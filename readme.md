@@ -20,38 +20,68 @@ Proyek ini menggabungkan teknologi IoT, machine learning, dan knowledge base giz
 
 ### 1. **IoT Smart Scale (Timbangan Pintar)**
 
-- Dibangun menggunakan **ESP32** + load cell.
-- Mengirimkan berat tubuh dan berat makanan ke server melalui Wi-Fi.
-- Data ditampilkan real-time di aplikasi.
+- Arduino UNO R4 WiFi
+- Load Cell 10kg + HX711.
+- Pengiriman data via Wi-Fi (HTTP / MQTT).
+- Kalibrasi otomatis
+- Update realtime ke server
 
 ### 2. **Progressive Web App (PWA)**
 
-- Registrasi profil anak (usia, berat, tinggi, riwayat kesehatan).
-- Pemantauan gizi harian dan mingguan.
-- Kamera ponsel untuk mendeteksi jenis makanan (image classification).
-- Analisis gizi menggunakan **knowledge base (TKPI, WHO, USDA)**.
-- Status gizi ditampilkan:
-  - ✔ Seimbang
-  - ⚠ Kurang Protein
-  - ❌ Belum Mencukupi
+- Registrasi profil anak
+- Dashboard konsumsi harian/mingguan/bulanan.
+- Kamera ponsel untuk deteksi makanan
+- Analisis status gizi
+- Tampilan responsif
 
 ### 3. **Machine Learning & Knowledge Base**
 
-- Pengenalan makanan menggunakan model image classification.
-- Matching makanan ↔ kebutuhan gizi anak menggunakan:
-  - **Cosine Similarity** (analisis komposisi makanan)
-  - **Z-Score WHO** (evaluasi pertumbuhan)
+- Image classification untuk identifikasi makanan.
+- Analisis nutrisi menggunakan:
+  - **Cosine Similarity**
+  - **Z-Score WHO**
 - Data nutrisi terintegrasi dengan local food knowledge base.
+- Rekomendasi gizi terpersonalisasi
 
 ### 4. **Dashboard Posyandu**
 
-- Kader dapat melihat rangkuman status gizi seluruh anak.
-- Mengurangi ketergantungan pada pencatatan manual.
-- Memudahkan intervensi dini berdasarkan data yang lengkap.
+- Rekap status gizi semua anak.
+- Grafik perkembangan.
+- Data terpusat.
+- Pengurangan pencatatan manual
 
 ---
 
 ## 🛠️ Teknologi yang Digunakan
+
+              ┌──────────────────┐
+              │   IoT SmartScale │
+              │ (Arduino UNO R4) │
+              └─────────┬────────┘
+                        │ Wi-Fi (HTTP/MQTT)
+                        ▼
+          ┌──────────────────────────────────┐
+          │        Backend API (Bun/Elysia)  │
+          │   Auth • REST API • Data Bridge  │
+          └─────────┬────────────────────────┘
+                    │
+                    ▼
+        ┌────────────────────────────────────┐
+        │        ML Service (Python Flask)   │
+        │  Image Recognition • Nutrition ML  │
+        └─────────┬──────────────────────────┘
+                  │
+                  ▼
+        ┌────────────────────────────────────┐
+        │          PostgreSQL Database       │
+        │ Child Profile • Food Logs • ML Data│
+        └─────────┬──────────────────────────┘
+                  │
+                  ▼
+       ┌─────────────────────────────────────┐
+       │        PWA Frontend (Next.js)       │
+       │ Dashboard • Camera                  │
+       └─────────────────────────────────────┘
 
 ### **Backend**
 
@@ -89,6 +119,46 @@ Proyek ini menggabungkan teknologi IoT, machine learning, dan knowledge base giz
 
 ### **Devploy**
 
-- Cloud Server
+- Docker
+- GitHub
+- Cloud Deployment
 
 ---
+
+# 🗂️ Roadmap Pengembangan
+
+### **Q1 — Baseline**
+
+- Observasi dan koordinasi dusun
+- Perancangan konsep sistem
+- Penyusunan Knowledge Base
+
+### **Q2 — Pengembangan Sistem**
+
+- Prototipe IoT Smart Scale
+- Desain UI/UX PWA
+- Integrasi backend + ML
+
+### **Q3 — Pengujian**
+
+- Uji lapangan bersama keluarga
+- Kalibrasi & validasi nutrisi
+
+### **Q4 — Implementasi**
+
+- Pelatihan kader
+- Sosialisasi Posyandu
+- NutriPlate v1.0 Release
+
+### **👥 Kontribusi**
+
+- Kontribusi sangat terbuka.
+- Silakan buat issue, pull request, atau diskusi.
+
+### **📄 Lisensi**
+
+- Lisensi: MIT License
+
+### **📞 Kontak Pengembang**
+
+- Email: muliaandiki@gmail.com
