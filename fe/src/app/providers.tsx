@@ -1,19 +1,23 @@
-'use client';
+"use client";
 
-import { store, persistor } from '@/stores/store';
-import { Provider } from 'react-redux';
-import { PersistGate } from 'redux-persist/integration/react';
-import { Toaster } from 'react-hot-toast';
-import { AlertProvinder } from '@/hooks/useAlert/costum-alert';
-import { ReactQueryClientProvider } from '@/pkg/react-query/query-client.pkg';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { ThemeProvider } from '@/core/providers/theme.provider';
-import { SidebarProvider } from '@/components/ui/sidebar';
-import { composeProviders } from './composeProvinders';
-import { AuthProvider } from '@/core/providers/auth.provider';
+import { store, persistor } from "@/stores/store";
+import { Provider } from "react-redux";
+import { PersistGate } from "redux-persist/integration/react";
+import { Toaster } from "react-hot-toast";
+import { AlertProvinder } from "@/hooks/useAlert/costum-alert";
+import { ReactQueryClientProvider } from "@/pkg/react-query/query-client.pkg";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { ThemeProvider } from "@/core/providers/theme.provider";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import { composeProviders } from "./composeProvinders";
+import { AuthProvider } from "@/core/providers/auth.provider";
+import AOS from "aos";
+import { useEffect } from "react";
 
 const Providers = composeProviders([
-  ({ children }) => <SidebarProvider defaultOpen={false}>{children}</SidebarProvider>,
+  ({ children }) => (
+    <SidebarProvider defaultOpen={false}>{children}</SidebarProvider>
+  ),
   ({ children }) => <Provider store={store}>{children}</Provider>,
   ({ children }) => <PersistGate persistor={persistor}>{children}</PersistGate>,
   AuthProvider,
@@ -23,6 +27,12 @@ const Providers = composeProviders([
 ]);
 
 export function AppProviders({ children }: { children: React.ReactNode }) {
+  useEffect(() => {
+    AOS.init({
+      duration: 800,
+      once: true,
+    });
+  }, []);
   return (
     <Providers>
       {children}

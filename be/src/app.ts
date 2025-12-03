@@ -15,7 +15,7 @@ class App {
   }
   private middlewares() {
     this.app.use(cors({ origin: "*" }));
-    this.app.use(autnRoutes);
+    this.app.group("/api", (api) => api.use(autnRoutes));
   }
 }
 
