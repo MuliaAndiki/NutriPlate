@@ -1,6 +1,8 @@
 import Elysia from "elysia";
 import cors from "@elysiajs/cors";
-import autnRoutes from "./routes/autnRoutes";
+import authRoutes from "./routes/authRoutes";
+import userRoutes from "./routes/userRoutes";
+import posyanduRoutes from "./routes/posyanduRoutes";
 
 class App {
   public app: Elysia;
@@ -13,9 +15,12 @@ class App {
   private routes(): void {
     this.app.get("/", () => "Hello Elysia! Bun js");
   }
+
   private middlewares() {
     this.app.use(cors({ origin: "*" }));
-    this.app.group("/api", (api) => api.use(autnRoutes));
+    this.app.group("/api", (api) =>
+      api.use(authRoutes).use(userRoutes).use(posyanduRoutes)
+    );
   }
 }
 

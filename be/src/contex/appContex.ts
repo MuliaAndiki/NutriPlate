@@ -1,9 +1,10 @@
 import type { Context } from "elysia";
 import type { JwtPayload } from "@/types/auth.types";
 import { AppFile } from "@/types/appFile";
+import { jwtChildPayload } from "@/types/child.types";
 
 export interface AppContext extends Context {
-  user?: JwtPayload;
+  user?: JwtPayload | jwtChildPayload;
   json?: (data: any, status?: number) => Response;
   files?: Record<string, AppFile[]>;
 }

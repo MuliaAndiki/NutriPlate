@@ -8,17 +8,217 @@ datasource db {
 }
 
 model User {
-  id        String    @id @default(uuid())
-  email     String    @unique
-  fullName  String
-  password  String
-  token     String?
-  role      String
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  otp       String?
-  expOtp    DateTime?
-  isVerify  Boolean?
+  id            String          @id @default(uuid())
+  email         String?         @unique
+  phone         String?         @unique
+  fullName      String
+  password      String?
+  role          RoleType
+  isVerify      Boolean         @default(false)
+  otp           String?
+  expOtp        DateTime?
+  token         String?
+  photoUrl      String?
+  activateExp   DateTime?
+  activateToken String?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  children      Child[]
+  iotDevices    IotDevice[]
+  notifications Notifications[]
+  posyandu      Posyandu[]
+  sessions      UserSession[]
 
-  @@map("User")
+  @@map("users")
+}
+
+model Child {
+  id              String                     @id @default(uuid())
+  parentId        String
+  posyanduId      String
+  fullName        String
+  dateOfBirth     DateTime
+  gender          GenderType
+  photoUrl        String?
+  createdAt       DateTime                   @default(now())
+  updatedAt       DateTime                   @updatedAt
+  profileChild    Json
+  parent          User                       @relation(fields: [parentId], references: [id])
+  posyandu        Posyandu                   @relation(fields: [posyanduId], references: [id])
+  foodIntake      Food[]
+  measurements    Measurement[]
+  programProgress NutritionProgramProgress[]
+
+  @@index([parentId])
+  @@index([posyanduId])
+  @@map("children")
+}
+
+model Posyandu {
+  id          String              @id @default(uuid())
+  userID      String
+  name        String
+  village     String
+  subDistrict String
+  district    String
+  scheduleDay Int
+  createdAt   DateTime            @default(now())
+  avaUrl      String
+  email       String
+  phone       String
+  children    Child[]
+  iotDevices  IotDevice[]
+  programs    NutriplateProgram[]
+  user        User                @relation(fields: [userID], references: [id])
+
+  @@map("posyandu")
+}
+
+model IotDevice {
+  id               String    @id @default(uuid())
+  parentId         String?
+  posyanduId       String?
+  macAddress       String    @unique
+  deviceName       String
+  pairingToken     String?
+  pairingExpiresAt DateTime?
+  batteryLevel     Int?
+  lastOnline       DateTime?
+  status           IotStatus
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  foodIntake       Food[]
+  parent           User?     @relation(fields: [parentId], references: [id])
+  posyandu         Posyandu? @relation(fields: [posyanduId], references: [id])
+
+  @@index([parentId])
+  @@index([posyanduId])
+  @@map("iot_devices")
+}
+
+model Measurement {
+  id                  String          @id @default(uuid())
+  childId             String
+  measurementDate     DateTime
+  weightKg            Decimal
+  heightCm            Decimal
+  headCircumferenceCm Decimal?
+  nutritionStatus     NutritionStatus
+  note                String?
+  createdAt           DateTime        @default(now())
+  child               Child           @relation(fields: [childId], references: [id])
+
+  @@index([childId])
+  @@map("measurements")
+}
+
+model Food {
+  id             String     @id @default(uuid())
+  childId        String
+  iotId          String?
+  photoUrl       String?
+  foodLabel      String?
+  mlConfidence   Decimal?
+  weightGram     Decimal?
+  energyKcal     Decimal?
+  proteinGram    Decimal?
+  fatGram        Decimal?
+  carbGram       Decimal?
+  vitamins       Json?
+  nutritionScore Decimal?
+  createdAt      DateTime   @default(now())
+  child          Child      @relation(fields: [childId], references: [id])
+  iot            IotDevice? @relation(fields: [iotId], references: [id])
+
+  @@index([childId])
+  @@index([iotId])
+  @@map("food_intakes")
+}
+
+model Notifications {
+  id        String    @id @default(uuid())
+  userId    String
+  type      NotifType
+  title     String
+  message   String
+  isRead    Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  user      User      @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@map("notifications")
+}
+
+model UserSession {
+  id        String   @id @default(uuid())
+  userId    String
+  userAgent String
+  ipAddress String
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@map("user_sessions")
+}
+
+model NutriplateProgram {
+  id           String                     @id @default(uuid())
+  posyanduId   String
+  name         String
+  description  String
+  durationDays Int
+  createdAt    DateTime                   @default(now())
+  posyandu     Posyandu                   @relation(fields: [posyanduId], references: [id])
+  progress     NutritionProgramProgress[]
+
+  @@index([posyanduId])
+  @@map("nutriplate_programs")
+}
+
+model NutritionProgramProgress {
+  id          String            @id @default(uuid())
+  childId     String
+  programId   String
+  dayNumber   Int
+  isCompleted Boolean           @default(false)
+  createdAt   DateTime          @default(now())
+  child       Child             @relation(fields: [childId], references: [id])
+  program     NutriplateProgram @relation(fields: [programId], references: [id])
+
+  @@index([childId])
+  @@index([programId])
+  @@map("program_progress")
+}
+
+enum RoleType {
+  PARENT
+  KADER
+  POSYANDU
+  ADMIN
+}
+
+enum GenderType {
+  MALE
+  FEMALE
+}
+
+enum IotStatus {
+  online
+  offline
+  error
+}
+
+enum NutritionStatus {
+  severely_underweight
+  underweight
+  normal
+  overweight
+}
+
+enum NotifType {
+  result
+  reminder
+  alert
+  edukasi
 }
