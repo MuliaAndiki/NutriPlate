@@ -2,8 +2,6 @@ import { AppContext } from "@/contex/appContex";
 import { AppFile } from "@/types/appFile";
 export const formDataMiddleware = () => ({
   beforeHandle: async (c: AppContext) => {
-    console.log("🔹 [formDataMiddleware] started...");
-
     const contentType = c.request.headers.get("content-type") || "";
 
     try {
@@ -18,8 +16,6 @@ export const formDataMiddleware = () => ({
       }
 
       if (contentType.includes("multipart/form-data")) {
-        console.log("🔹 FormData request detected, parsing files...");
-
         const formData = await c.request.formData();
         const body: Record<string, any> = {};
         const files: Record<string, AppFile[]> = {};

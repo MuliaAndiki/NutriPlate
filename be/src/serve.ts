@@ -1,5 +1,6 @@
 import app from "./app";
 import { connectWithRetry } from "./config/databases";
+import "@/utils/redis";
 
 connectWithRetry()
   .then(() => {

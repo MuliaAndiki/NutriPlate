@@ -2,9 +2,6 @@
   "name": "boilerpad-elysia-api",
   "version": "1.0.50",
   "type": "module",
-  "engines": {
-    "node": ">=22.0.0"
-  },
   "scripts": {
     "prisma:generate": "node node_modules/.bin/prisma generate",
     "dev": "npm run prisma:generate && bun --watch run src/serve.ts",
@@ -14,10 +11,15 @@
     "@elysiajs/cors": "^1.4.0",
     "@prisma/client": "^6.18.0",
     "@types/jsonwebtoken": "^9.0.10",
+    "@types/nodemailer": "^7.0.4",
     "bcryptjs": "^3.0.2",
+    "cloudinary": "^2.8.0",
     "elysia": "^1.2.0",
     "jsonwebtoken": "^9.0.2",
-    "prisma": "^6.18.0"
+    "nodemailer": "^7.0.11",
+    "prisma": "^6.18.0",
+    "redis": "^5.10.0",
+    "zod": "^4.1.13"
   },
   "devDependencies": {
     "@types/bcryptjs": "^3.0.0",
