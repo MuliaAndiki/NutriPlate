@@ -9,7 +9,6 @@ import {
   PickVerify,
   PickSendOtp,
   PickResetPassword,
-  PickActiveAccount,
 } from "@/types/auth.types";
 import prisma from "prisma/client";
 import { AppContext } from "@/contex/appContex";
@@ -98,6 +97,13 @@ class AuthController {
           201
         );
       }
+      return c.json?.(
+        {
+          status: 400,
+          message: "Invalid register request",
+        },
+        400
+      );
     } catch (error) {
       console.error(error);
       return c.json?.(
@@ -152,6 +158,12 @@ class AuthController {
         );
       }
 
+      await prisma.userSession.deleteMany({
+        where: {
+          userId: selectLogin.id,
+        },
+      });
+
       if (!selectLogin.isVerify) {
         return c.json?.(
           {
@@ -176,10 +188,24 @@ class AuthController {
         );
       }
 
+      const ipAddress =
+        c.headers["x-forwarded-for"]?.split(",")[0] ||
+        c.headers["x-real-ip"] ||
+        c.headers["cf-connecting-ip"] ||
+        "unknown";
+
+      const session = await prisma.userSession.create({
+        data: {
+          userId: selectLogin.id,
+          userAgent: c.headers["user-agent"] ?? "unknown",
+          ipAddress: ipAddress,
+          expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
+        },
+      });
+
       const payload: JwtPayload = {
         id: selectLogin.id,
-        email: selectLogin.email!,
-        fullName: selectLogin.fullName,
+        sessionId: session.id,
         role: selectLogin.role,
       };
       if (!process.env.JWT_SECRET) throw new Error("JWT_SECRET not set");

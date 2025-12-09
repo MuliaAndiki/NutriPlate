@@ -4,9 +4,12 @@ import { PickCreatePosyandu, PickPosyanduID } from "@/types/posyandu.types";
 import { redis } from "@/utils/redis";
 import prisma from "prisma/client";
 import bcryptjs from "bcryptjs";
-import crypto from "crypto";
+import crypto, { publicDecrypt } from "crypto";
 import { env } from "@/config/env.config";
 import { sendActivationEmail } from "@/utils/sendActiveEmail";
+import { generateOtp } from "@/utils/generate-otp";
+import { sendOTPEmail } from "@/utils/mailer";
+import { cacheKeys } from "@/cache/cacheKey";
 
 class PosyanduController {
   public async createPosyandu(c: AppContext) {
@@ -114,14 +117,14 @@ class PosyanduController {
           404
         );
       }
-      const cacheKey = `posyandu:${jwtUser.id}`;
+      const cacheKey = cacheKeys.posyandu.list();
       const cachePosyandu = await redis.get(cacheKey);
       if (cachePosyandu) {
         return c.json?.(
           {
             status: 200,
             message: "succesfully get cache posyandu",
-            data: cachePosyandu,
+            data: JSON.parse(cachePosyandu),
           },
           200
         );
@@ -129,6 +132,13 @@ class PosyanduController {
       const posyandu = await prisma.posyandu.findMany({
         where: {
           userID: jwtUser.id,
+        },
+        select: {
+          id: true,
+          avaUrl: true,
+          name: true,
+          village: true,
+          _count: true,
         },
       });
       await redis.set(cacheKey, JSON.stringify(posyandu), { EX: 60 });
@@ -185,13 +195,14 @@ class PosyanduController {
         );
       }
 
-      const cacheKey = `posyanduByID:${params}`;
+      const cacheKey = cacheKeys.posyandu.byID(params.id);
       const cachePosyandu = await redis.get(cacheKey);
       if (cachePosyandu) {
         return c.json?.(
           {
             status: 200,
             message: "succesfully get posyandu by id",
+            data: JSON.parse(cachePosyandu),
           },
           200
         );
@@ -216,7 +227,7 @@ class PosyanduController {
           {
             status: 200,
             message: "succesfully get posyandu byId",
-            data: 200,
+            data: posyandu,
           },
           200
         );
@@ -234,69 +245,6 @@ class PosyanduController {
     }
   }
 
-  public async getKader(c: AppContext) {
-    try {
-      const jwtUser = c.user as JwtPayload;
-      if (!jwtUser) {
-        return c.json?.(
-          {
-            status: 404,
-            message: "user not found",
-          },
-          404
-        );
-      }
-      const cacheKey = `kader:${jwtUser.id}`;
-      const cacheKader = await redis.get(cacheKey);
-      if (cacheKader) {
-        return c.json?.(
-          {
-            status: 200,
-            message: "succesfully get kader by cache",
-            data: cacheKader,
-          },
-          200
-        );
-      }
-      const user = await prisma.user.findMany({
-        where: {
-          id: jwtUser.id,
-        },
-        select: {
-          role: jwtUser.role === "KADER",
-        },
-      });
-      await redis.set(cacheKey, JSON.stringify(user), { EX: 60 });
-      if (!user) {
-        return c.json?.(
-          {
-            status: 400,
-            message: "server internal error",
-          },
-          400
-        );
-      } else {
-        return c.json?.(
-          {
-            status: 200,
-            message: "succesfully get kader",
-            data: user,
-          },
-          200
-        );
-      }
-    } catch (error) {
-      console.error(error);
-      return c.json?.(
-        {
-          status: 500,
-          message: "server internal error",
-          error: error instanceof Error ? error.message : error,
-        },
-        500
-      );
-    }
-  }
   public async activeAccount(c: AppContext) {
     try {
       const authBody = c.body as PickActiveAccount;
@@ -319,7 +267,7 @@ class PosyanduController {
         return c.json?.(
           {
             status: 400,
-            message: "inavalid token or expired token",
+            message: "inavalid token",
           },
           400
         );
@@ -351,6 +299,256 @@ class PosyanduController {
             status: 200,
             message: "succesfully active account posyandu",
             data: active,
+          },
+          200
+        );
+      }
+    } catch (error) {
+      console.error(error);
+      return c.json?.(
+        {
+          status: 500,
+          message: "server internal error",
+          error: error instanceof Error ? error.message : error,
+        },
+        500
+      );
+    }
+  }
+  public async updatePosyandu(c: AppContext) {
+    try {
+      const jwtUser = c.user as JwtPayload;
+      const params = c.params as PickPosyanduID;
+      const posyanduBody = c.body as Partial<PickCreatePosyandu>;
+      if (!params) {
+        return c.json?.(
+          {
+            status: 400,
+            message: "params is required",
+          },
+          400
+        );
+      }
+      if (!jwtUser) {
+        return c.json?.(
+          {
+            status: 404,
+            message: "user not found",
+          },
+          404
+        );
+      }
+      const isUpdateEmail =
+        typeof posyanduBody.email === "string" && posyanduBody.email.length > 0;
+
+      const cacheKey = cacheKeys.posyandu.byID(params.id);
+
+      const result = await prisma.$transaction(async (tx) => {
+        const posyandu = await tx.posyandu.update({
+          where: {
+            id: params.id,
+          },
+          data: {
+            ...(posyanduBody.name && { name: posyanduBody.name }),
+            ...(posyanduBody.avaUrl && { avaUrl: posyanduBody.avaUrl }),
+
+            ...(posyanduBody.subDistrict && {
+              subDistrict: posyanduBody.subDistrict,
+            }),
+            ...(posyanduBody.district && { district: posyanduBody.district }),
+            ...(posyanduBody.avaUrl && { avaUrl: posyanduBody.avaUrl }),
+            ...(posyanduBody.phone && { phone: posyanduBody.phone }),
+            ...(posyanduBody.scheduleDay && {
+              scheduleDay: posyanduBody.scheduleDay,
+            }),
+          },
+        });
+
+        const user = await tx.user.update({
+          where: {
+            id: posyandu.userID,
+          },
+          data: {
+            ...(posyanduBody.phone && { phone: posyanduBody.phone }),
+            ...(posyanduBody.name && { fullName: posyanduBody.name }),
+          },
+        });
+        if (isUpdateEmail) {
+          const otp = generateOtp(6);
+          const expOtp = new Date(Date.now() + 5 * 60 * 1000);
+          await tx.user.update({
+            where: {
+              id: posyandu.userID,
+            },
+            data: {
+              email: posyanduBody.email,
+              isVerify: false,
+              otp: otp,
+              expOtp: expOtp,
+            },
+          });
+          await sendOTPEmail(posyanduBody.email!, otp);
+        }
+        return { posyandu, user };
+      });
+
+      await redis.del(cacheKey);
+
+      if (!result) {
+        return c.json?.(
+          {
+            status: 400,
+            message: "server internal error",
+          },
+          400
+        );
+      } else {
+        return c.json?.(
+          {
+            status: 200,
+            message: "succesfully update posyandu",
+            data: result,
+          },
+          200
+        );
+      }
+    } catch (error) {
+      console.error(error);
+      return c.json?.(
+        {
+          status: 500,
+          message: "server internal error",
+          error: error instanceof Error ? error.message : error,
+        },
+        500
+      );
+    }
+  }
+  public async deletePosyandu(c: AppContext) {
+    try {
+      const jwtUser = c.user as JwtPayload;
+      const params = c.params as PickPosyanduID;
+      if (!jwtUser) {
+        return c.json?.(
+          {
+            status: 404,
+            message: "user not found",
+          },
+          404
+        );
+      }
+      if (!params) {
+        return c.json?.(
+          {
+            status: 400,
+            message: "params is required",
+          },
+          400
+        );
+      }
+      const cacheKey = cacheKeys.posyandu.byID(params.id);
+      const result = await prisma.$transaction(async (tx) => {
+        const posyandu = await tx.posyandu.delete({
+          where: {
+            id: params.id,
+          },
+        });
+        const user = await tx.user.delete({
+          where: {
+            id: posyandu.userID,
+          },
+        });
+        return { posyandu, user };
+      });
+
+      await redis.del(cacheKey);
+      if (!result) {
+        return c.json?.(
+          {
+            status: 400,
+            message: "server internal error",
+          },
+          400
+        );
+      } else {
+        return c.json?.(
+          {
+            status: 200,
+            message: "succesfully delete posyandu",
+            data: result,
+          },
+          200
+        );
+      }
+    } catch (error) {
+      console.error(error);
+      return c.json?.(
+        {
+          status: 500,
+          message: "server internal error",
+          error: error instanceof Error ? error.message : error,
+        },
+        500
+      );
+    }
+  }
+  public async getChildPosyandu(c: AppContext) {
+    try {
+      const jwtUser = c.user as JwtPayload;
+      const params = c.params as PickPosyanduID;
+      if (!jwtUser) {
+        return c.json?.(
+          {
+            status: 404,
+            message: "user not found",
+          },
+          400
+        );
+      }
+      if (!params) {
+        return c.json?.(
+          {
+            status: 400,
+            message: "params is required",
+          },
+          400
+        );
+      }
+      const child = await prisma.child.findMany({
+        where: {
+          posyanduId: params.id,
+        },
+      });
+
+      const cacheKey = cacheKeys.child.byPosyanduList(params.id);
+      const cachePosyandu = await redis.get(cacheKey);
+
+      if (cachePosyandu) {
+        return c.json?.(
+          {
+            status: 200,
+            message: "succesfully get cache child",
+            data: JSON.parse(cachePosyandu),
+          },
+          200
+        );
+      }
+
+      await redis.set(cacheKey, JSON.stringify(child), { EX: 60 });
+      if (!child) {
+        c.json?.(
+          {
+            status: 400,
+            message: "server internal error",
+          },
+          400
+        );
+      } else {
+        return c.json?.(
+          {
+            status: 200,
+            message: "succesfully get child",
+            data: child,
           },
           200
         );

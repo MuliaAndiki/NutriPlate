@@ -42,18 +42,38 @@ class PosyanduRoutes {
         beforeHandle: [verifyToken().beforeHandle],
       }
     );
-    this.posyanduRoutes.get(
-      "/kader",
-      (c: AppContext) => PosyanduController.getKader(c),
+    this.posyanduRoutes.post("/active", (c) =>
+      PosyanduController.activeAccount(c)
+    );
+    this.posyanduRoutes.put(
+      "/:id",
+      (c: AppContext) => PosyanduController.updatePosyandu(c),
       {
         beforeHandle: [
           verifyToken().beforeHandle,
-          requireRole(["POSYANDU"]).beforeHandle,
+          requireRole(["POSYANDU", "ADMIN"]).beforeHandle,
         ],
       }
     );
-    this.posyanduRoutes.post("/active", (c) =>
-      PosyanduController.activeAccount(c)
+    this.posyanduRoutes.delete(
+      "/:id",
+      (c: AppContext) => PosyanduController.deletePosyandu(c),
+      {
+        beforeHandle: [
+          verifyToken().beforeHandle,
+          requireRole(["ADMIN", "POSYANDU"]).beforeHandle,
+        ],
+      }
+    );
+    this.posyanduRoutes.get(
+      "/:id/child",
+      (c: AppContext) => PosyanduController.getChildPosyandu(c),
+      {
+        beforeHandle: [
+          verifyToken().beforeHandle,
+          requireRole(["POSYANDU", "ADMIN"]).beforeHandle,
+        ],
+      }
     );
   }
 }

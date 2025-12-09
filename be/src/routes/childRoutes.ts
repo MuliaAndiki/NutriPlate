@@ -1,7 +1,7 @@
 import Elysia from "elysia";
 import ChildController from "@/controllers/ChildController";
 import { AppContext } from "@/contex/appContex";
-import { verifyToken } from "@/middlewares/auth";
+import { requireRole, verifyToken } from "@/middlewares/auth";
 
 class ChildRoutes {
   public childRoutes;
@@ -18,14 +18,14 @@ class ChildRoutes {
   }
 
   private routes() {
-    this.childRoutes.get("/", (c: AppContext) => ChildController.getChild(c), {
-      beforeHandle: [verifyToken().beforeHandle],
-    });
-    this.childRoutes.get(
-      "/:id",
-      (c: AppContext) => ChildController.getChildByID(c),
+    this.childRoutes.post(
+      "/",
+      (c: AppContext) => ChildController.createChild(c),
       {
-        beforeHandle: [verifyToken().beforeHandle],
+        beforeHandle: [
+          verifyToken().beforeHandle,
+          requireRole(["PARENT"]).beforeHandle,
+        ],
       }
     );
   }
