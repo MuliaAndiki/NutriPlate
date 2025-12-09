@@ -27,8 +27,7 @@ model User {
   iotDevices    IotDevice[]
   notifications Notifications[]
   posyandu      Posyandu[]
-  sessions      UserSession[]
-
+  session UserSession[]
   @@map("users")
 }
 
@@ -156,7 +155,7 @@ model UserSession {
   ipAddress String
   createdAt DateTime @default(now())
   expiresAt DateTime
-  user      User     @relation(fields: [userId], references: [id])
+  user User @relation(references: [id], fields: [userId])
 
   @@index([userId])
   @@map("user_sessions")

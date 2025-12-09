@@ -20,16 +20,17 @@ CREATE TABLE "users" (
     "phone" TEXT,
     "fullName" TEXT NOT NULL,
     "password" TEXT,
+    "sessionID" TEXT NOT NULL,
     "role" "RoleType" NOT NULL,
     "isVerify" BOOLEAN NOT NULL DEFAULT false,
     "otp" TEXT,
     "expOtp" TIMESTAMP(3),
     "token" TEXT,
     "photoUrl" TEXT,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
     "activateExp" TIMESTAMP(3),
     "activateToken" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
 );
@@ -215,6 +216,9 @@ CREATE INDEX "program_progress_childId_idx" ON "program_progress"("childId");
 CREATE INDEX "program_progress_programId_idx" ON "program_progress"("programId");
 
 -- AddForeignKey
+ALTER TABLE "users" ADD CONSTRAINT "users_sessionID_fkey" FOREIGN KEY ("sessionID") REFERENCES "user_sessions"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "children" ADD CONSTRAINT "children_parentId_fkey" FOREIGN KEY ("parentId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -240,9 +244,6 @@ ALTER TABLE "food_intakes" ADD CONSTRAINT "food_intakes_iotId_fkey" FOREIGN KEY 
 
 -- AddForeignKey
 ALTER TABLE "notifications" ADD CONSTRAINT "notifications_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "user_sessions" ADD CONSTRAINT "user_sessions_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "nutriplate_programs" ADD CONSTRAINT "nutriplate_programs_posyanduId_fkey" FOREIGN KEY ("posyanduId") REFERENCES "posyandu"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

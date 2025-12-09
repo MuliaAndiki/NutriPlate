@@ -9,6 +9,7 @@ import { env } from "@/config/env.config";
 import { sendActivationEmail } from "@/utils/sendActiveEmail";
 import { generateOtp } from "@/utils/generate-otp";
 import { sendOTPEmail } from "@/utils/mailer";
+import { cacheKeys } from "@/cache/cacheKey";
 
 class PosyanduController {
   public async createPosyandu(c: AppContext) {
@@ -116,7 +117,7 @@ class PosyanduController {
           404
         );
       }
-      const cacheKey = `posyandu:${jwtUser.id}`;
+      const cacheKey = cacheKeys.posyandu.list();
       const cachePosyandu = await redis.get(cacheKey);
       if (cachePosyandu) {
         return c.json?.(
@@ -194,7 +195,7 @@ class PosyanduController {
         );
       }
 
-      const cacheKey = `posyanduByID:${params.id}`;
+      const cacheKey = cacheKeys.posyandu.byID(params.id);
       const cachePosyandu = await redis.get(cacheKey);
       if (cachePosyandu) {
         return c.json?.(
@@ -244,67 +245,6 @@ class PosyanduController {
     }
   }
 
-  public async getKader(c: AppContext) {
-    try {
-      const jwtUser = c.user as JwtPayload;
-      if (!jwtUser) {
-        return c.json?.(
-          {
-            status: 404,
-            message: "user not found",
-          },
-          404
-        );
-      }
-      const cacheKey = `kader:${jwtUser.id}`;
-      const cacheKader = await redis.get(cacheKey);
-      if (cacheKader) {
-        return c.json?.(
-          {
-            status: 200,
-            message: "succesfully get kader by cache",
-            data: JSON.parse(cacheKader),
-          },
-          200
-        );
-      }
-      const user = await prisma.user.findMany({
-        where: {
-          id: jwtUser.id,
-          role: "KADER",
-        },
-      });
-      await redis.set(cacheKey, JSON.stringify(user), { EX: 60 });
-      if (!user) {
-        return c.json?.(
-          {
-            status: 400,
-            message: "server internal error",
-          },
-          400
-        );
-      } else {
-        return c.json?.(
-          {
-            status: 200,
-            message: "succesfully get kader",
-            data: user,
-          },
-          200
-        );
-      }
-    } catch (error) {
-      console.error(error);
-      return c.json?.(
-        {
-          status: 500,
-          message: "server internal error",
-          error: error instanceof Error ? error.message : error,
-        },
-        500
-      );
-    }
-  }
   public async activeAccount(c: AppContext) {
     try {
       const authBody = c.body as PickActiveAccount;
@@ -401,7 +341,7 @@ class PosyanduController {
       const isUpdateEmail =
         typeof posyanduBody.email === "string" && posyanduBody.email.length > 0;
 
-      const cacheKey = `posyanduByID:${params.id}`;
+      const cacheKey = cacheKeys.posyandu.byID(params.id);
 
       const result = await prisma.$transaction(async (tx) => {
         const posyandu = await tx.posyandu.update({
@@ -506,7 +446,7 @@ class PosyanduController {
           400
         );
       }
-      const cacheKey = `posyanduByID:${params.id}`;
+      const cacheKey = cacheKeys.posyandu.byID(params.id);
       const result = await prisma.$transaction(async (tx) => {
         const posyandu = await tx.posyandu.delete({
           where: {
@@ -580,7 +520,7 @@ class PosyanduController {
         },
       });
 
-      const cacheKey = `posyanduChild:${params.id}`;
+      const cacheKey = cacheKeys.child.byPosyanduList(params.id);
       const cachePosyandu = await redis.get(cacheKey);
 
       if (cachePosyandu) {

@@ -16,17 +16,15 @@ export interface Auth {
   isVerify?: boolean;
   activateToken?: string;
   activateExp?: string;
+  sessionId: string;
 }
 
-export type JwtPayload = Pick<
-  Auth,
-  "id" | "email" | "role" | "fullName" | "token"
->;
+export type JwtPayload = Pick<Auth, "id" | "role" | "sessionId">;
 export type PickRegister = Pick<
   Auth,
   "email" | "fullName" | "password" | "role" | "phone"
 >;
-export type PickLogin = Pick<Auth, "email" | "password" | "phone">;
+export type PickLogin = Pick<Auth, "email" | "password" | "phone" | "id">;
 export type PickID = Pick<Auth, "id">;
 export type PickForgotPasswordEmail = Pick<Auth, "email" | "phone">;
 export type PickVerify = Pick<Auth, "email" | "otp">;
@@ -38,3 +36,4 @@ export type PickUpdateProfile = Pick<
 >;
 export type PickUpdatePassword = Pick<Auth, "password">;
 export type PickActiveAccount = Pick<Auth, "activateToken" | "password">;
+export type PickLoginAllReady = Pick<Auth, "token">;

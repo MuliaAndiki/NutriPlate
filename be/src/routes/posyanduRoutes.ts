@@ -42,16 +42,6 @@ class PosyanduRoutes {
         beforeHandle: [verifyToken().beforeHandle],
       }
     );
-    this.posyanduRoutes.get(
-      "/kader",
-      (c: AppContext) => PosyanduController.getKader(c),
-      {
-        beforeHandle: [
-          verifyToken().beforeHandle,
-          requireRole(["POSYANDU"]).beforeHandle,
-        ],
-      }
-    );
     this.posyanduRoutes.post("/active", (c) =>
       PosyanduController.activeAccount(c)
     );

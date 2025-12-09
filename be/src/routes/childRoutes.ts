@@ -18,16 +18,6 @@ class ChildRoutes {
   }
 
   private routes() {
-    this.childRoutes.get("/", (c: AppContext) => ChildController.getChild(c), {
-      beforeHandle: [verifyToken().beforeHandle],
-    });
-    this.childRoutes.get(
-      "/:id",
-      (c: AppContext) => ChildController.getChildByID(c),
-      {
-        beforeHandle: [verifyToken().beforeHandle],
-      }
-    );
     this.childRoutes.post(
       "/",
       (c: AppContext) => ChildController.createChild(c),

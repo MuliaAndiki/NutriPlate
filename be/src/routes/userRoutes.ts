@@ -26,6 +26,7 @@ class UserRoutes {
         beforeHandle: [verifyToken().beforeHandle],
       }
     );
+
     this.userRoutes.delete(
       "/account",
       (c: AppContext) => UserController.deleteAccount(c),
@@ -55,6 +56,44 @@ class UserRoutes {
           verifyToken().beforeHandle,
           requireRole(["kader", "posyandu"]).beforeHandle,
         ],
+      }
+    );
+    this.userRoutes.get(
+      "/profile/:id",
+      (c: AppContext) => UserController.getUserByID(c),
+      {
+        beforeHandle: [verifyToken().beforeHandle],
+      }
+    );
+    this.userRoutes.post(
+      "/allReadyLogin",
+      (c: AppContext) => UserController.AllReadyLogin(c),
+      {
+        beforeHandle: [verifyToken().beforeHandle],
+      }
+    );
+    this.userRoutes.get(
+      "/kader",
+      (c: AppContext) => UserController.getKader(c),
+      {
+        beforeHandle: [verifyToken().beforeHandle],
+      }
+    );
+    this.userRoutes.get("/", (c: AppContext) => UserController.getChild(c), {
+      beforeHandle: [verifyToken().beforeHandle],
+    });
+    this.userRoutes.get(
+      "/:id",
+      (c: AppContext) => UserController.getChildByID(c),
+      {
+        beforeHandle: [verifyToken().beforeHandle],
+      }
+    );
+    this.userRoutes.get(
+      "/kader/:id",
+      (c: AppContext) => UserController.getKaderByID(c),
+      {
+        beforeHandle: [verifyToken().beforeHandle],
       }
     );
   }
