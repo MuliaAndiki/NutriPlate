@@ -66,6 +66,7 @@ class UserController {
     try {
       const user = c.body as PickUpdateProfile;
       const jwtUser = c.user as JwtPayload;
+
       if (!jwtUser) {
         return c.json?.(
           {

@@ -1,6 +1,6 @@
 import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
-
+ 
 import {
   PickRegister,
   PickLogin,
@@ -9,7 +9,6 @@ import {
   PickVerify,
   PickSendOtp,
   PickResetPassword,
-  PickActiveAccount,
 } from "@/types/auth.types";
 import prisma from "prisma/client";
 import { AppContext } from "@/contex/appContex";
@@ -30,7 +29,7 @@ class AuthController {
 
       if (!auth.email && !auth.phone) {
         return c.json?.(
-          {
+         {
             status: 400,
             message: "email of phone is required",
           },

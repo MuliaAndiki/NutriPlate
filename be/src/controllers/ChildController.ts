@@ -25,7 +25,7 @@ class ChildController {
           {
             status: 200,
             message: " successfully get cache for child",
-            data: cacheChild,
+            data: JSON.parse(cacheChild),
           },
           200
         );
@@ -143,56 +143,165 @@ class ChildController {
     }
   }
   //   initial setup
-  //   public async createChild(c: AppContext) {
-  //     try {
-  //       const jwtUser = c.user as JwtPayload;
-  //       const childBody = c.body as PickCreateChild;
-  //       if (!jwtUser) {
-  //         return c.json?.(
-  //           {
-  //             status: 404,
-  //             message: "user not found",
-  //           },
-  //           404
-  //         );
-  //       }
-  //       if (
-  //         !childBody.dateOfBirth ||
-  //         !childBody.fullname ||
-  //         !childBody.gender ||
-  //         !childBody.photoUrl ||
-  //         !childBody.profileChild
-  //       ) {
-  //         return c.json?.(
-  //           {
-  //             status: 400,
-  //             message: "body is required",
-  //           },
-  //           400
-  //         );
-  //       }
+  public async createChild(c: AppContext) {
+    try {
+      const jwtUser = c.user as JwtPayload;
+      const childBody = c.body as PickCreateChild;
+      if (!jwtUser) {
+        return c.json?.(
+          {
+            status: 404,
+            message: "user not found",
+          },
+          404
+        );
+      }
+      if (
+        !childBody.dateOfBirth ||
+        !childBody.fullname ||
+        !childBody.gender ||
+        !childBody.photoUrl ||
+        !childBody.profileChild
+      ) {
+        return c.json?.(
+          {
+            status: 400,
+            message: "body is required",
+          },
+          400
+        );
+      }
+      const posyandu = await prisma.posyandu.findFirst({
+        where: {
+          userID: jwtUser.id,
+        },
+      });
+      if (!posyandu) {
+        return c.json?.({
+          status: 400,
+          message: "posyandu not found",
+        });
+      }
 
-  //       const child = await prisma.child.create({
-  //         data: {
-  //           fullName: childBody.fullname,
-  //           dateOfBirth: childBody.dateOfBirth,
-  //           gender: childBody.gender,
-  //           parentId:jwtUser.id
+      const child = await prisma.child.create({
+        data: {
+          fullName: childBody.fullname,
+          dateOfBirth: childBody.dateOfBirth,
+          gender: childBody.gender,
+          parentId: jwtUser.id,
+          posyanduId: posyandu.id,
+          profileChild: typeof childBody.profileChild,
+        },
+      });
+      if (!child) {
+        return c.json?.(
+          {
+            status: 400,
+            message: "server internal error",
+          },
+          400
+        );
+      } else {
+        return c.json?.(
+          {
+            status: 200,
+            message: "succesfully create Child",
+            data: child,
+          },
+          200
+        );
+      }
+    } catch (error) {
+      console.error(error);
+      return c.json?.(
+        {
+          status: 500,
+          message: "server internal error",
+          error: error instanceof Error ? error.message : error,
+        },
+        500
+      );
+    }
+  }
+  public async getChildPosyandu(c: AppContext) {
+    try {
+      const jwtUser = c.user as JwtPayload;
 
-  //         },
-  //       });
-  //     } catch (error) {
-  //       console.error(error);
-  //       return c.json?.(
-  //         {
-  //           status: 500,
-  //           message: "server internal error",
-  //           error: error instanceof Error ? error.message : error,
-  //         },
-  //         500
-  //       );
-  //     }
-  //   }
+      if (!jwtUser) {
+        return c.json?.(
+          {
+            status: 404,
+            message: "server internal error",
+          },
+          400
+        );
+      }
+      const child = await prisma.child.findFirst({
+        where: {
+          parentId: jwtUser.id,
+        },
+      });
+
+      if (!child) {
+        return c.json?.(
+          {
+            status: 400,
+            message: "user not found",
+          },
+          400
+        );
+      }
+      const cacheKey = `posyanduChild:${jwtUser.id}`;
+      const cachePosyandu = await redis.get(cacheKey);
+
+      if (cachePosyandu) {
+        return c.json?.(
+          {
+            status: 200,
+            message: "succesfully get cache child",
+            data: JSON.parse(cachePosyandu),
+          },
+          200
+        );
+      }
+
+      const posyandu = await prisma.child.findMany({
+        where: {
+          id: child.id,
+        },
+      });
+
+      await redis.set(cacheKey, JSON.stringify(posyandu), { EX: 60 });
+      if (!posyandu) {
+        c.json?.(
+          {
+            status: 400,
+            message: "server internal error",
+          },
+          400
+        );
+      } else {
+        return c.json?.(
+          {
+            status: 200,
+            message: "succesfully get child",
+            data: posyandu,
+          },
+          200
+        );
+      }
+    } catch (error) {
+      console.error(error);
+      return c.json?.(
+        {
+          status: 500,
+          message: "server internal error",
+          error: error instanceof Error ? error.message : error,
+        },
+        500
+      );
+    }
+  }
 }
 
 export default new ChildController();
