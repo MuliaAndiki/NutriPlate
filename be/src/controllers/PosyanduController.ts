@@ -4,7 +4,7 @@ import { PickCreatePosyandu, PickPosyanduID } from "@/types/posyandu.types";
 import { redis } from "@/utils/redis";
 import prisma from "prisma/client";
 import bcryptjs from "bcryptjs";
-import crypto, { publicDecrypt } from "crypto";
+import crypto from "crypto";
 import { env } from "@/config/env.config";
 import { sendActivationEmail } from "@/utils/sendActiveEmail";
 import { generateOtp } from "@/utils/generate-otp";

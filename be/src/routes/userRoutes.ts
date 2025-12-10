@@ -54,7 +54,7 @@ class UserRoutes {
       {
         beforeHandle: [
           verifyToken().beforeHandle,
-          requireRole(["kader", "posyandu"]).beforeHandle,
+          requireRole(["KADER", "POSYANDU", "ADMIN"]).beforeHandle,
         ],
       }
     );
@@ -92,6 +92,13 @@ class UserRoutes {
     this.userRoutes.get(
       "/kader/:id",
       (c: AppContext) => UserController.getKaderByID(c),
+      {
+        beforeHandle: [verifyToken().beforeHandle],
+      }
+    );
+    this.userRoutes.get(
+      "/parent/:id",
+      (c: AppContext) => UserController.getParentByID(c),
       {
         beforeHandle: [verifyToken().beforeHandle],
       }

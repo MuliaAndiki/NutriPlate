@@ -19,8 +19,28 @@ class ChildRoutes {
 
   private routes() {
     this.childRoutes.post(
-      "/",
+      "/:id",
       (c: AppContext) => ChildController.createChild(c),
+      {
+        beforeHandle: [
+          verifyToken().beforeHandle,
+          requireRole(["PARENT"]).beforeHandle,
+        ],
+      }
+    );
+    this.childRoutes.put(
+      "/:id",
+      (c: AppContext) => ChildController.updateChild(c),
+      {
+        beforeHandle: [
+          verifyToken().beforeHandle,
+          requireRole(["PARENT"]).beforeHandle,
+        ],
+      }
+    );
+    this.childRoutes.delete(
+      "/:id",
+      (c: AppContext) => ChildController.deleteChild(c),
       {
         beforeHandle: [
           verifyToken().beforeHandle,
