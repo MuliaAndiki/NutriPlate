@@ -302,6 +302,78 @@ class UserController {
       );
     }
   }
+  public async getParentByID(c: AppContext) {
+    try {
+      const jwtUser = c.user as JwtPayload;
+      const parentID = c.params as PickID;
+      if (!jwtUser) {
+        return c.json?.(
+          {
+            status: 404,
+            message: "user not found",
+          },
+          400
+        );
+      }
+      if (!parentID) {
+        return c.json?.(
+          {
+            status: 400,
+            message: "params is required",
+          },
+          400
+        );
+      }
+      const cacheKey = cacheKeys.parent.byID(parentID.id);
+      const cacheParent = await redis.get(cacheKey);
+      if (cacheParent) {
+        return c.json?.(
+          {
+            status: 200,
+            message: "succesfully get parent",
+            data: JSON.parse(cacheParent),
+          },
+          200
+        );
+      }
+
+      const parent = await prisma.user.findFirst({
+        where: {
+          id: parentID.id,
+          role: "PARENT",
+        },
+      });
+      if (!parent || parent.role !== "PARENT") {
+        return c.json?.(
+          {
+            status: 400,
+            message: "server internal error",
+          },
+          400
+        );
+      }
+      await redis.set(cacheKey, JSON.stringify(parent), { EX: 60 });
+
+      return c.json?.(
+        {
+          status: 200,
+          message: "successfully get parentByID",
+          data: parent,
+        },
+        200
+      );
+    } catch (error) {
+      console.error(error);
+      return c.json?.(
+        {
+          status: 500,
+          message: "server internal error",
+          error: error instanceof Error ? error.message : error,
+        },
+        500
+      );
+    }
+  }
   public async getUserByID(c: AppContext) {
     try {
       const jwtUser = c.user as JwtPayload;

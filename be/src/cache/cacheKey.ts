@@ -19,5 +19,6 @@ export const cacheKeys = {
   },
   parent: {
     list: () => `parent:list`,
+    byID: (id: string) => `parent:${id}`,
   },
 };

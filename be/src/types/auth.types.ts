@@ -26,7 +26,7 @@ export type PickRegister = Pick<
 >;
 export type PickLogin = Pick<Auth, "email" | "password" | "phone" | "id">;
 export type PickID = Pick<Auth, "id">;
-export type PickForgotPasswordEmail = Pick<Auth, "email" | "phone">;
+export type PickForgotPassword = Pick<Auth, "email" | "phone">;
 export type PickVerify = Pick<Auth, "email" | "otp">;
 export type PickSendOtp = Pick<Auth, "email">;
 export type PickResetPassword = Pick<Auth, "email" | "password" | "phone">;

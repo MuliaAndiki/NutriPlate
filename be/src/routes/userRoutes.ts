@@ -54,7 +54,7 @@ class UserRoutes {
       {
         beforeHandle: [
           verifyToken().beforeHandle,
-          requireRole(["kader", "posyandu"]).beforeHandle,
+          requireRole(["KADER", "POSYANDU", "ADMIN"]).beforeHandle,
         ],
       }
     );
@@ -79,11 +79,15 @@ class UserRoutes {
         beforeHandle: [verifyToken().beforeHandle],
       }
     );
-    this.userRoutes.get("/", (c: AppContext) => UserController.getChild(c), {
-      beforeHandle: [verifyToken().beforeHandle],
-    });
     this.userRoutes.get(
-      "/:id",
+      "/child",
+      (c: AppContext) => UserController.getChild(c),
+      {
+        beforeHandle: [verifyToken().beforeHandle],
+      }
+    );
+    this.userRoutes.get(
+      "/child/:id",
       (c: AppContext) => UserController.getChildByID(c),
       {
         beforeHandle: [verifyToken().beforeHandle],
@@ -92,6 +96,13 @@ class UserRoutes {
     this.userRoutes.get(
       "/kader/:id",
       (c: AppContext) => UserController.getKaderByID(c),
+      {
+        beforeHandle: [verifyToken().beforeHandle],
+      }
+    );
+    this.userRoutes.get(
+      "/parent/:id",
+      (c: AppContext) => UserController.getParentByID(c),
       {
         beforeHandle: [verifyToken().beforeHandle],
       }
