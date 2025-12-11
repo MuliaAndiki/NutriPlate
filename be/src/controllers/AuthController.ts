@@ -5,7 +5,7 @@ import {
   PickRegister,
   PickLogin,
   JwtPayload,
-  PickForgotPasswordEmail,
+  PickForgotPassword,
   PickVerify,
   PickSendOtp,
   PickResetPassword,
@@ -281,7 +281,7 @@ class AuthController {
   }
   public async forgotPassword(c: AppContext) {
     try {
-      const auth = c.body as PickForgotPasswordEmail;
+      const auth = c.body as PickForgotPassword;
       const { email, phone } = auth;
       if (!auth.email && !auth.phone) {
         return c.json?.(
