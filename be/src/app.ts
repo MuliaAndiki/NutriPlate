@@ -4,6 +4,7 @@ import authRoutes from "./routes/authRoutes";
 import userRoutes from "./routes/userRoutes";
 import posyanduRoutes from "./routes/posyanduRoutes";
 import childRoutes from "./routes/childRoutes";
+import serviceRoutes from "./routes/serviceRoutes";
 
 class App {
   public app: Elysia;
@@ -20,7 +21,12 @@ class App {
   private middlewares() {
     this.app.use(cors({ origin: "*" }));
     this.app.group("/api", (api) =>
-      api.use(authRoutes).use(userRoutes).use(posyanduRoutes).use(childRoutes)
+      api
+        .use(authRoutes)
+        .use(userRoutes)
+        .use(posyanduRoutes)
+        .use(childRoutes)
+        .use(serviceRoutes)
     );
   }
 }
