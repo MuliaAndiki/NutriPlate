@@ -1,0 +1,5 @@
+yolov_env/
+*.pt
+*.onnx
+*.pkl
+__pycache__/
