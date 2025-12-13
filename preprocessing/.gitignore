@@ -3,3 +3,5 @@ yolov_env/
 *.onnx
 *.pkl
 __pycache__/
+data/
+raw/

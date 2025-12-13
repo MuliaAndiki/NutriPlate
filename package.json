@@ -1,0 +1,16 @@
+{
+  "name": "nutriplate",
+  "private": true,
+  "packageManager": "bun@1.3.1",
+  "workspaces": [
+    "fe",
+    "be",
+    "api"
+  ],
+  "scripts": {
+    "dev": "turbo run dev --parallel"
+  },
+  "devDependencies": {
+    "turbo": "^2.0.0"
+  }
+}
