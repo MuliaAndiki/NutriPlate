@@ -7,10 +7,13 @@ export async function connectWithRetry(retries = 5, delay = 3000) {
     try {
       await prisma.$connect();
       console.log("✅ Database connected successfully!");
-      return;
+      return prisma;
     } catch (err) {
       console.error(`⏳ Failed to connect (attempt ${i + 1}/${retries})`);
-      if (i === retries - 1) throw err;
+      if (i === retries - 1) {
+        console.error("❌ All retry attempts failed");
+        throw err;
+      }
       await new Promise((r) => setTimeout(r, delay));
     }
   }

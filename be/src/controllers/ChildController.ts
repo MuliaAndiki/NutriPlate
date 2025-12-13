@@ -3,10 +3,14 @@ import { AppContext } from "@/contex/appContex";
 import { JwtPayload } from "@/types/auth.types";
 import { PickChilID, PickCreateChild } from "@/types/child.types";
 import { PickPosyanduID } from "@/types/posyandu.types";
-import { redis } from "@/utils/redis";
+import { getRedis } from "@/utils/redis";
 import prisma from "prisma/client";
 
 class ChildController {
+  private get redis() {
+    return getRedis();
+  }
+
   public async createChild(c: AppContext) {
     try {
       const jwtUser = c.user as JwtPayload;
@@ -135,7 +139,7 @@ class ChildController {
           400
         );
       }
-      await redis.del(cacheKey);
+      await this.redis.del(cacheKey).catch(console.error);
       return c.json?.(
         {
           status: 200,
@@ -185,7 +189,7 @@ class ChildController {
           parentId: jwtUser.id,
         },
       });
-      await redis.del(cacheKey);
+      await this.redis.del(cacheKey).catch(console.log);
       if (!child) {
         return c.json?.(
           {

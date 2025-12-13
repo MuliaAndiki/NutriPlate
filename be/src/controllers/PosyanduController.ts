@@ -1,7 +1,7 @@
 import { AppContext } from "@/contex/appContex";
 import { JwtPayload, PickActiveAccount } from "@/types/auth.types";
 import { PickCreatePosyandu, PickPosyanduID } from "@/types/posyandu.types";
-import { redis } from "@/utils/redis";
+import { getRedis } from "@/utils/redis";
 import prisma from "prisma/client";
 import bcryptjs from "bcryptjs";
 import crypto from "crypto";
@@ -10,8 +10,13 @@ import { sendActivationEmail } from "@/utils/sendActiveEmail";
 import { generateOtp } from "@/utils/generate-otp";
 import { sendOTPEmail } from "@/utils/mailer";
 import { cacheKeys } from "@/cache/cacheKey";
+import { error } from "console";
+import { ERROR_CODE } from "elysia";
 
 class PosyanduController {
+  private get redis() {
+    return getRedis();
+  }
   public async createPosyandu(c: AppContext) {
     try {
       const jwtUser = c.user as JwtPayload;
@@ -118,17 +123,22 @@ class PosyanduController {
         );
       }
       const cacheKey = cacheKeys.posyandu.list();
-      const cachePosyandu = await redis.get(cacheKey);
-      if (cachePosyandu) {
-        return c.json?.(
-          {
-            status: 200,
-            message: "succesfully get cache posyandu",
-            data: JSON.parse(cachePosyandu),
-          },
-          200
-        );
+      try {
+        const cachePosyandu = await this.redis.get(cacheKey);
+        if (cachePosyandu) {
+          return c.json?.(
+            {
+              status: 200,
+              message: "succesfully get cache posyandu",
+              data: JSON.parse(cachePosyandu),
+            },
+            200
+          );
+        }
+      } catch (error) {
+        console.warn(`Redis error, fallback to DB`);
       }
+
       const posyandu = await prisma.posyandu.findMany({
         where: {
           userID: jwtUser.id,
@@ -141,7 +151,9 @@ class PosyanduController {
           _count: true,
         },
       });
-      await redis.set(cacheKey, JSON.stringify(posyandu), { EX: 60 });
+      if (posyandu.length === 0) {
+        await this.redis.set(cacheKey, JSON.stringify(posyandu), { EX: 60 });
+      }
       if (!posyandu) {
         return c.json?.(
           {
@@ -196,16 +208,20 @@ class PosyanduController {
       }
 
       const cacheKey = cacheKeys.posyandu.byID(params.id);
-      const cachePosyandu = await redis.get(cacheKey);
-      if (cachePosyandu) {
-        return c.json?.(
-          {
-            status: 200,
-            message: "succesfully get posyandu by id",
-            data: JSON.parse(cachePosyandu),
-          },
-          200
-        );
+      try {
+        const cachePosyandu = await this.redis.get(cacheKey);
+        if (cachePosyandu) {
+          return c.json?.(
+            {
+              status: 200,
+              message: "succesfully get posyandu by id",
+              data: JSON.parse(cachePosyandu),
+            },
+            200
+          );
+        }
+      } catch (error) {
+        console.warn("Redis Error, fallback DB");
       }
 
       const posyandu = await prisma.posyandu.findUnique({
@@ -213,7 +229,8 @@ class PosyanduController {
           id: params.id,
         },
       });
-      await redis.set(cacheKey, JSON.stringify(posyandu), { EX: 60 });
+
+      await this.redis.set(cacheKey, JSON.stringify(posyandu), { EX: 60 });
       if (!posyandu) {
         return c.json?.(
           {
@@ -392,7 +409,7 @@ class PosyanduController {
         return { posyandu, user };
       });
 
-      await redis.del(cacheKey);
+      await this.redis.del(cacheKey).catch(error);
 
       if (!result) {
         return c.json?.(
@@ -461,7 +478,7 @@ class PosyanduController {
         return { posyandu, user };
       });
 
-      await redis.del(cacheKey);
+      await this.redis.del(cacheKey).catch(error);
       if (!result) {
         return c.json?.(
           {
@@ -514,27 +531,35 @@ class PosyanduController {
           400
         );
       }
+
+      const cacheKey = cacheKeys.child.byPosyanduList(params.id);
+
+      try {
+        const cachePosyandu = await this.redis.get(cacheKey);
+
+        if (cachePosyandu) {
+          return c.json?.(
+            {
+              status: 200,
+              message: "succesfully get cache child",
+              data: JSON.parse(cachePosyandu),
+            },
+            200
+          );
+        }
+      } catch (error) {
+        console.warn(`redis error, fallback DB`, error);
+      }
+
       const child = await prisma.child.findMany({
         where: {
           posyanduId: params.id,
         },
       });
 
-      const cacheKey = cacheKeys.child.byPosyanduList(params.id);
-      const cachePosyandu = await redis.get(cacheKey);
-
-      if (cachePosyandu) {
-        return c.json?.(
-          {
-            status: 200,
-            message: "succesfully get cache child",
-            data: JSON.parse(cachePosyandu),
-          },
-          200
-        );
+      if (child.length === 0) {
+        await this.redis.set(cacheKey, JSON.stringify(child), { EX: 60 });
       }
-
-      await redis.set(cacheKey, JSON.stringify(child), { EX: 60 });
       if (!child) {
         c.json?.(
           {
