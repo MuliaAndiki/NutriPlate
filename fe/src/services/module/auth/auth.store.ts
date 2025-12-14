@@ -1,5 +1,5 @@
-import { cookies } from 'next/headers';
-import { APP_SESSION_COOKIE_KEY } from '@/configs/cookies.config';
+import { cookies } from "next/headers";
+import { APP_SESSION_COOKIE_KEY } from "@/configs/cookies.config";
 
 // Server-only: validate if a session cookie exists
 export async function authValidator(): Promise<boolean> {
