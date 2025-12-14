@@ -1,3 +1,4 @@
+import { SidebarIconsKey } from "../icons";
 export enum GenderType {
   MALE,
   FEMALE,
@@ -21,4 +22,10 @@ export interface ProfileChild {
   baselineHeightCm?: number;
   baselineBmi?: number;
   baselineZscore?: number;
+}
+
+export interface SidebarContentType {
+  title: string;
+  url: string;
+  icon: SidebarIconsKey;
 }

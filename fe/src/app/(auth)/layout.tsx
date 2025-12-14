@@ -1,6 +1,10 @@
-import BlankLayout from '@/core/layouts/blank.layout';
+import BlankLayout from "@/core/layouts/blank.layout";
 
-export default function AuthLayout({ children }: { children: React.ReactNode }) {
+export default function AuthLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <main className="w-full">
       <BlankLayout>{children}</BlankLayout>

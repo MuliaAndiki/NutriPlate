@@ -1,4 +1,5 @@
-import React from 'react';
+import { SidebarContentType } from "@/types/partial";
+import React from "react";
 
 interface AppConfig {
   name: string;
@@ -36,36 +37,36 @@ interface AppConfig {
 }
 
 export const appConfig: AppConfig = {
-  name: 'App',
-  description: 'App',
-  logo: '/images/logo.png',
+  name: "App",
+  description: "App",
+  logo: "/images/logo.svg",
   metadata: {
-    title: 'App',
-    description: 'App',
-    keywords: ['App'],
-    author: 'App',
-    image: 'App',
+    title: "App",
+    description: "App",
+    keywords: ["App"],
+    author: "App",
+    image: "App",
   },
   social_media: {
     twitter: {
-      url: 'https://twitter.com/app',
-      icon: 'hugeicons:new-twitter-rectangle',
+      url: "https://twitter.com/app",
+      icon: "hugeicons:new-twitter-rectangle",
     },
     instagram: {
-      url: 'https://instagram.com/app',
-      icon: 'basil:instagram-outline',
+      url: "https://instagram.com/app",
+      icon: "basil:instagram-outline",
     },
     linkedin: {
-      url: 'https://linkedin.com/app',
-      icon: 'tabler:brand-linkedin',
+      url: "https://linkedin.com/app",
+      icon: "tabler:brand-linkedin",
     },
     youtube: {
-      url: 'https://youtube.com/app',
-      icon: 'mingcute:youtube-line',
+      url: "https://youtube.com/app",
+      icon: "mingcute:youtube-line",
     },
     tiktok: {
-      url: 'https://tiktok.com/app',
-      icon: 'hugeicons:tiktok',
+      url: "https://tiktok.com/app",
+      icon: "hugeicons:tiktok",
     },
   },
 };
@@ -76,21 +77,49 @@ interface NavigationMenuConfig {
     href: string;
     icon?: React.ReactNode;
     description?: string;
-    children?: NavigationMenuConfig['items'];
+    children?: NavigationMenuConfig["items"];
   }[];
 }
 
 export const navigationMenuConfig: NavigationMenuConfig = {
   items: [
     {
-      title: 'Home',
-      href: '/',
-      description: 'Home',
+      title: "Home",
+      href: "/",
+      description: "Home",
     },
     {
-      title: 'Kelas',
-      href: '/kelas',
-      description: 'Kelas',
+      title: "Kelas",
+      href: "/kelas",
+      description: "Kelas",
     },
   ],
 };
+
+export const SidebarDefaultData: SidebarContentType[] = [
+  {
+    title: "Home",
+    url: "/",
+    icon: "Home",
+  },
+  {
+    title: "Inbox",
+    url: "/inbox",
+    icon: "Inbox",
+  },
+  {
+    title: "Calendar",
+    url: "/calendar",
+    icon: "Calendar",
+  },
+  {
+    title: "Search",
+    url: "/search",
+    icon: "Search",
+  },
+  {
+    title: "Settings",
+    url: "/settings",
+    icon: "Settings",
+  },
+];
