@@ -11,7 +11,6 @@ import { generateOtp } from "@/utils/generate-otp";
 import { sendOTPEmail } from "@/utils/mailer";
 import { cacheKeys } from "@/cache/cacheKey";
 import { error } from "console";
-import { ERROR_CODE } from "elysia";
 
 class PosyanduController {
   private get redis() {
@@ -558,7 +557,9 @@ class PosyanduController {
       });
 
       if (child.length === 0) {
-        await this.redis.set(cacheKey, JSON.stringify(child), { EX: 60 });
+        await this.redis
+          .set(cacheKey, JSON.stringify(child), { EX: 60 })
+          .catch(error);
       }
       if (!child) {
         c.json?.(

@@ -27,7 +27,8 @@ model User {
   iotDevices    IotDevice[]
   notifications Notifications[]
   posyandu      Posyandu[]
-  session UserSession[]
+  session       UserSession[]
+
   @@map("users")
 }
 
@@ -135,14 +136,15 @@ model Food {
 }
 
 model Notifications {
-  id        String    @id @default(uuid())
-  userId    String
-  type      NotifType
-  title     String
-  message   String
-  isRead    Boolean   @default(false)
-  createdAt DateTime  @default(now())
-  user      User      @relation(fields: [userId], references: [id])
+  id          String    @id @default(uuid())
+  userId      String
+  type        NotifType
+  title       String
+  message     String
+  isRead      Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  isBroadcast Boolean   @default(false)
+  user        User      @relation(fields: [userId], references: [id])
 
   @@index([userId])
   @@map("notifications")
@@ -152,10 +154,10 @@ model UserSession {
   id        String   @id @default(uuid())
   userId    String
   userAgent String
-  ipAddress String
   createdAt DateTime @default(now())
   expiresAt DateTime
-  user User @relation(references: [id], fields: [userId])
+  ipAddress String
+  user      User     @relation(fields: [userId], references: [id])
 
   @@index([userId])
   @@map("user_sessions")
