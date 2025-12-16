@@ -21,4 +21,9 @@ export const cacheKeys = {
     list: () => `parent:list`,
     byID: (id: string) => `parent:${id}`,
   },
+  notify: {
+    list: () => `notif:list`,
+    byID: (id: string) => `notif:${id}`,
+    byRole: (role: string) => `notif:role:${role}`,
+  },
 };
