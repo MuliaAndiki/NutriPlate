@@ -18,9 +18,9 @@ class UserController {
   }
   public async getProfile(c: AppContext) {
     try {
-      const user = c.user as JwtPayload;
+      const jwtUser = c.user as JwtPayload;
 
-      if (!user) {
+      if (!jwtUser) {
         return c.json?.(
           {
             status: 404,
@@ -30,7 +30,7 @@ class UserController {
         );
       }
 
-      const cacheKey = cacheKeys.user.profile(user.id);
+      const cacheKey = cacheKeys.user.byID(jwtUser.id);
       try {
         const cacheProfile = await this.redis.get(cacheKey);
 
@@ -50,12 +50,20 @@ class UserController {
 
       const auth = await prisma.user.findFirst({
         where: {
-          id: user.id,
+          id: jwtUser.id,
         },
       });
-      await this.redis
-        .set(cacheKey, JSON.stringify(auth), { EX: 60 })
-        .catch(error);
+      if (!auth) {
+        return c.json?.({
+          status: 404,
+          message: "server internal error",
+        });
+      } else {
+        await this.redis
+          .set(cacheKey, JSON.stringify(auth), { EX: 60 })
+          .catch(error);
+      }
+
       return c.json?.(
         {
           status: 200,
@@ -90,6 +98,8 @@ class UserController {
           404
         );
       }
+
+      const cacheKey = [cacheKeys.user.byID(jwtUser.id)];
       let documentUrl: { photoUrl: string } = { photoUrl: "" };
       if (c.files?.photoUrl?.[0]) {
         const file = c.files.photoUrl[0];
@@ -123,7 +133,7 @@ class UserController {
           phone: user.phone,
         },
       });
-      const cacheKey = cacheKeys.user.profile(jwtUser.id);
+
       await this.redis.del(cacheKey).catch(error);
       return c.json?.(
         {
@@ -157,13 +167,13 @@ class UserController {
           40
         );
       }
+      const cacheKey = cacheKeys.user.byID(jwtUser.id);
       const auth = await prisma.user.delete({
         where: {
           id: jwtUser.id,
         },
       });
-      const cacheKey = cacheKeys.user.byID(jwtUser.id);
-      await this.redis.del(cacheKey).catch(error);
+
       if (!auth) {
         return c.json?.(
           {
@@ -173,15 +183,16 @@ class UserController {
           400
         );
       } else {
-        return c.json?.(
-          {
-            status: 200,
-            message: "successfully delete acound",
-            data: auth,
-          },
-          200
-        );
+        await this.redis.del(cacheKey).catch(error);
       }
+      return c.json?.(
+        {
+          status: 200,
+          message: "successfully delete acound",
+          data: auth,
+        },
+        200
+      );
     } catch (error) {
       console.error(error);
       return c.json?.(
@@ -289,11 +300,10 @@ class UserController {
         where: { role: "PARENT" },
       });
 
-      if (user.length === 0) {
-        await this.redis.set(cacheKey, JSON.stringify(user), { EX: 60 });
-      }
       if (!user) {
         return c.json?.({ status: 400, message: "server internal error" }, 400);
+      } else if (user && user.length > 0) {
+        await this.redis.set(cacheKey, JSON.stringify(user), { EX: 60 });
       }
 
       return c.json?.(
@@ -345,7 +355,7 @@ class UserController {
           return c.json?.(
             {
               status: 200,
-              message: "succesfully get parent",
+              message: "succesfully get by parent",
               data: JSON.parse(cacheParent),
             },
             200
@@ -358,14 +368,13 @@ class UserController {
       const parent = await prisma.user.findFirst({
         where: {
           id: parentID.id,
-          role: "PARENT",
         },
       });
-      if (!parent || parent.role !== "PARENT") {
+      if (!parent) {
         return c.json?.(
           {
             status: 400,
-            message: "server internal error",
+            message: "server internal error ",
           },
           400
         );
@@ -440,9 +449,6 @@ class UserController {
         },
       });
 
-      await this.redis
-        .set(cacheKey, JSON.stringify(auth), { EX: 60 })
-        .catch(error);
       if (!auth) {
         return c.json?.(
           {
@@ -452,15 +458,18 @@ class UserController {
           400
         );
       } else {
-        return c.json?.(
-          {
-            status: 200,
-            message: "succesfully get user id",
-            data: auth,
-          },
-          200
-        );
+        await this.redis
+          .set(cacheKey, JSON.stringify(auth), { EX: 60 })
+          .catch(error);
       }
+      return c.json?.(
+        {
+          status: 200,
+          message: "succesfully get user id",
+          data: auth,
+        },
+        200
+      );
     } catch (error) {
       console.error(error);
       return c.json?.(
@@ -556,9 +565,6 @@ class UserController {
           role: "KADER",
         },
       });
-      if (user.length === 0) {
-        await this.redis.set(cacheKey, JSON.stringify(user), { EX: 60 });
-      }
 
       if (!user) {
         return c.json?.(
@@ -569,15 +575,18 @@ class UserController {
           400
         );
       } else {
-        return c.json?.(
-          {
-            status: 200,
-            message: "succesfully get kader",
-            data: user,
-          },
-          200
-        );
+        await this.redis
+          .set(cacheKey, JSON.stringify(user), { EX: 60 })
+          .catch(error);
       }
+      return c.json?.(
+        {
+          status: 200,
+          message: "succesfully get kader",
+          data: user,
+        },
+        200
+      );
     } catch (error) {
       console.error(error);
       return c.json?.(
@@ -633,13 +642,8 @@ class UserController {
       const kader = await prisma.user.findUnique({
         where: {
           id: userID.id,
-          role: "KADER",
         },
       });
-
-      await this.redis
-        .set(cacheKey, JSON.stringify(kader), { EX: 60 })
-        .catch(error);
 
       if (!kader) {
         return c.json?.(
@@ -649,24 +653,19 @@ class UserController {
           },
           400
         );
-      } else if (kader.role !== "KADER") {
-        return c.json?.(
-          {
-            status: 403,
-            messsage: "role mismatch",
-          },
-          403
-        );
       } else {
-        return c.json?.(
-          {
-            status: 200,
-            message: "succesfully get kader by id",
-            data: kader,
-          },
-          200
-        );
+        await this.redis
+          .set(cacheKey, JSON.stringify(kader), { EX: 60 })
+          .catch(error);
       }
+      return c.json?.(
+        {
+          status: 200,
+          message: "succesfully get kader by id",
+          data: kader,
+        },
+        200
+      );
     } catch (error) {
       console.error(error);
       return c.json?.(
@@ -679,7 +678,8 @@ class UserController {
       );
     }
   }
-  public async getChild(c: AppContext) {
+
+  public async getChildByParent(c: AppContext) {
     try {
       const jwtUser = c.user as JwtPayload;
       if (!jwtUser) {
@@ -691,7 +691,22 @@ class UserController {
           400
         );
       }
-      const cacheKey = cacheKeys.child.list();
+      const parent = await prisma.user.findFirst({
+        where: {
+          id: jwtUser.id,
+        },
+      });
+
+      if (!parent) {
+        return c.json?.(
+          {
+            status: 404,
+            message: "parent not found",
+          },
+          404
+        );
+      }
+      const cacheKey = cacheKeys.child.byParent(parent.id);
       try {
         const cacheChild = await this.redis.get(cacheKey);
 
@@ -711,12 +726,9 @@ class UserController {
 
       const child = await prisma.child.findMany({
         where: {
-          parentId: jwtUser.id,
+          parentId: parent.id,
         },
       });
-      if (child.length === 0) {
-        await this.redis.set(cacheKey, JSON.stringify(child), { EX: 60 });
-      }
 
       if (!child) {
         return c.json?.(
@@ -726,16 +738,20 @@ class UserController {
           },
           400
         );
-      } else {
-        return c.json?.(
-          {
-            status: 200,
-            message: "successfully get child",
-            data: child,
-          },
-          200
-        );
+      } else if (child && child.length > 0) {
+        await this.redis
+          .set(cacheKey, JSON.stringify(child), { EX: 60 })
+          .catch(error);
       }
+
+      return c.json?.(
+        {
+          status: 200,
+          message: "successfully get child",
+          data: child,
+        },
+        200
+      );
     } catch (error) {
       console.error(error);
       return c.json?.(
@@ -770,7 +786,8 @@ class UserController {
           400
         );
       }
-      const cacheKey = cacheKeys.child.byParent(jwtUser.id);
+
+      const cacheKey = cacheKeys.child.byID(chilParams.id);
       try {
         const cacheChild = await this.redis.get(cacheKey);
 
@@ -791,7 +808,10 @@ class UserController {
       const parent = await prisma.user.findFirst({
         where: {
           id: jwtUser.id,
-          role: "PARENT",
+        },
+        select: {
+          role: true,
+          id: true,
         },
       });
 
@@ -799,7 +819,7 @@ class UserController {
         return c.json?.(
           {
             status: 400,
-            message: "parent not found + parent not role",
+            message: "server internal error",
           },
           400
         );

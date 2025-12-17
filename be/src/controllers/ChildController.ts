@@ -4,6 +4,7 @@ import { JwtPayload } from "@/types/auth.types";
 import { PickChilID, PickCreateChild } from "@/types/child.types";
 import { PickPosyanduID } from "@/types/posyandu.types";
 import { getRedis } from "@/utils/redis";
+import { error } from "console";
 import prisma from "prisma/client";
 
 class ChildController {
@@ -115,10 +116,30 @@ class ChildController {
         );
       }
 
+      const parent = await prisma.user.findFirst({
+        where: {
+          id: jwtUser.id,
+        },
+        select: {
+          role: true,
+          id: true,
+        },
+      });
+
+      if (!parent || parent.role !== "PARENT") {
+        return c.json?.(
+          {
+            status: 404,
+            message: "role not valid",
+          },
+          404
+        );
+      }
+
       const child = await prisma.child.update({
         where: {
           id: childID.id,
-          parentId: jwtUser.id,
+          parentId: parent.id,
         },
         data: {
           fullName: childBody.fullname,
@@ -129,7 +150,10 @@ class ChildController {
         },
       });
 
-      const cacheKey = cacheKeys.child.byParent(jwtUser.id);
+      const cacheKey = [
+        cacheKeys.child.byID(childID.id),
+        cacheKeys.child.byParent(parent.id),
+      ];
       if (!child) {
         return c.json?.(
           {
@@ -139,7 +163,8 @@ class ChildController {
           400
         );
       }
-      await this.redis.del(cacheKey).catch(console.error);
+      const delet = await this.redis.del(cacheKey).catch(error);
+      console.log("key redis", delet);
       return c.json?.(
         {
           status: 200,
@@ -182,14 +207,37 @@ class ChildController {
           400
         );
       }
-      const cacheKey = cacheKeys.child.byParent(jwtUser.id);
+      const parent = await prisma.user.findFirst({
+        where: {
+          id: jwtUser.id,
+        },
+        select: {
+          role: true,
+          id: true,
+        },
+      });
+      if (!parent || parent.role !== "PARENT") {
+        return c.json?.(
+          {
+            status: 403,
+            message: "server internal error & role not acces",
+          },
+          403
+        );
+      }
+      const cacheKey = [
+        cacheKeys.child.byParent(parent.id),
+        cacheKeys.child.byID(childID.id),
+      ];
+
       const child = await prisma.child.delete({
         where: {
           id: childID.id,
-          parentId: jwtUser.id,
+          parentId: parent.id,
         },
       });
-      await this.redis.del(cacheKey).catch(console.log);
+      const deletd = await this.redis.del(cacheKey).catch(error);
+      console.log("Redis keys deleted:", deletd);
       if (!child) {
         return c.json?.(
           {
