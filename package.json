@@ -8,7 +8,9 @@
     "api"
   ],
   "scripts": {
-    "dev": "turbo run dev --parallel"
+    "dev": "turbo run dev --parallel",
+    "build": "turbo run build",
+    "format": "turbo run format"
   },
   "devDependencies": {
     "turbo": "^2.0.0"

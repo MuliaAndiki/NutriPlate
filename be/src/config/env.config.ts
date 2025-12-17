@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 const envSchema = z.object({
   DATABASE_URL: z.string().url(),
@@ -14,13 +14,13 @@ const envSchema = z.object({
   SMTP_PORT: z.string().transform((val) => Number(val)),
   SMTP_USER: z.string(),
   SMTP_PASS: z.string(),
-  SMTP_SECURE: z.preprocess((val) => val === "true", z.boolean()),
+  SMTP_SECURE: z.preprocess((val) => val === 'true', z.boolean()),
 });
 
 const _env = envSchema.safeParse(process.env);
 
 if (!_env.success) {
-  console.error("❌ Invalid Env Variables:", _env.error.format());
+  console.error('❌ Invalid Env Variables:', _env.error.format());
   process.exit(1);
 }
 

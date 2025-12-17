@@ -1,16 +1,16 @@
-import { AppContext } from "@/contex/appContex";
-import { JwtPayload, PickActiveAccount } from "@/types/auth.types";
-import { PickCreatePosyandu, PickPosyanduID } from "@/types/posyandu.types";
-import { getRedis } from "@/utils/redis";
-import prisma from "prisma/client";
-import bcryptjs from "bcryptjs";
-import crypto from "crypto";
-import { env } from "@/config/env.config";
-import { sendActivationEmail } from "@/utils/sendActiveEmail";
-import { generateOtp } from "@/utils/generate-otp";
-import { sendOTPEmail } from "@/utils/mailer";
-import { cacheKeys } from "@/cache/cacheKey";
-import { error } from "console";
+import { AppContext } from '@/contex/appContex';
+import { JwtPayload, PickActiveAccount } from '@/types/auth.types';
+import { PickCreatePosyandu, PickPosyanduID } from '@/types/posyandu.types';
+import { getRedis } from '@/utils/redis';
+import prisma from 'prisma/client';
+import bcryptjs from 'bcryptjs';
+import crypto from 'crypto';
+import { env } from '@/config/env.config';
+import { sendActivationEmail } from '@/utils/sendActiveEmail';
+import { generateOtp } from '@/utils/generate-otp';
+import { sendOTPEmail } from '@/utils/mailer';
+import { cacheKeys } from '@/cache/cacheKey';
+import { error } from 'console';
 
 class PosyanduController {
   private get redis() {
@@ -25,9 +25,9 @@ class PosyanduController {
         return c.json?.(
           {
             status: 404,
-            message: "account not found",
+            message: 'account not found',
           },
-          404
+          404,
         );
       }
       if (
@@ -42,9 +42,9 @@ class PosyanduController {
         return c.json?.(
           {
             status: 400,
-            message: "body is required",
+            message: 'body is required',
           },
-          400
+          400,
         );
       }
 
@@ -54,7 +54,7 @@ class PosyanduController {
         data: {
           email: posyanduBody.email,
           phone: posyanduBody.phone,
-          role: "POSYANDU",
+          role: 'POSYANDU',
           isVerify: false,
           fullName: posyanduBody.name,
           activateToken: activateToken,
@@ -83,18 +83,18 @@ class PosyanduController {
         return c.json?.(
           {
             status: 400,
-            message: "server internal error",
+            message: 'server internal error',
           },
-          400
+          400,
         );
       } else {
         return c.json?.(
           {
             status: 201,
-            message: "succesfully create posyandu",
+            message: 'succesfully create posyandu',
             data: posyandu,
           },
-          201
+          201,
         );
       }
     } catch (error) {
@@ -102,10 +102,10 @@ class PosyanduController {
       return c.json?.(
         {
           status: 500,
-          message: "server internal error",
+          message: 'server internal error',
           error: error instanceof Error ? error.message : error,
         },
-        500
+        500,
       );
     }
   }
@@ -116,9 +116,9 @@ class PosyanduController {
         return c.json?.(
           {
             status: 404,
-            message: "user not found",
+            message: 'user not found',
           },
-          404
+          404,
         );
       }
       const cacheKey = cacheKeys.posyandu.list();
@@ -128,10 +128,10 @@ class PosyanduController {
           return c.json?.(
             {
               status: 200,
-              message: "succesfully get cache posyandu",
+              message: 'succesfully get cache posyandu',
               data: JSON.parse(cachePosyandu),
             },
-            200
+            200,
           );
         }
       } catch (error) {
@@ -157,18 +157,18 @@ class PosyanduController {
         return c.json?.(
           {
             status: 400,
-            message: "server internal error",
+            message: 'server internal error',
           },
-          400
+          400,
         );
       } else {
         return c.json?.(
           {
             status: 200,
-            message: "succesfully get posyandu",
+            message: 'succesfully get posyandu',
             data: posyandu,
           },
-          200
+          200,
         );
       }
     } catch (error) {
@@ -176,10 +176,10 @@ class PosyanduController {
       return c.json?.(
         {
           status: 500,
-          message: "server internal error",
+          message: 'server internal error',
           error: error instanceof Error ? error.message : error,
         },
-        500
+        500,
       );
     }
   }
@@ -191,18 +191,18 @@ class PosyanduController {
         return c.json?.(
           {
             status: 404,
-            message: "user not found",
+            message: 'user not found',
           },
-          404
+          404,
         );
       }
       if (!params) {
         return c.json?.(
           {
             status: 400,
-            message: "params is requiredmend",
+            message: 'params is requiredmend',
           },
-          400
+          400,
         );
       }
 
@@ -213,14 +213,14 @@ class PosyanduController {
           return c.json?.(
             {
               status: 200,
-              message: "succesfully get posyandu by id",
+              message: 'succesfully get posyandu by id',
               data: JSON.parse(cachePosyandu),
             },
-            200
+            200,
           );
         }
       } catch (error) {
-        console.warn("Redis Error, fallback DB");
+        console.warn('Redis Error, fallback DB');
       }
 
       const posyandu = await prisma.posyandu.findUnique({
@@ -234,18 +234,18 @@ class PosyanduController {
         return c.json?.(
           {
             status: 400,
-            message: "server internal error",
+            message: 'server internal error',
           },
-          400
+          400,
         );
       } else {
         return c.json?.(
           {
             status: 200,
-            message: "succesfully get posyandu byId",
+            message: 'succesfully get posyandu byId',
             data: posyandu,
           },
-          200
+          200,
         );
       }
     } catch (error) {
@@ -253,10 +253,10 @@ class PosyanduController {
       return c.json?.(
         {
           status: 500,
-          message: "server internal error",
+          message: 'server internal error',
           error: error instanceof Error ? error.message : error,
         },
-        500
+        500,
       );
     }
   }
@@ -268,9 +268,9 @@ class PosyanduController {
         return c.json?.(
           {
             status: 400,
-            message: "token & password required",
+            message: 'token & password required',
           },
-          400
+          400,
         );
       }
       const user = await prisma.user.findFirst({
@@ -283,9 +283,9 @@ class PosyanduController {
         return c.json?.(
           {
             status: 400,
-            message: "inavalid token",
+            message: 'inavalid token',
           },
-          400
+          400,
         );
       }
       const hash = await bcryptjs.hash(authBody.password, 10);
@@ -305,18 +305,18 @@ class PosyanduController {
         return c.json?.(
           {
             status: 400,
-            message: "server internal error",
+            message: 'server internal error',
           },
-          400
+          400,
         );
       } else {
         return c.json?.(
           {
             status: 200,
-            message: "succesfully active account posyandu",
+            message: 'succesfully active account posyandu',
             data: active,
           },
-          200
+          200,
         );
       }
     } catch (error) {
@@ -324,10 +324,10 @@ class PosyanduController {
       return c.json?.(
         {
           status: 500,
-          message: "server internal error",
+          message: 'server internal error',
           error: error instanceof Error ? error.message : error,
         },
-        500
+        500,
       );
     }
   }
@@ -340,22 +340,21 @@ class PosyanduController {
         return c.json?.(
           {
             status: 400,
-            message: "params is required",
+            message: 'params is required',
           },
-          400
+          400,
         );
       }
       if (!jwtUser) {
         return c.json?.(
           {
             status: 404,
-            message: "user not found",
+            message: 'user not found',
           },
-          404
+          404,
         );
       }
-      const isUpdateEmail =
-        typeof posyanduBody.email === "string" && posyanduBody.email.length > 0;
+      const isUpdateEmail = typeof posyanduBody.email === 'string' && posyanduBody.email.length > 0;
 
       const cacheKey = cacheKeys.posyandu.byID(params.id);
 
@@ -414,18 +413,18 @@ class PosyanduController {
         return c.json?.(
           {
             status: 400,
-            message: "server internal error",
+            message: 'server internal error',
           },
-          400
+          400,
         );
       } else {
         return c.json?.(
           {
             status: 200,
-            message: "succesfully update posyandu",
+            message: 'succesfully update posyandu',
             data: result,
           },
-          200
+          200,
         );
       }
     } catch (error) {
@@ -433,10 +432,10 @@ class PosyanduController {
       return c.json?.(
         {
           status: 500,
-          message: "server internal error",
+          message: 'server internal error',
           error: error instanceof Error ? error.message : error,
         },
-        500
+        500,
       );
     }
   }
@@ -448,18 +447,18 @@ class PosyanduController {
         return c.json?.(
           {
             status: 404,
-            message: "user not found",
+            message: 'user not found',
           },
-          404
+          404,
         );
       }
       if (!params) {
         return c.json?.(
           {
             status: 400,
-            message: "params is required",
+            message: 'params is required',
           },
-          400
+          400,
         );
       }
       const cacheKey = cacheKeys.posyandu.byID(params.id);
@@ -482,18 +481,18 @@ class PosyanduController {
         return c.json?.(
           {
             status: 400,
-            message: "server internal error",
+            message: 'server internal error',
           },
-          400
+          400,
         );
       } else {
         return c.json?.(
           {
             status: 200,
-            message: "succesfully delete posyandu",
+            message: 'succesfully delete posyandu',
             data: result,
           },
-          200
+          200,
         );
       }
     } catch (error) {
@@ -501,10 +500,10 @@ class PosyanduController {
       return c.json?.(
         {
           status: 500,
-          message: "server internal error",
+          message: 'server internal error',
           error: error instanceof Error ? error.message : error,
         },
-        500
+        500,
       );
     }
   }
@@ -516,18 +515,18 @@ class PosyanduController {
         return c.json?.(
           {
             status: 404,
-            message: "user not found",
+            message: 'user not found',
           },
-          404
+          404,
         );
       }
       if (!params) {
         return c.json?.(
           {
             status: 400,
-            message: "params is required",
+            message: 'params is required',
           },
-          400
+          400,
         );
       }
 
@@ -540,10 +539,10 @@ class PosyanduController {
           return c.json?.(
             {
               status: 200,
-              message: "succesfully get cache child",
+              message: 'succesfully get cache child',
               data: JSON.parse(cachePosyandu),
             },
-            200
+            200,
           );
         }
       } catch (error) {
@@ -560,32 +559,30 @@ class PosyanduController {
         c.json?.(
           {
             status: 400,
-            message: "server internal error",
+            message: 'server internal error',
           },
-          400
+          400,
         );
       } else if (child && child.length > 0) {
-        await this.redis
-          .set(cacheKey, JSON.stringify(child), { EX: 60 })
-          .catch(error);
+        await this.redis.set(cacheKey, JSON.stringify(child), { EX: 60 }).catch(error);
       }
       return c.json?.(
         {
           status: 200,
-          message: "succesfully get child",
+          message: 'succesfully get child',
           data: child,
         },
-        200
+        200,
       );
     } catch (error) {
       console.error(error);
       return c.json?.(
         {
           status: 500,
-          message: "server internal error",
+          message: 'server internal error',
           error: error instanceof Error ? error.message : error,
         },
-        500
+        500,
       );
     }
   }

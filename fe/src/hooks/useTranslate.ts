@@ -1,8 +1,9 @@
 "use client";
 
-import { useLanguage } from "./useLanguage";
 import enTranslations from "@/pkg/i18n/locales/en/common.json";
 import idTranslations from "@/pkg/i18n/locales/id/common.json";
+
+import { useLanguage } from "./useLanguage";
 
 const translations: Record<string, any> = {
   en: enTranslations,

@@ -1,6 +1,8 @@
-import axios, { AxiosResponse, AxiosError } from 'axios';
-import { store } from '@/stores/store';
-import { env } from '../configs/env.config';
+import axios, { AxiosError,AxiosResponse } from "axios";
+
+import { store } from "@/stores/store";
+
+import { env } from "../configs/env.config";
 
 const AxiosClient = axios.create({
   baseURL: env.NEXT_PUBLIC_BACKEND_URL,
@@ -16,7 +18,7 @@ AxiosClient.interceptors.request.use(
   },
   (error: AxiosError): Promise<AxiosError> => {
     return Promise.reject(error);
-  }
+  },
 );
 
 AxiosClient.interceptors.response.use(
@@ -25,7 +27,7 @@ AxiosClient.interceptors.response.use(
   },
   (error: AxiosError): Promise<AxiosError> => {
     return Promise.reject(error);
-  }
+  },
 );
 
 export default AxiosClient;

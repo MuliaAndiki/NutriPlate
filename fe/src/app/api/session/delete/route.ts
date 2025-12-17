@@ -1,14 +1,14 @@
-'use server';
+"use server";
 
-import { NextResponse } from 'next/server';
+import { cookies } from "next/headers";
+import { NextResponse } from "next/server";
 
-import { cookies } from 'next/headers';
-import { APP_SESSION_COOKIE_KEY } from '@/configs/cookies.config';
+import { APP_SESSION_COOKIE_KEY } from "@/configs/cookies.config";
 
 export async function POST() {
   const cookieStore = await cookies();
 
   cookieStore.delete(APP_SESSION_COOKIE_KEY);
 
-  return NextResponse.json({ message: 'Session deleted' });
+  return NextResponse.json({ message: "Session deleted" });
 }

@@ -5,14 +5,14 @@ import AxiosClient from "@/utils/axios.client";
 class ChildApi {
   public async createChild(
     payload: FormCreateChild,
-    id: string
+    id: string,
   ): Promise<TResponse<any>> {
     const res = await AxiosClient.post(`/api/child/${id}`, payload);
     return res.data;
   }
   public async updateChild(
     payload: FormCreateChild,
-    id: string
+    id: string,
   ): Promise<TResponse<any>> {
     const res = await AxiosClient.put(`/api/child/${id}`, payload);
     return res.data;

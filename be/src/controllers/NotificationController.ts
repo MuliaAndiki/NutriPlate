@@ -1,15 +1,12 @@
-import { cacheKeys } from "@/cache/cacheKey";
-import { AppContext } from "@/contex/appContex";
-import { JwtPayload } from "@/types/auth.types";
-import {
-  PickCreateNotification,
-  PickNotifID,
-} from "@/types/notificatios.types";
-import { getRedis } from "@/utils/redis";
-import prisma from "prisma/client";
-import app from "@/app";
-import { error } from "console";
-import { Roles, Tuple_Roles } from "@/utils/roleTuple";
+import { cacheKeys } from '@/cache/cacheKey';
+import { AppContext } from '@/contex/appContex';
+import { JwtPayload } from '@/types/auth.types';
+import { PickCreateNotification, PickNotifID } from '@/types/notificatios.types';
+import { getRedis } from '@/utils/redis';
+import prisma from 'prisma/client';
+import app from '@/app';
+import { error } from 'console';
+import { Roles, Tuple_Roles } from '@/utils/roleTuple';
 
 class NotificationController {
   private get redis() {
@@ -24,9 +21,9 @@ class NotificationController {
         return c.json?.(
           {
             status: 400,
-            message: "user not found",
+            message: 'user not found',
           },
-          400
+          400,
         );
       }
 
@@ -34,9 +31,9 @@ class NotificationController {
         return c.json?.(
           {
             status: 400,
-            message: "body is required",
+            message: 'body is required',
           },
-          400
+          400,
         );
       }
       const notify = await prisma.notifications.create({
@@ -51,27 +48,27 @@ class NotificationController {
       app.server?.publish(
         `user:${jwtUser.id}`,
         JSON.stringify({
-          type: "notification:new",
+          type: 'notification:new',
           payload: notify,
-        })
+        }),
       );
 
       if (!notify) {
         return c.json?.(
           {
             status: 400,
-            message: "server internal error",
+            message: 'server internal error',
           },
-          400
+          400,
         );
       } else {
         return c.json?.(
           {
             status: 200,
-            message: "succesfuly create notify",
+            message: 'succesfuly create notify',
             data: notify,
           },
-          200
+          200,
         );
       }
     } catch (error) {
@@ -79,10 +76,10 @@ class NotificationController {
       return c.json?.(
         {
           status: 500,
-          message: "server internal error",
+          message: 'server internal error',
           error: error instanceof Error ? error.message : error,
         },
-        500
+        500,
       );
     }
   }
@@ -93,9 +90,9 @@ class NotificationController {
         return c.json?.(
           {
             status: 400,
-            message: "user not found",
+            message: 'user not found',
           },
-          400
+          400,
         );
       }
 
@@ -108,13 +105,13 @@ class NotificationController {
         },
       });
 
-      if (!user || user.role !== "PARENT") {
+      if (!user || user.role !== 'PARENT') {
         return c.json?.(
           {
             status: 404,
-            message: "user not found",
+            message: 'user not found',
           },
-          404
+          404,
         );
       }
       const cacheKey = cacheKeys.notify.byRole(user.role);
@@ -125,10 +122,10 @@ class NotificationController {
           return c.json?.(
             {
               status: 200,
-              message: "succesfully get notify by parent",
+              message: 'succesfully get notify by parent',
               data: JSON.parse(cacheNotify),
             },
-            200
+            200,
           );
         }
       } catch (error) {
@@ -140,7 +137,7 @@ class NotificationController {
           isBroadcast: true,
         },
         orderBy: {
-          createdAt: "desc",
+          createdAt: 'desc',
         },
       });
 
@@ -148,9 +145,9 @@ class NotificationController {
         return c.json?.(
           {
             status: 400,
-            message: "server internal error",
+            message: 'server internal error',
           },
-          400
+          400,
         );
       }
       if (notifications && notifications.length > 0) {
@@ -163,20 +160,20 @@ class NotificationController {
       return c.json?.(
         {
           status: 200,
-          message: "succesfully get notify parent",
+          message: 'succesfully get notify parent',
           data: notifications,
         },
-        200
+        200,
       );
     } catch (error) {
       console.error(error);
       return c.json?.(
         {
           status: 500,
-          message: "server internal error",
+          message: 'server internal error',
           error: error instanceof Error ? error.message : error,
         },
-        500
+        500,
       );
     }
   }
@@ -187,9 +184,9 @@ class NotificationController {
         return c.json?.(
           {
             status: 404,
-            message: "user not found",
+            message: 'user not found',
           },
-          404
+          404,
         );
       }
 
@@ -202,13 +199,13 @@ class NotificationController {
         },
       });
 
-      if (!user || user.role !== "KADER") {
+      if (!user || user.role !== 'KADER') {
         return c.json?.(
           {
             status: 404,
-            message: "user not found",
+            message: 'user not found',
           },
-          404
+          404,
         );
       }
 
@@ -219,10 +216,10 @@ class NotificationController {
           return c.json?.(
             {
               status: 200,
-              message: "succesfully get cache kager",
+              message: 'succesfully get cache kager',
               data: JSON.parse(cacheKader),
             },
-            200
+            200,
           );
         }
       } catch (error) {
@@ -233,40 +230,38 @@ class NotificationController {
           isBroadcast: true,
         },
         orderBy: {
-          createdAt: "desc",
+          createdAt: 'desc',
         },
       });
       if (!notifications) {
         return c.json?.(
           {
             status: 400,
-            message: "server intenal error",
+            message: 'server intenal error',
           },
-          400
+          400,
         );
       }
       if (notifications && notifications.length > 0) {
-        await this.redis
-          .set(cacheKey, JSON.stringify(notifications), { EX: 60 })
-          .catch(error);
+        await this.redis.set(cacheKey, JSON.stringify(notifications), { EX: 60 }).catch(error);
       }
       return c.json?.(
         {
           status: 200,
-          message: "succesfully get notifications",
+          message: 'succesfully get notifications',
           data: notifications,
         },
-        200
+        200,
       );
     } catch (error) {
       console.error(error);
       return c.json?.(
         {
           status: 500,
-          message: "server internal error",
+          message: 'server internal error',
           error: error instanceof Error ? error.message : error,
         },
-        500
+        500,
       );
     }
   }
@@ -277,9 +272,9 @@ class NotificationController {
         return c.json?.(
           {
             status: 404,
-            message: "user not found",
+            message: 'user not found',
           },
-          400
+          400,
         );
       }
       const user = await prisma.user.findFirst({
@@ -290,13 +285,13 @@ class NotificationController {
           role: true,
         },
       });
-      if (!user || user.role !== "POSYANDU") {
+      if (!user || user.role !== 'POSYANDU') {
         return c.json?.(
           {
             status: 404,
-            message: "user not found",
+            message: 'user not found',
           },
-          404
+          404,
         );
       }
 
@@ -308,10 +303,10 @@ class NotificationController {
           return c.json?.(
             {
               status: 200,
-              message: "succesfully get notifications posyandu",
+              message: 'succesfully get notifications posyandu',
               data: JSON.parse(cachePosyandu),
             },
-            200
+            200,
           );
         }
       } catch (error) {
@@ -323,7 +318,7 @@ class NotificationController {
           OR: [{ isBroadcast: false }, { isBroadcast: true }],
         },
         orderBy: {
-          createdAt: "desc",
+          createdAt: 'desc',
         },
       });
 
@@ -331,34 +326,32 @@ class NotificationController {
         return c.json?.(
           {
             status: 400,
-            messaage: "server internal error",
+            messaage: 'server internal error',
           },
-          400
+          400,
         );
       }
 
       if (notification && notification.length > 0) {
-        await this.redis
-          .set(cacheKey, JSON.stringify(notification), { EX: 60 })
-          .catch(error);
+        await this.redis.set(cacheKey, JSON.stringify(notification), { EX: 60 }).catch(error);
       }
       return c.json?.(
         {
           status: 200,
-          message: "succesfully get notification posyandu",
+          message: 'succesfully get notification posyandu',
           data: notification,
         },
-        200
+        200,
       );
     } catch (error) {
       console.log(error);
       return c.json?.(
         {
           status: 500,
-          message: "server internal error",
+          message: 'server internal error',
           error: error instanceof Error ? error.message : error,
         },
-        500
+        500,
       );
     }
   }
@@ -370,18 +363,18 @@ class NotificationController {
         return c.json?.(
           {
             status: 404,
-            message: "user not found",
+            message: 'user not found',
           },
-          400
+          400,
         );
       }
       if (!notParams) {
         return c.json?.(
           {
             status: 400,
-            message: "params is required",
+            message: 'params is required',
           },
-          400
+          400,
         );
       }
       const cacheKey = cacheKeys.notify.byID(notParams.id);
@@ -391,10 +384,10 @@ class NotificationController {
           return c.json?.(
             {
               status: 200,
-              message: "succesfully get notification by id",
+              message: 'succesfully get notification by id',
               data: JSON.parse(cacheNotify),
             },
-            200
+            200,
           );
         }
       } catch (error) {
@@ -413,9 +406,9 @@ class NotificationController {
         return c.json?.(
           {
             status: 400,
-            message: "server internal error",
+            message: 'server internal error',
           },
-          400
+          400,
         );
       }
       await prisma.notifications.update({
@@ -427,25 +420,23 @@ class NotificationController {
           isRead: true,
         },
       });
-      await this.redis
-        .set(cacheKey, JSON.stringify(notification), { EX: 60 })
-        .catch(error);
+      await this.redis.set(cacheKey, JSON.stringify(notification), { EX: 60 }).catch(error);
       return c.json?.(
         {
           status: 200,
-          message: "succesfully get notifications by id",
+          message: 'succesfully get notifications by id',
           data: notification,
         },
-        200
+        200,
       );
     } catch (error) {
       console.error(error);
       return c.json?.(
         {
           status: 500,
-          message: "server internal error",
+          message: 'server internal error',
         },
-        500
+        500,
       );
     }
   }
@@ -456,9 +447,9 @@ class NotificationController {
         return c.json?.(
           {
             status: 404,
-            message: "user not found",
+            message: 'user not found',
           },
-          404
+          404,
         );
       }
       const user = await prisma.user.findFirst({
@@ -470,13 +461,13 @@ class NotificationController {
         },
       });
 
-      if (!user || user.role !== "ADMIN") {
+      if (!user || user.role !== 'ADMIN') {
         return c.json?.(
           {
             status: 404,
-            message: "user not found",
+            message: 'user not found',
           },
-          404
+          404,
         );
       }
       const cacheKey = cacheKeys.notify.list();
@@ -486,10 +477,10 @@ class NotificationController {
           return c.json?.(
             {
               status: 200,
-              message: "succesfully get all notafication",
+              message: 'succesfully get all notafication',
               data: JSON.parse(cacheNotifications),
             },
-            200
+            200,
           );
         }
       } catch (error) {
@@ -500,7 +491,7 @@ class NotificationController {
           OR: [{ isBroadcast: false }, { isBroadcast: true }],
         },
         orderBy: {
-          createdAt: "desc",
+          createdAt: 'desc',
         },
       });
 
@@ -508,33 +499,31 @@ class NotificationController {
         return c.json?.(
           {
             status: 400,
-            message: "server internal error",
+            message: 'server internal error',
           },
-          400
+          400,
         );
       }
       if (notification && notification.length > 0) {
-        await this.redis
-          .set(cacheKey, JSON.stringify(notification), { EX: 60 })
-          .catch(error);
+        await this.redis.set(cacheKey, JSON.stringify(notification), { EX: 60 }).catch(error);
       }
       return c.json?.(
         {
           status: 200,
-          message: "succesfully get notification",
+          message: 'succesfully get notification',
           data: notification,
         },
-        200
+        200,
       );
     } catch (error) {
       console.error(error);
       return c.json?.(
         {
           status: 500,
-          message: "server internal error",
+          message: 'server internal error',
           error: error instanceof Error ? error.message : error,
         },
-        500
+        500,
       );
     }
   }
@@ -547,18 +536,18 @@ class NotificationController {
         return c.json?.(
           {
             status: 404,
-            message: "user not found",
+            message: 'user not found',
           },
-          404
+          404,
         );
       }
       if (!notParams) {
         return c.json?.(
           {
             status: 400,
-            message: "params is required",
+            message: 'params is required',
           },
-          400
+          400,
         );
       }
       const cacheKey = cacheKeys.notify.byID(notParams.id);
@@ -579,36 +568,36 @@ class NotificationController {
       app.server?.publish(
         `user:${jwtUser.id}`,
         JSON.stringify({
-          type: "notification:update",
+          type: 'notification:update',
           payload: notafication,
-        })
+        }),
       );
 
       await this.redis.del(cacheKey).catch(error);
       if (!notafication || notafication.isBroadcast === false) {
         return c.json?.({
           status: 400,
-          message: "server internal error & notif is broadcast",
+          message: 'server internal error & notif is broadcast',
         });
       }
 
       return c.json?.(
         {
           status: 200,
-          message: "succesfully update notification",
+          message: 'succesfully update notification',
           data: notafication,
         },
-        200
+        200,
       );
     } catch (error) {
       console.error(error);
       return c.json?.(
         {
           status: 500,
-          message: "server internal error",
+          message: 'server internal error',
           error: error instanceof Error ? error.message : error,
         },
-        500
+        500,
       );
     }
   }
@@ -621,18 +610,18 @@ class NotificationController {
         return c.json?.(
           {
             status: 404,
-            message: "user not found",
+            message: 'user not found',
           },
-          404
+          404,
         );
       }
       if (!notParams) {
         return c.json?.(
           {
             status: 400,
-            message: "params is required",
+            message: 'params is required',
           },
-          400
+          400,
         );
       }
       const cacheKey = cacheKeys.notify.byID(notParams.id);
@@ -648,34 +637,34 @@ class NotificationController {
       if (!notafication || notafication.isBroadcast === false) {
         return c.json?.({
           status: 400,
-          message: "server internal error & notif is broadcast",
+          message: 'server internal error & notif is broadcast',
         });
       }
       await this.redis.del(cacheKey);
       app.server?.publish(
         `user:${jwtUser.id}`,
         JSON.stringify({
-          type: "notification:delete",
+          type: 'notification:delete',
           payload: notafication,
-        })
+        }),
       );
       return c.json?.(
         {
           status: 200,
-          message: "succesfully delete notification",
+          message: 'succesfully delete notification',
           data: notafication,
         },
-        200
+        200,
       );
     } catch (error) {
       console.error(error);
       return c.json?.(
         {
           status: 500,
-          message: "server internal error",
+          message: 'server internal error',
           error: error instanceof Error ? error.message : error,
         },
-        500
+        500,
       );
     }
   }
@@ -687,18 +676,18 @@ class NotificationController {
         return c.json?.(
           {
             status: 404,
-            message: " user not found",
+            message: ' user not found',
           },
-          404
+          404,
         );
       }
       if (!notParams) {
         return c.json?.(
           {
             status: 400,
-            message: "params is required",
+            message: 'params is required',
           },
-          400
+          400,
         );
       }
 
@@ -712,13 +701,13 @@ class NotificationController {
         },
       });
 
-      if (!user || (user.role !== "ADMIN" && user.role !== "POSYANDU")) {
+      if (!user || (user.role !== 'ADMIN' && user.role !== 'POSYANDU')) {
         return c.json?.(
           {
             status: 403,
-            message: "acces forenbaden",
+            message: 'acces forenbaden',
           },
-          403
+          403,
         );
       }
       const cacheKey = Tuple_Roles.map((role) => cacheKeys.notify.byRole(role));
@@ -733,9 +722,9 @@ class NotificationController {
         return c.json?.(
           {
             status: 404,
-            message: "notafication not found",
+            message: 'notafication not found',
           },
-          404
+          404,
         );
       }
 
@@ -748,41 +737,41 @@ class NotificationController {
         },
       });
       const deleted = await this.redis.del(cacheKey).catch(error);
-      console.log("Redis keys deleted:", deleted);
+      console.log('Redis keys deleted:', deleted);
 
       app.server?.publish(
         `user:${jwtPayload.id}`,
         JSON.stringify({
-          type: "notification:broadcast",
+          type: 'notification:broadcast',
           payload: notification,
-        })
+        }),
       );
       if (!notification) {
         return c.json?.(
           {
             status: 400,
-            message: "server internal error",
+            message: 'server internal error',
           },
-          400
+          400,
         );
       }
       return c.json?.(
         {
           status: 200,
-          message: "succesfully update notafication",
+          message: 'succesfully update notafication',
           data: notification,
         },
-        200
+        200,
       );
     } catch (error) {
       console.error(error);
       return c.json?.(
         {
           status: 500,
-          message: "server internal error",
+          message: 'server internal error',
           error: error instanceof Error ? error.message : error,
         },
-        500
+        500,
       );
     }
   }
