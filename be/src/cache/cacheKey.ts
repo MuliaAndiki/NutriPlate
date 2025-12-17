@@ -1,6 +1,5 @@
 export const cacheKeys = {
   user: {
-    profile: (userId: string) => `user:profile:${userId}`,
     byID: (id: string) => `user:${id}`,
     list: () => `user:list`,
   },
@@ -15,7 +14,8 @@ export const cacheKeys = {
   child: {
     list: () => `child:list`,
     byParent: (parentID: string) => `child:parent:${parentID}`,
-    byPosyanduList: (posyandu: string) => `posyandu:list:${posyandu}`,
+    byID: (id: string) => `child:id:${id}`,
+    byPosyanduList: (posyandu: string) => `child:posyandu:list:${posyandu}`,
   },
   parent: {
     list: () => `parent:list`,

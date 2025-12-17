@@ -93,6 +93,16 @@ class NotificationRouter {
         beforeHandle: [verifyToken().beforeHandle],
       }
     );
+    this.notificationRoutes.put(
+      "/broadcast/:id",
+      (c: AppContext) => NotificationController.broadcastNotifications(c),
+      {
+        beforeHandle: [
+          verifyToken().beforeHandle,
+          requireRole(["ADMIN", "POSYANDU"]).beforeHandle,
+        ],
+      }
+    );
   }
 }
 

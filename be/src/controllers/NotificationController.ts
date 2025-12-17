@@ -9,6 +9,7 @@ import { getRedis } from "@/utils/redis";
 import prisma from "prisma/client";
 import app from "@/app";
 import { error } from "console";
+import { Roles, Tuple_Roles } from "@/utils/roleTuple";
 
 class NotificationController {
   private get redis() {
@@ -134,7 +135,7 @@ class NotificationController {
         console.warn(`redis error, fallback db: ${error}`);
       }
 
-      const notify = await prisma.notifications.findMany({
+      const notifications = await prisma.notifications.findMany({
         where: {
           isBroadcast: true,
         },
@@ -143,16 +144,27 @@ class NotificationController {
         },
       });
 
-      if (!notify || notify.length === 0) {
+      if (!notifications) {
+        return c.json?.(
+          {
+            status: 400,
+            message: "server internal error",
+          },
+          400
+        );
+      }
+      if (notifications && notifications.length > 0) {
         await this.redis
-          .set(cacheKey, JSON.stringify(notify), { EX: 60 })
+          .set(cacheKey, JSON.stringify(notifications), {
+            EX: 60,
+          })
           .catch(error);
       }
       return c.json?.(
         {
           status: 200,
           message: "succesfully get notify parent",
-          data: notify,
+          data: notifications,
         },
         200
       );
@@ -224,7 +236,16 @@ class NotificationController {
           createdAt: "desc",
         },
       });
-      if (!notifications || notifications.length === 0) {
+      if (!notifications) {
+        return c.json?.(
+          {
+            status: 400,
+            message: "server intenal error",
+          },
+          400
+        );
+      }
+      if (notifications && notifications.length > 0) {
         await this.redis
           .set(cacheKey, JSON.stringify(notifications), { EX: 60 })
           .catch(error);
@@ -299,19 +320,28 @@ class NotificationController {
 
       const notification = await prisma.notifications.findMany({
         where: {
-          isBroadcast: true,
+          OR: [{ isBroadcast: false }, { isBroadcast: true }],
         },
         orderBy: {
           createdAt: "desc",
         },
       });
 
-      if (!notification || notification.length === 0) {
+      if (!notification) {
+        return c.json?.(
+          {
+            status: 400,
+            messaage: "server internal error",
+          },
+          400
+        );
+      }
+
+      if (notification && notification.length > 0) {
         await this.redis
           .set(cacheKey, JSON.stringify(notification), { EX: 60 })
           .catch(error);
       }
-
       return c.json?.(
         {
           status: 200,
@@ -373,13 +403,13 @@ class NotificationController {
       const notification = await prisma.notifications.findUnique({
         where: {
           id: notParams.id,
+        },
+        select: {
           isBroadcast: true,
         },
       });
-      await this.redis
-        .set(cacheKey, JSON.stringify(notification), { EX: 60 })
-        .catch(error);
-      if (!notification) {
+
+      if (!notification || notification.isBroadcast === true) {
         return c.json?.(
           {
             status: 400,
@@ -387,16 +417,27 @@ class NotificationController {
           },
           400
         );
-      } else {
-        return c.json?.(
-          {
-            status: 200,
-            message: "succesfully get notifications by id",
-            data: notification,
-          },
-          200
-        );
       }
+      await prisma.notifications.update({
+        where: {
+          id: notParams.id,
+          userId: jwtUser.id,
+        },
+        data: {
+          isRead: true,
+        },
+      });
+      await this.redis
+        .set(cacheKey, JSON.stringify(notification), { EX: 60 })
+        .catch(error);
+      return c.json?.(
+        {
+          status: 200,
+          message: "succesfully get notifications by id",
+          data: notification,
+        },
+        200
+      );
     } catch (error) {
       console.error(error);
       return c.json?.(
@@ -456,18 +497,13 @@ class NotificationController {
       }
       const notification = await prisma.notifications.findMany({
         where: {
-          isBroadcast: true,
+          OR: [{ isBroadcast: false }, { isBroadcast: true }],
         },
         orderBy: {
           createdAt: "desc",
         },
       });
 
-      if (!notification || notification.length === 0) {
-        await this.redis
-          .set(cacheKey, JSON.stringify(notification), { EX: 60 })
-          .catch(error);
-      }
       if (!notification) {
         return c.json?.(
           {
@@ -476,6 +512,11 @@ class NotificationController {
           },
           400
         );
+      }
+      if (notification && notification.length > 0) {
+        await this.redis
+          .set(cacheKey, JSON.stringify(notification), { EX: 60 })
+          .catch(error);
       }
       return c.json?.(
         {
@@ -575,6 +616,7 @@ class NotificationController {
     try {
       const jwtUser = c.user as JwtPayload;
       const notParams = c.params as PickNotifID;
+
       if (!jwtUser) {
         return c.json?.(
           {
@@ -622,6 +664,113 @@ class NotificationController {
           status: 200,
           message: "succesfully delete notification",
           data: notafication,
+        },
+        200
+      );
+    } catch (error) {
+      console.error(error);
+      return c.json?.(
+        {
+          status: 500,
+          message: "server internal error",
+          error: error instanceof Error ? error.message : error,
+        },
+        500
+      );
+    }
+  }
+  public async broadcastNotifications(c: AppContext) {
+    try {
+      const jwtPayload = c.user as JwtPayload;
+      const notParams = c.params as PickNotifID;
+      if (!jwtPayload) {
+        return c.json?.(
+          {
+            status: 404,
+            message: " user not found",
+          },
+          404
+        );
+      }
+      if (!notParams) {
+        return c.json?.(
+          {
+            status: 400,
+            message: "params is required",
+          },
+          400
+        );
+      }
+
+      const user = await prisma.user.findFirst({
+        where: {
+          id: jwtPayload.id,
+        },
+        select: {
+          role: true,
+          id: true,
+        },
+      });
+
+      if (!user || (user.role !== "ADMIN" && user.role !== "POSYANDU")) {
+        return c.json?.(
+          {
+            status: 403,
+            message: "acces forenbaden",
+          },
+          403
+        );
+      }
+      const cacheKey = Tuple_Roles.map((role) => cacheKeys.notify.byRole(role));
+      const notif = await prisma.notifications.findFirst({
+        where: {
+          id: notParams.id,
+          userId: user.id,
+        },
+      });
+
+      if (!notif) {
+        return c.json?.(
+          {
+            status: 404,
+            message: "notafication not found",
+          },
+          404
+        );
+      }
+
+      const notification = await prisma.notifications.update({
+        where: {
+          id: notif.id,
+        },
+        data: {
+          isBroadcast: true,
+        },
+      });
+      const deleted = await this.redis.del(cacheKey).catch(error);
+      console.log("Redis keys deleted:", deleted);
+
+      app.server?.publish(
+        `user:${jwtPayload.id}`,
+        JSON.stringify({
+          type: "notification:broadcast",
+          payload: notification,
+        })
+      );
+      if (!notification) {
+        return c.json?.(
+          {
+            status: 400,
+            message: "server internal error",
+          },
+          400
+        );
+      }
+      return c.json?.(
+        {
+          status: 200,
+          message: "succesfully update notafication",
+          data: notification,
         },
         200
       );

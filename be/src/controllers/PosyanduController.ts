@@ -518,7 +518,7 @@ class PosyanduController {
             status: 404,
             message: "user not found",
           },
-          400
+          404
         );
       }
       if (!params) {
@@ -556,11 +556,6 @@ class PosyanduController {
         },
       });
 
-      if (child.length === 0) {
-        await this.redis
-          .set(cacheKey, JSON.stringify(child), { EX: 60 })
-          .catch(error);
-      }
       if (!child) {
         c.json?.(
           {
@@ -569,16 +564,19 @@ class PosyanduController {
           },
           400
         );
-      } else {
-        return c.json?.(
-          {
-            status: 200,
-            message: "succesfully get child",
-            data: child,
-          },
-          200
-        );
+      } else if (child && child.length > 0) {
+        await this.redis
+          .set(cacheKey, JSON.stringify(child), { EX: 60 })
+          .catch(error);
       }
+      return c.json?.(
+        {
+          status: 200,
+          message: "succesfully get child",
+          data: child,
+        },
+        200
+      );
     } catch (error) {
       console.error(error);
       return c.json?.(

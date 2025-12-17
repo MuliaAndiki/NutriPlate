@@ -29,3 +29,10 @@ export interface SidebarContentType {
   url: string;
   icon: SidebarIconsKey;
 }
+
+export enum NotifType {
+  result,
+  reminder,
+  alert,
+  edukasi,
+}
