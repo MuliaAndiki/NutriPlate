@@ -1,17 +1,12 @@
-import prisma from "prisma/client";
-import {
-  JwtPayload,
-  PickID,
-  PickUpdatePassword,
-  PickUpdateProfile,
-} from "@/types/auth.types";
-import { AppContext } from "@/contex/appContex";
-import { uploadCloudinary } from "@/utils/clodinary";
-import bcrypt from "bcryptjs";
-import { getRedis } from "@/utils/redis";
-import { PickChilID } from "@/types/child.types";
-import { cacheKeys } from "@/cache/cacheKey";
-import { error } from "console";
+import prisma from 'prisma/client';
+import { JwtPayload, PickID, PickUpdatePassword, PickUpdateProfile } from '@/types/auth.types';
+import { AppContext } from '@/contex/appContex';
+import { uploadCloudinary } from '@/utils/clodinary';
+import bcrypt from 'bcryptjs';
+import { getRedis } from '@/utils/redis';
+import { PickChilID } from '@/types/child.types';
+import { cacheKeys } from '@/cache/cacheKey';
+import { error } from 'console';
 class UserController {
   private get redis() {
     return getRedis();
@@ -24,9 +19,9 @@ class UserController {
         return c.json?.(
           {
             status: 404,
-            message: "user not found",
+            message: 'user not found',
           },
-          404
+          404,
         );
       }
 
@@ -38,10 +33,10 @@ class UserController {
           return c.json?.(
             {
               status: 200,
-              message: "successfully get cache profile",
+              message: 'successfully get cache profile',
               data: JSON.parse(cacheProfile),
             },
-            200
+            200,
           );
         }
       } catch (error) {
@@ -56,31 +51,29 @@ class UserController {
       if (!auth) {
         return c.json?.({
           status: 404,
-          message: "server internal error",
+          message: 'server internal error',
         });
       } else {
-        await this.redis
-          .set(cacheKey, JSON.stringify(auth), { EX: 60 })
-          .catch(error);
+        await this.redis.set(cacheKey, JSON.stringify(auth), { EX: 60 }).catch(error);
       }
 
       return c.json?.(
         {
           status: 200,
-          message: "succes get user",
+          message: 'succes get user',
           data: auth,
         },
-        200
+        200,
       );
     } catch (error) {
       console.error(error);
       return c.json?.(
         {
           status: 500,
-          message: "Server Internal Error",
+          message: 'Server Internal Error',
           error: error instanceof Error ? error.message : error,
         },
-        500
+        500,
       );
     }
   }
@@ -93,33 +86,29 @@ class UserController {
         return c.json?.(
           {
             status: 404,
-            message: "user not found",
+            message: 'user not found',
           },
-          404
+          404,
         );
       }
 
       const cacheKey = [cacheKeys.user.byID(jwtUser.id)];
-      let documentUrl: { photoUrl: string } = { photoUrl: "" };
+      let documentUrl: { photoUrl: string } = { photoUrl: '' };
       if (c.files?.photoUrl?.[0]) {
         const file = c.files.photoUrl[0];
         const buffer = file.buffer;
 
-        const result = await uploadCloudinary(
-          buffer,
-          "photoUrl",
-          file.originalname
-        );
+        const result = await uploadCloudinary(buffer, 'photoUrl', file.originalname);
         documentUrl.photoUrl = result.secure_url;
       } else if (
         user.photoUrl &&
-        typeof user.photoUrl === "string" &&
-        user.photoUrl.startsWith("data:image")
+        typeof user.photoUrl === 'string' &&
+        user.photoUrl.startsWith('data:image')
       ) {
         const base64 = user.photoUrl;
-        const buffer = Buffer.from(base64.split(",")[1], "base64");
+        const buffer = Buffer.from(base64.split(',')[1], 'base64');
 
-        const result = await uploadCloudinary(buffer, "photoUrl", "image.png");
+        const result = await uploadCloudinary(buffer, 'photoUrl', 'image.png');
         documentUrl.photoUrl = result.secure_url;
       }
       const Auth = await prisma.user.update({
@@ -138,20 +127,20 @@ class UserController {
       return c.json?.(
         {
           status: 201,
-          message: "succes update profile",
+          message: 'succes update profile',
           data: Auth,
         },
-        201
+        201,
       );
     } catch (error) {
       console.error(error);
       return c.json?.(
         {
           status: 500,
-          message: "Server Internal Error",
+          message: 'Server Internal Error',
           error: error instanceof Error ? error.message : error,
         },
-        500
+        500,
       );
     }
   }
@@ -162,9 +151,9 @@ class UserController {
         return c.json?.(
           {
             status: 404,
-            message: "user not found",
+            message: 'user not found',
           },
-          40
+          40,
         );
       }
       const cacheKey = cacheKeys.user.byID(jwtUser.id);
@@ -178,9 +167,9 @@ class UserController {
         return c.json?.(
           {
             status: 400,
-            message: "server internal error",
+            message: 'server internal error',
           },
-          400
+          400,
         );
       } else {
         await this.redis.del(cacheKey).catch(error);
@@ -188,20 +177,20 @@ class UserController {
       return c.json?.(
         {
           status: 200,
-          message: "successfully delete acound",
+          message: 'successfully delete acound',
           data: auth,
         },
-        200
+        200,
       );
     } catch (error) {
       console.error(error);
       return c.json?.(
         {
           status: 500,
-          message: "server internal error",
+          message: 'server internal error',
           error: error instanceof Error ? error.message : error,
         },
-        500
+        500,
       );
     }
   }
@@ -214,18 +203,18 @@ class UserController {
         return c.json?.(
           {
             status: 404,
-            message: "user not found",
+            message: 'user not found',
           },
-          404
+          404,
         );
       }
       if (!usr) {
         return c.json?.(
           {
             status: 400,
-            message: "body is required",
+            message: 'body is required',
           },
-          400
+          400,
         );
       }
 
@@ -244,18 +233,18 @@ class UserController {
         return c.json?.(
           {
             status: 400,
-            message: "server internal error",
+            message: 'server internal error',
           },
-          400
+          400,
         );
       } else {
         return c.json?.(
           {
             status: 200,
-            message: "successfully update password",
+            message: 'successfully update password',
             data: user,
           },
-          200
+          200,
         );
       }
     } catch (error) {
@@ -263,10 +252,10 @@ class UserController {
       return c.json?.(
         {
           status: 500,
-          message: "server internal error",
+          message: 'server internal error',
           error: error instanceof Error ? error.message : error,
         },
-        500
+        500,
       );
     }
   }
@@ -275,7 +264,7 @@ class UserController {
       const jwtUser = c.user as JwtPayload;
 
       if (!jwtUser) {
-        return c.json?.({ status: 400, message: "user not found" }, 400);
+        return c.json?.({ status: 400, message: 'user not found' }, 400);
       }
 
       const cacheKey = cacheKeys.parent.list();
@@ -286,10 +275,10 @@ class UserController {
           return c.json?.(
             {
               status: 200,
-              message: "successfully data from cache",
+              message: 'successfully data from cache',
               data: JSON.parse(cacheUser),
             },
-            200
+            200,
           );
         }
       } catch (error) {
@@ -297,11 +286,11 @@ class UserController {
       }
 
       const user = await prisma.user.findMany({
-        where: { role: "PARENT" },
+        where: { role: 'PARENT' },
       });
 
       if (!user) {
-        return c.json?.({ status: 400, message: "server internal error" }, 400);
+        return c.json?.({ status: 400, message: 'server internal error' }, 400);
       } else if (user && user.length > 0) {
         await this.redis.set(cacheKey, JSON.stringify(user), { EX: 60 });
       }
@@ -309,20 +298,20 @@ class UserController {
       return c.json?.(
         {
           status: 200,
-          message: "successfully get user",
+          message: 'successfully get user',
           data: user,
         },
-        200
+        200,
       );
     } catch (error) {
       console.error(error);
       return c.json?.(
         {
           status: 500,
-          message: "server internal error",
+          message: 'server internal error',
           error: error instanceof Error ? error.message : error,
         },
-        500
+        500,
       );
     }
   }
@@ -334,18 +323,18 @@ class UserController {
         return c.json?.(
           {
             status: 404,
-            message: "user not found",
+            message: 'user not found',
           },
-          400
+          400,
         );
       }
       if (!parentID) {
         return c.json?.(
           {
             status: 400,
-            message: "params is required",
+            message: 'params is required',
           },
-          400
+          400,
         );
       }
       const cacheKey = cacheKeys.parent.byID(parentID.id);
@@ -355,10 +344,10 @@ class UserController {
           return c.json?.(
             {
               status: 200,
-              message: "succesfully get by parent",
+              message: 'succesfully get by parent',
               data: JSON.parse(cacheParent),
             },
-            200
+            200,
           );
         }
       } catch (error) {
@@ -374,32 +363,30 @@ class UserController {
         return c.json?.(
           {
             status: 400,
-            message: "server internal error ",
+            message: 'server internal error ',
           },
-          400
+          400,
         );
       }
-      await this.redis
-        .set(cacheKey, JSON.stringify(parent), { EX: 60 })
-        .catch(error);
+      await this.redis.set(cacheKey, JSON.stringify(parent), { EX: 60 }).catch(error);
 
       return c.json?.(
         {
           status: 200,
-          message: "successfully get parentByID",
+          message: 'successfully get parentByID',
           data: parent,
         },
-        200
+        200,
       );
     } catch (error) {
       console.error(error);
       return c.json?.(
         {
           status: 500,
-          message: "server internal error",
+          message: 'server internal error',
           error: error instanceof Error ? error.message : error,
         },
-        500
+        500,
       );
     }
   }
@@ -411,18 +398,18 @@ class UserController {
         return c.json?.(
           {
             status: 404,
-            message: "user not found",
+            message: 'user not found',
           },
-          404
+          404,
         );
       }
       if (!userID) {
         return c.json?.(
           {
             status: 400,
-            message: "params is required",
+            message: 'params is required',
           },
-          400
+          400,
         );
       }
       const cacheKey = cacheKeys.user.byID(userID.id);
@@ -433,10 +420,10 @@ class UserController {
           return c.json?.(
             {
               status: 200,
-              message: "succesfully get cache redis",
+              message: 'succesfully get cache redis',
               data: JSON.parse(cacheUser),
             },
-            200
+            200,
           );
         }
       } catch (error) {
@@ -453,32 +440,30 @@ class UserController {
         return c.json?.(
           {
             status: 400,
-            message: "server internal error",
+            message: 'server internal error',
           },
-          400
+          400,
         );
       } else {
-        await this.redis
-          .set(cacheKey, JSON.stringify(auth), { EX: 60 })
-          .catch(error);
+        await this.redis.set(cacheKey, JSON.stringify(auth), { EX: 60 }).catch(error);
       }
       return c.json?.(
         {
           status: 200,
-          message: "succesfully get user id",
+          message: 'succesfully get user id',
           data: auth,
         },
-        200
+        200,
       );
     } catch (error) {
       console.error(error);
       return c.json?.(
         {
           status: 500,
-          message: "server internal error",
+          message: 'server internal error',
           error: error instanceof Error ? error.message : error,
         },
-        500
+        500,
       );
     }
   }
@@ -490,9 +475,9 @@ class UserController {
         return c.json?.(
           {
             status: 404,
-            message: "user not found",
+            message: 'user not found',
           },
-          404
+          404,
         );
       }
       const session = await prisma.userSession.findFirst({
@@ -505,18 +490,18 @@ class UserController {
         return c.json?.(
           {
             status: 400,
-            message: "server internal error",
+            message: 'server internal error',
           },
-          400
+          400,
         );
       } else {
         return c.json?.(
           {
             status: 200,
-            message: "user sedang login",
+            message: 'user sedang login',
             data: session,
           },
-          200
+          200,
         );
       }
     } catch (error) {
@@ -524,10 +509,10 @@ class UserController {
       return c.json?.(
         {
           status: 500,
-          message: "server internal error",
+          message: 'server internal error',
           error: error instanceof Error ? error.message : error,
         },
-        500
+        500,
       );
     }
   }
@@ -538,9 +523,9 @@ class UserController {
         return c.json?.(
           {
             status: 404,
-            message: "user not found",
+            message: 'user not found',
           },
-          404
+          404,
         );
       }
       const cacheKey = cacheKeys.kader.list();
@@ -550,10 +535,10 @@ class UserController {
           return c.json?.(
             {
               status: 200,
-              message: "succesfully get kader by cache",
+              message: 'succesfully get kader by cache',
               data: JSON.parse(cacheKader),
             },
-            200
+            200,
           );
         }
       } catch (error) {
@@ -562,7 +547,7 @@ class UserController {
 
       const user = await prisma.user.findMany({
         where: {
-          role: "KADER",
+          role: 'KADER',
         },
       });
 
@@ -570,32 +555,30 @@ class UserController {
         return c.json?.(
           {
             status: 400,
-            message: "server internal error",
+            message: 'server internal error',
           },
-          400
+          400,
         );
       } else {
-        await this.redis
-          .set(cacheKey, JSON.stringify(user), { EX: 60 })
-          .catch(error);
+        await this.redis.set(cacheKey, JSON.stringify(user), { EX: 60 }).catch(error);
       }
       return c.json?.(
         {
           status: 200,
-          message: "succesfully get kader",
+          message: 'succesfully get kader',
           data: user,
         },
-        200
+        200,
       );
     } catch (error) {
       console.error(error);
       return c.json?.(
         {
           status: 500,
-          message: "server internal error",
+          message: 'server internal error',
           error: error instanceof Error ? error.message : error,
         },
-        500
+        500,
       );
     }
   }
@@ -608,18 +591,18 @@ class UserController {
         return c.json?.(
           {
             status: 404,
-            message: "user not found",
+            message: 'user not found',
           },
-          404
+          404,
         );
       }
       if (!userID) {
         return c.json?.(
           {
             status: 400,
-            message: "params is required",
+            message: 'params is required',
           },
-          400
+          400,
         );
       }
       const cacheKey = cacheKeys.kader.byID(userID.id);
@@ -629,10 +612,10 @@ class UserController {
           return c.json?.(
             {
               status: 200,
-              message: "succesfully get Kader by Cache",
+              message: 'succesfully get Kader by Cache',
               data: JSON.parse(cacheKaderID),
             },
-            200
+            200,
           );
         }
       } catch (error) {
@@ -649,32 +632,30 @@ class UserController {
         return c.json?.(
           {
             status: 400,
-            message: "server internal error",
+            message: 'server internal error',
           },
-          400
+          400,
         );
       } else {
-        await this.redis
-          .set(cacheKey, JSON.stringify(kader), { EX: 60 })
-          .catch(error);
+        await this.redis.set(cacheKey, JSON.stringify(kader), { EX: 60 }).catch(error);
       }
       return c.json?.(
         {
           status: 200,
-          message: "succesfully get kader by id",
+          message: 'succesfully get kader by id',
           data: kader,
         },
-        200
+        200,
       );
     } catch (error) {
       console.error(error);
       return c.json?.(
         {
           status: 500,
-          message: "server internal error",
+          message: 'server internal error',
           error: error instanceof Error ? error.message : error,
         },
-        500
+        500,
       );
     }
   }
@@ -686,9 +667,9 @@ class UserController {
         return c.json?.(
           {
             status: 400,
-            message: "user not found",
+            message: 'user not found',
           },
-          400
+          400,
         );
       }
       const parent = await prisma.user.findFirst({
@@ -701,9 +682,9 @@ class UserController {
         return c.json?.(
           {
             status: 404,
-            message: "parent not found",
+            message: 'parent not found',
           },
-          404
+          404,
         );
       }
       const cacheKey = cacheKeys.child.byParent(parent.id);
@@ -714,10 +695,10 @@ class UserController {
           return c.json?.(
             {
               status: 200,
-              message: " successfully get cache for child",
+              message: ' successfully get cache for child',
               data: JSON.parse(cacheChild),
             },
-            200
+            200,
           );
         }
       } catch (error) {
@@ -734,33 +715,31 @@ class UserController {
         return c.json?.(
           {
             status: 400,
-            message: "server internal error",
+            message: 'server internal error',
           },
-          400
+          400,
         );
       } else if (child && child.length > 0) {
-        await this.redis
-          .set(cacheKey, JSON.stringify(child), { EX: 60 })
-          .catch(error);
+        await this.redis.set(cacheKey, JSON.stringify(child), { EX: 60 }).catch(error);
       }
 
       return c.json?.(
         {
           status: 200,
-          message: "successfully get child",
+          message: 'successfully get child',
           data: child,
         },
-        200
+        200,
       );
     } catch (error) {
       console.error(error);
       return c.json?.(
         {
           status: 500,
-          message: "server internal error",
+          message: 'server internal error',
           error: error instanceof Error ? error.message : error,
         },
-        500
+        500,
       );
     }
   }
@@ -772,18 +751,18 @@ class UserController {
         return c.json?.(
           {
             status: 404,
-            message: "user not found",
+            message: 'user not found',
           },
-          404
+          404,
         );
       }
       if (!chilParams) {
         return c.json?.(
           {
             status: 400,
-            message: "params is required",
+            message: 'params is required',
           },
-          400
+          400,
         );
       }
 
@@ -795,10 +774,10 @@ class UserController {
           return c.json?.(
             {
               status: 200,
-              message: "successfully get cache child",
+              message: 'successfully get cache child',
               data: JSON.parse(cacheChild),
             },
-            200
+            200,
           );
         }
       } catch (error) {
@@ -815,13 +794,13 @@ class UserController {
         },
       });
 
-      if (!parent || parent.role !== "PARENT") {
+      if (!parent || parent.role !== 'PARENT') {
         return c.json?.(
           {
             status: 400,
-            message: "server internal error",
+            message: 'server internal error',
           },
-          400
+          400,
         );
       }
       const child = await prisma.child.findFirst({
@@ -831,25 +810,23 @@ class UserController {
         },
       });
 
-      await this.redis
-        .set(cacheKey, JSON.stringify(child), { EX: 60 })
-        .catch(error);
+      await this.redis.set(cacheKey, JSON.stringify(child), { EX: 60 }).catch(error);
       if (!child) {
         return c.json?.(
           {
             status: 404,
-            message: "server internal error",
+            message: 'server internal error',
           },
-          404
+          404,
         );
       } else {
         return c.json?.(
           {
             status: 200,
-            message: "successfully get child",
+            message: 'successfully get child',
             data: child,
           },
-          200
+          200,
         );
       }
     } catch (error) {
@@ -857,10 +834,10 @@ class UserController {
       return c.json?.(
         {
           status: 500,
-          message: "server internal error",
+          message: 'server internal error',
           error: error instanceof Error ? error.message : error,
         },
-        500
+        500,
       );
     }
   }

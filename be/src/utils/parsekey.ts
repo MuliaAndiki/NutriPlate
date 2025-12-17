@@ -1,4 +1,4 @@
-import { AppFile } from "@/types/appFile";
+import { AppFile } from '@/types/appFile';
 export const parseFormData = async (req: Request) => {
   const formData = await req.formData();
   const result: {
@@ -15,7 +15,7 @@ export const parseFormData = async (req: Request) => {
       const fileData: AppFile = {
         fieldname: key,
         originalname: value.name,
-        encoding: "7bit",
+        encoding: '7bit',
         mimetype: value.type,
         buffer: buffer,
         size: value.size,

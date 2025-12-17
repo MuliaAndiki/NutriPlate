@@ -1,5 +1,6 @@
-import { SidebarContentType } from "@/types/partial";
 import React from "react";
+
+import { SidebarContentType } from "@/types/partial";
 
 interface AppConfig {
   name: string;

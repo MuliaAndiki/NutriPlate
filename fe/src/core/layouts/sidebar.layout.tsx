@@ -1,17 +1,18 @@
 "use client";
 
-import { AppSidebar } from "@/core/components/app-sidebar";
+import { usePathname } from "next/navigation";
+
 import {
+  SidebarInset,
   SidebarProvider,
   SidebarTrigger,
-  SidebarInset,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/core/components/app-sidebar";
 
-import ThemeToggle from "../components/theme-toggle";
 import LanguageDropdown from "../components/language.dropdown";
 import NotificationDropdown from "../components/notification.dropdown";
-import { usePathname } from "next/navigation";
+import ThemeToggle from "../components/theme-toggle";
 
 interface AppLayoutProps {
   children: React.ReactNode;

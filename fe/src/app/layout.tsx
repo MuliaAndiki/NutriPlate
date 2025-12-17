@@ -1,7 +1,8 @@
-import { metadata, siteConfig } from "./metadata";
 import "@/styles/globals.css";
-import { AppProviders } from "./providers";
 import "aos/dist/aos.css";
+
+import { metadata, siteConfig } from "./metadata";
+import { AppProviders } from "./providers";
 
 export { metadata };
 

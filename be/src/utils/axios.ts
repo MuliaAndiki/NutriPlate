@@ -1,5 +1,5 @@
-import axios, { AxiosInstance, AxiosError } from "axios";
-import { env } from "@/config/env.config";
+import axios, { AxiosInstance, AxiosError } from 'axios';
+import { env } from '@/config/env.config';
 
 export function AxiosService() {
   const AxiosHit: AxiosInstance = axios.create({

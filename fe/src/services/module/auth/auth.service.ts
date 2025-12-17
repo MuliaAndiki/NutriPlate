@@ -1,4 +1,3 @@
-import AxiosClient from "@/utils/axios.client";
 import { TResponse } from "@/pkg/react-query/mutation-wrapper.type";
 import {
   FormForgotPassword,
@@ -8,6 +7,7 @@ import {
   FormSendOtp,
   FormVerify,
 } from "@/types/form/auth.form";
+import AxiosClient from "@/utils/axios.client";
 
 class AuthApi {
   public async Login(payload: FormLogin): Promise<TResponse<any>> {
@@ -35,7 +35,7 @@ class AuthApi {
     return res.data;
   }
   public async resetPassword(
-    payload: FormResetPassword
+    payload: FormResetPassword,
   ): Promise<TResponse<any>> {
     const res = await AxiosClient.post("/api/auth/reset-password", payload);
     return res.data;

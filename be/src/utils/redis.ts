@@ -1,5 +1,5 @@
-import { createClient, RedisClientType } from "redis";
-import { env } from "@/config/env.config";
+import { createClient, RedisClientType } from 'redis';
+import { env } from '@/config/env.config';
 
 let redis: RedisClientType | null = null;
 
@@ -9,10 +9,10 @@ export function getRedis(): RedisClientType {
       url: env.REDIS_URL,
     });
 
-    redis.on("error", (err) => console.error("❌ Redis Client Error", err));
+    redis.on('error', (err) => console.error('❌ Redis Client Error', err));
 
-    redis.on("connect", () => {
-      console.log("🔴 Redis connected successfully");
+    redis.on('connect', () => {
+      console.log('🔴 Redis connected successfully');
     });
   }
 

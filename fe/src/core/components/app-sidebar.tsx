@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 import {
   Sidebar,
   SidebarContent,
@@ -6,10 +8,10 @@ import {
   SidebarGroupLabel,
   SidebarHeader,
 } from "@/components/ui/sidebar";
-import Image from "next/image";
-import { kebabCaseToWords } from "@/utils/string.format";
-import SidebarSection from "../partial/sidebar-section";
 import { SidebarDefaultData } from "@/configs/app.config";
+import { kebabCaseToWords } from "@/utils/string.format";
+
+import SidebarSection from "../partial/sidebar-section";
 
 interface AppSidebarProps {
   isCollapsed: any;

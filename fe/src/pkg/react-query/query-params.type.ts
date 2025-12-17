@@ -22,13 +22,13 @@ export const rowsFilterTypeSchema = z.number().optional();
 // export const orderRuleFilterTypeSchema = z.enum(['asc', 'desc']).optional()
 
 export const queryParamsSchema = z.object({
-    //   filters: filterTypeSchema,
-    //   searchFilters: searchFilterTypeSchema,
-    //   rangedFilters: rangedFilterTypeSchema,
-    page: pageFilterTypeSchema,
-    rows: rowsFilterTypeSchema,
-    //   orderKey: orderKeyFilterTypeSchema,
-    //   orderRule: orderRuleFilterTypeSchema
+  //   filters: filterTypeSchema,
+  //   searchFilters: searchFilterTypeSchema,
+  //   rangedFilters: rangedFilterTypeSchema,
+  page: pageFilterTypeSchema,
+  rows: rowsFilterTypeSchema,
+  //   orderKey: orderKeyFilterTypeSchema,
+  //   orderRule: orderRuleFilterTypeSchema
 });
 
 export type QueryParams = z.infer<typeof queryParamsSchema>;

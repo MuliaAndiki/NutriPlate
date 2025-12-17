@@ -1,11 +1,11 @@
-import { cacheKeys } from "@/cache/cacheKey";
-import { AppContext } from "@/contex/appContex";
-import { JwtPayload } from "@/types/auth.types";
-import { PickChilID, PickCreateChild } from "@/types/child.types";
-import { PickPosyanduID } from "@/types/posyandu.types";
-import { getRedis } from "@/utils/redis";
-import { error } from "console";
-import prisma from "prisma/client";
+import { cacheKeys } from '@/cache/cacheKey';
+import { AppContext } from '@/contex/appContex';
+import { JwtPayload } from '@/types/auth.types';
+import { PickChilID, PickCreateChild } from '@/types/child.types';
+import { PickPosyanduID } from '@/types/posyandu.types';
+import { getRedis } from '@/utils/redis';
+import { error } from 'console';
+import prisma from 'prisma/client';
 
 class ChildController {
   private get redis() {
@@ -21,9 +21,9 @@ class ChildController {
         return c.json?.(
           {
             status: 404,
-            message: "user not found",
+            message: 'user not found',
           },
-          404
+          404,
         );
       }
       if (
@@ -35,9 +35,9 @@ class ChildController {
         return c.json?.(
           {
             status: 400,
-            message: "body is required",
+            message: 'body is required',
           },
-          400
+          400,
         );
       }
 
@@ -45,9 +45,9 @@ class ChildController {
         return c.json?.(
           {
             status: 400,
-            message: "posyandu not found",
+            message: 'posyandu not found',
           },
-          400
+          400,
         );
       }
 
@@ -65,18 +65,18 @@ class ChildController {
         return c.json?.(
           {
             status: 400,
-            message: "server internal error",
+            message: 'server internal error',
           },
-          400
+          400,
         );
       } else {
         return c.json?.(
           {
             status: 200,
-            message: "succesfully create Child",
+            message: 'succesfully create Child',
             data: child,
           },
-          200
+          200,
         );
       }
     } catch (error) {
@@ -84,10 +84,10 @@ class ChildController {
       return c.json?.(
         {
           status: 500,
-          message: "server internal error",
+          message: 'server internal error',
           error: error instanceof Error ? error.message : error,
         },
-        500
+        500,
       );
     }
   }
@@ -101,18 +101,18 @@ class ChildController {
         return c.json?.(
           {
             status: 400,
-            message: "user not found",
+            message: 'user not found',
           },
-          400
+          400,
         );
       }
       if (!childID) {
         return c.json?.(
           {
             status: 400,
-            message: "params is required",
+            message: 'params is required',
           },
-          400
+          400,
         );
       }
 
@@ -126,13 +126,13 @@ class ChildController {
         },
       });
 
-      if (!parent || parent.role !== "PARENT") {
+      if (!parent || parent.role !== 'PARENT') {
         return c.json?.(
           {
             status: 404,
-            message: "role not valid",
+            message: 'role not valid',
           },
-          404
+          404,
         );
       }
 
@@ -150,38 +150,35 @@ class ChildController {
         },
       });
 
-      const cacheKey = [
-        cacheKeys.child.byID(childID.id),
-        cacheKeys.child.byParent(parent.id),
-      ];
+      const cacheKey = [cacheKeys.child.byID(childID.id), cacheKeys.child.byParent(parent.id)];
       if (!child) {
         return c.json?.(
           {
             status: 400,
-            message: "server internal error",
+            message: 'server internal error',
           },
-          400
+          400,
         );
       }
       const delet = await this.redis.del(cacheKey).catch(error);
-      console.log("key redis", delet);
+      console.log('key redis', delet);
       return c.json?.(
         {
           status: 200,
-          message: "succesfully update child",
+          message: 'succesfully update child',
           data: child,
         },
-        200
+        200,
       );
     } catch (error) {
       console.error(error);
       return c.json?.(
         {
           status: 500,
-          message: "server internal error",
+          message: 'server internal error',
           error: error instanceof Error ? error.message : error,
         },
-        500
+        500,
       );
     }
   }
@@ -193,18 +190,18 @@ class ChildController {
         return c.json?.(
           {
             status: 404,
-            message: "user not found",
+            message: 'user not found',
           },
-          400
+          400,
         );
       }
       if (!childID) {
         return c.json?.(
           {
             status: 400,
-            message: "params is required",
+            message: 'params is required',
           },
-          400
+          400,
         );
       }
       const parent = await prisma.user.findFirst({
@@ -216,19 +213,16 @@ class ChildController {
           id: true,
         },
       });
-      if (!parent || parent.role !== "PARENT") {
+      if (!parent || parent.role !== 'PARENT') {
         return c.json?.(
           {
             status: 403,
-            message: "server internal error & role not acces",
+            message: 'server internal error & role not acces',
           },
-          403
+          403,
         );
       }
-      const cacheKey = [
-        cacheKeys.child.byParent(parent.id),
-        cacheKeys.child.byID(childID.id),
-      ];
+      const cacheKey = [cacheKeys.child.byParent(parent.id), cacheKeys.child.byID(childID.id)];
 
       const child = await prisma.child.delete({
         where: {
@@ -237,33 +231,33 @@ class ChildController {
         },
       });
       const deletd = await this.redis.del(cacheKey).catch(error);
-      console.log("Redis keys deleted:", deletd);
+      console.log('Redis keys deleted:', deletd);
       if (!child) {
         return c.json?.(
           {
             status: 400,
-            message: "server internal error",
+            message: 'server internal error',
           },
-          400
+          400,
         );
       }
       return c.json?.(
         {
           status: 200,
-          message: "succesfully delete child",
+          message: 'succesfully delete child',
           data: child,
         },
-        200
+        200,
       );
     } catch (error) {
       console.error(error);
       return c.json?.(
         {
           status: 500,
-          message: "server internal error",
+          message: 'server internal error',
           error: error instanceof Error ? error.message : error,
         },
-        500
+        500,
       );
     }
   }

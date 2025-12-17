@@ -1,23 +1,21 @@
-import { AppContext } from "@/contex/appContex";
-import ServiceController from "@/controllers/ServiceController";
-import Elysia from "elysia";
+import { AppContext } from '@/contex/appContex';
+import ServiceController from '@/controllers/ServiceController';
+import Elysia from 'elysia';
 class ServiceRoutes {
   public serviceRoutes;
   constructor() {
-    this.serviceRoutes = new Elysia({ prefix: "/service" }).derive(() => ({
+    this.serviceRoutes = new Elysia({ prefix: '/service' }).derive(() => ({
       json(data: any, status = 200) {
         return new Response(JSON.stringify(data), {
           status,
-          headers: { "Content-Type": "application/json" },
+          headers: { 'Content-Type': 'application/json' },
         });
       },
     }));
     this.routes();
   }
   private routes() {
-    this.serviceRoutes.get("/", (c: AppContext) =>
-      ServiceController.getFastApi(c)
-    );
+    this.serviceRoutes.get('/', (c: AppContext) => ServiceController.getFastApi(c));
   }
 }
 

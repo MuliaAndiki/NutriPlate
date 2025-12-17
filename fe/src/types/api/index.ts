@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 export const userType = z.object({
   user: z.object({
@@ -9,7 +9,9 @@ export const userType = z.object({
     provinsi: z.string(),
     fullName: z.string(),
     email: z.string(),
-    phoneNumber: z.string().regex(/^(\+62|0)8[1-9][0-9]{6,9}$/, 'Nomor HP tidak valid'),
+    phoneNumber: z
+      .string()
+      .regex(/^(\+62|0)8[1-9][0-9]{6,9}$/, "Nomor HP tidak valid"),
     password: z.string(),
     fotoProfile: z.string().nullable().optional(),
     isVerified: z.boolean(),

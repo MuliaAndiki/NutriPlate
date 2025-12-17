@@ -1,5 +1,5 @@
-import { AppContext } from "@/contex/appContex";
-import fastApiService from "@/service/fastApi.service";
+import { AppContext } from '@/contex/appContex';
+import fastApiService from '@/service/fastApi.service';
 
 class ServiceController {
   public async getFastApi(c: AppContext) {
@@ -9,14 +9,14 @@ class ServiceController {
         return c.json?.(
           {
             status: 400,
-            message: "server internal error",
+            message: 'server internal error',
           },
-          400
+          400,
         );
       }
       return c.json?.({
         status: 200,
-        message: "success",
+        message: 'success',
         data: response,
       });
     } catch (error) {
@@ -24,10 +24,10 @@ class ServiceController {
       return c.json?.(
         {
           status: 500,
-          message: "server internal error",
+          message: 'server internal error',
           error: error instanceof Error ? error.message : error,
         },
-        500
+        500,
       );
     }
   }

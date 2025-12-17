@@ -1,4 +1,4 @@
-import { NutritionType } from "@prisma/client";
+import { NutritionStatus } from '@prisma/client';
 
 export interface IMeasurements {
   id: string;
@@ -7,6 +7,6 @@ export interface IMeasurements {
   weight_kg: number;
   eight_cm: number;
   head_circumference_cm: number;
-  nutrition_status: NutritionType;
+  nutrition_status: NutritionStatus;
   note: string;
 }

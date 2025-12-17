@@ -1,13 +1,14 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { useSelector } from 'react-redux';
-import type { RootState } from '@/stores/store';
-import { usePathname, useRouter } from 'next/navigation';
-import { getCookie } from 'cookies-next';
-import { useAppDispatch } from '@/hooks/dispatch/dispatch';
-import { setCurrentUser } from '@/stores/authSlice/authSlice';
-import { APP_SESSION_COOKIE_KEY } from '@/configs/cookies.config';
+import { getCookie } from "cookies-next";
+import { usePathname, useRouter } from "next/navigation";
+import React from "react";
+import { useSelector } from "react-redux";
+
+import { APP_SESSION_COOKIE_KEY } from "@/configs/cookies.config";
+import { useAppDispatch } from "@/hooks/dispatch/dispatch";
+import { setCurrentUser } from "@/stores/authSlice/authSlice";
+import type { RootState } from "@/stores/store";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -26,14 +27,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   React.useEffect(() => {
     const isAuthPage =
-      pathname?.startsWith('/login') ||
-      pathname?.startsWith('/register') ||
-      pathname?.startsWith('/home');
+      pathname?.startsWith("/login") ||
+      pathname?.startsWith("/register") ||
+      pathname?.startsWith("/home");
 
     const isAuthenticated = Boolean(currentUser?.user?.token);
 
     if (!isAuthenticated && !isAuthPage) {
-      router.replace('/login');
+      router.replace("/login");
       return;
     }
 
