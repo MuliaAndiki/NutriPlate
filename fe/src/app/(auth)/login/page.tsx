@@ -1,5 +1,5 @@
 import LoginContainer from "./_container/login";
 
-export default function Login() {
+export default async function Login() {
   return <LoginContainer />;
 }

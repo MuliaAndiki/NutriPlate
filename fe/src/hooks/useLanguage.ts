@@ -11,7 +11,6 @@ import {
 
 export const useLanguage = () => {
   const [currentLanguage, setCurrentLanguage] = useState<Language>(() => {
-    // Initialize with localStorage value if available, otherwise use default
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem(LANGUAGE_STORAGE_KEY) as Language;
       return saved && languages.includes(saved) ? saved : defaultLanguage;

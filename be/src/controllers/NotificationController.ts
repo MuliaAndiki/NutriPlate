@@ -6,7 +6,7 @@ import { getRedis } from '@/utils/redis';
 import prisma from 'prisma/client';
 import app from '@/app';
 import { error } from 'console';
-import { Roles, Tuple_Roles } from '@/utils/roleTuple';
+import { Tuple_Roles } from '@/utils/roleTuple';
 
 class NotificationController {
   private get redis() {
@@ -736,8 +736,7 @@ class NotificationController {
           isBroadcast: true,
         },
       });
-      const deleted = await this.redis.del(cacheKey).catch(error);
-      console.log('Redis keys deleted:', deleted);
+      await this.redis.del(cacheKey).catch(error);
 
       app.server?.publish(
         `user:${jwtPayload.id}`,

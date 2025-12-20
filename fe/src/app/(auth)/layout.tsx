@@ -1,4 +1,5 @@
 import BlankLayout from "@/core/layouts/blank.layout";
+import { MobileOnly } from "@/core/layouts/mobile.only";
 
 export default function AuthLayout({
   children,
@@ -7,7 +8,9 @@ export default function AuthLayout({
 }) {
   return (
     <main className="w-full">
-      <BlankLayout>{children}</BlankLayout>
+      <MobileOnly>
+        <BlankLayout>{children}</BlankLayout>
+      </MobileOnly>
     </main>
   );
 }

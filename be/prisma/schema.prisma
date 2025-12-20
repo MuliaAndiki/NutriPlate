@@ -24,6 +24,7 @@ model User {
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
   children      Child[]
+  footImage     FoodRawImage[]
   iotDevices    IotDevice[]
   notifications Notifications[]
   posyandu      Posyandu[]
@@ -113,7 +114,7 @@ model Measurement {
 }
 
 model Food {
-  id             String     @id @default(uuid())
+  id             String         @id @default(uuid())
   childId        String
   iotId          String?
   photoUrl       String?
@@ -126,9 +127,10 @@ model Food {
   carbGram       Decimal?
   vitamins       Json?
   nutritionScore Decimal?
-  createdAt      DateTime   @default(now())
-  child          Child      @relation(fields: [childId], references: [id])
-  iot            IotDevice? @relation(fields: [iotId], references: [id])
+  createdAt      DateTime       @default(now())
+  child          Child          @relation(fields: [childId], references: [id])
+  iot            IotDevice?     @relation(fields: [iotId], references: [id])
+  food           FoodRawImage[]
 
   @@index([childId])
   @@index([iotId])
@@ -192,6 +194,64 @@ model NutritionProgramProgress {
   @@map("program_progress")
 }
 
+model FoodRawImage {
+  id             String           @id @default(uuid())
+  uploader_id    String
+  source_food_id String
+  image_url      String
+  status         DatasetStatus
+  createdAt      DateTime         @default(now())
+  labeled_at     DateTime
+  labels         FoodAnnotation[]
+  food           Food             @relation(fields: [source_food_id], references: [id])
+  uploader       User             @relation(fields: [uploader_id], references: [id])
+
+  @@map("food_raw_image")
+}
+
+model FoodClasses {
+  id          String           @id @default(uuid())
+  name        String           @unique
+  category    String?
+  energyKcal  Decimal?
+  proteinGram Decimal?
+  fatGram     Decimal?
+  carbGram    Decimal?
+  edibleRatio Decimal?
+  createdAt   DateTime         @default(now())
+  annotations FoodAnnotation[]
+
+  @@map("food_classes")
+}
+
+model FoodAnnotation {
+  id          String       @id @default(uuid())
+  rawImageId  String
+  foodClassId String
+  xCenter     Float
+  yCenter     Float
+  width       Float
+  height      Float
+  createdAt   DateTime     @default(now())
+  foodClass   FoodClasses  @relation(fields: [foodClassId], references: [id])
+  rawImage    FoodRawImage @relation(fields: [rawImageId], references: [id])
+
+  @@index([rawImageId])
+  @@map("food_annotations")
+}
+
+model MlModel {
+  id        String   @id @default(uuid())
+  name      String
+  version   String
+  modelPath String
+  metrics   Json?
+  isActive  Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@map("ml_models")
+}
+
 enum RoleType {
   PARENT
   KADER
@@ -222,4 +282,11 @@ enum NotifType {
   reminder
   alert
   edukasi
+}
+
+enum DatasetStatus {
+  pending_label
+  labeled
+  approved
+  rejected
 }
