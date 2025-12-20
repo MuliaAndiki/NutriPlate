@@ -26,4 +26,8 @@ export const cacheKeys = {
     byID: (id: string) => `notif:${id}`,
     byRole: (role: string) => `notif:role:${role}`,
   },
+  program: {
+    list: () => `program:list`,
+    byID: (id: string) => `program:id:${id}`,
+  },
 };

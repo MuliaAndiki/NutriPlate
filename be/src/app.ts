@@ -6,6 +6,7 @@ import posyanduRoutes from './routes/posyanduRoutes';
 import childRoutes from './routes/childRoutes';
 import serviceRoutes from './routes/serviceRoutes';
 import notificationRoutes from './routes/notificationRoutes';
+import programRoutes from './routes/programRoutes';
 
 class App {
   public app: Elysia;
@@ -28,7 +29,8 @@ class App {
         .use(posyanduRoutes)
         .use(childRoutes)
         .use(serviceRoutes)
-        .use(notificationRoutes),
+        .use(notificationRoutes)
+        .use(programRoutes),
     );
   }
 }

@@ -29,6 +29,7 @@ model User {
   notifications Notifications[]
   posyandu      Posyandu[]
   session       UserSession[]
+  program NutriplateProgram[]
 
   @@map("users")
 }
@@ -168,12 +169,15 @@ model UserSession {
 model NutriplateProgram {
   id           String                     @id @default(uuid())
   posyanduId   String
+  userId String
   name         String
   description  String
   durationDays Int
   createdAt    DateTime                   @default(now())
   posyandu     Posyandu                   @relation(fields: [posyanduId], references: [id])
   progress     NutritionProgramProgress[]
+  user User @relation(fields: [userId], references: [id])
+
 
   @@index([posyanduId])
   @@map("nutriplate_programs")

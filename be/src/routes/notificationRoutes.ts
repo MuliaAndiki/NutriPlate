@@ -73,7 +73,7 @@ class NotificationRouter {
         beforeHandle: [verifyToken().beforeHandle],
       },
     );
-    this.notificationRoutes.put(
+    this.notificationRoutes.patch(
       '/broadcast/:id',
       (c: AppContext) => NotificationController.broadcastNotifications(c),
       {
