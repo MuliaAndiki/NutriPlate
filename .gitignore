@@ -10,3 +10,4 @@ node_modules/
 /preprocessing/data
 /preprocessing/raw
 /preprocessing/yolov_env
+/preprocessing/runs
