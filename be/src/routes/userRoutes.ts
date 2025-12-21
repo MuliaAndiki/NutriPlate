@@ -1,6 +1,6 @@
 import { AppContext } from '@/contex/appContex';
 import UserController from '@/controllers/UserController';
-import { requireRole, verifyToken } from '@/middlewares/auth';
+import { verifyToken } from '@/middlewares/auth';
 import Elysia from 'elysia';
 
 class UserRoutes {
@@ -44,7 +44,7 @@ class UserRoutes {
     this.userRoutes.get('/kader', (c: AppContext) => UserController.getKader(c), {
       beforeHandle: [verifyToken().beforeHandle],
     });
-    this.userRoutes.get('/child', (c: AppContext) => UserController.getChildByParent(c), {
+    this.userRoutes.get('/child', (c: AppContext) => UserController.getChild(c), {
       beforeHandle: [verifyToken().beforeHandle],
     });
     this.userRoutes.get('/child/:id', (c: AppContext) => UserController.getChildByID(c), {

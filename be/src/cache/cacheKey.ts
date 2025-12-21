@@ -13,7 +13,7 @@ export const cacheKeys = {
   },
   child: {
     list: () => `child:list`,
-    byParent: (parentID: string) => `child:parent:${parentID}`,
+    byRole: (role: string) => `child:parent:${role}`,
     byID: (id: string) => `child:id:${id}`,
     byPosyanduList: (posyandu: string) => `child:posyandu:list:${posyandu}`,
   },
@@ -29,5 +29,10 @@ export const cacheKeys = {
   program: {
     list: () => `program:list`,
     byID: (id: string) => `program:id:${id}`,
+  },
+  progres: {
+    list: () => `progres:list`,
+    byID: (id: string) => `progres:id:${id}`,
+    byRole: (role: string) => `progres:role:${role}`,
   },
 };

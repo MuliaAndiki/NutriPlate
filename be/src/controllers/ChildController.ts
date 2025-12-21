@@ -150,7 +150,7 @@ class ChildController {
         },
       });
 
-      const cacheKey = [cacheKeys.child.byID(childID.id), cacheKeys.child.byParent(parent.id)];
+      const cacheKey = [cacheKeys.child.byID(childID.id), cacheKeys.child.byRole(parent.role)];
       if (!child) {
         return c.json?.(
           {
@@ -222,7 +222,7 @@ class ChildController {
           403,
         );
       }
-      const cacheKey = [cacheKeys.child.byParent(parent.id), cacheKeys.child.byID(childID.id)];
+      const cacheKey = [cacheKeys.child.byRole(parent.role), cacheKeys.child.byID(childID.id)];
 
       const child = await prisma.child.delete({
         where: {
