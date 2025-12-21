@@ -7,6 +7,7 @@ import childRoutes from './routes/childRoutes';
 import serviceRoutes from './routes/serviceRoutes';
 import notificationRoutes from './routes/notificationRoutes';
 import programRoutes from './routes/programRoutes';
+import progresRoutes from './routes/progresRoutes';
 
 class App {
   public app: Elysia;
@@ -30,7 +31,8 @@ class App {
         .use(childRoutes)
         .use(serviceRoutes)
         .use(notificationRoutes)
-        .use(programRoutes),
+        .use(programRoutes)
+        .use(progresRoutes),
     );
   }
 }

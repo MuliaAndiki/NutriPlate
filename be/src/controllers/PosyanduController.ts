@@ -151,7 +151,7 @@ class PosyanduController {
         },
       });
       if (posyandu.length === 0) {
-        await this.redis.set(cacheKey, JSON.stringify(posyandu), { EX: 60 });
+        await this.redis.set(cacheKey, JSON.stringify(posyandu), { EX: 60 }).catch(error);
       }
       if (!posyandu) {
         return c.json?.(
@@ -229,7 +229,7 @@ class PosyanduController {
         },
       });
 
-      await this.redis.set(cacheKey, JSON.stringify(posyandu), { EX: 60 });
+      await this.redis.set(cacheKey, JSON.stringify(posyandu), { EX: 60 }).catch(error);
       if (!posyandu) {
         return c.json?.(
           {
@@ -495,85 +495,6 @@ class PosyanduController {
           200,
         );
       }
-    } catch (error) {
-      console.error(error);
-      return c.json?.(
-        {
-          status: 500,
-          message: 'server internal error',
-          error: error instanceof Error ? error.message : error,
-        },
-        500,
-      );
-    }
-  }
-  public async getChildPosyandu(c: AppContext) {
-    try {
-      const jwtUser = c.user as JwtPayload;
-      const params = c.params as PickPosyanduID;
-      if (!jwtUser) {
-        return c.json?.(
-          {
-            status: 404,
-            message: 'user not found',
-          },
-          404,
-        );
-      }
-      if (!params) {
-        return c.json?.(
-          {
-            status: 400,
-            message: 'params is required',
-          },
-          400,
-        );
-      }
-
-      const cacheKey = cacheKeys.child.byPosyanduList(params.id);
-
-      try {
-        const cachePosyandu = await this.redis.get(cacheKey);
-
-        if (cachePosyandu) {
-          return c.json?.(
-            {
-              status: 200,
-              message: 'succesfully get cache child',
-              data: JSON.parse(cachePosyandu),
-            },
-            200,
-          );
-        }
-      } catch (error) {
-        console.warn(`redis error, fallback DB`, error);
-      }
-
-      const child = await prisma.child.findMany({
-        where: {
-          posyanduId: params.id,
-        },
-      });
-
-      if (!child) {
-        c.json?.(
-          {
-            status: 400,
-            message: 'server internal error',
-          },
-          400,
-        );
-      } else if (child && child.length > 0) {
-        await this.redis.set(cacheKey, JSON.stringify(child), { EX: 60 }).catch(error);
-      }
-      return c.json?.(
-        {
-          status: 200,
-          message: 'succesfully get child',
-          data: child,
-        },
-        200,
-      );
     } catch (error) {
       console.error(error);
       return c.json?.(

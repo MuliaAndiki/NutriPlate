@@ -292,7 +292,7 @@ class UserController {
       if (!user) {
         return c.json?.({ status: 400, message: 'server internal error' }, 400);
       } else if (user && user.length > 0) {
-        await this.redis.set(cacheKey, JSON.stringify(user), { EX: 60 });
+        await this.redis.set(cacheKey, JSON.stringify(user), { EX: 60 }).catch(error);
       }
 
       return c.json?.(
@@ -660,54 +660,112 @@ class UserController {
     }
   }
 
-  public async getChildByParent(c: AppContext) {
+  public async getChild(c: AppContext) {
     try {
       const jwtUser = c.user as JwtPayload;
       if (!jwtUser) {
         return c.json?.(
           {
-            status: 400,
+            status: 404,
+            message: 'user not found',
+          },
+          404,
+        );
+      }
+      const user = await prisma.user.findFirst({
+        where: {
+          id: jwtUser.id,
+        },
+        select: {
+          id: true,
+          role: true,
+        },
+      });
+      if (!user) {
+        return c.json?.(
+          {
+            status: 404,
             message: 'user not found',
           },
           400,
         );
       }
-      const parent = await prisma.user.findFirst({
-        where: {
-          id: jwtUser.id,
-        },
-      });
+      let childrenIds: string[] = [];
 
-      if (!parent) {
-        return c.json?.(
-          {
-            status: 404,
-            message: 'parent not found',
+      if (user.role === 'PARENT') {
+        const children = await prisma.child.findMany({
+          where: {
+            parentId: user.id,
           },
-          404,
-        );
+          select: {
+            id: true,
+          },
+        });
+        childrenIds = children.map((c) => c.id);
       }
-      const cacheKey = cacheKeys.child.byParent(parent.id);
+      if (user.role === 'POSYANDU') {
+        const posyandu = await prisma.posyandu.findFirst({
+          where: {
+            userID: user.id,
+          },
+          select: {
+            id: true,
+          },
+        });
+        if (!posyandu) {
+          return c.json?.(
+            {
+              status: 404,
+              message: 'posyandu not found',
+            },
+            404,
+          );
+        }
+        const children = await prisma.child.findMany({
+          where: {
+            posyanduId: posyandu.id,
+          },
+          select: {
+            id: true,
+          },
+        });
+        childrenIds = children.map((c) => c.id);
+      }
+
+      const cacheKey = cacheKeys.child.byRole(user.role);
       try {
         const cacheChild = await this.redis.get(cacheKey);
-
         if (cacheChild) {
           return c.json?.(
             {
               status: 200,
-              message: ' successfully get cache for child',
+              message: 'succesfully get by child',
               data: JSON.parse(cacheChild),
             },
             200,
           );
         }
       } catch (error) {
-        console.warn(`redis error, fallback db ${error}`);
+        console.warn(`redis error, fallback db: ${error}`);
       }
 
+      if (childrenIds.length === 0) {
+        return c.json?.(
+          {
+            status: 400,
+            message: 'child not found',
+          },
+          400,
+        );
+      }
       const child = await prisma.child.findMany({
         where: {
-          parentId: parent.id,
+          id: {
+            in: childrenIds,
+          },
+        },
+        orderBy: {
+          createdAt: 'desc',
         },
       });
 
@@ -719,14 +777,14 @@ class UserController {
           },
           400,
         );
-      } else if (child && child.length > 0) {
+      }
+      if (child && child.length > 0) {
         await this.redis.set(cacheKey, JSON.stringify(child), { EX: 60 }).catch(error);
       }
-
       return c.json?.(
         {
           status: 200,
-          message: 'successfully get child',
+          message: 'succesfully get child',
           data: child,
         },
         200,
@@ -743,6 +801,7 @@ class UserController {
       );
     }
   }
+
   public async getChildByID(c: AppContext) {
     try {
       const chilParams = c.params as PickChilID;

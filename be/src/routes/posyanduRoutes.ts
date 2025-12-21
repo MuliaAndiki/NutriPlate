@@ -34,13 +34,6 @@ class PosyanduRoutes {
     this.posyanduRoutes.delete('/:id', (c: AppContext) => PosyanduController.deletePosyandu(c), {
       beforeHandle: [verifyToken().beforeHandle, requireRole(['ADMIN', 'POSYANDU']).beforeHandle],
     });
-    this.posyanduRoutes.get(
-      '/:id/child',
-      (c: AppContext) => PosyanduController.getChildPosyandu(c),
-      {
-        beforeHandle: [verifyToken().beforeHandle, requireRole(['POSYANDU', 'ADMIN']).beforeHandle],
-      },
-    );
   }
 }
 
