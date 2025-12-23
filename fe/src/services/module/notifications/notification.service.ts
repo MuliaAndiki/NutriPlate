@@ -3,45 +3,32 @@ import { FormCreateNotification } from "@/types/form/notafications.form";
 import AxiosClient from "@/utils/axios.client";
 class NotificationApi {
   public async createNotifications(
-    payload: FormCreateNotification,
+    payload: FormCreateNotification
   ): Promise<TResponse<any>> {
     const res = await AxiosClient.post("/api/notifications/", payload);
     return res.data;
   }
-  public async getNotaficationsParent(): Promise<TResponse<any>> {
-    const res = await AxiosClient.get("/api/notifications/parent");
-    return res.data;
-  }
-  public async getNotaficationsPosyandu(): Promise<TResponse<any>> {
-    const res = await AxiosClient.get("/api/notifications/posyandu");
-    return res.data;
-  }
-  public async getNotaficationsKader(): Promise<TResponse<any>> {
-    const res = await AxiosClient.get("/api/notifications/kader");
-    return res.data;
-  }
-  public async getNotaficationsByID(id: string): Promise<TResponse<any>> {
-    const res = await AxiosClient.get(`/api/notifications/${id}`);
-    return res.data;
-  }
-  //   Admin
-  public async getNotatificationsAll(): Promise<TResponse<any>> {
+  public async getNotafications(): Promise<TResponse<any>> {
     const res = await AxiosClient.get("/api/notifications/");
     return res.data;
   }
-  public async updateNotafications(
+  public async getNotificationByID(id: string): Promise<TResponse<any>> {
+    const res = await AxiosClient.get(`/api/notifications/${id}`);
+    return res.data;
+  }
+  public async updateNotification(
     id: string,
-    payload: FormCreateNotification,
+    payload: FormCreateNotification
   ): Promise<TResponse<any>> {
     const res = await AxiosClient.put(`/api/notifications/${id}`, payload);
     return res.data;
   }
-  public async deleteNotaficatios(id: string): Promise<TResponse<any>> {
+  public async deleteNotification(id: string): Promise<TResponse<any>> {
     const res = await AxiosClient.delete(`/api/notifications/${id}`);
     return res.data;
   }
-  public async broadcastNotif(id: string): Promise<TResponse<any>> {
-    const res = await AxiosClient.put(`/api/notifications/broadcast/${id}`);
+  public async broadcastNotifications(id: string): Promise<TResponse<any>> {
+    const res = await AxiosClient.patch(`/api/notifications/broadcast/${id}`);
     return res.data;
   }
 }

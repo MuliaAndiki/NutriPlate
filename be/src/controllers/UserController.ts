@@ -690,20 +690,11 @@ class UserController {
           400,
         );
       }
-      let childrenIds: string[] = [];
+      let whereCondicional: any = {};
 
       if (user.role === 'PARENT') {
-        const children = await prisma.child.findMany({
-          where: {
-            parentId: user.id,
-          },
-          select: {
-            id: true,
-          },
-        });
-        childrenIds = children.map((c) => c.id);
-      }
-      if (user.role === 'POSYANDU') {
+        whereCondicional.parentId = user.id;
+      } else if (user.role === 'POSYANDU') {
         const posyandu = await prisma.posyandu.findFirst({
           where: {
             userID: user.id,
@@ -721,15 +712,8 @@ class UserController {
             404,
           );
         }
-        const children = await prisma.child.findMany({
-          where: {
-            posyanduId: posyandu.id,
-          },
-          select: {
-            id: true,
-          },
-        });
-        childrenIds = children.map((c) => c.id);
+
+        whereCondicional.posyanduId = posyandu.id;
       }
 
       const cacheKey = cacheKeys.child.byRole(user.role);
@@ -749,33 +733,20 @@ class UserController {
         console.warn(`redis error, fallback db: ${error}`);
       }
 
-      if (childrenIds.length === 0) {
-        return c.json?.(
-          {
-            status: 400,
-            message: 'child not found',
-          },
-          400,
-        );
-      }
       const child = await prisma.child.findMany({
-        where: {
-          id: {
-            in: childrenIds,
-          },
-        },
+        where: whereCondicional,
         orderBy: {
           createdAt: 'desc',
         },
       });
 
-      if (!child) {
+      if (!child || child.length === 0) {
         return c.json?.(
           {
-            status: 400,
-            message: 'server internal error',
+            status: 404,
+            message: 'children not found',
           },
-          400,
+          404,
         );
       }
       if (child && child.length > 0) {

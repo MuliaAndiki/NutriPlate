@@ -3,29 +3,29 @@ import { FormCreateProgram } from "@/types/form/program.form";
 import AxiosClient from "@/utils/axios.client";
 
 class ProgramApi {
-  public async create(
+  public async createProgram(
     payload: FormCreateProgram,
     id: string
   ): Promise<TResponse<any>> {
     const res = await AxiosClient.post(`/api/programs/${id}`, payload);
     return res.data;
   }
-  public async update(
+  public async updateProgram(
     payload: FormCreateProgram,
     id: string
   ): Promise<TResponse<any>> {
     const res = await AxiosClient.put(`/api/programs/${id}`, payload);
     return res.data;
   }
-  public async get(): Promise<TResponse<any>> {
+  public async getPrograms(): Promise<TResponse<any>> {
     const res = await AxiosClient.get("/api/programs");
     return res.data;
   }
-  public async getByID(id: string): Promise<TResponse<any>> {
+  public async getProgrambyID(id: string): Promise<TResponse<any>> {
     const res = await AxiosClient.get(`/api/programs/${id}`);
     return res.data;
   }
-  public async delete(id: string): Promise<TResponse<any>> {
+  public async deleteProgram(id: string): Promise<TResponse<any>> {
     const res = await AxiosClient.delete(`/api/programs${id}`);
     return res.data;
   }

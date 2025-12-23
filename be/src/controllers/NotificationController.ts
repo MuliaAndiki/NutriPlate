@@ -83,7 +83,7 @@ class NotificationController {
       );
     }
   }
-  public async getNotificationsParent(c: AppContext) {
+  public async getNotifications(c: AppContext) {
     try {
       const jwtUser = c.user as JwtPayload;
       if (!jwtUser) {
@@ -102,10 +102,11 @@ class NotificationController {
         },
         select: {
           role: true,
+          id: true,
         },
       });
 
-      if (!user || user.role !== 'PARENT') {
+      if (!user) {
         return c.json?.(
           {
             status: 404,
@@ -114,34 +115,146 @@ class NotificationController {
           404,
         );
       }
-      const cacheKey = cacheKeys.notify.byRole(user.role);
+      let notafications: any = [];
+      if (user.role === 'PARENT') {
+        const parent = user.id;
+        if (!parent) {
+          return c.json?.(
+            {
+              status: 404,
+              message: 'parent not found',
+            },
+            404,
+          );
+        }
+        const notif = await prisma.notifications.findMany({
+          where: {
+            isBroadcast: true,
+          },
+        });
+        notafications = notif.map((c) => c.id);
+      } else if (user.role === 'KADER') {
+        const kader = user.id;
+        if (!kader) {
+          return c.json?.(
+            {
+              status: 404,
+              message: 'kader not found',
+            },
+            404,
+          );
+        }
+        const notif = await prisma.notifications.findMany({
+          where: {
+            isBroadcast: true,
+          },
+          select: {
+            id: true,
+          },
+        });
 
+        notafications = notif.map((c) => c.id);
+      } else if (user.role === 'POSYANDU') {
+        const posyandu = await prisma.user.findFirst({
+          where: {
+            id: user.id,
+          },
+          select: {
+            id: true,
+            role: true,
+          },
+        });
+
+        if (!posyandu || posyandu.role !== 'POSYANDU') {
+          return c.json?.(
+            {
+              status: 404,
+              message: 'posyandu not found & cannot acces',
+            },
+            404,
+          );
+        }
+
+        const notif = await prisma.notifications.findMany({
+          where: {
+            userId: posyandu.id,
+            OR: [{ isBroadcast: false }, { isBroadcast: true }],
+          },
+          select: {
+            id: true,
+          },
+        });
+        notafications = notif.map((c) => c.id);
+      } else if (user.role === 'ADMIN') {
+        const admin = await prisma.user.findFirst({
+          where: {
+            id: user.id,
+          },
+          select: {
+            role: true,
+            id: true,
+          },
+        });
+        if (!admin || admin.role !== 'ADMIN') {
+          return c.json?.(
+            {
+              status: 404,
+              message: 'admin not found',
+            },
+            404,
+          );
+        }
+        const notif = await prisma.notifications.findMany({
+          where: {
+            userId: admin.id,
+            OR: [{ isBroadcast: false }, { isBroadcast: true }],
+          },
+          select: {
+            id: true,
+          },
+        });
+        notafications = notif.map((c) => c.id);
+      }
+
+      if (notafications.length === 0) {
+        return c.json?.(
+          {
+            status: 404,
+            message: 'notafication not found',
+          },
+          404,
+        );
+      }
+
+      const cacheKey = cacheKeys.notify.byRole(user.role);
       try {
-        const cacheNotify = await this.redis.get(cacheKey);
-        if (cacheNotify) {
+        const cacheNotif = await this.redis.get(cacheKey);
+        if (cacheNotif) {
           return c.json?.(
             {
               status: 200,
-              message: 'succesfully get notify by parent',
-              data: JSON.parse(cacheNotify),
+              message: 'succesfully get notifocation by cache',
+              data: JSON.parse(cacheNotif),
             },
             200,
           );
         }
       } catch (error) {
-        console.warn(`redis error, fallback db: ${error}`);
+        console.warn(`redis error, fallback db`);
       }
 
-      const notifications = await prisma.notifications.findMany({
+      const notafication = await prisma.notifications.findMany({
         where: {
-          isBroadcast: true,
+          id: {
+            in: notafications,
+          },
         },
         orderBy: {
           createdAt: 'desc',
         },
       });
 
-      if (!notifications) {
+      if (!notafication) {
         return c.json?.(
           {
             status: 400,
@@ -150,18 +263,23 @@ class NotificationController {
           400,
         );
       }
-      if (notifications && notifications.length > 0) {
-        await this.redis
-          .set(cacheKey, JSON.stringify(notifications), {
-            EX: 60,
-          })
-          .catch(error);
+
+      if (notafication && notafication.length > 0) {
+        await this.redis.set(cacheKey, JSON.stringify(notafication), { EX: 60 });
       }
+      app.server?.publish(
+        `user:${jwtUser.id}`,
+        JSON.stringify({
+          type: 'notification:get',
+          payload: notafication,
+        }),
+      );
+
       return c.json?.(
         {
           status: 200,
-          message: 'succesfully get notify parent',
-          data: notifications,
+          message: 'succesfully get notafications',
+          data: notafication,
         },
         200,
       );
@@ -177,184 +295,7 @@ class NotificationController {
       );
     }
   }
-  public async getNotificationKader(c: AppContext) {
-    try {
-      const jwtUser = c.user as JwtPayload;
-      if (!jwtUser) {
-        return c.json?.(
-          {
-            status: 404,
-            message: 'user not found',
-          },
-          404,
-        );
-      }
 
-      const user = await prisma.user.findFirst({
-        where: {
-          id: jwtUser.id,
-        },
-        select: {
-          role: true,
-        },
-      });
-
-      if (!user || user.role !== 'KADER') {
-        return c.json?.(
-          {
-            status: 404,
-            message: 'user not found',
-          },
-          404,
-        );
-      }
-
-      const cacheKey = cacheKeys.notify.byRole(user.role);
-      try {
-        const cacheKader = await this.redis.get(cacheKey);
-        if (cacheKader) {
-          return c.json?.(
-            {
-              status: 200,
-              message: 'succesfully get cache kager',
-              data: JSON.parse(cacheKader),
-            },
-            200,
-          );
-        }
-      } catch (error) {
-        console.warn(`redis error, fallback db: ${error}`);
-      }
-      const notifications = await prisma.notifications.findMany({
-        where: {
-          isBroadcast: true,
-        },
-        orderBy: {
-          createdAt: 'desc',
-        },
-      });
-      if (!notifications) {
-        return c.json?.(
-          {
-            status: 400,
-            message: 'server intenal error',
-          },
-          400,
-        );
-      }
-      if (notifications && notifications.length > 0) {
-        await this.redis.set(cacheKey, JSON.stringify(notifications), { EX: 60 }).catch(error);
-      }
-      return c.json?.(
-        {
-          status: 200,
-          message: 'succesfully get notifications',
-          data: notifications,
-        },
-        200,
-      );
-    } catch (error) {
-      console.error(error);
-      return c.json?.(
-        {
-          status: 500,
-          message: 'server internal error',
-          error: error instanceof Error ? error.message : error,
-        },
-        500,
-      );
-    }
-  }
-  public async getNotificationPosyandu(c: AppContext) {
-    try {
-      const jwtUser = c.user as JwtPayload;
-      if (!jwtUser) {
-        return c.json?.(
-          {
-            status: 404,
-            message: 'user not found',
-          },
-          400,
-        );
-      }
-      const user = await prisma.user.findFirst({
-        where: {
-          id: jwtUser.id,
-        },
-        select: {
-          role: true,
-        },
-      });
-      if (!user || user.role !== 'POSYANDU') {
-        return c.json?.(
-          {
-            status: 404,
-            message: 'user not found',
-          },
-          404,
-        );
-      }
-
-      const cacheKey = cacheKeys.notify.byRole(user.role);
-
-      try {
-        const cachePosyandu = await this.redis.get(cacheKey);
-        if (cachePosyandu) {
-          return c.json?.(
-            {
-              status: 200,
-              message: 'succesfully get notifications posyandu',
-              data: JSON.parse(cachePosyandu),
-            },
-            200,
-          );
-        }
-      } catch (error) {
-        console.warn(`redis error, fallback db: ${error}`);
-      }
-
-      const notification = await prisma.notifications.findMany({
-        where: {
-          OR: [{ isBroadcast: false }, { isBroadcast: true }],
-        },
-        orderBy: {
-          createdAt: 'desc',
-        },
-      });
-
-      if (!notification) {
-        return c.json?.(
-          {
-            status: 400,
-            messaage: 'server internal error',
-          },
-          400,
-        );
-      }
-
-      if (notification && notification.length > 0) {
-        await this.redis.set(cacheKey, JSON.stringify(notification), { EX: 60 }).catch(error);
-      }
-      return c.json?.(
-        {
-          status: 200,
-          message: 'succesfully get notification posyandu',
-          data: notification,
-        },
-        200,
-      );
-    } catch (error) {
-      console.log(error);
-      return c.json?.(
-        {
-          status: 500,
-          message: 'server internal error',
-          error: error instanceof Error ? error.message : error,
-        },
-        500,
-      );
-    }
-  }
   public async getNotificationByID(c: AppContext) {
     try {
       const jwtUser = c.user as JwtPayload;
@@ -440,93 +381,7 @@ class NotificationController {
       );
     }
   }
-  public async getAllNotification(c: AppContext) {
-    try {
-      const jwtUser = c.user as JwtPayload;
-      if (!jwtUser) {
-        return c.json?.(
-          {
-            status: 404,
-            message: 'user not found',
-          },
-          404,
-        );
-      }
-      const user = await prisma.user.findFirst({
-        where: {
-          id: jwtUser.id,
-        },
-        select: {
-          role: true,
-        },
-      });
 
-      if (!user || user.role !== 'ADMIN') {
-        return c.json?.(
-          {
-            status: 404,
-            message: 'user not found',
-          },
-          404,
-        );
-      }
-      const cacheKey = cacheKeys.notify.list();
-      try {
-        const cacheNotifications = await this.redis.get(cacheKey);
-        if (cacheNotifications) {
-          return c.json?.(
-            {
-              status: 200,
-              message: 'succesfully get all notafication',
-              data: JSON.parse(cacheNotifications),
-            },
-            200,
-          );
-        }
-      } catch (error) {
-        console.warn(`redis error, fallback db: ${error}`);
-      }
-      const notification = await prisma.notifications.findMany({
-        where: {
-          OR: [{ isBroadcast: false }, { isBroadcast: true }],
-        },
-        orderBy: {
-          createdAt: 'desc',
-        },
-      });
-
-      if (!notification) {
-        return c.json?.(
-          {
-            status: 400,
-            message: 'server internal error',
-          },
-          400,
-        );
-      }
-      if (notification && notification.length > 0) {
-        await this.redis.set(cacheKey, JSON.stringify(notification), { EX: 60 }).catch(error);
-      }
-      return c.json?.(
-        {
-          status: 200,
-          message: 'succesfully get notification',
-          data: notification,
-        },
-        200,
-      );
-    } catch (error) {
-      console.error(error);
-      return c.json?.(
-        {
-          status: 500,
-          message: 'server internal error',
-          error: error instanceof Error ? error.message : error,
-        },
-        500,
-      );
-    }
-  }
   public async updateNotification(c: AppContext) {
     try {
       const jwtUser = c.user as JwtPayload;
@@ -575,10 +430,13 @@ class NotificationController {
 
       await this.redis.del(cacheKey).catch(error);
       if (!notafication || notafication.isBroadcast === false) {
-        return c.json?.({
-          status: 400,
-          message: 'server internal error & notif is broadcast',
-        });
+        return c.json?.(
+          {
+            status: 400,
+            message: 'server internal error & notif is broadcast',
+          },
+          400,
+        );
       }
 
       return c.json?.(

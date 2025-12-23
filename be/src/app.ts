@@ -8,6 +8,7 @@ import serviceRoutes from './routes/serviceRoutes';
 import notificationRoutes from './routes/notificationRoutes';
 import programRoutes from './routes/programRoutes';
 import progresRoutes from './routes/progresRoutes';
+import { swagger } from '@elysiajs/swagger';
 
 class App {
   public app: Elysia;
@@ -15,7 +16,27 @@ class App {
   constructor() {
     this.app = new Elysia();
     this.middlewares();
+    this.plugins();
     this.routes();
+  }
+  private plugins() {
+    this.app.use(
+      swagger({
+        path: '/api-docs',
+        documentation: {
+          info: {
+            title: 'NutriPlate API',
+            version: '1.0.0',
+            description: 'API documentation untuk Frontend',
+          },
+          servers: [
+            {
+              url: 'http://localhost:5000',
+            },
+          ],
+        },
+      }),
+    );
   }
   private routes(): void {
     this.app.get('/', () => 'Hello Elysia! Bun js');

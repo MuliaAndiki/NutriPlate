@@ -1,11 +1,13 @@
 import { cacheKeys } from '@/cache/cacheKey';
 import { AppContext } from '@/contex/appContex';
 import { JwtPayload } from '@/types/auth.types';
-import { PickChilID, PickCreateChild } from '@/types/child.types';
+import { PickChilID, PickCreateChild, PickRegisteredChild } from '@/types/child.types';
 import { PickPosyanduID } from '@/types/posyandu.types';
 import { getRedis } from '@/utils/redis';
 import { error } from 'console';
+import { status } from 'elysia';
 import prisma from 'prisma/client';
+import { id } from 'zod/locales';
 
 class ChildController {
   private get redis() {
@@ -16,7 +18,7 @@ class ChildController {
     try {
       const jwtUser = c.user as JwtPayload;
       const childBody = c.body as PickCreateChild;
-      const posyanduID = c.params as PickPosyanduID;
+
       if (!jwtUser) {
         return c.json?.(
           {
@@ -41,23 +43,12 @@ class ChildController {
         );
       }
 
-      if (!posyanduID) {
-        return c.json?.(
-          {
-            status: 400,
-            message: 'posyandu not found',
-          },
-          400,
-        );
-      }
-
       const child = await prisma.child.create({
         data: {
           fullName: childBody.fullname,
           dateOfBirth: childBody.dateOfBirth,
           gender: childBody.gender,
           parentId: jwtUser.id,
-          posyanduId: posyanduID.id,
           profileChild: typeof childBody.profileChild,
         },
       });
@@ -256,6 +247,154 @@ class ChildController {
           status: 500,
           message: 'server internal error',
           error: error instanceof Error ? error.message : error,
+        },
+        500,
+      );
+    }
+  }
+  public async registerChild(c: AppContext) {
+    try {
+      const jwtUser = c.user as JwtPayload;
+      const childParams = c.params as PickChilID;
+      const registedBody = c.body as PickRegisteredChild;
+
+      if (!jwtUser) {
+        return c.json?.(
+          {
+            status: 404,
+            message: 'user not found',
+          },
+          404,
+        );
+      }
+
+      if (!childParams) {
+        return c.json?.(
+          {
+            status: 400,
+            message: 'params is required',
+          },
+          400,
+        );
+      }
+
+      if (!registedBody.posyanduID) {
+        return c.json?.(
+          {
+            status: 400,
+            message: 'body is required',
+          },
+          400,
+        );
+      }
+
+      const parent = await prisma.user.findFirst({
+        where: {
+          id: jwtUser.id,
+        },
+        select: {
+          role: true,
+          id: true,
+        },
+      });
+
+      if (!parent || parent.role !== 'PARENT') {
+        return c.json?.(
+          {
+            status: 403,
+            message: 'providen acces',
+          },
+          403,
+        );
+      }
+
+      const child = await prisma.child.findFirst({
+        where: {
+          id: childParams.id,
+          parentId: parent.id,
+        },
+        select: {
+          id: true,
+        },
+      });
+      if (!child) {
+        return c.json?.(
+          {
+            status: 404,
+            message: 'child not found',
+          },
+          404,
+        );
+      }
+
+      const posyandu = await prisma.posyandu.findFirst({
+        where: {
+          id: registedBody.posyanduID,
+        },
+      });
+
+      if (!posyandu) {
+        return c.json?.(
+          {
+            status: 404,
+            message: 'posyandu not found',
+          },
+          404,
+        );
+      }
+      const cacheKey = cacheKeys.child.byID(child.id);
+
+      const registerd = await prisma.child.update({
+        where: {
+          id: child.id,
+        },
+        data: {
+          posyanduId: registedBody.posyanduID,
+        },
+      });
+
+      if (!registerd) {
+        return c.json?.(
+          {
+            status: 400,
+            message: 'server internal error',
+          },
+          400,
+        );
+      }
+
+      await this.redis.del(cacheKey).catch(error);
+
+      return c.json?.(
+        {
+          status: 200,
+          message: 'succesfully registerd child in posyandu',
+          data: registerd,
+        },
+        200,
+      );
+    } catch (error) {
+      console.error(error);
+      return c.json?.(
+        {
+          status: 500,
+          message: 'server internal error',
+          error: error instanceof Error ? error.message : error,
+        },
+        500,
+      );
+    }
+  }
+  //
+  public async cancelRegister(c: AppContext) {
+    try {
+      //
+    } catch (error) {
+      console.error(error);
+      return c.json?.(
+        {
+          status: 500,
+          message: 'server internal error',
         },
         500,
       );

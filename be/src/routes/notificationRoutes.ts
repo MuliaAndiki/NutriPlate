@@ -24,27 +24,7 @@ class NotificationRouter {
         beforeHandle: [verifyToken().beforeHandle, requireRole(['ADMIN', 'POSYANDU']).beforeHandle],
       },
     );
-    this.notificationRoutes.get(
-      `/parent`,
-      (c: AppContext) => NotificationController.getNotificationsParent(c),
-      {
-        beforeHandle: [verifyToken().beforeHandle, requireRole(['PARENT']).beforeHandle],
-      },
-    );
-    this.notificationRoutes.get(
-      '/posyandu',
-      (c: AppContext) => NotificationController.getNotificationPosyandu(c),
-      {
-        beforeHandle: [verifyToken().beforeHandle, requireRole(['POSYANDU']).beforeHandle],
-      },
-    );
-    this.notificationRoutes.get(
-      '/kader',
-      (c: AppContext) => NotificationController.getNotificationKader(c),
-      {
-        beforeHandle: [verifyToken().beforeHandle, requireRole(['KADER']).beforeHandle],
-      },
-    );
+
     this.notificationRoutes.get(
       '/:id',
       (c: AppContext) => NotificationController.getNotificationByID(c),
@@ -54,9 +34,9 @@ class NotificationRouter {
     );
     this.notificationRoutes.get(
       '/',
-      (c: AppContext) => NotificationController.getAllNotification(c),
+      (c: AppContext) => NotificationController.getNotifications(c),
       {
-        beforeHandle: [verifyToken().beforeHandle, requireRole(['ADMIN']).beforeHandle],
+        beforeHandle: [verifyToken().beforeHandle],
       },
     );
     this.notificationRoutes.put(

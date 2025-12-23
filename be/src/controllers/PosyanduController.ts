@@ -461,11 +461,31 @@ class PosyanduController {
           400,
         );
       }
+      const admin = await prisma.user.findFirst({
+        where: {
+          id: jwtUser.id,
+        },
+        select: {
+          role: true,
+          id: true,
+        },
+      });
+
+      if (!admin || admin.role !== 'ADMIN') {
+        return c.json?.(
+          {
+            status: 403,
+            message: "can't acces role",
+          },
+          403,
+        );
+      }
+
       const cacheKey = cacheKeys.posyandu.byID(params.id);
       const result = await prisma.$transaction(async (tx) => {
         const posyandu = await tx.posyandu.delete({
           where: {
-            id: params.id,
+            id: admin.id,
           },
         });
         const user = await tx.user.delete({
