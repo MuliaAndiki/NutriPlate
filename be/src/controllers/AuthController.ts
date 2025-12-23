@@ -405,7 +405,7 @@ class AuthController {
     }
   }
 
-  public async sendOtp(c: AppContext) {
+  public async resendOtp(c: AppContext) {
     try {
       const auth = c.body as PickSendOtp;
       if (!auth.email) {

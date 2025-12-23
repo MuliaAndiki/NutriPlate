@@ -35,4 +35,9 @@ export const cacheKeys = {
     byID: (id: string) => `progres:id:${id}`,
     byRole: (role: string) => `progres:role:${role}`,
   },
+  history: {
+    list: () => `history:list`,
+    byID: (id: string) => `history:id:${id}`,
+    byRole: (role: string) => `history:role:${role}`,
+  },
 };

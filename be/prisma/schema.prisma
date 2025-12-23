@@ -37,7 +37,7 @@ model User {
 model Child {
   id              String                     @id @default(uuid())
   parentId        String
-  posyanduId      String
+  posyanduId      String?
   fullName        String
   dateOfBirth     DateTime
   gender          GenderType
@@ -46,7 +46,7 @@ model Child {
   updatedAt       DateTime                   @updatedAt
   profileChild    Json
   parent          User                       @relation(fields: [parentId], references: [id])
-  posyandu        Posyandu                   @relation(fields: [posyanduId], references: [id])
+  posyandu        Posyandu?                   @relation(fields: [posyanduId], references: [id])
   foodIntake      Food[]
   measurements    Measurement[]
   programProgress NutritionProgramProgress[]

@@ -27,7 +27,7 @@ class AuthRouter {
     this.authRouter.post('/forgot', (c: AppContext) => AuthController.forgotPassword(c));
 
     this.authRouter.post('/verifyOtp', (c: AppContext) => AuthController.verifyOtp(c));
-    this.authRouter.post('/resend', (c: AppContext) => AuthController.sendOtp(c));
+    this.authRouter.post('/resend', (c: AppContext) => AuthController.resendOtp(c));
     this.authRouter.post('/reset-password', (c: AppContext) => AuthController.resetPassword(c));
   }
 }

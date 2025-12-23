@@ -10,19 +10,21 @@ import {
 import AxiosClient from "@/utils/axios.client";
 
 class AuthApi {
-  public async Login(payload: FormLogin): Promise<TResponse<any>> {
+  public async login(payload: FormLogin): Promise<TResponse<any>> {
     const res = await AxiosClient.post("/api/auth/login", payload);
     return res.data;
   }
-  public async Register(payload: FormRegister): Promise<TResponse<any>> {
+  public async register(payload: FormRegister): Promise<TResponse<any>> {
     const res = await AxiosClient.post("/api/auth/register", payload);
     return res.data;
   }
-  public async Logout(): Promise<TResponse<any>> {
+  public async logout(): Promise<TResponse<any>> {
     const res = await AxiosClient.post("/api/auth/logout");
     return res.data;
   }
-  public async forgot(payload: FormForgotPassword): Promise<TResponse<any>> {
+  public async forgotPassword(
+    payload: FormForgotPassword
+  ): Promise<TResponse<any>> {
     const res = await AxiosClient.post("/api/auth/forgot", payload);
     return res.data;
   }
@@ -30,12 +32,12 @@ class AuthApi {
     const res = await AxiosClient.post("/api/auth/verifyOtp", payload);
     return res.data;
   }
-  public async resend(payload: FormSendOtp): Promise<TResponse<any>> {
+  public async resendOtp(payload: FormSendOtp): Promise<TResponse<any>> {
     const res = await AxiosClient.post("/api/auth/resend", payload);
     return res.data;
   }
   public async resetPassword(
-    payload: FormResetPassword,
+    payload: FormResetPassword
   ): Promise<TResponse<any>> {
     const res = await AxiosClient.post("/api/auth/reset-password", payload);
     return res.data;

@@ -20,3 +20,4 @@ export type PickCreateChild = Pick<
   IChild,
   'fullname' | 'dateOfBirth' | 'gender' | 'profileChild' | 'photoUrl'
 >;
+export type PickRegisteredChild = Pick<IChild, 'posyanduID'>;

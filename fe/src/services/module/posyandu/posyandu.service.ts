@@ -5,7 +5,7 @@ import AxiosClient from "@/utils/axios.client";
 
 class PosyanduApi {
   public async createPosyandu(
-    payload: FormCreatePosyandu,
+    payload: FormCreatePosyandu
   ): Promise<TResponse<any>> {
     const res = await AxiosClient.post(`/api/posyandu/`, payload);
     return res.data;
@@ -18,26 +18,21 @@ class PosyanduApi {
     const res = await AxiosClient.get(`/api/posyandu/${id}`);
     return res.data;
   }
-  public async activePosyandu(
-    payload: FormActiveAccount,
+  public async activeAccount(
+    payload: FormActiveAccount
   ): Promise<TResponse<any>> {
     const res = await AxiosClient.post("/api/posyandu/active", payload);
     return res.data;
   }
   public async updatePosyandu(
     payload: FormCreatePosyandu,
-    id: string,
+    id: string
   ): Promise<TResponse<any>> {
     const res = await AxiosClient.put(`/api/posyandu/${id}`, payload);
     return res.data;
   }
   public async deletePosyandu(id: string): Promise<TResponse<any>> {
     const res = await AxiosClient.delete(`/api/posyandu/${id}`);
-    return res.data;
-  }
-  //   warning
-  public async getChildPosyandu(id: string): Promise<TResponse<any>> {
-    const res = await AxiosClient.get(`/api/posyandu/${id}/child`);
     return res.data;
   }
 }
