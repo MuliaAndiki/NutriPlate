@@ -3,11 +3,12 @@ import { RoleType } from "../partial";
 export interface IAuth {
   id: string;
   email: string;
+  identifier: string;
   fullName: string;
   password: string;
   phone: string;
   token?: string;
-  role: RoleType;
+  role: string;
   photoUrl: string;
   createdAt: Date;
   updatedAt: Date;

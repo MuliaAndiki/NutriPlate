@@ -1,8 +1,8 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
-
 import { themeConfig } from "@/configs/theme.config";
+import React from "react";
 
 type Theme = "light" | "dark";
 
@@ -13,25 +13,48 @@ interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
+function applyThemeConfig(theme: Theme) {
+  const themeValues = themeConfig[theme];
+  Object.entries(themeValues).forEach(([key, value]) => {
+    if (typeof value === "string") {
+      document.documentElement.style.setProperty(`--${key}`, value);
+    } else if (typeof value === "object" && value !== null) {
+      if ("background" in value && "foreground" in value) {
+        document.documentElement.style.setProperty(
+          `--${key}`,
+          value.background
+        );
+        document.documentElement.style.setProperty(
+          `--${key}-foreground`,
+          value.foreground
+        );
+      }
+    }
+  });
+}
+
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<Theme>("light");
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-    // Check if user has theme preference in localStorage
+
     const storedTheme = localStorage.getItem("theme") as Theme | null;
     const prefersDark = window.matchMedia(
-      "(prefers-color-scheme: dark)",
+      "(prefers-color-scheme: dark)"
     ).matches;
 
+    let finalTheme: Theme = "light";
     if (storedTheme) {
-      setTheme(storedTheme);
-      document.documentElement.classList.toggle("dark", storedTheme === "dark");
+      finalTheme = storedTheme;
     } else if (prefersDark) {
-      setTheme("dark");
-      document.documentElement.classList.add("dark");
+      finalTheme = "dark";
     }
+
+    setTheme(finalTheme);
+    document.documentElement.classList.toggle("dark", finalTheme === "dark");
+    applyThemeConfig(finalTheme);
   }, []);
 
   const toggleTheme = () => {
@@ -39,29 +62,10 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     setTheme(newTheme);
     document.documentElement.classList.toggle("dark");
     localStorage.setItem("theme", newTheme);
-
-    // Apply theme variables
-    const themeValues = themeConfig[newTheme];
-    Object.entries(themeValues).forEach(([key, value]) => {
-      if (typeof value === "string") {
-        document.documentElement.style.setProperty(`--${key}`, value);
-      } else if (typeof value === "object") {
-        document.documentElement.style.setProperty(
-          `--${key}`,
-          value.background,
-        );
-        document.documentElement.style.setProperty(
-          `--${key}-foreground`,
-          value.foreground,
-        );
-      }
-    });
+    applyThemeConfig(newTheme);
   };
 
-  // Prevent hydration mismatch
-  if (!mounted) {
-    return null;
-  }
+  if (!mounted) return null;
 
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme }}>

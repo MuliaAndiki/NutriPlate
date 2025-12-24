@@ -13,6 +13,8 @@ import { AppSidebar } from "@/core/components/app-sidebar";
 import LanguageDropdown from "../components/language.dropdown";
 import NotificationDropdown from "../components/notification.dropdown";
 import ThemeToggle from "../components/theme-toggle";
+import { Button } from "@/components/ui/button";
+import useService from "@/hooks/mutation/prop.service";
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -22,6 +24,12 @@ export function SidebarLayout({ children }: AppLayoutProps) {
   const pathname = usePathname();
   const { state } = useSidebar();
   const isCollapsed = state === "collapsed";
+  const service = useService();
+  const logout = service.auth.mutation.useLogout();
+
+  const handleLogout = () => {
+    return logout.mutate({});
+  };
   return (
     <SidebarProvider defaultOpen>
       <div className="flex min-h-screen w-full">
@@ -35,6 +43,12 @@ export function SidebarLayout({ children }: AppLayoutProps) {
                   <ThemeToggle />
                   <LanguageDropdown />
                   <NotificationDropdown />
+                  <Button
+                    variant={"destructive"}
+                    onClick={() => handleLogout()}
+                  >
+                    Out
+                  </Button>
                   {/* <UserDropdown /> */}
                 </div>
               </div>
