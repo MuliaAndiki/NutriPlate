@@ -3,12 +3,7 @@ export enum GenderType {
   MALE,
   FEMALE,
 }
-export enum RoleType {
-  PARENT,
-  KADER,
-  POSYANDU,
-  ADMIN,
-}
+export type RoleType = "PARENT" | "KADER" | "ADMIN" | "POSYANDU";
 
 export interface ProfileChild {
   birthWeightKg?: number;

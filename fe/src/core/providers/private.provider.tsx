@@ -1,7 +1,5 @@
 import { redirect } from "next/navigation";
-
 import { authValidator } from "@/services/module/auth/auth.store";
-
 import { MobileOnly } from "../layouts/mobile.only";
 
 export default async function PrivateProviders({

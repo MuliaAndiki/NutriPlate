@@ -30,6 +30,9 @@ class ChildRoutes {
     this.childRoutes.patch('/:id', (c: AppContext) => ChildController.registerChild(c), {
       beforeHandle: [verifyToken().beforeHandle, requireRole(['PARENT']).beforeHandle],
     });
+    this.childRoutes.patch('/cancel/:id', (c: AppContext) => ChildController.cancelRegister(c), {
+      beforeHandle: [verifyToken().beforeHandle, requireRole(['PARENT']).beforeHandle],
+    });
   }
 }
 

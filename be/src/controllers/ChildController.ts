@@ -385,10 +385,126 @@ class ChildController {
       );
     }
   }
-  //
+
   public async cancelRegister(c: AppContext) {
     try {
-      //
+      const jwtUser = c.user as JwtPayload;
+      const params = c.params as PickPosyanduID;
+      const body = c.body as PickChilID;
+      if (!jwtUser) {
+        return c.json?.(
+          {
+            status: 404,
+            message: 'user not found',
+          },
+          404,
+        );
+      }
+
+      if (!params) {
+        return c.json?.(
+          {
+            status: 400,
+            message: 'params is required',
+          },
+          400,
+        );
+      }
+
+      if (!body.id) {
+        return c.json?.(
+          {
+            status: 400,
+            message: 'body is required',
+          },
+          400,
+        );
+      }
+
+      const user = await prisma.user.findFirst({
+        where: {
+          id: jwtUser.id,
+        },
+        select: {
+          role: true,
+          id: true,
+        },
+      });
+      if (!user || user.role !== 'PARENT') {
+        return c.json?.(
+          {
+            status: 403,
+            message: 'request error & acces no coret',
+          },
+          403,
+        );
+      }
+      const child = await prisma.child.findFirst({
+        where: {
+          parentId: user.id,
+        },
+        select: {
+          id: true,
+        },
+      });
+
+      if (!child) {
+        return c.json?.(
+          {
+            status: 404,
+            message: 'child not found',
+          },
+          404,
+        );
+      }
+      const posyandu = await prisma.posyandu.findFirst({
+        where: {
+          id: params.id,
+        },
+        select: {
+          id: true,
+        },
+      });
+      if (!posyandu) {
+        return c.json?.(
+          {
+            status: 404,
+            message: 'posyandu not found',
+          },
+          404,
+        );
+      }
+      const cacheKey = cacheKeys.child.byID(child.id);
+
+      const cancel = await prisma.child.update({
+        where: {
+          id: child.id,
+        },
+        data: {
+          posyanduId: null,
+        },
+      });
+
+      if (!cancel) {
+        return c.json?.(
+          {
+            status: 400,
+            message: 'server internal error',
+          },
+          400,
+        );
+      } else {
+        await this.redis.del(cacheKey).catch(error);
+      }
+
+      return c.json?.(
+        {
+          status: 200,
+          message: 'succesfully cancel cancel',
+          data: cancel,
+        },
+        200,
+      );
     } catch (error) {
       console.error(error);
       return c.json?.(

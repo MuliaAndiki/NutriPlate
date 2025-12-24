@@ -2,9 +2,9 @@ import { IAuth } from "../schema/auth.schema";
 export type JwtPayload = Pick<IAuth, "id" | "role" | "sessionId">;
 export type FormRegister = Pick<
   IAuth,
-  "email" | "fullName" | "password" | "role" | "phone"
+  "fullName" | "password" | "role" | "identifier"
 >;
-export type FormLogin = Pick<IAuth, "email" | "password" | "phone" | "id">;
+export type FormLogin = Pick<IAuth, "password" | "identifier">;
 export type FormIDAuth = Pick<IAuth, "id">;
 export type FormForgotPassword = Pick<IAuth, "email" | "phone">;
 export type FormVerify = Pick<IAuth, "email" | "otp">;

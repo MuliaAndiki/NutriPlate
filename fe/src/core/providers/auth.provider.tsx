@@ -3,20 +3,20 @@
 import { getCookie } from "cookies-next";
 import { usePathname, useRouter } from "next/navigation";
 import React from "react";
-import { useSelector } from "react-redux";
 
+import { useEffect } from "react";
 import { APP_SESSION_COOKIE_KEY } from "@/configs/cookies.config";
 import { useAppDispatch } from "@/hooks/dispatch/dispatch";
 import { setCurrentUser } from "@/stores/authSlice/authSlice";
-import type { RootState } from "@/stores/store";
+import { useAppSelector } from "@/hooks/dispatch/dispatch";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
-  const currentUser = useSelector((state: RootState) => state.auth.currentUser);
+  const currentUser = useAppSelector((state) => state.auth.currentUser);
   const dispatch = useAppDispatch();
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!currentUser?.user?.token) {
       const token = getCookie(APP_SESSION_COOKIE_KEY);
       if (token) {
@@ -25,11 +25,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [currentUser, dispatch]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const isAuthPage =
       pathname?.startsWith("/login") ||
       pathname?.startsWith("/register") ||
       pathname?.startsWith("/home") ||
+      pathname.startsWith("/verify-otp") ||
       pathname?.startsWith("/forgot-password") ||
       pathname.startsWith("/verify-password") ||
       pathname.startsWith("/reset-password");

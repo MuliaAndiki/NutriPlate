@@ -5,3 +5,4 @@ export type FormCreateChild = Pick<
   IChild,
   "fullname" | "dateOfBirth" | "gender" | "profileChild" | "photoUrl"
 >;
+export type FormRegisteredChild = Pick<IChild, "posyanduID">;
