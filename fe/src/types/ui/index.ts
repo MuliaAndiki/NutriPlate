@@ -21,3 +21,9 @@ export interface AlertContexType {
   modal: (p: ModalProps) => void;
   confirm: (p: ModalProps) => Promise<boolean>;
 }
+
+export interface NagivationType {
+  name: string;
+  icon: any;
+  href: string;
+}

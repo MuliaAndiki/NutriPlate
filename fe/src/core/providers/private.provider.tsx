@@ -1,6 +1,8 @@
 import { redirect } from "next/navigation";
+
 import { authValidator } from "@/services/module/auth/auth.store";
-import { MobileOnly } from "../layouts/mobile.only";
+
+import { ClientGate } from "./client-gate";
 
 export default async function PrivateProviders({
   children,
@@ -15,7 +17,7 @@ export default async function PrivateProviders({
 
   return (
     <>
-      <MobileOnly>{children}</MobileOnly>
+      <ClientGate>{children}</ClientGate>
     </>
   );
 }

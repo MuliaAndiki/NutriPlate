@@ -1,9 +1,10 @@
 "use client";
+import { useState } from "react";
+
 import LoginHeroSection from "@/components/section/auth/login-section";
 import useService from "@/hooks/mutation/prop.service";
-import { FormLogin } from "@/types/form/auth.form";
-import { useState } from "react";
 import { useAppNameSpace } from "@/hooks/useAppNameSpace";
+import { FormLogin } from "@/types/form/auth.form";
 
 const LoginContainer = () => {
   const nameSpace = useAppNameSpace();
@@ -12,7 +13,7 @@ const LoginContainer = () => {
     password: "",
   });
   const service = useService();
-  const login = service.auth.mutation.useLogin();
+  const login = service.auth.mutation.login();
 
   const handleLogin = () => {
     const payload: any = {

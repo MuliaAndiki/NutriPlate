@@ -1,10 +1,13 @@
 "use client";
-import RegisterHeroSection from "@/components/section/auth/register-section";
-import useService from "@/hooks/mutation/prop.service";
-import { FormRegister } from "@/types/form/auth.form";
 import { useState } from "react";
 
+import RegisterHeroSection from "@/components/section/auth/register-section";
+import useService from "@/hooks/mutation/prop.service";
+import { useAppNameSpace } from "@/hooks/useAppNameSpace";
+import { FormRegister } from "@/types/form/auth.form";
+
 const RegisterContainer = () => {
+  const nameSpace = useAppNameSpace();
   const [formRegister, setFormRegister] = useState<FormRegister>({
     fullName: "",
     identifier: "",
@@ -13,7 +16,7 @@ const RegisterContainer = () => {
   });
 
   const service = useService();
-  const registered = service.auth.mutation.useRegister();
+  const registered = service.auth.mutation.register();
   const handleRegister = () => {
     const payload: any = {
       fullName: formRegister.fullName,
@@ -37,6 +40,7 @@ const RegisterContainer = () => {
         setFormRegister={setFormRegister}
         isPending={registered.isPending}
         onRegister={() => handleRegister()}
+        router={nameSpace.router}
       />
     </main>
   );

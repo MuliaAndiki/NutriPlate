@@ -3,12 +3,12 @@
 import { getCookie } from "cookies-next";
 import { usePathname, useRouter } from "next/navigation";
 import React from "react";
-
 import { useEffect } from "react";
+
 import { APP_SESSION_COOKIE_KEY } from "@/configs/cookies.config";
 import { useAppDispatch } from "@/hooks/dispatch/dispatch";
-import { setCurrentUser } from "@/stores/authSlice/authSlice";
 import { useAppSelector } from "@/hooks/dispatch/dispatch";
+import { setCurrentUser } from "@/stores/authSlice/authSlice";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();

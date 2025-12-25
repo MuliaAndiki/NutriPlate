@@ -1,3 +1,7 @@
+import { ChevronLeft } from "lucide-react";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+import Link from "next/link";
+
 import GoogleSvg from "@/components/svg/google-svg";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,24 +16,30 @@ import {
 } from "@/components/ui/select";
 import { Spinner } from "@/components/ui/spinner";
 import { FormRegister } from "@/types/form/auth.form";
-import Link from "next/link";
 
 interface RegisterProps {
   formRegister: FormRegister;
   setFormRegister: React.Dispatch<React.SetStateAction<FormRegister>>;
   isPending: boolean;
   onRegister: () => void;
+  router: AppRouterInstance;
 }
 const RegisterHeroSection: React.FC<RegisterProps> = ({
   formRegister,
   isPending,
   onRegister,
   setFormRegister,
+  router,
 }) => {
   return (
     <div className="w-full min-h-screen overflow-x-hidden">
       <div className="w-full min-h-screen flex justify-center items-center flex-col">
-        <h1 className="text-4xl font-bold">Daftar Akun</h1>
+        <div className="flex justify-center items-center w-full relative">
+          <div className="absolute left-0">
+            <ChevronLeft size={50} onClick={() => router.back()} />
+          </div>
+          <h1 className="text-4xl font-extrabold">Daftar Akun</h1>
+        </div>
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -121,7 +131,7 @@ const RegisterHeroSection: React.FC<RegisterProps> = ({
 
           <div className="w-full flex justify-center items-center flex-col space-y-3">
             <h1 className="text-lg font-bold">Atau Masuk Dengan</h1>
-            <button>
+            <button type="button">
               <GoogleSvg />
             </button>
             <p>

@@ -240,15 +240,44 @@ class AuthController {
 
       const user = await prisma.user.findUnique({
         where: { id: auth.id },
+        select: {
+          id: true,
+        },
       });
 
       if (!user) {
         return c.json?.({ status: 404, message: 'Account not found' }, 404);
       }
 
+      const session = await prisma.userSession.findFirst({
+        where: {
+          userId: user.id,
+        },
+        select: {
+          id: true,
+        },
+      });
+
+      if (!session) {
+        return c.json?.(
+          {
+            status: 404,
+            message: 'session not found',
+          },
+          404,
+        );
+      }
+
       await prisma.user.update({
-        where: { id: auth.id },
+        where: { id: user.id },
         data: { token: null },
+      });
+
+      await prisma.userSession.delete({
+        where: {
+          id: session.id,
+          userId: user.id,
+        },
       });
 
       return c.json?.(
