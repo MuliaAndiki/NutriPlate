@@ -1,10 +1,12 @@
 "use client";
 import RegisterHeroSection from "@/components/section/auth/register-section";
 import useService from "@/hooks/mutation/prop.service";
+import { useAppNameSpace } from "@/hooks/useAppNameSpace";
 import { FormRegister } from "@/types/form/auth.form";
 import { useState } from "react";
 
 const RegisterContainer = () => {
+  const nameSpace = useAppNameSpace();
   const [formRegister, setFormRegister] = useState<FormRegister>({
     fullName: "",
     identifier: "",
@@ -37,6 +39,7 @@ const RegisterContainer = () => {
         setFormRegister={setFormRegister}
         isPending={registered.isPending}
         onRegister={() => handleRegister()}
+        router={nameSpace.router}
       />
     </main>
   );

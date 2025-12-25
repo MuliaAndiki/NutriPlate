@@ -6,10 +6,10 @@ export type FormRegister = Pick<
 >;
 export type FormLogin = Pick<IAuth, "password" | "identifier">;
 export type FormIDAuth = Pick<IAuth, "id">;
-export type FormForgotPassword = Pick<IAuth, "email" | "phone">;
+export type FormForgotPassword = Pick<IAuth, "identifier">;
 export type FormVerify = Pick<IAuth, "email" | "otp">;
 export type FormSendOtp = Pick<IAuth, "email">;
-export type FormResetPassword = Pick<IAuth, "email" | "password" | "phone">;
+export type FormResetPassword = Pick<IAuth, "password" | "identifier">;
 export type FormUpdateProfile = Pick<
   IAuth,
   "email" | "fullName" | "photoUrl" | "phone"

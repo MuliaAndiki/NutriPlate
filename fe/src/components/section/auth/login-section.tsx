@@ -19,7 +19,7 @@ const LoginHeroSection: React.FC<LoginSectionProps> = ({
   return (
     <div className="w-full h-full overflow-x-hidden">
       <div className="w-full min-h-screen flex justify-center items-center  flex-col ">
-        <h1 className="text-4xl font-bold">Masuk</h1>
+        <h1 className="text-4xl font-extrabold">Masuk</h1>
         <form
           onSubmit={(e) => {
             e.preventDefault();
