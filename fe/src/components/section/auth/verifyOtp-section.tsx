@@ -1,13 +1,14 @@
+import { REGEXP_ONLY_DIGITS_AND_CHARS } from "input-otp";
 import Image from "next/image";
+
+import { Button } from "@/components/ui/button";
 import {
   InputOTP,
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
-import { REGEXP_ONLY_DIGITS_AND_CHARS } from "input-otp";
-import { Button } from "@/components/ui/button";
-import { FormVerify } from "@/types/form/auth.form";
 import { Spinner } from "@/components/ui/spinner";
+import { FormVerify } from "@/types/form/auth.form";
 
 interface VerifikasiOtpProps {
   formVerifyOtp: FormVerify;

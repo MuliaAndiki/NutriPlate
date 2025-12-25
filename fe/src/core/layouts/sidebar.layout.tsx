@@ -1,7 +1,9 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import { useState } from "react";
 
+import { Button } from "@/components/ui/button";
 import {
   SidebarInset,
   SidebarProvider,
@@ -9,23 +11,30 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/core/components/app-sidebar";
+import { useAppSelector } from "@/hooks/dispatch/dispatch";
+import useService from "@/hooks/mutation/prop.service";
+import { useAppNameSpace } from "@/hooks/useAppNameSpace";
 
+import FooterApp from "../components/footer-app";
 import LanguageDropdown from "../components/language.dropdown";
 import NotificationDropdown from "../components/notification.dropdown";
 import ThemeToggle from "../components/theme-toggle";
-import { Button } from "@/components/ui/button";
-import useService from "@/hooks/mutation/prop.service";
 
 interface AppLayoutProps {
   children: React.ReactNode;
 }
 
 export function SidebarLayout({ children }: AppLayoutProps) {
+  const nameSpace = useAppNameSpace();
   const pathname = usePathname();
   const { state } = useSidebar();
   const isCollapsed = state === "collapsed";
   const service = useService();
-  const logout = service.auth.mutation.useLogout();
+  const currentRole = useAppSelector(
+    (state) => state.auth.currentUser?.user.role
+  );
+  const logout = service.auth.mutation.logout();
+  const [isActive, setIsActive] = useState<string>("");
 
   const handleLogout = () => {
     return logout.mutate({});
@@ -58,6 +67,14 @@ export function SidebarLayout({ children }: AppLayoutProps) {
               <div className="container h-full max-w-7xl w-full mx-auto p-1">
                 {children}
               </div>
+            </div>
+            <div className="fixed bottom-0 left-0 w-full z-20 ">
+              <FooterApp
+                isActive={isActive}
+                setIsActive={setIsActive}
+                router={nameSpace.router}
+                baseRole={currentRole!}
+              />
             </div>
           </div>
         </SidebarInset>

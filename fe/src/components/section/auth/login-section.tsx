@@ -1,8 +1,9 @@
+import Link from "next/link";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { FormLogin } from "@/types/form/auth.form";
-import Link from "next/link";
 
 interface LoginSectionProps {
   formLogin: FormLogin;

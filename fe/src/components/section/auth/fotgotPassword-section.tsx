@@ -1,9 +1,10 @@
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { FormForgotPassword } from "@/types/form/auth.form";
-import { Spinner } from "@/components/ui/spinner";
 import { ChevronLeft } from "lucide-react";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Spinner } from "@/components/ui/spinner";
+import { FormForgotPassword } from "@/types/form/auth.form";
 interface ForgotProps {
   formForgotPassword: FormForgotPassword;
   setFormForgotPassword: React.Dispatch<

@@ -1,8 +1,9 @@
 "use client";
+import { useEffect } from "react";
+
 import { useAppSelector } from "@/hooks/dispatch/dispatch";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useAppNameSpace } from "@/hooks/useAppNameSpace";
-import { useEffect } from "react";
 
 export function ClientGate({ children }: { children: React.ReactNode }) {
   const isMobile = useIsMobile();

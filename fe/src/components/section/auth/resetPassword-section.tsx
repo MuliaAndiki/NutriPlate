@@ -1,9 +1,10 @@
-import { Input } from "@/components/ui/input";
-import { FormResetPassword } from "@/types/form/auth.form";
 import { ChevronLeft } from "lucide-react";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
+import { FormResetPassword } from "@/types/form/auth.form";
 
 interface ResetPasswordSectionProps {
   router: AppRouterInstance;

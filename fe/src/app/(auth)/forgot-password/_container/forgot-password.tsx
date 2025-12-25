@@ -1,9 +1,11 @@
 "use client";
 import { useState } from "react";
-import ForgotPasswordHeroSection from "../../../../components/section/auth/fotgotPassword-section";
-import { FormForgotPassword } from "@/types/form/auth.form";
+
 import useService from "@/hooks/mutation/prop.service";
 import { useAppNameSpace } from "@/hooks/useAppNameSpace";
+import { FormForgotPassword } from "@/types/form/auth.form";
+
+import ForgotPasswordHeroSection from "../../../../components/section/auth/fotgotPassword-section";
 
 const ForgotPasswordContainer = () => {
   const [formForgotPassword, setFormForgotPassword] =
@@ -11,7 +13,7 @@ const ForgotPasswordContainer = () => {
       identifier: "",
     });
   const service = useService();
-  const forgot = service.auth.mutation.useForgotPasswsord();
+  const forgot = service.auth.mutation.forgotPassword();
   const nameSpace = useAppNameSpace();
   const handleForgotPassword = () => {
     const payload: any = {};

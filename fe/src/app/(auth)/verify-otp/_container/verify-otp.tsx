@@ -1,11 +1,12 @@
 "use client";
+import { useEffect, useState } from "react";
+
 import VerifyOtpHeroSection from "@/components/section/auth/verifyOtp-section";
 import { useAppSelector } from "@/hooks/dispatch/dispatch";
 import useService from "@/hooks/mutation/prop.service";
 import { useAppNameSpace } from "@/hooks/useAppNameSpace";
 import { clearOtp } from "@/stores/otpSlice/otpSlice";
 import { FormVerify } from "@/types/form/auth.form";
-import { useEffect, useState } from "react";
 
 const VerifyOtpContainer = () => {
   const nameSpace = useAppNameSpace();
@@ -16,8 +17,8 @@ const VerifyOtpContainer = () => {
   });
   const [colldown, setColldown] = useState<number>(0);
   const service = useService();
-  const verifikasi = service.auth.mutation.useVerify();
-  const resend = service.auth.mutation.useResend();
+  const verifikasi = service.auth.mutation.verifyOtp();
+  const resend = service.auth.mutation.resend();
   const hash = email?.slice(-12);
   const handleVerfiyOtp = () => {
     if (soure === "Register") {

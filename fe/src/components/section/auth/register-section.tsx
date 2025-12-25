@@ -1,3 +1,7 @@
+import { ChevronLeft } from "lucide-react";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+import Link from "next/link";
+
 import GoogleSvg from "@/components/svg/google-svg";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,9 +16,6 @@ import {
 } from "@/components/ui/select";
 import { Spinner } from "@/components/ui/spinner";
 import { FormRegister } from "@/types/form/auth.form";
-import { ChevronLeft } from "lucide-react";
-import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
-import Link from "next/link";
 
 interface RegisterProps {
   formRegister: FormRegister;

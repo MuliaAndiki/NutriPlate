@@ -1,10 +1,11 @@
 "use client";
+import { useState } from "react";
+
 import ResetPasswordHeroSection from "@/components/section/auth/resetPassword-section";
 import { useAppSelector } from "@/hooks/dispatch/dispatch";
 import useService from "@/hooks/mutation/prop.service";
 import { useAppNameSpace } from "@/hooks/useAppNameSpace";
 import { FormResetPassword } from "@/types/form/auth.form";
-import { useState } from "react";
 
 const ResetPasswordContainer = () => {
   const nameSpace = useAppNameSpace();
@@ -17,7 +18,7 @@ const ResetPasswordContainer = () => {
   );
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const service = useService();
-  const resetPassword = service.auth.mutation.useResetPassword();
+  const resetPassword = service.auth.mutation.resetPassword();
 
   const handleResetPassword = () => {
     if (confirmPassword !== formResetPassword.password) {
