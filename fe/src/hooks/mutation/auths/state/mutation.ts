@@ -34,7 +34,7 @@ export function useLogin() {
         maxAge: APP_REFRESH_TOKEN_COOKIE_EXPIRES_IN,
         path: "/",
       });
-      console.log("payload", token);
+
       const payload: userSchema = {
         user: res.data,
       };
@@ -208,6 +208,37 @@ export function useResetPassword() {
       nameSpace.alert.toast({
         title: "failed",
         message: "failed reset password",
+        icon: "error",
+      });
+    },
+  });
+}
+
+export function useLoginGoogle() {
+  const nameSpace = useAppNameSpace();
+  return useMutation<TResponse<any>, Error, any>({
+    mutationFn: (payload) => Api.Auth.LoginGoogle(payload),
+    onSuccess: (res) => {
+      const token = res.data.token;
+      setCookie(APP_SESSION_COOKIE_KEY, token, {
+        maxAge: APP_REFRESH_TOKEN_COOKIE_EXPIRES_IN,
+        path: "/",
+      });
+      const payload: userSchema = {
+        user: res.data,
+      };
+      nameSpace.dispatch(setCurrentUser(payload));
+      nameSpace.alert.toast({
+        title: "succes",
+        message: "welcom to nutriplate",
+        icon: "success",
+      });
+    },
+    onError: (err) => {
+      console.error(err);
+      nameSpace.alert.toast({
+        title: "failed",
+        message: "try again",
         icon: "error",
       });
     },

@@ -18,7 +18,7 @@ const ForgotPasswordContainer = () => {
   const handleForgotPassword = () => {
     const payload: any = {};
     const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
-      formForgotPassword.identifier
+      formForgotPassword.identifier,
     );
     if (isEmail) {
       payload.email = formForgotPassword.identifier;

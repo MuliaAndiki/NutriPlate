@@ -23,11 +23,11 @@ function applyThemeConfig(theme: Theme) {
       if ("background" in value && "foreground" in value) {
         document.documentElement.style.setProperty(
           `--${key}`,
-          value.background
+          value.background,
         );
         document.documentElement.style.setProperty(
           `--${key}-foreground`,
-          value.foreground
+          value.foreground,
         );
       }
     }
@@ -43,7 +43,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
     const storedTheme = localStorage.getItem("theme") as Theme | null;
     const prefersDark = window.matchMedia(
-      "(prefers-color-scheme: dark)"
+      "(prefers-color-scheme: dark)",
     ).matches;
 
     let finalTheme: Theme = "light";

@@ -6,6 +6,7 @@ import {
   useResend,
   useResetPassword,
   useVerify,
+  useLoginGoogle,
 } from "./state/mutation";
 
 export function useAuth() {
@@ -18,6 +19,7 @@ export function useAuth() {
       resend: useResend,
       resetPassword: useResetPassword,
       verifyOtp: useVerify,
+      loginGoogle: useLoginGoogle,
     },
     query: {
       //

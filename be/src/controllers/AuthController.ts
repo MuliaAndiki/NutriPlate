@@ -14,6 +14,11 @@ import prisma from 'prisma/client';
 import { AppContext } from '@/contex/appContex';
 import { generateOtp } from '@/utils/generate-otp';
 import { sendOTPEmail } from '@/utils/mailer';
+import { OAuth2Client } from 'google-auth-library';
+import { env } from '@/config/env.config';
+import axios from 'axios';
+
+const googleClient = new OAuth2Client(env.GOOGLE_CLIENT_ID);
 
 class AuthController {
   public async register(c: AppContext) {
@@ -551,6 +556,144 @@ class AuthController {
           status: 200,
           message: 'Succes Reset Password',
           data: newPassword,
+        },
+        200,
+      );
+    } catch (error) {
+      console.error(error);
+      return c.json?.(
+        {
+          status: 500,
+          message: 'Server Internal Error',
+          error: error instanceof Error ? error.message : error,
+        },
+        500,
+      );
+    }
+  }
+  public async LoginWithGoogle(c: AppContext) {
+    try {
+      const { code } = c.body as { code: string };
+
+      if (!code) {
+        return c.json?.(
+          {
+            status: 400,
+            message: 'Google authorization code is required',
+          },
+          400,
+        );
+      }
+
+      const tokenResponse = await axios.post(
+        'https://oauth2.googleapis.com/token',
+        {
+          code,
+          client_id: process.env.GOOGLE_CLIENT_ID,
+          client_secret: process.env.GOOGLE_CLIENT_SECRET,
+          redirect_uri: 'postmessage',
+          grant_type: 'authorization_code',
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+
+      const { id_token } = tokenResponse.data;
+
+      if (!id_token) {
+        return c.json?.(
+          {
+            status: 400,
+            message: 'Failed to retrieve Google id_token',
+          },
+          400,
+        );
+      }
+
+      const ticket = await googleClient.verifyIdToken({
+        idToken: id_token,
+        audience: process.env.GOOGLE_CLIENT_ID,
+      });
+
+      const payload = ticket.getPayload();
+
+      if (!payload || !payload.email) {
+        return c.json?.(
+          {
+            status: 400,
+            message: 'Invalid Google token payload',
+          },
+          400,
+        );
+      }
+
+      const { email, name } = payload;
+
+      let user = await prisma.user.findUnique({
+        where: { email },
+      });
+
+      if (!user) {
+        user = await prisma.user.create({
+          data: {
+            email,
+            fullName: name ?? 'Google User',
+            role: 'PARENT',
+            isVerify: true,
+            password: null,
+          },
+        });
+      }
+
+      await prisma.userSession.deleteMany({
+        where: { userId: user.id },
+      });
+
+      const ipAddress =
+        c.headers['x-forwarded-for']?.split(',')[0] ||
+        c.headers['x-real-ip'] ||
+        c.headers['cf-connecting-ip'] ||
+        'unknown';
+
+      const session = await prisma.userSession.create({
+        data: {
+          userId: user.id,
+          userAgent: c.headers['user-agent'] ?? 'unknown',
+          ipAddress,
+          expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
+        },
+      });
+
+      if (!process.env.JWT_SECRET) {
+        throw new Error('JWT_SECRET not set');
+      }
+
+      const jwtPayload: JwtPayload = {
+        id: user.id,
+        sessionId: session.id,
+        role: user.role,
+      };
+
+      const token = jwt.sign(jwtPayload, process.env.JWT_SECRET, {
+        expiresIn: '1d',
+      });
+
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { token },
+      });
+
+      return c.json?.(
+        {
+          status: 200,
+          message: 'Login with Google successfully',
+          data: {
+            ...user,
+            token,
+          },
         },
         200,
       );

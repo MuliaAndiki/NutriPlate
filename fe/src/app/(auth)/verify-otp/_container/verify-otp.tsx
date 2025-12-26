@@ -49,7 +49,7 @@ const VerifyOtpContainer = () => {
         onSuccess: () => {
           setColldown(300);
         },
-      }
+      },
     );
   };
 

@@ -23,11 +23,11 @@ export function AppSidebar({ isCollapsed, pathname }: AppSidebarProps) {
     <Sidebar collapsible="icon" className="border-r">
       <SidebarHeader className="border-b p-4 h-20 flex justify-center">
         {isCollapsed ? (
-          <Image src="/images/logo.png" alt="Logo" width={40} height={40} />
+          <Image src="/images/logo.svg" alt="Logo" width={40} height={40} />
         ) : (
           <div className="flex gap-2 items-center">
             <Image src="/images/logo.png" alt="Logo" width={40} height={40} />
-            <span className="text-xl font-semibold">
+            <span className="text-xl font-semibold ">
               {kebabCaseToWords(pathname)}
             </span>
           </div>

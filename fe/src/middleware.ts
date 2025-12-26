@@ -39,12 +39,12 @@ export const config = {
   matcher: [
     "/parent/:path*",
     "/kader/:path*",
-    "/admin/:path*",
     "/posyandu/:path*",
     "/login/:path*",
     "/register/:path*",
     "/forgot-password/:path*",
     "/reset-password/:path*",
     "/verify-otp/:path*",
+    "/admin/:path*",
   ],
 };

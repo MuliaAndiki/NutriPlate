@@ -4,22 +4,35 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { FormLogin } from "@/types/form/auth.form";
+import GoogleSvg from "@/components/svg/google-svg";
+import { useGoogleLogin } from "@react-oauth/google";
 
 interface LoginSectionProps {
   formLogin: FormLogin;
   setFormLogin: React.Dispatch<React.SetStateAction<FormLogin>>;
   isPending: boolean;
   onLogin: () => void;
+  onLoginGoogle: (code: string) => void;
 }
 const LoginHeroSection: React.FC<LoginSectionProps> = ({
   formLogin,
   isPending,
   onLogin,
   setFormLogin,
+  onLoginGoogle,
 }) => {
+  const googleLogin = useGoogleLogin({
+    flow: "auth-code",
+    onSuccess: async (codeResponse) => {
+      onLoginGoogle(codeResponse.code);
+    },
+    onError: () => {
+      console.log("Google Login Failed");
+    },
+  });
   return (
     <div className="w-full h-full overflow-x-hidden">
-      <div className="w-full min-h-screen flex justify-center items-center  flex-col ">
+      <div className="w-full min-h-screen flex justify-center items-center space-y-5 flex-col ">
         <h1 className="text-4xl font-extrabold">Masuk</h1>
         <form
           onSubmit={(e) => {
@@ -67,7 +80,7 @@ const LoginHeroSection: React.FC<LoginSectionProps> = ({
               </Link>
             </div>
           </div>
-          <div className="w-full max-w-sm border">
+          <div className="w-full max-w-sm ">
             <Button
               className="w-full"
               variant={"btn"}
@@ -83,6 +96,19 @@ const LoginHeroSection: React.FC<LoginSectionProps> = ({
               <span className="text-primary">Daftar</span>
             </Link>
           </p>
+
+          <div className="w-full flex justify-center items-center flex-col space-y-3">
+            <h1 className="text-lg font-bold">Atau Masuk Dengan</h1>
+            <button type="button" onClick={() => googleLogin()}>
+              <GoogleSvg />
+            </button>
+            <p>
+              Sudah Memiliki Akun?
+              <Link href={"/login"}>
+                <span className="text-primary">Masuk</span>
+              </Link>
+            </p>
+          </div>
         </form>
       </div>
     </div>

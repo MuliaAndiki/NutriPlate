@@ -5,7 +5,7 @@ import AxiosClient from "@/utils/axios.client";
 class UserApi {
   //min intergrate
   public async editProfile(
-    payload: FormUpdateProfile
+    payload: FormUpdateProfile,
   ): Promise<TResponse<any>> {
     const res = await AxiosClient.put("/api/users/profile", payload);
     return res.data;
@@ -19,7 +19,7 @@ class UserApi {
     return res.data;
   }
   public async updatePassword(
-    payload: FormUpdatePassword
+    payload: FormUpdatePassword,
   ): Promise<TResponse<any>> {
     const res = await AxiosClient.put("/api/users/password", payload);
     return res.data;

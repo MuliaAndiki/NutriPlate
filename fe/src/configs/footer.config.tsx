@@ -16,7 +16,7 @@ export const NavigationParent: NagivationType[] = [
   {
     name: "Asupan Gizi",
     icon: <Icon icon="fa7-solid:cutlery" />,
-    href: "",
+    href: "/parent/asupan-gizi",
   },
   {
     name: "Programs",

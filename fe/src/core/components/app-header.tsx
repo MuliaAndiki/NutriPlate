@@ -18,9 +18,18 @@ import { cn } from "@/utils/classname";
 import LanguageDropdown from "./language.dropdown";
 import NotificationDropdown from "./notification.dropdown";
 import ThemeToggle from "./theme-toggle";
+import { Button } from "@/components/ui/button";
+import { useAppNameSpace } from "@/hooks/useAppNameSpace";
+import useService from "@/hooks/mutation/prop.service";
 
 export default function AppHeader() {
   const [isScrolled, setIsScrolled] = useState(false);
+  // const service = useService();
+  // const logout = service.auth.mutation.logout();
+
+  // const handleLogout = () => {
+  //   return logout.mutate({});
+  // };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -62,6 +71,14 @@ export default function AppHeader() {
               ))}
             </NavigationMenuList>
           </NavigationMenu>
+          {/* Klo Lengket DIsini */}
+          {/* <Button
+            onClick={() => {
+              handleLogout();
+            }}
+          >
+            reset
+          </Button> */}
         </div>
 
         <div className="flex items-center gap-4">
