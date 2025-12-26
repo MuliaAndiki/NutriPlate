@@ -17,6 +17,7 @@ const RegisterContainer = () => {
 
   const service = useService();
   const registered = service.auth.mutation.register();
+  const loginGoogle = service.auth.mutation.loginGoogle();
   const handleRegister = () => {
     const payload: any = {
       fullName: formRegister.fullName,
@@ -33,14 +34,38 @@ const RegisterContainer = () => {
 
     registered.mutate(payload);
   };
+
+  const handleLoginGoogle = (code: string) => {
+    loginGoogle.mutate(
+      {
+        code,
+      },
+      {
+        onSuccess: (res) => {
+          const baseRole = res.data.role;
+          switch (baseRole) {
+            case "PARENT":
+              return nameSpace.router.push("/parent/home");
+            case "KADER":
+              return nameSpace.router.push("/kader/home");
+            case "POSYANDU":
+              return nameSpace.router.push("/posyandu/home");
+            case "ADMIN":
+              return nameSpace.router.push("/admin/home");
+          }
+        },
+      }
+    );
+  };
   return (
     <main className="w-full min-h-screen ">
       <RegisterHeroSection
         formRegister={formRegister}
         setFormRegister={setFormRegister}
-        isPending={registered.isPending}
+        isPending={registered.isPending || loginGoogle.isPending}
         onRegister={() => handleRegister()}
         router={nameSpace.router}
+        onLoginGoogle={handleLoginGoogle}
       />
     </main>
   );

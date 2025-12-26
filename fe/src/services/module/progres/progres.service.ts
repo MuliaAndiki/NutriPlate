@@ -7,7 +7,7 @@ import AxiosClient from "@/utils/axios.client";
 
 class ProgresApi {
   public async assingProgramChild(
-    payload: FormAssingPrograms
+    payload: FormAssingPrograms,
   ): Promise<TResponse<any>> {
     const res = await AxiosClient.post("/api/progres", payload);
     return res.data;
@@ -18,7 +18,7 @@ class ProgresApi {
   }
   public async cancelChildProgram(
     id: string,
-    payload: FormCancelPrograms
+    payload: FormCancelPrograms,
   ): Promise<TResponse<any>> {
     const res = await AxiosClient.patch(`/api/progres/${id}`, payload);
     return res.data;

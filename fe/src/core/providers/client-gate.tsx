@@ -9,19 +9,19 @@ export function ClientGate({ children }: { children: React.ReactNode }) {
   const isMobile = useIsMobile();
   const { router } = useAppNameSpace();
   const current = useAppSelector((state) => state.auth.currentUser);
-  const baseRole = current?.user.role;
 
   const getBaseRedirectPath = () => {
-    // Mata disini
     if (!current) return "/login";
 
-    switch (baseRole) {
+    switch (current.user.role) {
       case "PARENT":
         return "/parent/home";
       case "KADER":
         return "/kader/home";
       case "POSYANDU":
         return "/posyandu/home";
+      case "ADMIN":
+        return "/admin/home";
       default:
         return "/home";
     }

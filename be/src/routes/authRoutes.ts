@@ -29,6 +29,7 @@ class AuthRouter {
     this.authRouter.post('/verifyOtp', (c: AppContext) => AuthController.verifyOtp(c));
     this.authRouter.post('/resend', (c: AppContext) => AuthController.resendOtp(c));
     this.authRouter.post('/reset-password', (c: AppContext) => AuthController.resetPassword(c));
+    this.authRouter.post('/google-login', (c: AppContext) => AuthController.LoginWithGoogle(c));
   }
 }
 

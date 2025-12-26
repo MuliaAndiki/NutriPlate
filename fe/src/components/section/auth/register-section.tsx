@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/select";
 import { Spinner } from "@/components/ui/spinner";
 import { FormRegister } from "@/types/form/auth.form";
+import { useGoogleLogin } from "@react-oauth/google";
 
 interface RegisterProps {
   formRegister: FormRegister;
@@ -23,6 +24,7 @@ interface RegisterProps {
   isPending: boolean;
   onRegister: () => void;
   router: AppRouterInstance;
+  onLoginGoogle: (code: string) => void;
 }
 const RegisterHeroSection: React.FC<RegisterProps> = ({
   formRegister,
@@ -30,10 +32,20 @@ const RegisterHeroSection: React.FC<RegisterProps> = ({
   onRegister,
   setFormRegister,
   router,
+  onLoginGoogle,
 }) => {
+  const googleLogin = useGoogleLogin({
+    flow: "auth-code",
+    onSuccess: async (codeResponse) => {
+      onLoginGoogle(codeResponse.code);
+    },
+    onError: () => {
+      console.log("Google Login Failed");
+    },
+  });
   return (
     <div className="w-full min-h-screen overflow-x-hidden">
-      <div className="w-full min-h-screen flex justify-center items-center flex-col">
+      <div className="w-full min-h-screen flex justify-center items-center flex-col space-y-5">
         <div className="flex justify-center items-center w-full relative">
           <div className="absolute left-0">
             <ChevronLeft size={50} onClick={() => router.back()} />
@@ -131,7 +143,11 @@ const RegisterHeroSection: React.FC<RegisterProps> = ({
 
           <div className="w-full flex justify-center items-center flex-col space-y-3">
             <h1 className="text-lg font-bold">Atau Masuk Dengan</h1>
-            <button type="button">
+            <button
+              type="button"
+              disabled={isPending}
+              onClick={() => googleLogin()}
+            >
               <GoogleSvg />
             </button>
             <p>

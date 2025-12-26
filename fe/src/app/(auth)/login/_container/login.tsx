@@ -14,6 +14,7 @@ const LoginContainer = () => {
   });
   const service = useService();
   const login = service.auth.mutation.login();
+  const loginGoogle = service.auth.mutation.loginGoogle();
 
   const handleLogin = () => {
     const payload: any = {
@@ -30,16 +31,46 @@ const LoginContainer = () => {
         const baseRole = res.data.role;
         switch (baseRole) {
           case "PARENT":
-            return nameSpace.router.push("/parent/home");
+            nameSpace.router.push("/parent/home");
+            break;
           case "KADER":
-            return nameSpace.router.push("/kader/home");
+            nameSpace.router.push("/kader/home");
+            break;
           case "POSYANDU":
-            return nameSpace.router.push("/posyandu/home");
+            nameSpace.router.push("/posyandu/home");
+            break;
           case "ADMIN":
-            return nameSpace.router.push("/admin/home");
+            nameSpace.router.push("/admin/home");
+            break;
         }
       },
     });
+  };
+
+  const handleLoginGoogle = (code: string) => {
+    loginGoogle.mutate(
+      { code },
+      {
+        onSuccess: (res) => {
+          const baseRole = res.data.role;
+          console.log("login goole", baseRole);
+          switch (baseRole) {
+            case "PARENT":
+              nameSpace.router.push("/parent/home");
+              break;
+            case "KADER":
+              nameSpace.router.push("/kader/home");
+              break;
+            case "POSYANDU":
+              nameSpace.router.push("/posyandu/home");
+              break;
+            case "ADMIN":
+              nameSpace.router.push("/admin/home");
+              break;
+          }
+        },
+      }
+    );
   };
 
   return (
@@ -49,6 +80,7 @@ const LoginContainer = () => {
         setFormLogin={setFormLogin}
         onLogin={() => handleLogin()}
         isPending={login.isPending}
+        onLoginGoogle={handleLoginGoogle}
       />
     </main>
   );

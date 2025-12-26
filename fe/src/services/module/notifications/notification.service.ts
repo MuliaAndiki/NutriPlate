@@ -3,7 +3,7 @@ import { FormCreateNotification } from "@/types/form/notafications.form";
 import AxiosClient from "@/utils/axios.client";
 class NotificationApi {
   public async createNotifications(
-    payload: FormCreateNotification
+    payload: FormCreateNotification,
   ): Promise<TResponse<any>> {
     const res = await AxiosClient.post("/api/notifications/", payload);
     return res.data;
@@ -18,7 +18,7 @@ class NotificationApi {
   }
   public async updateNotification(
     id: string,
-    payload: FormCreateNotification
+    payload: FormCreateNotification,
   ): Promise<TResponse<any>> {
     const res = await AxiosClient.put(`/api/notifications/${id}`, payload);
     return res.data;

@@ -10,18 +10,19 @@ const MOBILE_BREAKPOINT = 768;
 export default function NotSupportedPage() {
   const router = useRouter();
   const current = useAppSelector((state) => state.auth.currentUser);
-  const baseRole = current?.user.role;
   const getBaseRedirectPath = () => {
     // Mata Dini
     if (!current) return "/login";
 
-    switch (baseRole) {
+    switch (current.user.role) {
       case "PARENT":
         return "/parent/home";
       case "KADER":
         return "/kader/home";
       case "POSYANDU":
         return "/posyandu/home";
+      case "ADMIN":
+        return "/admin/home";
       default:
         return "/home";
     }

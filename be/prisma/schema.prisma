@@ -185,12 +185,13 @@ model NutriplateProgram {
 
 model NutritionProgramProgress {
   id          String            @id @default(uuid())
-  childId     String
+  childId     String?
   programId   String
   dayNumber   Int
+  isAccep Boolean @default(false)
   isCompleted Boolean           @default(false)
   createdAt   DateTime          @default(now())
-  child       Child             @relation(fields: [childId], references: [id])
+  child       Child?             @relation(fields: [childId], references: [id])
   program     NutriplateProgram @relation(fields: [programId], references: [id])
 
   @@index([childId])

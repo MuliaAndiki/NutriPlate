@@ -42,6 +42,10 @@ class AuthApi {
     const res = await AxiosClient.post("/api/auth/reset-password", payload);
     return res.data;
   }
+  public async LoginGoogle(payload: { code: string }): Promise<TResponse<any>> {
+    const res = await AxiosClient.post("/api/auth/google-login", payload);
+    return res.data;
+  }
 }
 
 export default AuthApi;

@@ -15,6 +15,7 @@ class ProgresController {
   private get redis() {
     return getRedis();
   }
+  // not fix
   public async assingProgramChild(c: AppContext) {
     try {
       const jwtUser = c.user as JwtPayload;

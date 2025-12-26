@@ -1,4 +1,4 @@
 import HomeKaderContainer from "./_container/home-kader";
-export default async function Home() {
+export default function Home() {
   return <HomeKaderContainer />;
 }
