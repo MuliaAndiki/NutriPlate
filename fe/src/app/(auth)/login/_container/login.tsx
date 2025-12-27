@@ -53,7 +53,7 @@ const LoginContainer = () => {
       {
         onSuccess: (res) => {
           const baseRole = res.data.role;
-          console.log("login goole", baseRole);
+
           switch (baseRole) {
             case "PARENT":
               nameSpace.router.push("/parent/home");

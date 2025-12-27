@@ -1,5 +1,4 @@
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
-import { useEffect } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -8,6 +7,7 @@ import {
   NavigationParent,
   NavigationPosyandu,
 } from "@/configs/footer.config";
+import { usePathname } from "next/navigation";
 
 interface FooterAppProps {
   router: AppRouterInstance;
@@ -21,6 +21,7 @@ const FooterApp: React.FC<FooterAppProps> = ({
   setIsActive,
   baseRole,
 }) => {
+  const pathname = usePathname();
   const navigationRole = () => {
     switch (baseRole) {
       case "PARENT":
@@ -37,30 +38,26 @@ const FooterApp: React.FC<FooterAppProps> = ({
   };
   const mapping = navigationRole();
 
-  const handleRedirect = (name: typeof isActive) => {
-    setIsActive(name);
-    const base = navigationRole();
-    const item = base.find((item) => item.name === name);
-    if (!item) return;
-
-    router.push(item.href);
-  };
-
   return (
     <main className="w-full h-full ">
       <div className={`flex justify-between items-center bg-background  p-2  `}>
         {mapping.map((items) => {
-          const active = isActive === items.name;
+          const active = pathname === items.href;
+
           return (
             <Button
               key={items.name}
               variant="ghost"
-              className={`p-3`}
-              onClick={() => handleRedirect(items.name)}
+              className="p-3"
+              onClick={() => router.push(items.href)}
               disabled={active}
             >
               <div
-                className={`flex justify-center items-center h-auto w-auto flex-col scale-120 text-foreground  p-1  ${active ? "text-primary border-t-2 sha border-primary inset-shadow-primary" : "text-background"}`}
+                className={`flex flex-col items-center p-1 ${
+                  active
+                    ? "text-primary border-t-2 border-primary"
+                    : "text-muted-foreground"
+                }`}
               >
                 {items.icon}
                 <p className={`text-xs ${active ? "font-bold" : "font-light"}`}>

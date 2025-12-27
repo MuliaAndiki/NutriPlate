@@ -2,6 +2,7 @@ export interface INutritionProgramProgress {
   id: string;
   childId: string;
   programId: string;
+  isAccep: boolean;
   dayNumber: number;
   isCompleted: boolean;
   createdAt: string;

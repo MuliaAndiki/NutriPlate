@@ -3,7 +3,6 @@ import RiwayatAsupanGiziHeroSection from "@/components/section/private/parent/ri
 import { SidebarLayout } from "@/core/layouts/sidebar.layout";
 import { useAppNameSpace } from "@/hooks/useAppNameSpace";
 
-// dumpy Data
 import { HistoryFoodData } from "@/configs/component.config";
 const RiwayatAsupanGiziContainer = () => {
   const nameSpace = useAppNameSpace();

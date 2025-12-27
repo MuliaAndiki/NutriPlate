@@ -8,28 +8,28 @@ datasource db {
 }
 
 model User {
-  id            String          @id @default(uuid())
-  email         String?         @unique
-  phone         String?         @unique
+  id            String              @id @default(uuid())
+  email         String?             @unique
+  phone         String?             @unique
   fullName      String
   password      String?
   role          RoleType
-  isVerify      Boolean         @default(false)
+  isVerify      Boolean             @default(false)
   otp           String?
   expOtp        DateTime?
   token         String?
   photoUrl      String?
   activateExp   DateTime?
   activateToken String?
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
   children      Child[]
   footImage     FoodRawImage[]
   iotDevices    IotDevice[]
   notifications Notifications[]
+  program       NutriplateProgram[]
   posyandu      Posyandu[]
   session       UserSession[]
-  program NutriplateProgram[]
 
   @@map("users")
 }
@@ -46,7 +46,7 @@ model Child {
   updatedAt       DateTime                   @updatedAt
   profileChild    Json
   parent          User                       @relation(fields: [parentId], references: [id])
-  posyandu        Posyandu?                   @relation(fields: [posyanduId], references: [id])
+  posyandu        Posyandu?                  @relation(fields: [posyanduId], references: [id])
   foodIntake      Food[]
   measurements    Measurement[]
   programProgress NutritionProgramProgress[]
@@ -169,15 +169,14 @@ model UserSession {
 model NutriplateProgram {
   id           String                     @id @default(uuid())
   posyanduId   String
-  userId String
   name         String
   description  String
   durationDays Int
   createdAt    DateTime                   @default(now())
+  userId       String
   posyandu     Posyandu                   @relation(fields: [posyanduId], references: [id])
+  user         User                       @relation(fields: [userId], references: [id])
   progress     NutritionProgramProgress[]
-  user User @relation(fields: [userId], references: [id])
-
 
   @@index([posyanduId])
   @@map("nutriplate_programs")
@@ -188,10 +187,10 @@ model NutritionProgramProgress {
   childId     String?
   programId   String
   dayNumber   Int
-  isAccep Boolean @default(false)
   isCompleted Boolean           @default(false)
   createdAt   DateTime          @default(now())
-  child       Child?             @relation(fields: [childId], references: [id])
+  isAccep     Boolean           @default(false)
+  child       Child?            @relation(fields: [childId], references: [id])
   program     NutriplateProgram @relation(fields: [programId], references: [id])
 
   @@index([childId])
