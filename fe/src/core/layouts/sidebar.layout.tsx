@@ -49,9 +49,9 @@ export function SidebarLayout({ children }: AppLayoutProps) {
               <div className="flex items-center justify-between max-w-7xl mx-auto w-full">
                 <SidebarTrigger />
                 <div className="flex items-center gap-4">
-                  <ThemeToggle />
+                  {/* <ThemeToggle />
                   <LanguageDropdown />
-                  <NotificationDropdown />
+                  <NotificationDropdown /> */}
                   <Button
                     variant={"destructive"}
                     onClick={() => handleLogout()}

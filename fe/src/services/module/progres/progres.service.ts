@@ -6,8 +6,9 @@ import {
 import AxiosClient from "@/utils/axios.client";
 
 class ProgresApi {
+  // min intergrate
   public async assingProgramChild(
-    payload: FormAssingPrograms,
+    payload: FormAssingPrograms
   ): Promise<TResponse<any>> {
     const res = await AxiosClient.post("/api/progres", payload);
     return res.data;
@@ -18,13 +19,21 @@ class ProgresApi {
   }
   public async cancelChildProgram(
     id: string,
-    payload: FormCancelPrograms,
+    payload: FormCancelPrograms
   ): Promise<TResponse<any>> {
     const res = await AxiosClient.patch(`/api/progres/${id}`, payload);
     return res.data;
   }
   public async getHistoryChildProgram(): Promise<TResponse<any>> {
     const res = await AxiosClient.get(`/api/progres/history`);
+    return res.data;
+  }
+  public async getAcceptedProgram(): Promise<TResponse<any>> {
+    const res = await AxiosClient.get("/api/progres/accepted");
+    return res.data;
+  }
+  public async accepProgram(id: string): Promise<TResponse<any>> {
+    const res = await AxiosClient.patch(`/api/progres/accepted/${id}`);
     return res.data;
   }
 }

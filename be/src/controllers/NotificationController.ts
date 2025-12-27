@@ -155,21 +155,20 @@ class NotificationController {
 
         notafications = notif.map((c) => c.id);
       } else if (user.role === 'POSYANDU') {
-        const posyandu = await prisma.user.findFirst({
+        const posyandu = await prisma.posyandu.findFirst({
           where: {
-            id: user.id,
+            userID: user.id,
           },
           select: {
             id: true,
-            role: true,
           },
         });
 
-        if (!posyandu || posyandu.role !== 'POSYANDU') {
+        if (!posyandu) {
           return c.json?.(
             {
               status: 404,
-              message: 'posyandu not found & cannot acces',
+              message: 'posyandu not found ',
             },
             404,
           );

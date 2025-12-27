@@ -49,9 +49,9 @@ const AsupanGiziHeroSection: React.FC<AsupanGiziSectionProps> = ({
           </Button>
         </Link>
       </div>
-      <div className="w-full space-y-3">
-        {HistoryFoodData.map((items, key) => (
-          <HistoryFood data={items} key={key} />
+      <div className="w-full space-y-3 ">
+        {HistoryFoodData.map((items) => (
+          <HistoryFood data={items} key={items.id} />
         ))}
       </div>
     </div>

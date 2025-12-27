@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/tooltip";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/utils/classname";
+import { Icon } from "@iconify/react/dist/iconify.js";
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state";
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
@@ -273,7 +274,7 @@ function SidebarTrigger({
       }}
       {...props}
     >
-      <PanelLeftIcon />
+      <Icon icon="material-symbols:menu" width="24" height="24" />
       <span className="sr-only">Toggle Sidebar</span>
     </Button>
   );
