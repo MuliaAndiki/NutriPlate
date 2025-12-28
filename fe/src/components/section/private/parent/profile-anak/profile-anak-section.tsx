@@ -33,7 +33,7 @@ const ProfileAnakHeroSection: React.FC<ProfileChildProps> = ({
       icon: (
         <Icon icon="ph:baby" width="256" height="256" className="scale-130" />
       ),
-      title: "Data Anak",
+      title: "Profil Kesehatan Anak",
       icon2: (
         <Icon
           icon="mingcute:arrow-right-fill"
@@ -46,9 +46,14 @@ const ProfileAnakHeroSection: React.FC<ProfileChildProps> = ({
     },
     {
       icon: (
-        <Icon icon="ph:baby" width="256" height="256" className="scale-130" />
+        <Icon
+          icon="streamline-flex:decent-work-and-economic-growth-solid"
+          width="14"
+          height="14"
+          className="scale-110"
+        />
       ),
-      title: "Data Anak",
+      title: "Grafik Pertumbuhan Anak",
       icon2: (
         <Icon
           icon="mingcute:arrow-right-fill"

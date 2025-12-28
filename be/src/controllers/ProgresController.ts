@@ -10,7 +10,6 @@ import {
 import { getRedis } from '@/utils/redis';
 import { error } from 'console';
 import prisma from 'prisma/client';
-import { tr } from 'zod/locales';
 
 class ProgresController {
   private get redis() {

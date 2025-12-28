@@ -9,6 +9,7 @@ import notificationRoutes from './routes/notificationRoutes';
 import programRoutes from './routes/programRoutes';
 import progresRoutes from './routes/progresRoutes';
 import { swagger } from '@elysiajs/swagger';
+import taskRoutes from './routes/taskRoutes';
 
 class App {
   public app: Elysia;
@@ -53,7 +54,8 @@ class App {
         .use(serviceRoutes)
         .use(notificationRoutes)
         .use(programRoutes)
-        .use(progresRoutes),
+        .use(progresRoutes)
+        .use(taskRoutes),
     );
   }
 }

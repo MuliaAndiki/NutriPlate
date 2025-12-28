@@ -1,4 +1,3 @@
-import { TrendingUp } from "lucide-react";
 import {
   Label,
   PolarGrid,
@@ -10,7 +9,6 @@ import {
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -35,7 +33,7 @@ const StatusAsupan = () => {
   return (
     <Card className="flex  ">
       <div className="w-full flex">
-        <CardContent className="flex  pb-0">
+        <CardContent className="flex flex-col  pb-0">
           <ChartContainer
             config={chartConfig}
             className="mx-auto aspect-square w-[100px] h-[100px]"
@@ -81,6 +79,9 @@ const StatusAsupan = () => {
               </PolarRadiusAxis>
             </RadialBarChart>
           </ChartContainer>
+          <div className="w-full flex justify-center items-center">
+            <h1 className="text-lg font-bold text-primary">Baik</h1>
+          </div>
         </CardContent>
         <div className="w-full">
           <CardHeader className="items-center w-full pb-0">

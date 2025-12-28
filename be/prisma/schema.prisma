@@ -192,10 +192,25 @@ model NutritionProgramProgress {
   isAccep     Boolean           @default(false)
   child       Child?            @relation(fields: [childId], references: [id])
   program     NutriplateProgram @relation(fields: [programId], references: [id])
+  subtask     TaskProgram[]
 
   @@index([childId])
   @@index([programId])
   @@map("program_progress")
+}
+
+model TaskProgram {
+  id          String                   @id @default(uuid())
+  progresId   String
+  title       String
+  description String
+  isComplated Boolean                  @default(false)
+  createdAt   DateTime                 @default(now())
+  updatedAt DateTime @updatedAt
+  progres     NutritionProgramProgress @relation(fields: [progresId], references: [id])
+
+  @@index([progresId])
+  @@map("subtask_program")
 }
 
 model FoodRawImage {
