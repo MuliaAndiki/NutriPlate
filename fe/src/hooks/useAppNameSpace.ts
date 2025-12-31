@@ -1,5 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
 import { useAppDispatch } from "./dispatch/dispatch";
 import { useAlert } from "./useAlert/costum-alert";
@@ -11,5 +11,6 @@ export function useAppNameSpace() {
   const { t } = useTranslate();
   const router = useRouter();
   const dispatch = useAppDispatch();
-  return { alert, queryClient, t, dispatch, router };
+  const pathname = usePathname();
+  return { alert, queryClient, t, dispatch, router, pathname };
 }

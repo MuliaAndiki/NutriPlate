@@ -40,4 +40,8 @@ export const cacheKeys = {
     byID: (id: string) => `history:id:${id}`,
     byRole: (role: string) => `history:role:${role}`,
   },
+  task: {
+    list: () => `task:list`,
+    byRole: (role: string) => `task:role:${role}`,
+  },
 };

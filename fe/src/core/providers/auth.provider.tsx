@@ -1,6 +1,6 @@
 "use client";
 
-import { getCookie } from "cookies-next";
+import { deleteCookie, getCookie } from "cookies-next";
 import { usePathname, useRouter } from "next/navigation";
 import React from "react";
 import { useEffect } from "react";
@@ -15,6 +15,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const currentUser = useAppSelector((state) => state.auth.currentUser);
   const dispatch = useAppDispatch();
+  const baseRole = useAppSelector((state) => state.auth.currentUser?.user.role);
 
   useEffect(() => {
     if (!currentUser?.user?.token) {
@@ -37,15 +38,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const isAuthenticated = Boolean(currentUser?.user?.token);
 
-    if (!isAuthenticated && !isAuthPage) {
-      router.replace("/");
+    if (!isAuthenticated && !isAuthPage && !baseRole) {
+      router.replace("/home");
+
       return;
     }
 
     if (isAuthenticated && isAuthPage) {
-      // setUp
-      // router.replace('/home');
-      return;
+      switch (baseRole) {
+        case "PARENT":
+          router.replace("/parent/home");
+          break;
+        case "KADER":
+          router.replace("/kader/home");
+          break;
+        case "POSYANDU":
+          router.replace("/posyandu/home");
+          break;
+        case "ADMIN":
+          router.replace("/admin/home");
+      }
     }
   }, [pathname, currentUser, router]);
 

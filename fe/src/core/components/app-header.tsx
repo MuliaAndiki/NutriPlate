@@ -24,12 +24,12 @@ import useService from "@/hooks/mutation/prop.service";
 
 export default function AppHeader() {
   const [isScrolled, setIsScrolled] = useState(false);
-  // const service = useService();
-  // const logout = service.auth.mutation.logout();
+  const service = useService();
+  const logout = service.auth.mutation.logout();
 
-  // const handleLogout = () => {
-  //   return logout.mutate({});
-  // };
+  const handleLogout = () => {
+    return logout.mutate({});
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -72,13 +72,13 @@ export default function AppHeader() {
             </NavigationMenuList>
           </NavigationMenu>
           {/* Klo Lengket DIsini */}
-          {/* <Button
+          <Button
             onClick={() => {
               handleLogout();
             }}
           >
             reset
-          </Button> */}
+          </Button>
         </div>
 
         <div className="flex items-center gap-4">
