@@ -3,11 +3,11 @@ import { AppContext } from '@/contex/appContex';
 import { JwtPayload } from '@/types/auth.types';
 import { PickChilID, PickCreateChild, PickRegisteredChild } from '@/types/child.types';
 import { PickPosyanduID } from '@/types/posyandu.types';
+import { uploadCloudinary } from '@/utils/clodinary';
 import { getRedis } from '@/utils/redis';
+import { Prisma } from '@prisma/client';
 import { error } from 'console';
-import { status } from 'elysia';
 import prisma from 'prisma/client';
-import { id } from 'zod/locales';
 
 class ChildController {
   private get redis() {
@@ -32,7 +32,8 @@ class ChildController {
         !childBody.dateOfBirth ||
         !childBody.fullname ||
         !childBody.gender ||
-        !childBody.photoUrl
+        !childBody.avaChild ||
+        !childBody.placeOfBirth
       ) {
         return c.json?.(
           {
@@ -43,13 +44,33 @@ class ChildController {
         );
       }
 
+      let documentUrl: { avaChild: string } = { avaChild: '' };
+      if (c.files?.avaChild?.[0]) {
+        const file = c.files.avaChild[0];
+        const buffer = file.buffer;
+
+        const result = await uploadCloudinary(buffer, 'avaChild', file.originalname);
+        documentUrl.avaChild = result.secure_url;
+      } else if (
+        childBody.avaChild &&
+        typeof childBody.avaChild === 'string' &&
+        childBody.avaChild.startsWith('data:image')
+      ) {
+        const base64 = childBody.avaChild;
+        const buffer = Buffer.from(base64.split(',')[1], 'base64');
+        const result = await uploadCloudinary(buffer, 'avaChild', 'image.png');
+        documentUrl.avaChild = result.secure_url;
+      }
+
       const child = await prisma.child.create({
         data: {
           fullName: childBody.fullname,
-          dateOfBirth: childBody.dateOfBirth,
+          dateOfBirth: new Date(childBody.dateOfBirth),
           gender: childBody.gender,
           parentId: jwtUser.id,
-          profileChild: typeof childBody.profileChild,
+          placeOfBirth: childBody.placeOfBirth,
+          avaChild: documentUrl.avaChild ?? null,
+          profileChild: childBody.profileChild as Prisma.JsonObject,
         },
       });
       if (!child) {
@@ -127,6 +148,24 @@ class ChildController {
         );
       }
 
+      let documentUrl: { avaChild: string } = { avaChild: '' };
+      if (c.files?.avaChild?.[0]) {
+        const file = c.files.avaChild[0];
+        const buffer = file.buffer;
+
+        const result = await uploadCloudinary(buffer, 'avaChild', file.originalname);
+        documentUrl.avaChild = result.secure_url;
+      } else if (
+        childBody.avaChild &&
+        typeof childBody.avaChild === 'string' &&
+        childBody.avaChild.startsWith('data:image')
+      ) {
+        const base64 = childBody.avaChild;
+        const buffer = Buffer.from(base64.split(',')[1], 'base64');
+        const result = await uploadCloudinary(buffer, 'avaChild', 'image.png');
+        documentUrl.avaChild = result.secure_url;
+      }
+
       const child = await prisma.child.update({
         where: {
           id: childID.id,
@@ -136,8 +175,10 @@ class ChildController {
           fullName: childBody.fullname,
           dateOfBirth: childBody.dateOfBirth,
           gender: childBody.gender,
+          placeOfBirth: childBody.placeOfBirth,
           parentId: jwtUser.id,
-          profileChild: typeof childBody.profileChild,
+          avaChild: documentUrl.avaChild,
+          profileChild: (childBody.profileChild ?? {}) as Prisma.JsonObject,
         },
       });
 

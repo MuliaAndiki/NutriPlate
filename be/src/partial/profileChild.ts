@@ -1,4 +1,5 @@
 export interface ProfileChild {
+  [key: string]: unknown;
   birthWeightKg?: number;
   birthHeightCm?: number;
   pregnancyAgeWeeks?: number;

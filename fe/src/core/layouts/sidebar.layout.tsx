@@ -16,9 +16,6 @@ import useService from "@/hooks/mutation/prop.service";
 import { useAppNameSpace } from "@/hooks/useAppNameSpace";
 
 import FooterApp from "../components/footer-app";
-import LanguageDropdown from "../components/language.dropdown";
-import NotificationDropdown from "../components/notification.dropdown";
-import ThemeToggle from "../components/theme-toggle";
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -45,7 +42,7 @@ export function SidebarLayout({ children }: AppLayoutProps) {
         <AppSidebar isCollapsed={isCollapsed} pathname={pathname} />
         <SidebarInset>
           <div className="flex h-full flex-col w-full">
-            <div className="flex p-4 items-center gap-2 border-b w-full h-20">
+            <div className="flex p-4 items-center gap-2  w-full h-20">
               <div className="flex items-center justify-between max-w-7xl mx-auto w-full">
                 <SidebarTrigger />
                 <div className="flex items-center gap-4">
@@ -63,8 +60,8 @@ export function SidebarLayout({ children }: AppLayoutProps) {
               </div>
             </div>
 
-            <div className="flex-1 overflow-auto w-full">
-              <div className="container h-full max-w-7xl w-full mx-auto p-1">
+            <div className="flex-1  overflow-auto w-full">
+              <div className="container pb-15 max-w-7xl w-full mx-auto p-1">
                 {children}
               </div>
             </div>
