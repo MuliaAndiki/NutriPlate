@@ -41,10 +41,11 @@ model Child {
   fullName        String
   dateOfBirth     DateTime
   gender          GenderType
-  photoUrl        String?
   createdAt       DateTime                   @default(now())
   updatedAt       DateTime                   @updatedAt
   profileChild    Json
+  avaChild        String?
+  placeOfBirth    String                     @default("Tidak Diketahui")
   parent          User                       @relation(fields: [parentId], references: [id])
   posyandu        Posyandu?                  @relation(fields: [posyanduId], references: [id])
   foodIntake      Food[]
@@ -206,7 +207,7 @@ model TaskProgram {
   description String
   isComplated Boolean                  @default(false)
   createdAt   DateTime                 @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt   DateTime                 @updatedAt
   progres     NutritionProgramProgress @relation(fields: [progresId], references: [id])
 
   @@index([progresId])

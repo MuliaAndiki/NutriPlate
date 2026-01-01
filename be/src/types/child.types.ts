@@ -6,18 +6,19 @@ export interface IChild {
   posyanduID: string;
   fullname: string;
   dateOfBirth: string;
+  placeOfBirth: string;
   gender: GenderType;
-  photoUrl: string;
+  avaChild: string;
   profileChild: ProfileChild;
 }
 
 export type jwtChildPayload = Pick<
   IChild,
-  'id' | 'fullname' | 'dateOfBirth' | 'gender' | 'photoUrl'
+  'id' | 'fullname' | 'dateOfBirth' | 'gender' | 'avaChild'
 >;
 export type PickChilID = Pick<IChild, 'id'>;
 export type PickCreateChild = Pick<
   IChild,
-  'fullname' | 'dateOfBirth' | 'gender' | 'profileChild' | 'photoUrl'
+  'fullname' | 'dateOfBirth' | 'gender' | 'profileChild' | 'avaChild' | 'placeOfBirth'
 >;
 export type PickRegisteredChild = Pick<IChild, 'posyanduID'>;

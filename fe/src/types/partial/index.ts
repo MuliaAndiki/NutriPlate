@@ -6,17 +6,17 @@ export enum GenderType {
 export type RoleType = "PARENT" | "KADER" | "ADMIN" | "POSYANDU";
 
 export interface ProfileChild {
-  birthWeightKg?: number;
-  birthHeightCm?: number;
-  pregnancyAgeWeeks?: number;
+  birthWeightKg?: number | undefined;
+  birthHeightCm?: number | undefined;
+  pregnancyAgeWeeks?: number | undefined;
   allergicFoods?: string[];
   chronicConditions?: string[];
   feedingType?: string;
   activityLevel?: string;
-  baselineWeightKg?: number;
-  baselineHeightCm?: number;
-  baselineBmi?: number;
-  baselineZscore?: number;
+  baselineWeightKg?: number | undefined;
+  baselineHeightCm?: number | undefined;
+  baselineBmi?: number | undefined;
+  baselineZscore?: number | undefined;
 }
 
 export interface SidebarContentType {

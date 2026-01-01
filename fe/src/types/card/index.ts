@@ -12,3 +12,11 @@ export interface ProfileChildType {
   desc: string;
   title: string;
 }
+
+export interface ChildProfile {
+  id: string;
+  fullname: string;
+  gender: string;
+  dateOfBirth: string;
+  //
+}
