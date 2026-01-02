@@ -13,7 +13,7 @@ const FormCreateChildContainer = () => {
   const createChild = service.child.mutation.create();
   const [formCreateChiild, setFormCreateChild] = useState<FormCreateChild>({
     dateOfBirth: "",
-    fullname: "",
+    fullName: "",
     placeOfBirth: "",
     gender: "",
     avaChild: "",
@@ -34,7 +34,7 @@ const FormCreateChildContainer = () => {
 
   const handleCreateChild = () => {
     if (
-      !formCreateChiild.fullname ||
+      !formCreateChiild.fullName ||
       !formCreateChiild.dateOfBirth ||
       !formCreateChiild.gender
     ) {

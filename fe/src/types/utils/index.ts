@@ -4,4 +4,5 @@ export interface UploadsTriggerProps {
   accept?: string;
   multiple?: boolean;
   className?: string;
+  disable?: boolean;
 }

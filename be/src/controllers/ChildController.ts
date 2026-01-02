@@ -4,6 +4,7 @@ import { JwtPayload } from '@/types/auth.types';
 import { PickChilID, PickCreateChild, PickRegisteredChild } from '@/types/child.types';
 import { PickPosyanduID } from '@/types/posyandu.types';
 import { uploadCloudinary } from '@/utils/clodinary';
+import { ParseUpdateData } from '@/utils/parseUpdateData';
 import { getRedis } from '@/utils/redis';
 import { Prisma } from '@prisma/client';
 import { error } from 'console';
@@ -30,9 +31,8 @@ class ChildController {
       }
       if (
         !childBody.dateOfBirth ||
-        !childBody.fullname ||
+        !childBody.fullName ||
         !childBody.gender ||
-        !childBody.avaChild ||
         !childBody.placeOfBirth
       ) {
         return c.json?.(
@@ -64,7 +64,7 @@ class ChildController {
 
       const child = await prisma.child.create({
         data: {
-          fullName: childBody.fullname,
+          fullName: childBody.fullName,
           dateOfBirth: new Date(childBody.dateOfBirth),
           gender: childBody.gender,
           parentId: jwtUser.id,
@@ -165,21 +165,16 @@ class ChildController {
         const result = await uploadCloudinary(buffer, 'avaChild', 'image.png');
         documentUrl.avaChild = result.secure_url;
       }
+      const update = ParseUpdateData(childBody, {
+        profileChild: (value) => value as Prisma.InputJsonObject,
+      });
 
       const child = await prisma.child.update({
         where: {
           id: childID.id,
           parentId: parent.id,
         },
-        data: {
-          fullName: childBody.fullname,
-          dateOfBirth: childBody.dateOfBirth,
-          gender: childBody.gender,
-          placeOfBirth: childBody.placeOfBirth,
-          parentId: jwtUser.id,
-          avaChild: documentUrl.avaChild,
-          profileChild: (childBody.profileChild ?? {}) as Prisma.JsonObject,
-        },
+        data: update,
       });
 
       const cacheKey = [cacheKeys.child.byID(childID.id), cacheKeys.child.byRole(parent.role)];

@@ -738,6 +738,15 @@ class UserController {
         orderBy: {
           createdAt: 'desc',
         },
+        select: {
+          avaChild: true,
+          fullName: true,
+          gender: true,
+          dateOfBirth: true,
+          id: true,
+          parentId: true,
+          placeOfBirth: true,
+        },
       });
 
       if (!child || child.length === 0) {

@@ -2,82 +2,35 @@ import ChildCard from "@/components/card/child-card";
 import ProfileChildCard from "@/components/card/profile-child";
 import StatusAsupan from "@/components/card/status-asupan";
 import { Button } from "@/components/ui/button";
-import { ProfileChildType } from "@/types/card";
+import {
+  profileChildCardsConfig,
+  RouteDetailChild,
+} from "@/configs/component.config";
+import { ChildCardProps } from "@/types/props.type";
+
 import { Icon } from "@iconify/react/dist/iconify.js";
+import { ChevronLeft } from "lucide-react";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import Link from "next/link";
 
-interface ProfileChildProps {
-  profileChild: ProfileChildType[];
+interface DetailProfileAnakProps {
+  isPending: boolean;
+  router: AppRouterInstance;
+  isLoading: boolean;
 }
-
-const DetailProfileAnakHeroSection: React.FC<ProfileChildProps> = ({
-  profileChild,
-}) => {
-  const ButtonData = [
-    {
-      icon: (
-        <Icon icon="ph:baby" width="256" height="256" className="scale-130" />
-      ),
-      title: "Data Anak",
-      icon2: (
-        <Icon
-          icon="mingcute:arrow-right-fill"
-          width="24"
-          height="24"
-          className="scale-150 text-end "
-        />
-      ),
-      href: "#",
-    },
-    {
-      icon: (
-        <Icon icon="ph:baby" width="256" height="256" className="scale-130" />
-      ),
-      title: "Profil Kesehatan Anak",
-      icon2: (
-        <Icon
-          icon="mingcute:arrow-right-fill"
-          width="24"
-          height="24"
-          className="scale-150 text-end "
-        />
-      ),
-      href: "#",
-    },
-    {
-      icon: (
-        <Icon
-          icon="streamline-flex:decent-work-and-economic-growth-solid"
-          width="14"
-          height="14"
-          className="scale-110"
-        />
-      ),
-      title: "Grafik Pertumbuhan Anak",
-      icon2: (
-        <Icon
-          icon="mingcute:arrow-right-fill"
-          width="24"
-          height="24"
-          className="scale-150 text-end "
-        />
-      ),
-      href: "#",
-    },
-  ];
+const DetailProfileAnakHeroSection: React.FC<
+  ChildCardProps & DetailProfileAnakProps
+> = ({ data, isPending, router, isLoading }) => {
+  // fallback skeleton
+  if (isLoading) {
+    return <div>loading</div>;
+  }
   return (
     <div className="w-full min-h-screen flex justify-start items-center flex-col p-2">
       <div className="w-full flex  flex-col space-y-4">
-        <div className="w-full flex justify-between items-start">
+        <div className="w-full flex justify-start items-center">
+          <ChevronLeft onClick={() => router.back()} className="scale-120" />
           <h1 className="text-3xl font-bold">Profil Anak</h1>
-          <Button variant={"btn"} className="w-auto flex items-center">
-            <Icon
-              icon="material-symbols:child-care-outline"
-              width="50"
-              height="50"
-            />
-            <h1 className="text-lg">Tambah Data Anak</h1>
-          </Button>
         </div>
 
         <div className="w-full flex">
@@ -86,15 +39,26 @@ const DetailProfileAnakHeroSection: React.FC<ProfileChildProps> = ({
           </h1>
         </div>
         <div className="w-full">
-          <ChildCard />
+          <ChildCard data={data} />
         </div>
         <div className="w-full flex justify-between items-center">
           <h1 className="font-extralight text-xs">Terakhir Diperbarui</h1>
           <h1 className="font-extralight text-xs">09 Juli 2025 14.39 WIB</h1>
         </div>
         <div className="w-full grid grid-cols-3 grid-rows-1 justify-center items-center gap-2">
-          {profileChild.map((items) => (
-            <ProfileChildCard data={items} key={items.id} />
+          {/* ilmu baru */}
+          {profileChildCardsConfig.map((item) => (
+            <ProfileChildCard
+              color={item.color}
+              icon={item.icon}
+              label={item.label}
+              value={item.getValue(data.profileChild)}
+              key={item.key}
+              border={item.border}
+              header={item.header}
+              unit={item.unit}
+              text={item.text}
+            />
           ))}
         </div>
         <div className="w-full space-y-4">
@@ -111,16 +75,24 @@ const DetailProfileAnakHeroSection: React.FC<ProfileChildProps> = ({
             Kelola informasi, kesehatan, dan pertumbuhan anak
           </p>
           <div className="w-full h-auto  space-y-2 ">
-            {ButtonData.map((items, key) => (
+            {RouteDetailChild.map((items, key) => (
               <Button variant={"btn"} className="w-full h-auto " key={key}>
-                <Link href={items.href} className="w-full h-auto  ">
+                <Link
+                  href={`${items.href}/${data.id}/data-anak`}
+                  className="w-full h-auto  "
+                >
                   <div className="w-full grid grid-cols-2 grid-rows-1 items-center ">
                     <div className="w-full flex justify-start items-center space-x-1">
-                      {items.icon}
-                      <h1 className="text-lg font-extrabold">Data Anak</h1>
+                      <Icon
+                        icon={items.icon}
+                        width={34}
+                        height={34}
+                        className="scale-120"
+                      />
+                      <h1 className="text-lg font-extrabold">{items.title}</h1>
                     </div>
                     <div className="w-full border  flex justify-end">
-                      {items.icon2}
+                      <Icon icon={items.icon2} width={34} height={34} />
                     </div>
                   </div>
                 </Link>

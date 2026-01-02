@@ -1,8 +1,8 @@
-import { HistoryFoodType, ProfileChildType } from "./card";
+import { ChildCardType, HistoryFoodType } from "./card";
 
 export interface HistoryFootProps {
   data: HistoryFoodType;
 }
-export interface ProfileChildProps {
-  data: ProfileChildType;
+export interface ChildCardProps {
+  data: ChildCardType;
 }

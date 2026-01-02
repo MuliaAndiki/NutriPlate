@@ -61,11 +61,11 @@ const FormCreateChildSection: React.FC<FormCreateChildProps> = ({
             placeholder="Masukkan Nama Lengkap Anak"
             required
             type="text"
-            value={formCreateChild.fullname}
+            value={formCreateChild.fullName}
             onChange={(e) => {
               setFormCreateChild((prev) => ({
                 ...prev,
-                fullname: e.target.value,
+                fullName: e.target.value,
               }));
             }}
           />
@@ -444,7 +444,7 @@ const FormCreateChildSection: React.FC<FormCreateChildProps> = ({
           className="w-full flex justify-center items-center "
           variant={"btn"}
           disabled={
-            !formCreateChild.fullname ||
+            !formCreateChild.fullName ||
             !formCreateChild.gender ||
             !formCreateChild.dateOfBirth ||
             isPending

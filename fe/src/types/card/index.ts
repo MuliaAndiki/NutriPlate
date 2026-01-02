@@ -1,3 +1,5 @@
+import { IChild } from "../schema/child.schema";
+import { IconifyIcon } from "@iconify/react";
 export interface HistoryFoodType {
   id: string;
   image: string;
@@ -7,16 +9,26 @@ export interface HistoryFoodType {
   gizi: number;
 }
 
-export interface ProfileChildType {
-  id: string;
-  desc: string;
-  title: string;
-}
+export type ChildCardType = Pick<
+  IChild,
+  | "avaChild"
+  | "dateOfBirth"
+  | "fullName"
+  | "gender"
+  | "parentId"
+  | "placeOfBirth"
+  | "id"
+  | "profileChild"
+>;
 
-export interface ChildProfile {
-  id: string;
-  fullname: string;
-  gender: string;
-  dateOfBirth: string;
-  //
+export interface ProfileChildType {
+  key: string;
+  label: string;
+  unit?: string;
+  header: string;
+  icon: string;
+  color: string;
+  text: string;
+  border: string;
+  getValue: (profile: any) => number | string | null;
 }

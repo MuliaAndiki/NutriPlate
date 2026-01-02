@@ -9,3 +9,16 @@ export function kebabCaseToWords(str: string) {
     return char.toUpperCase();
   });
 }
+
+export function GenderFormat(gender: string) {
+  if (gender === "MALE") {
+    return "Laki-Laki";
+  } else {
+    return "Perempuan";
+  }
+}
+
+export const formatDateForInput = (date: string) => {
+  if (!date) return "";
+  return date.split("T")[0];
+};
