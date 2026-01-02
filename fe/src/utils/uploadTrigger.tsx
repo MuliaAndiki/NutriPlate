@@ -7,10 +7,11 @@ export interface UploadTriggerRef {
 }
 
 const UploadsTrigger = forwardRef<UploadTriggerRef, UploadsTriggerProps>(
-  ({ children, onChange, accept, multiple, className }, ref) => {
+  ({ children, onChange, accept, multiple, className, disable }, ref) => {
     const fileRef = useRef<HTMLInputElement>(null);
 
     const handleTrigger = () => {
+      if (disable) return;
       fileRef.current?.click();
     };
 
@@ -32,6 +33,7 @@ const UploadsTrigger = forwardRef<UploadTriggerRef, UploadsTriggerProps>(
           onChange={onChange}
           accept={accept}
           multiple={multiple}
+          disabled={disable}
         />
       </>
     );

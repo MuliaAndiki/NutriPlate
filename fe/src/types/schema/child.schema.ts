@@ -1,10 +1,10 @@
-import { GenderType, ProfileChild } from "../partial";
+import { ProfileChild } from "../partial";
 
 export interface IChild {
   id: string;
   parentId: string;
   posyanduID?: string;
-  fullname: string;
+  fullName: string;
   placeOfBirth: string;
   dateOfBirth: string;
   gender: string;

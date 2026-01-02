@@ -1,9 +1,16 @@
 import ChildCard from "@/components/card/child-card";
+import ChildFallback from "@/components/fallback/child.fallback";
 import { Button } from "@/components/ui/button";
+import { ChildCardType } from "@/types/card";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import Link from "next/link";
 
-const ProfileAnakHeroSection = () => {
+interface ProfileAnakSectionProps {
+  profileAnak: ChildCardType[];
+}
+const ProfileAnakHeroSection: React.FC<ProfileAnakSectionProps> = ({
+  profileAnak,
+}) => {
   return (
     <div className="w-full min-h-screen flex justify-start items-center flex-col p-2 space-y-2">
       <div className="w-full">
@@ -26,15 +33,20 @@ const ProfileAnakHeroSection = () => {
         </Link>
       </div>
 
-      <div className="w-full">{/* <ChildFallback /> */}</div>
-
       <div className="w-full flex items-center ">
         <Icon icon="ph:baby" width="30" height="30" className="text-primary" />
         <h1 className="text-lg font-extrabold">Daftar Anak</h1>
       </div>
-      <div className="w-full">
-        <ChildCard />
-      </div>
+
+      {profileAnak.length > 0 ? (
+        <div className="w-full flex flex-col space-y-3 ">
+          {profileAnak.map((item) => (
+            <ChildCard key={item.id} data={item} />
+          ))}
+        </div>
+      ) : (
+        <ChildFallback />
+      )}
     </div>
   );
 };
