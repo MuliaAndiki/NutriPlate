@@ -37,7 +37,7 @@ const UploadsTrigger = forwardRef<UploadTriggerRef, UploadsTriggerProps>(
         />
       </>
     );
-  }
+  },
 );
 
 UploadsTrigger.displayName = "UploadsTrigger";

@@ -1,19 +1,17 @@
 "use client";
 import { useEffect } from "react";
 
-import { useAppSelector } from "@/hooks/dispatch/dispatch";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useAppNameSpace } from "@/hooks/useAppNameSpace";
+import { getCookie } from "cookies-next";
 
 export function ClientGate({ children }: { children: React.ReactNode }) {
   const isMobile = useIsMobile();
   const { router } = useAppNameSpace();
-  const current = useAppSelector((state) => state.auth.currentUser);
+  const baseRole = getCookie("user_role");
 
   const getBaseRedirectPath = () => {
-    if (!current) return "/login";
-
-    switch (current.user.role) {
+    switch (baseRole) {
       case "PARENT":
         return "/parent/home";
       case "KADER":

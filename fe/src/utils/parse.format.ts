@@ -1,6 +1,6 @@
 export function parsePayload<T extends Record<string, unknown>>(
   original: T,
-  current: T
+  current: T,
 ): Partial<T> {
   const payload: Partial<T> = {};
 

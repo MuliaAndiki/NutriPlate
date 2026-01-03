@@ -23,10 +23,10 @@ class ChildController {
       if (!jwtUser) {
         return c.json?.(
           {
-            status: 404,
-            message: 'user not found',
+            status: 401,
+            message: 'Unauthorized',
           },
-          404,
+          401,
         );
       }
       if (
@@ -112,10 +112,10 @@ class ChildController {
       if (!jwtUser) {
         return c.json?.(
           {
-            status: 400,
-            message: 'user not found',
+            status: 401,
+            message: 'Unauthorized',
           },
-          400,
+          401,
         );
       }
       if (!childID) {
@@ -216,10 +216,10 @@ class ChildController {
       if (!jwtUser) {
         return c.json?.(
           {
-            status: 404,
-            message: 'user not found',
+            status: 401,
+            message: 'Unauthorized',
           },
-          400,
+          401,
         );
       }
       if (!childID) {
@@ -297,10 +297,10 @@ class ChildController {
       if (!jwtUser) {
         return c.json?.(
           {
-            status: 404,
-            message: 'user not found',
+            status: 401,
+            message: 'Unauthorized',
           },
-          404,
+          401,
         );
       }
 
@@ -430,10 +430,10 @@ class ChildController {
       if (!jwtUser) {
         return c.json?.(
           {
-            status: 404,
-            message: 'user not found',
+            status: 401,
+            message: 'Unauthorized',
           },
-          404,
+          401,
         );
       }
 

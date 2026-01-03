@@ -2,48 +2,44 @@
 import { useEffect, useState } from "react";
 
 import VerifyOtpHeroSection from "@/components/section/auth/verifyOtp-section";
-import { useAppSelector } from "@/hooks/dispatch/dispatch";
 import useService from "@/hooks/mutation/prop.service";
 import { useAppNameSpace } from "@/hooks/useAppNameSpace";
-import { clearOtp } from "@/stores/otpSlice/otpSlice";
+import { useSearchParams } from "next/navigation";
 import { FormVerify } from "@/types/form/auth.form";
 
 const VerifyOtpContainer = () => {
   const nameSpace = useAppNameSpace();
-  const { email, soure } = useAppSelector((state) => state.otp);
+  const searchParams = useSearchParams();
+  const identifier = searchParams.get("identifier");
+  const target = searchParams.get("target");
+
   const [formVerifyOtp, setFormVerifyOtp] = useState<FormVerify>({
-    email: email!,
+    email: "",
     otp: "",
   });
   const [colldown, setColldown] = useState<number>(0);
   const service = useService();
   const verifikasi = service.auth.mutation.verifyOtp();
   const resend = service.auth.mutation.resend();
-  const hash = email?.slice(-12);
+  const hash = identifier?.slice(-12);
+
+  if (!identifier || !target) {
+    nameSpace.router.replace("/login");
+    return null;
+  }
   const handleVerfiyOtp = () => {
-    if (soure === "Register") {
-      verifikasi.mutate(formVerifyOtp, {
-        onSuccess: () => {
-          nameSpace.router.push("/login");
-          nameSpace.dispatch(clearOtp());
-        },
-      });
-    } else if (soure === "Forgot-Password") {
-      verifikasi.mutate(formVerifyOtp, {
-        onSuccess: () => {
-          nameSpace.router.push("/reset-password");
-        },
-      });
-    } else {
-      // Callback Ui
-      return null;
-    }
+    verifikasi.mutate(formVerifyOtp, {
+      onSuccess: () => {
+        const params = new URLSearchParams(identifier);
+        nameSpace.router.push(`${target}?identifier=${params}`);
+      },
+    });
   };
 
   const handleResend = () => {
     resend.mutate(
       {
-        email: email ?? "",
+        email: identifier ?? "",
       },
       {
         onSuccess: () => {
@@ -66,6 +62,14 @@ const VerifyOtpContainer = () => {
     }, 1000);
     return () => clearInterval(interfal);
   }, [colldown]);
+
+  useEffect(() => {
+    setFormVerifyOtp((prev) => ({
+      ...prev,
+      email: identifier,
+      otp: "",
+    }));
+  }, [identifier]);
 
   return (
     <main className="w-full min-h-full">

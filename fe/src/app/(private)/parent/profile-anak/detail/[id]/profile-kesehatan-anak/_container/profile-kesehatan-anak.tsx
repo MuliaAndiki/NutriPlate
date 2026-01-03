@@ -37,7 +37,7 @@ const ProfileKesehatanAnakContainer = () => {
         onSuccess: () => {
           nameSpace.router.back();
         },
-      }
+      },
     );
   };
   useEffect(() => {

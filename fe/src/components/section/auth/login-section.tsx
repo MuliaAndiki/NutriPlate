@@ -102,12 +102,6 @@ const LoginHeroSection: React.FC<LoginSectionProps> = ({
             <button type="button" onClick={() => googleLogin()}>
               <GoogleSvg />
             </button>
-            <p>
-              Sudah Memiliki Akun?
-              <Link href={"/login"}>
-                <span className="text-primary">Masuk</span>
-              </Link>
-            </p>
           </div>
         </form>
       </div>

@@ -20,7 +20,7 @@ export function middleware(req: NextRequest) {
   ];
 
   const isPrivateRoute = privateRoutes.some((route) =>
-    pathname.startsWith(route)
+    pathname.startsWith(route),
   );
   if (!isPrivateRoute) {
     return NextResponse.next();

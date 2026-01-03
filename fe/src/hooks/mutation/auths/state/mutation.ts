@@ -8,14 +8,6 @@ import {
 import { useAppNameSpace } from "@/hooks/useAppNameSpace";
 import { TResponse } from "@/pkg/react-query/mutation-wrapper.type";
 import Api from "@/services/props.module";
-import { logout, setCurrentUser } from "@/stores/authSlice/authSlice";
-import {
-  clearOtp,
-  setEmail,
-  setPhone,
-  setSoure,
-} from "@/stores/otpSlice/otpSlice";
-import { userSchema } from "@/types/api";
 import {
   FormLogin,
   FormRegister,
@@ -30,16 +22,16 @@ export function useLogin() {
     mutationFn: (payload) => Api.Auth.login(payload),
     onSuccess: (res) => {
       const token = res.data.token;
+      const role = res.data.role;
       setCookie(APP_SESSION_COOKIE_KEY, token, {
         maxAge: APP_REFRESH_TOKEN_COOKIE_EXPIRES_IN,
         path: "/",
       });
+      setCookie("user_role", role, {
+        maxAge: 60 * 60 * 24 * 7,
+        path: "/",
+      });
 
-      const payload: userSchema = {
-        user: res.data,
-      };
-
-      nameSpace.dispatch(setCurrentUser(payload));
       nameSpace.alert.toast({
         title: "succesfully",
         message: "success login in NutriPlate",
@@ -68,8 +60,8 @@ export function useLogout() {
         icon: "success",
       });
       nameSpace.queryClient.clear();
-      nameSpace.dispatch(logout());
       deleteCookie(APP_SESSION_COOKIE_KEY);
+      deleteCookie("user_role", { path: "/home" });
       nameSpace.router.push("/login");
     },
     onError: (err) => {
@@ -80,8 +72,8 @@ export function useLogout() {
         icon: "warning",
       });
       nameSpace.queryClient.clear();
-      nameSpace.dispatch(logout());
-      deleteCookie(APP_SESSION_COOKIE_KEY);
+      deleteCookie("user_role", { path: "/home" });
+      deleteCookie(APP_SESSION_COOKIE_KEY, { path: "/home" });
       nameSpace.router.push("/login");
     },
   });
@@ -92,19 +84,21 @@ export function useRegister() {
   return useMutation<TResponse<any>, Error, FormRegister>({
     mutationFn: (payload) => Api.Auth.register(payload),
     onSuccess: (res) => {
+      const email = res.data.email;
+      const phone = res.data.phone;
+      if (email) {
+        nameSpace.router.push(`/verify-otp?identifier=${email}&target=/login`);
+        return;
+      }
+      if (phone) {
+        nameSpace.router.push("/login");
+        return;
+      }
       nameSpace.alert.toast({
         title: "success",
         message: "succesfully registerd",
         icon: "success",
       });
-
-      if (res.data.email !== null) {
-        nameSpace.dispatch(setEmail(res.data.email));
-        nameSpace.dispatch(setSoure("Register"));
-        nameSpace.router.push("/verify-otp");
-      } else {
-        nameSpace.router.push("/login");
-      }
     },
     onError: (err) => {
       console.error(err);
@@ -166,19 +160,23 @@ export function useForgotPasswsord() {
   return useMutation<TResponse<any>, Error, FormResetPassword>({
     mutationFn: (payload) => Api.Auth.forgotPassword(payload),
     onSuccess: (res) => {
+      const phone = res.data.phone;
+      const email = res.data.email;
+      if (email) {
+        nameSpace.router.push(
+          `/verify-otp?identifier=${email}&target=/reset-password`,
+        );
+        return;
+      }
+      if (phone) {
+        nameSpace.router.push(`/reset-password?identifier=${phone}`);
+        return;
+      }
       nameSpace.alert.toast({
         title: "success",
         message: "succesfully identifier account",
         icon: "success",
       });
-      if (res.data.email !== null) {
-        nameSpace.dispatch(setEmail(res.data.email));
-        nameSpace.dispatch(setSoure("Forgot-Password"));
-        nameSpace.router.push("/verify-otp");
-      } else {
-        nameSpace.dispatch(setPhone(res.data.phone));
-        nameSpace.router.push("/reset-password");
-      }
     },
     onError: (err) => {
       console.error(err);
@@ -201,7 +199,6 @@ export function useResetPassword() {
         message: "succesfully reset your password",
         icon: "success",
       });
-      nameSpace.dispatch(clearOtp());
     },
     onError: (err) => {
       console.error(err);
@@ -220,14 +217,15 @@ export function useLoginGoogle() {
     mutationFn: (payload) => Api.Auth.LoginGoogle(payload),
     onSuccess: (res) => {
       const token = res.data.token;
+      const role = res.data.role;
       setCookie(APP_SESSION_COOKIE_KEY, token, {
         maxAge: APP_REFRESH_TOKEN_COOKIE_EXPIRES_IN,
-        path: "/",
+        path: "/home",
       });
-      const payload: userSchema = {
-        user: res.data,
-      };
-      nameSpace.dispatch(setCurrentUser(payload));
+      setCookie("user_role", role, {
+        maxAge: 60 * 60 * 24 * 7,
+        path: "/home",
+      });
       nameSpace.alert.toast({
         title: "succes",
         message: "welcom to nutriplate",

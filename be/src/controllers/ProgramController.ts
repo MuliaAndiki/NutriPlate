@@ -20,10 +20,10 @@ class ProgramController {
       if (!jwtUser) {
         return c.json?.(
           {
-            status: 404,
-            message: 'user not found',
+            status: 401,
+            message: 'Unauthorized',
           },
-          404,
+          401,
         );
       }
       if (!prog.description || !prog.durationDays || !prog.name) {
@@ -137,10 +137,10 @@ class ProgramController {
       if (!jwtUser) {
         return c.json?.(
           {
-            status: 404,
-            message: 'user not found',
+            status: 401,
+            message: 'Unauthorized',
           },
-          400,
+          401,
         );
       }
       if (!progParams) {
@@ -241,10 +241,10 @@ class ProgramController {
       if (!jwtUser) {
         return c.json?.(
           {
-            status: 404,
-            message: 'user not found',
+            status: 401,
+            message: 'Unauthorized',
           },
-          404,
+          401,
         );
       }
       const user = await prisma.user.findFirst({
@@ -330,10 +330,10 @@ class ProgramController {
       if (!jwtUser) {
         return c.json?.(
           {
-            status: 404,
-            message: 'user not found',
+            status: 401,
+            message: 'Unauthorized',
           },
-          404,
+          401,
         );
       }
       if (!progParams) {
@@ -406,10 +406,10 @@ class ProgramController {
       if (!jwtUser) {
         return c.json?.(
           {
-            status: 404,
-            message: 'user not found',
+            status: 401,
+            message: 'Unauthorized',
           },
-          404,
+          401,
         );
       }
       if (!progParams) {

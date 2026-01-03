@@ -14,7 +14,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { type ChartConfig,ChartContainer } from "@/components/ui/chart";
+import { type ChartConfig, ChartContainer } from "@/components/ui/chart";
 
 import { Button } from "../ui/button";
 const StatusAsupan = () => {
