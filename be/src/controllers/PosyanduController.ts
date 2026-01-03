@@ -24,10 +24,10 @@ class PosyanduController {
       if (!jwtUser) {
         return c.json?.(
           {
-            status: 404,
-            message: 'account not found',
+            status: 401,
+            message: 'Unauthorized',
           },
-          404,
+          401,
         );
       }
       if (
@@ -115,10 +115,10 @@ class PosyanduController {
       if (!jwtUser) {
         return c.json?.(
           {
-            status: 404,
-            message: 'user not found',
+            status: 401,
+            message: 'Unauthorized',
           },
-          404,
+          401,
         );
       }
       const cacheKey = cacheKeys.posyandu.list();
@@ -190,10 +190,10 @@ class PosyanduController {
       if (!jwtUser) {
         return c.json?.(
           {
-            status: 404,
-            message: 'user not found',
+            status: 401,
+            message: 'Unauthorized',
           },
-          404,
+          401,
         );
       }
       if (!params) {
@@ -348,10 +348,10 @@ class PosyanduController {
       if (!jwtUser) {
         return c.json?.(
           {
-            status: 404,
-            message: 'user not found',
+            status: 401,
+            message: 'Unauthorized',
           },
-          404,
+          401,
         );
       }
       const isUpdateEmail = typeof posyanduBody.email === 'string' && posyanduBody.email.length > 0;
@@ -446,10 +446,10 @@ class PosyanduController {
       if (!jwtUser) {
         return c.json?.(
           {
-            status: 404,
-            message: 'user not found',
+            status: 401,
+            message: 'Unauthorized',
           },
-          404,
+          401,
         );
       }
       if (!params) {

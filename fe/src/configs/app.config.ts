@@ -124,3 +124,5 @@ export const SidebarDefaultData: SidebarContentType[] = [
     icon: "Settings",
   },
 ];
+
+export type UserRole = "PARENT" | "KADER" | "POSYANDU" | "ADMIN";

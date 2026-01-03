@@ -54,7 +54,7 @@ const RegisterContainer = () => {
               return nameSpace.router.push("/admin/home");
           }
         },
-      }
+      },
     );
   };
   return (

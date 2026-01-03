@@ -4,17 +4,15 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 import { useAppSelector } from "@/hooks/dispatch/dispatch";
+import { getCookie } from "cookies-next";
 
 const MOBILE_BREAKPOINT = 768;
 
 export default function NotSupportedPage() {
   const router = useRouter();
-  const current = useAppSelector((state) => state.auth.currentUser);
+  const currentRole = getCookie("user_role");
   const getBaseRedirectPath = () => {
-    // Mata Dini
-    if (!current) return "/login";
-
-    switch (current.user.role) {
+    switch (currentRole) {
       case "PARENT":
         return "/parent/home";
       case "KADER":

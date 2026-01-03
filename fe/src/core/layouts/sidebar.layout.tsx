@@ -11,11 +11,13 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/core/components/app-sidebar";
-import { useAppSelector } from "@/hooks/dispatch/dispatch";
+
 import useService from "@/hooks/mutation/prop.service";
 import { useAppNameSpace } from "@/hooks/useAppNameSpace";
 
 import FooterApp from "../components/footer-app";
+import { getCookie } from "cookies-next";
+import { UserRole } from "@/configs/app.config";
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -27,9 +29,7 @@ export function SidebarLayout({ children }: AppLayoutProps) {
   const { state } = useSidebar();
   const isCollapsed = state === "collapsed";
   const service = useService();
-  const currentRole = useAppSelector(
-    (state) => state.auth.currentUser?.user.role
-  );
+  const currentRole = getCookie("user_role") as UserRole | undefined;
   const logout = service.auth.mutation.logout();
   const [isActive, setIsActive] = useState<string>("");
 

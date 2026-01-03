@@ -20,10 +20,10 @@ class NotificationController {
       if (!jwtUser) {
         return c.json?.(
           {
-            status: 400,
-            message: 'user not found',
+            status: 401,
+            message: 'Unauthorized',
           },
-          400,
+          401,
         );
       }
 
@@ -89,13 +89,12 @@ class NotificationController {
       if (!jwtUser) {
         return c.json?.(
           {
-            status: 400,
-            message: 'user not found',
+            status: 401,
+            message: 'Unauthorized',
           },
-          400,
+          401,
         );
       }
-
       const user = await prisma.user.findFirst({
         where: {
           id: jwtUser.id,
@@ -302,10 +301,10 @@ class NotificationController {
       if (!jwtUser) {
         return c.json?.(
           {
-            status: 404,
-            message: 'user not found',
+            status: 401,
+            message: 'Unauthorized',
           },
-          400,
+          401,
         );
       }
       if (!notParams) {
@@ -389,10 +388,10 @@ class NotificationController {
       if (!jwtUser) {
         return c.json?.(
           {
-            status: 404,
-            message: 'user not found',
+            status: 401,
+            message: 'Unauthorized',
           },
-          404,
+          401,
         );
       }
       if (!notParams) {
@@ -466,10 +465,10 @@ class NotificationController {
       if (!jwtUser) {
         return c.json?.(
           {
-            status: 404,
-            message: 'user not found',
+            status: 401,
+            message: 'Unauthorized',
           },
-          404,
+          401,
         );
       }
       if (!notParams) {

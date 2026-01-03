@@ -1,4 +1,4 @@
-import { useEffect,useReducer } from "react";
+import { useEffect, useReducer } from "react";
 
 type AvatarState = {
   original: string | null;

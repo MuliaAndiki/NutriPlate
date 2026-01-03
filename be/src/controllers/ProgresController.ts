@@ -22,10 +22,10 @@ class ProgresController {
       if (!jwtUser) {
         return c.json?.(
           {
-            status: 404,
-            message: 'user not found',
+            status: 401,
+            message: 'Unauthorized',
           },
-          404,
+          401,
         );
       }
       if (!Array.isArray(progresBody.childId) || !progresBody.dayNumber || !progresBody.programId) {
@@ -127,13 +127,12 @@ class ProgresController {
       if (!jwtUser) {
         return c.json?.(
           {
-            status: 404,
-            message: 'user not found',
+            status: 401,
+            message: 'Unauthorized',
           },
-          404,
+          401,
         );
       }
-
       const user = await prisma.user.findFirst({
         where: {
           id: jwtUser.id,
@@ -284,10 +283,10 @@ class ProgresController {
       if (!jwtUser) {
         return c.json?.(
           {
-            status: 404,
-            message: 'user not found',
+            status: 401,
+            message: 'Unauthorized',
           },
-          404,
+          401,
         );
       }
 
@@ -374,10 +373,10 @@ class ProgresController {
       if (!jwtUser) {
         return c.json?.(
           {
-            status: 404,
-            message: 'user not found',
+            status: 401,
+            message: 'Unauthorized',
           },
-          404,
+          401,
         );
       }
       const user = await prisma.user.findFirst({
@@ -508,10 +507,10 @@ class ProgresController {
       if (!jwtUser) {
         return c.json?.(
           {
-            status: 404,
-            message: 'user not found',
+            status: 401,
+            message: 'Unauthorized',
           },
-          404,
+          401,
         );
       }
       if (!progresParams) {
@@ -632,7 +631,7 @@ class ProgresController {
         return c.json?.(
           {
             status: 401,
-            message: 'unauthorized',
+            message: 'Unauthorized',
           },
           401,
         );

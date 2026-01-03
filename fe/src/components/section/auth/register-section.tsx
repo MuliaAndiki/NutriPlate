@@ -47,9 +47,6 @@ const RegisterHeroSection: React.FC<RegisterProps> = ({
     <div className="w-full min-h-screen overflow-x-hidden">
       <div className="w-full min-h-screen flex justify-center items-center flex-col space-y-5">
         <div className="flex justify-center items-center w-full relative">
-          <div className="absolute left-0">
-            <ChevronLeft size={50} onClick={() => router.back()} />
-          </div>
           <h1 className="text-4xl font-extrabold">Daftar Akun</h1>
         </div>
         <form

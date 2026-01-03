@@ -23,7 +23,7 @@ class AuthApi {
     return res.data;
   }
   public async forgotPassword(
-    payload: FormForgotPassword
+    payload: FormForgotPassword,
   ): Promise<TResponse<any>> {
     const res = await AxiosClient.post("/api/auth/forgot", payload);
     return res.data;
@@ -37,7 +37,7 @@ class AuthApi {
     return res.data;
   }
   public async resetPassword(
-    payload: FormResetPassword
+    payload: FormResetPassword,
   ): Promise<TResponse<any>> {
     const res = await AxiosClient.post("/api/auth/reset-password", payload);
     return res.data;

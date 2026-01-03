@@ -18,10 +18,10 @@ class UserController {
       if (!jwtUser) {
         return c.json?.(
           {
-            status: 404,
-            message: 'user not found',
+            status: 401,
+            message: 'Unauthorized',
           },
-          404,
+          401,
         );
       }
 
@@ -85,13 +85,12 @@ class UserController {
       if (!jwtUser) {
         return c.json?.(
           {
-            status: 404,
-            message: 'user not found',
+            status: 401,
+            message: 'Unauthorized',
           },
-          404,
+          401,
         );
       }
-
       const cacheKey = [cacheKeys.user.byID(jwtUser.id)];
       let documentUrl: { photoUrl: string } = { photoUrl: '' };
       if (c.files?.photoUrl?.[0]) {
@@ -150,10 +149,10 @@ class UserController {
       if (!jwtUser) {
         return c.json?.(
           {
-            status: 404,
-            message: 'user not found',
+            status: 401,
+            message: 'Unauthorized',
           },
-          40,
+          401,
         );
       }
       const cacheKey = cacheKeys.user.byID(jwtUser.id);
@@ -202,10 +201,10 @@ class UserController {
       if (!jwtUser) {
         return c.json?.(
           {
-            status: 404,
-            message: 'user not found',
+            status: 401,
+            message: 'Unauthorized',
           },
-          404,
+          401,
         );
       }
       if (!usr) {
@@ -264,7 +263,13 @@ class UserController {
       const jwtUser = c.user as JwtPayload;
 
       if (!jwtUser) {
-        return c.json?.({ status: 400, message: 'user not found' }, 400);
+        return c.json?.(
+          {
+            status: 401,
+            message: 'Unauthorized',
+          },
+          401,
+        );
       }
 
       const cacheKey = cacheKeys.parent.list();
@@ -322,10 +327,10 @@ class UserController {
       if (!jwtUser) {
         return c.json?.(
           {
-            status: 404,
-            message: 'user not found',
+            status: 401,
+            message: 'Unauthorized',
           },
-          400,
+          401,
         );
       }
       if (!parentID) {
@@ -397,10 +402,10 @@ class UserController {
       if (!jwtUser) {
         return c.json?.(
           {
-            status: 404,
-            message: 'user not found',
+            status: 401,
+            message: 'Unauthorized',
           },
-          404,
+          401,
         );
       }
       if (!userID) {
@@ -474,10 +479,10 @@ class UserController {
       if (!jwtUser) {
         return c.json?.(
           {
-            status: 404,
-            message: 'user not found',
+            status: 401,
+            message: 'Unauthorized',
           },
-          404,
+          401,
         );
       }
       const session = await prisma.userSession.findFirst({
@@ -522,10 +527,10 @@ class UserController {
       if (!jwtUser) {
         return c.json?.(
           {
-            status: 404,
-            message: 'user not found',
+            status: 401,
+            message: 'Unauthorized',
           },
-          404,
+          401,
         );
       }
       const cacheKey = cacheKeys.kader.list();
@@ -586,14 +591,13 @@ class UserController {
     try {
       const jwtUser = c.user as JwtPayload;
       const userID = c.params as PickID;
-
       if (!jwtUser) {
         return c.json?.(
           {
-            status: 404,
-            message: 'user not found',
+            status: 401,
+            message: 'Unauthorized',
           },
-          404,
+          401,
         );
       }
       if (!userID) {
@@ -666,10 +670,10 @@ class UserController {
       if (!jwtUser) {
         return c.json?.(
           {
-            status: 404,
-            message: 'user not found',
+            status: 401,
+            message: 'Unauthorized',
           },
-          404,
+          401,
         );
       }
       const user = await prisma.user.findFirst({
@@ -789,10 +793,10 @@ class UserController {
       if (!jwtUser) {
         return c.json?.(
           {
-            status: 404,
-            message: 'user not found',
+            status: 401,
+            message: 'Unauthorized',
           },
-          404,
+          401,
         );
       }
       if (!chilParams) {
