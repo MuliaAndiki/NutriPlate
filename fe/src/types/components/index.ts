@@ -5,4 +5,5 @@ export interface RouteDetailChildType {
   title: string;
   icon2: any;
   href: string;
+  slice: string;
 }

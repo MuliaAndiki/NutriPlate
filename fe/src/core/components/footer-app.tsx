@@ -1,4 +1,5 @@
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+import { usePathname } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -7,7 +8,6 @@ import {
   NavigationParent,
   NavigationPosyandu,
 } from "@/configs/footer.config";
-import { usePathname } from "next/navigation";
 
 interface FooterAppProps {
   router: AppRouterInstance;

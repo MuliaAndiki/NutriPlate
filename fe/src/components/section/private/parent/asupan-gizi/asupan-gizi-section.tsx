@@ -1,9 +1,10 @@
+import { Icon } from "@iconify/react/dist/iconify.js";
+import Link from "next/link";
+
 import HistoryFood from "@/components/card/history-food";
 import IotStatus from "@/components/card/iot-status";
 import { Button } from "@/components/ui/button";
 import { HistoryFoodType } from "@/types/card";
-import { Icon } from "@iconify/react/dist/iconify.js";
-import Link from "next/link";
 
 interface AsupanGiziSectionProps {
   HistoryFoodData: HistoryFoodType[];

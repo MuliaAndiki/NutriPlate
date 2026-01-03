@@ -1,5 +1,7 @@
 import { redirect } from "next/navigation";
+
 import { authValidator } from "@/services/module/auth/auth.store";
+
 import { ClientGate } from "./client-gate";
 
 export default async function PrivateProviders({

@@ -1,12 +1,12 @@
 import {
   useForgotPasswsord,
   useLogin,
+  useLoginGoogle,
   useLogout,
   useRegister,
   useResend,
   useResetPassword,
   useVerify,
-  useLoginGoogle,
 } from "./state/mutation";
 
 export function useAuth() {

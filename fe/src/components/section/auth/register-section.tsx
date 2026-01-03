@@ -1,3 +1,4 @@
+import { useGoogleLogin } from "@react-oauth/google";
 import { ChevronLeft } from "lucide-react";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import Link from "next/link";
@@ -16,7 +17,6 @@ import {
 } from "@/components/ui/select";
 import { Spinner } from "@/components/ui/spinner";
 import { FormRegister } from "@/types/form/auth.form";
-import { useGoogleLogin } from "@react-oauth/google";
 
 interface RegisterProps {
   formRegister: FormRegister;

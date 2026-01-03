@@ -1,11 +1,10 @@
-import { FormUpdateChild } from "@/types/form/child.form";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { ChevronLeft } from "lucide-react";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import Image from "next/image";
-import UploadsTrigger from "@/utils/uploadTrigger";
-import { Input } from "@/components/ui/input";
 
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -15,8 +14,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
+import { FormUpdateChild } from "@/types/form/child.form";
 import { AlertContexType } from "@/types/ui";
+import UploadsTrigger from "@/utils/uploadTrigger";
 interface DataAnakHeroSectionProps {
   router: AppRouterInstance;
   formUpdateChild: FormUpdateChild | null;
@@ -50,7 +50,7 @@ const DataAnakHeroSection: React.FC<DataAnakHeroSectionProps> = ({
     <div className="w-full min-h-screen flex justify-start items-center flex-col p-2 space-y-2">
       <div className="w-full flex justify-start items-center">
         <ChevronLeft onClick={() => router.back()} className="scale-120" />
-        <h1 className="text-3xl font-bold">Data Anak</h1>
+        <h1 className="text-2xl font-bold">Data Anak</h1>
       </div>
       <div className="w-full flex flex-col border rounded-lg">
         <div className="w-full flex  items-center justify-start bg-primary rounded-lg border p-2">
@@ -147,6 +147,7 @@ const DataAnakHeroSection: React.FC<DataAnakHeroSectionProps> = ({
               <h1 className="text-lg font-bold">Jenis Kelamin</h1>
               <Select
                 value={formUpdateChild?.gender ?? ""}
+                key={formUpdateChild?.gender ?? ""}
                 disabled={!isEdit}
                 onValueChange={(value) => {
                   setFormUpdateChild!((prev) =>

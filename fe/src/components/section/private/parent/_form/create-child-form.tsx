@@ -1,3 +1,9 @@
+import { Icon } from "@iconify/react/dist/iconify.js";
+import { ChevronLeft, ImagePlus } from "lucide-react";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+import Image from "next/image";
+
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -8,25 +14,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import UploadsTrigger from "@/utils/uploadTrigger";
-import { Icon } from "@iconify/react/dist/iconify.js";
-import { ChevronLeft, ImagePlus } from "lucide-react";
-import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
-import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
 import { FormCreateChild } from "@/types/form/child.form";
-import Image from "next/image";
-import { Spinner } from "@/components/ui/spinner";
+import UploadsTrigger from "@/utils/uploadTrigger";
 
 interface FormCreateChildProps {
   router: AppRouterInstance;
   formCreateChild: FormCreateChild;
   setFormCreateChild: React.Dispatch<React.SetStateAction<FormCreateChild>>;
   preview: string | null;
-  setPreview: React.Dispatch<React.SetStateAction<string | null>>;
   onChangeAva: (e: any) => void;
   isPending: boolean;
   onCreate: () => void;
+  onRemovePreview: () => void;
 }
 const FormCreateChildSection: React.FC<FormCreateChildProps> = ({
   router,
@@ -34,9 +35,9 @@ const FormCreateChildSection: React.FC<FormCreateChildProps> = ({
   setFormCreateChild,
   preview,
   onChangeAva,
-  setPreview,
   isPending,
   onCreate,
+  onRemovePreview,
 }) => {
   return (
     <div className="w-full min-h-screen flex flex-col p-2 space-y-2 overflow-y-auto">
@@ -158,7 +159,7 @@ const FormCreateChildSection: React.FC<FormCreateChildProps> = ({
                   <Button
                     className="w-auto border-2 border-dashed "
                     variant={"ghost"}
-                    onClick={() => setPreview(null)}
+                    onClick={() => onRemovePreview()}
                   >
                     Hapus
                   </Button>

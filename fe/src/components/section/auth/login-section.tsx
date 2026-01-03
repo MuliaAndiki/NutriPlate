@@ -1,11 +1,11 @@
+import { useGoogleLogin } from "@react-oauth/google";
 import Link from "next/link";
 
+import GoogleSvg from "@/components/svg/google-svg";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { FormLogin } from "@/types/form/auth.form";
-import GoogleSvg from "@/components/svg/google-svg";
-import { useGoogleLogin } from "@react-oauth/google";
 
 interface LoginSectionProps {
   formLogin: FormLogin;

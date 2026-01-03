@@ -1,5 +1,6 @@
-import { IChild } from "../schema/child.schema";
 import { IconifyIcon } from "@iconify/react";
+
+import { IChild } from "../schema/child.schema";
 export interface HistoryFoodType {
   id: string;
   image: string;

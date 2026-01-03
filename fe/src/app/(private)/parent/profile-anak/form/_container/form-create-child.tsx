@@ -1,16 +1,19 @@
 "use client";
+import { useState } from "react";
+
 import FormCreateChildSection from "@/components/section/private/parent/_form/create-child-form";
 import { SidebarLayout } from "@/core/layouts/sidebar.layout";
 import useService from "@/hooks/mutation/prop.service";
 import { useAppNameSpace } from "@/hooks/useAppNameSpace";
+import { useAvatarReducer } from "@/hooks/useAvatarReducer";
 import { FormCreateChild } from "@/types/form/child.form";
 import { fileToBase64 } from "@/utils/base64";
-import { useEffect, useState } from "react";
 
 const FormCreateChildContainer = () => {
   const nameSpace = useAppNameSpace();
   const service = useService();
   const createChild = service.child.mutation.create();
+  const { avatar, removePreview, selectAvatar } = useAvatarReducer();
   const [formCreateChiild, setFormCreateChild] = useState<FormCreateChild>({
     dateOfBirth: "",
     fullName: "",
@@ -51,7 +54,6 @@ const FormCreateChildContainer = () => {
       });
     }
   };
-  const [preview, setPreview] = useState<string | null>(null);
 
   const handleChangeAvaChild = async (
     e: React.ChangeEvent<HTMLInputElement>
@@ -60,14 +62,21 @@ const FormCreateChildContainer = () => {
 
     if (file) {
       const base64 = await fileToBase64(file);
+      const Previewurl = URL.createObjectURL(file);
+      selectAvatar(Previewurl, base64);
       setFormCreateChild((prev) => ({
         ...prev,
         avaChild: base64,
       }));
-      const url = URL.createObjectURL(file);
-      setPreview(url);
-      return () => URL.revokeObjectURL(url);
     }
+  };
+
+  const handleRemovePreview = () => {
+    removePreview();
+    setFormCreateChild((prev) => ({
+      ...prev,
+      avaChild: "",
+    }));
   };
 
   return (
@@ -77,9 +86,9 @@ const FormCreateChildContainer = () => {
           router={nameSpace.router}
           formCreateChild={formCreateChiild}
           setFormCreateChild={setFormCreateChild}
-          preview={preview}
+          preview={avatar.preview}
           onChangeAva={handleChangeAvaChild}
-          setPreview={setPreview}
+          onRemovePreview={handleRemovePreview}
           isPending={createChild.isPending}
           onCreate={() => handleCreateChild()}
         />
