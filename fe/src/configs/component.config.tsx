@@ -1,6 +1,7 @@
+import { Icon } from "@iconify/react";
+
 import { HistoryFoodType, ProfileChildType } from "@/types/card";
 import { RouteDetailChildType } from "@/types/components";
-import { Icon } from "@iconify/react";
 export const HistoryFoodData: HistoryFoodType[] = [
   {
     id: "1",
@@ -77,18 +78,21 @@ export const RouteDetailChild: RouteDetailChildType[] = [
     title: "Data Anak",
     icon2: "mingcute:arrow-right-fill",
     href: "/parent/profile-anak/detail",
+    slice: "/data-anak",
   },
 
   {
     icon: "streamline-flex:health-care-2-remix",
     title: "Profil Kesehatan Anak",
     icon2: "mingcute:arrow-right-fill",
-    href: "#",
+    href: "/parent/profile-anak/detail",
+    slice: "/profile-kesehatan-anak",
   },
   {
     icon: "fluent:arrow-growth-24-filled",
     title: "Grafik Pertumbuhan Anak",
     icon2: "mingcute:arrow-right-fill",
-    href: "#",
+    href: "/parent/profile-anak/detail",
+    slice: "/grafik-pertumbuhan-anak",
   },
 ];

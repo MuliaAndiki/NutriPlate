@@ -1,5 +1,6 @@
-import { Card } from "../ui/card";
 import Image from "next/image";
+
+import { Card } from "../ui/card";
 
 const ChildFallback = () => {
   return (

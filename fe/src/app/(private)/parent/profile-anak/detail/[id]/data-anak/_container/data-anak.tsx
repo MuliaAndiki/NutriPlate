@@ -1,42 +1,44 @@
 "use client";
+import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
+
 import DataAnakHeroSection from "@/components/section/private/parent/detail-profile-anak/data-anak/data-anak-section";
 import { SidebarLayout } from "@/core/layouts/sidebar.layout";
 import useService from "@/hooks/mutation/prop.service";
 import { useAppNameSpace } from "@/hooks/useAppNameSpace";
-import { FormUpdateChild } from "@/types/form/child.form";
-import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
-import { parsePayload } from "@/utils/parse.format";
-import { fileToBase64 } from "@/utils/base64";
 import { useAvatarReducer } from "@/hooks/useAvatarReducer";
+import { FormUpdateChild } from "@/types/form/child.form";
+import { fileToBase64 } from "@/utils/base64";
+import { parsePayload } from "@/utils/parse.format";
 
 const DataAnakContainer = () => {
   const nameSpace = useAppNameSpace();
   const { id } = useParams<{ id: string }>();
   const service = useService();
   const childQueryByID = service.user.query.childById(id);
-  const chilDataByID = childQueryByID.data?.data ?? [];
+  const chilDataByID = childQueryByID.data?.data ?? null;
   const updateChild = service.child.mutation.update();
-
+  const deleteChild = service.child.mutation.delete();
   const [formUpdateChild, setFormUpdateChild] =
     useState<FormUpdateChild | null>(null);
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const { avatar, selectAvatar, removePreview } = useAvatarReducer(
     chilDataByID?.avaChild ?? null
   );
-  const deleteChild = service.child.mutation.delete();
 
   useEffect(() => {
-    if (chilDataByID) {
-      setFormUpdateChild({
+    if (!chilDataByID) return;
+    setFormUpdateChild((prev) => {
+      if (prev?.id === chilDataByID.id) return prev;
+      return {
         dateOfBirth: chilDataByID.dateOfBirth,
         fullName: chilDataByID.fullName,
         placeOfBirth: chilDataByID.placeOfBirth,
         gender: chilDataByID.gender,
         avaChild: chilDataByID.avaChild,
         id: chilDataByID.id,
-      });
-    }
+      };
+    });
   }, [chilDataByID]);
 
   const handleChangeAvaChild = async (

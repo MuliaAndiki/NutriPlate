@@ -1,9 +1,10 @@
+import { Icon } from "@iconify/react/dist/iconify.js";
+import Link from "next/link";
+
 import ChildCard from "@/components/card/child-card";
 import ChildFallback from "@/components/fallback/child.fallback";
 import { Button } from "@/components/ui/button";
 import { ChildCardType } from "@/types/card";
-import { Icon } from "@iconify/react/dist/iconify.js";
-import Link from "next/link";
 
 interface ProfileAnakSectionProps {
   profileAnak: ChildCardType[];

@@ -1,3 +1,8 @@
+import { Icon } from "@iconify/react/dist/iconify.js";
+import { ChevronLeft } from "lucide-react";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+import Link from "next/link";
+
 import ChildCard from "@/components/card/child-card";
 import ProfileChildCard from "@/components/card/profile-child";
 import StatusAsupan from "@/components/card/status-asupan";
@@ -7,11 +12,6 @@ import {
   RouteDetailChild,
 } from "@/configs/component.config";
 import { ChildCardProps } from "@/types/props.type";
-
-import { Icon } from "@iconify/react/dist/iconify.js";
-import { ChevronLeft } from "lucide-react";
-import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
-import Link from "next/link";
 
 interface DetailProfileAnakProps {
   isPending: boolean;
@@ -46,7 +46,6 @@ const DetailProfileAnakHeroSection: React.FC<
           <h1 className="font-extralight text-xs">09 Juli 2025 14.39 WIB</h1>
         </div>
         <div className="w-full grid grid-cols-3 grid-rows-1 justify-center items-center gap-2">
-          {/* ilmu baru */}
           {profileChildCardsConfig.map((item) => (
             <ProfileChildCard
               color={item.color}
@@ -78,7 +77,7 @@ const DetailProfileAnakHeroSection: React.FC<
             {RouteDetailChild.map((items, key) => (
               <Button variant={"btn"} className="w-full h-auto " key={key}>
                 <Link
-                  href={`${items.href}/${data.id}/data-anak`}
+                  href={`${items.href}/${data.id}/${items.slice}`}
                   className="w-full h-auto  "
                 >
                   <div className="w-full grid grid-cols-2 grid-rows-1 items-center ">

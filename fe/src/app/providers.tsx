@@ -1,5 +1,6 @@
 "use client";
 
+import { GoogleOAuthProvider } from "@react-oauth/google";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import AOS from "aos";
 import { useEffect } from "react";
@@ -8,14 +9,14 @@ import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 
 import { SidebarProvider } from "@/components/ui/sidebar";
+import { env } from "@/configs/env.config";
 import { AuthProvider } from "@/core/providers/auth.provider";
 import { ThemeProvider } from "@/core/providers/theme.provider";
 import { AlertProvinder } from "@/hooks/useAlert/costum-alert";
 import { ReactQueryClientProvider } from "@/pkg/react-query/query-client.pkg";
 import { persistor, store } from "@/stores/store";
-import { GoogleOAuthProvider } from "@react-oauth/google";
+
 import { composeProviders } from "./composeProvinders";
-import { env } from "@/configs/env.config";
 
 const Providers = composeProviders([
   ({ children }) => (

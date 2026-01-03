@@ -1,3 +1,4 @@
+import { Icon } from "@iconify/react/dist/iconify.js";
 import {
   Label,
   PolarGrid,
@@ -13,8 +14,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { ChartContainer, type ChartConfig } from "@/components/ui/chart";
-import { Icon } from "@iconify/react/dist/iconify.js";
+import { type ChartConfig,ChartContainer } from "@/components/ui/chart";
+
 import { Button } from "../ui/button";
 const StatusAsupan = () => {
   const chartData = [

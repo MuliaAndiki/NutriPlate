@@ -1,11 +1,11 @@
 "use client";
+import { useParams } from "next/navigation";
+import { useEffect } from "react";
+
 import DetailProfileAnakHeroSection from "@/components/section/private/parent/detail-profile-anak/detail-profile-anak-section";
 import { SidebarLayout } from "@/core/layouts/sidebar.layout";
-import { useAppNameSpace } from "@/hooks/useAppNameSpace";
-import { useParams } from "next/navigation";
-
 import useService from "@/hooks/mutation/prop.service";
-import { useEffect } from "react";
+import { useAppNameSpace } from "@/hooks/useAppNameSpace";
 const DetailProfileAnakContainer = () => {
   const nameSpace = useAppNameSpace();
   const service = useService();
