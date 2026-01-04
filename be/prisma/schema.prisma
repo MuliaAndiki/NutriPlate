@@ -272,6 +272,25 @@ model MlModel {
   @@map("ml_models")
 }
 
+model WhoHeightForAge {
+  id          String  @id @default(uuid())
+  gender      GenderType
+  ageMonths   Int
+
+  sdMinus3    Float
+  sdMinus2    Float
+  sdMinus1    Float
+  median      Float
+  sdPlus1     Float
+  sdPlus2     Float
+  sdPlus3     Float
+
+  createdAt  DateTime @default(now())
+
+  @@unique([gender, ageMonths])
+  @@map("who_height_for_age")
+}
+
 enum RoleType {
   PARENT
   KADER
