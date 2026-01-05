@@ -6,6 +6,7 @@ import PosyanduApi from "./module/posyandu/posyandu.service";
 import ProgramApi from "./module/program/program.service";
 import ProgresApi from "./module/progres/progres.service";
 import UserApi from "./module/user/user.service";
+import MeasurementApi from "./module/measurement/measurement.service";
 
 class Api {
   static Auth = new AuhtApi();
@@ -15,6 +16,7 @@ class Api {
   static Notification = new NotificationApi();
   static Program = new ProgramApi();
   static Progres = new ProgresApi();
+  static Measurement = new MeasurementApi();
 }
 
 export default Api;

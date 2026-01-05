@@ -44,4 +44,16 @@ export const cacheKeys = {
     list: () => `task:list`,
     byRole: (role: string) => `task:role:${role}`,
   },
+  who: {
+    list: () => `who:list`,
+    byGrowt: (id: string) => `who:child:${id}`,
+  },
+  measurement: {
+    list: () => `measurement:list`,
+    byChild: (id: string) => `measurement:child:${id}`,
+  },
+  evalution: {
+    list: () => `evalution:list`,
+    byChild: (id: string) => `evalution:child:${id}`,
+  },
 };
