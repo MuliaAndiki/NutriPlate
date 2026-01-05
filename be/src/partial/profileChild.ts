@@ -7,8 +7,4 @@ export interface ProfileChild {
   chronicConditions?: string[];
   feedingType?: string;
   activityLevel?: string;
-  baselineWeightKg?: number;
-  baselineHeightCm?: number;
-  baselineBmi?: number;
-  baselineZscore?: number;
 }

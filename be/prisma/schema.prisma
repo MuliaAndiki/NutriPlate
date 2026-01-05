@@ -51,7 +51,7 @@ model Child {
   foodIntake      Food[]
   measurements    Measurement[]
   programProgress NutritionProgramProgress[]
-
+  whoEvaluation WhoEvaluation[]
   @@index([parentId])
   @@index([posyanduId])
   @@map("children")
@@ -110,7 +110,7 @@ model Measurement {
   note                String?
   createdAt           DateTime        @default(now())
   child               Child           @relation(fields: [childId], references: [id])
-
+  whoEvaluation WhoEvaluation[]
   @@index([childId])
   @@map("measurements")
 }
@@ -271,6 +271,45 @@ model MlModel {
 
   @@map("ml_models")
 }
+
+model WhoHeightForAge {
+  id          String  @id @default(uuid())
+  gender      GenderType
+  ageMonths   Int
+
+  sdMinus3    Float
+  sdMinus2    Float
+  sdMinus1    Float
+  median      Float
+  sdPlus1     Float
+  sdPlus2     Float
+  sdPlus3     Float
+
+  createdAt  DateTime @default(now())
+
+  @@unique([gender, ageMonths])
+  @@map("who_height_for_age")
+}
+
+model WhoEvaluation {
+  id            String   @id @default(uuid())
+  childId       String
+  measurementId String @unique
+  ageMonths     Int
+  heightCm      Decimal
+  weightKg      Decimal
+  zScore        Float
+  classification Json
+  recommendation Json
+  createdAt     DateTime @default(now())
+  child       Child       @relation(fields: [childId], references: [id])
+  measurement Measurement @relation(fields: [measurementId], references: [id])
+
+  @@index([childId])
+  @@map("who_evaluations")
+}
+
+
 
 enum RoleType {
   PARENT

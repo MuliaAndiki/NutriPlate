@@ -1,5 +1,6 @@
 import { useAuth } from "./auths/useAuth";
 import { useChild } from "./childs/useChild";
+import { useMeasuremnet } from "./measurement/useMeasuremnet";
 import { useNotification } from "./notafications/useNotifications";
 import { usePosyandu } from "./posyandu/usePosyandu";
 import { useServices } from "./services/useService";
@@ -12,6 +13,7 @@ export const useService = () => ({
   notafication: useNotification(),
   service: useServices(),
   child: useChild(),
+  measuremnt: useMeasuremnet(),
 });
 
 export default useService;

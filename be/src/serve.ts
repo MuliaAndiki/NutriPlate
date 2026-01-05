@@ -1,7 +1,7 @@
 import app from './app';
 import { connectWithRetry } from './config/databases';
 import { env } from './config/env.config';
-import { connectRedis } from '@/utils/redis';
+import { connectRedis } from './utils/redis';
 import { initSocket } from './utils/socket';
 const port = env.PORT ? Number(env.PORT) : 5000;
 

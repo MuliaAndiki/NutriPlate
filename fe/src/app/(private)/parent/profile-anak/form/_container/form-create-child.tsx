@@ -28,10 +28,6 @@ const FormCreateChildContainer = () => {
       chronicConditions: [],
       feedingType: "",
       activityLevel: "",
-      baselineHeightCm: undefined,
-      baselineBmi: undefined,
-      baselineWeightKg: undefined,
-      baselineZscore: undefined,
     },
   });
 
@@ -56,7 +52,7 @@ const FormCreateChildContainer = () => {
   };
 
   const handleChangeAvaChild = async (
-    e: React.ChangeEvent<HTMLInputElement>,
+    e: React.ChangeEvent<HTMLInputElement>
   ) => {
     const file = e.target.files?.[0];
 

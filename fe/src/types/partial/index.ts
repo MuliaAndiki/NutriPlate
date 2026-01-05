@@ -13,10 +13,6 @@ export interface ProfileChild {
   chronicConditions?: string[];
   feedingType?: string;
   activityLevel?: string;
-  baselineWeightKg?: number | undefined;
-  baselineHeightCm?: number | undefined;
-  baselineBmi?: number | undefined;
-  baselineZscore?: number | undefined;
 }
 
 export interface SidebarContentType {
@@ -30,4 +26,11 @@ export enum NotifType {
   reminder,
   alert,
   edukasi,
+}
+
+export enum NutritionStatus {
+  severely_underweight,
+  underweight,
+  normal,
+  overweight,
 }

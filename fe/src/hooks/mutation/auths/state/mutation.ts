@@ -61,8 +61,8 @@ export function useLogout() {
       });
       nameSpace.queryClient.clear();
       deleteCookie(APP_SESSION_COOKIE_KEY);
-      deleteCookie("user_role", { path: "/home" });
-      nameSpace.router.push("/login");
+      deleteCookie("user_role");
+      nameSpace.router.replace("/login");
     },
     onError: (err) => {
       console.error(err);
@@ -72,9 +72,9 @@ export function useLogout() {
         icon: "warning",
       });
       nameSpace.queryClient.clear();
-      deleteCookie("user_role", { path: "/home" });
-      deleteCookie(APP_SESSION_COOKIE_KEY, { path: "/home" });
-      nameSpace.router.push("/login");
+      deleteCookie("user_role");
+      deleteCookie(APP_SESSION_COOKIE_KEY);
+      nameSpace.router.replace("/login");
     },
   });
 }
@@ -164,7 +164,7 @@ export function useForgotPasswsord() {
       const email = res.data.email;
       if (email) {
         nameSpace.router.push(
-          `/verify-otp?identifier=${email}&target=/reset-password`,
+          `/verify-otp?identifier=${email}&target=/reset-password`
         );
         return;
       }

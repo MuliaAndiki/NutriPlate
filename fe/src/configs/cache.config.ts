@@ -3,4 +3,7 @@ export const cacheKey = {
     list: () => ["child"] as const,
     byID: (id: string) => ["child", id],
   },
+  evaluate: {
+    byChild: (id: string) => ["evaluate", id],
+  },
 };
