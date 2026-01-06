@@ -1,4 +1,4 @@
-import { useGetChild, useGetChildById } from "./state/query";
+import { useGetChild, useGetChildById, useGetProfile } from "./state/query";
 
 export function useUsers() {
   return {
@@ -8,6 +8,7 @@ export function useUsers() {
     query: {
       childAll: useGetChild,
       childById: useGetChildById,
+      profile: useGetProfile,
     },
   };
 }

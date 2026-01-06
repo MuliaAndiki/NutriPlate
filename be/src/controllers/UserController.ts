@@ -695,8 +695,9 @@ class UserController {
         );
       }
       let whereCondicional: any = {};
-
+      let cacheKey = '';
       if (user.role === 'PARENT') {
+        cacheKey = cacheKeys.child.byParent(user.id);
         whereCondicional.parentId = user.id;
       } else if (user.role === 'POSYANDU') {
         const posyandu = await prisma.posyandu.findFirst({
@@ -716,11 +717,10 @@ class UserController {
             404,
           );
         }
-
         whereCondicional.posyanduId = posyandu.id;
+        cacheKey = cacheKeys.child.byPosyanduList(posyandu.id);
       }
 
-      const cacheKey = cacheKeys.child.byRole(user.role);
       try {
         const cacheChild = await this.redis.get(cacheKey);
         if (cacheChild) {

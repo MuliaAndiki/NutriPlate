@@ -6,7 +6,6 @@ import useService from "@/hooks/mutation/prop.service";
 import { useAppNameSpace } from "@/hooks/useAppNameSpace";
 
 const ProfileAnakContainer = () => {
-  const nameSpace = useAppNameSpace();
   const service = useService();
   const childQuery = service.user.query.childAll();
   const childData = childQuery.data?.data ?? [];

@@ -16,9 +16,6 @@ const GrafikPertumbuhanAnakContainer = () => {
   const measurementQuery = service.measuremnt.query.measurement(id);
   const growthChartData = growthChartQuery.data?.data ?? null;
   const measurementData = measurementQuery.data?.data ?? [];
-  useEffect(() => {
-    console.log("data", measurementData);
-  }, [measurementData]);
 
   const heightChartData =
     growthChartData?.heightChart?.lines?.child?.map(

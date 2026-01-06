@@ -6,6 +6,9 @@ export const cacheKey = {
   evaluate: {
     byChild: (id: string) => [`evaluate:child:${id}`],
   },
+  profile: {
+    user: () => ["user:profile"],
+  },
   measurement: {
     byChild: (id: string) => [`measurement:child:${id}`],
   },

@@ -13,8 +13,8 @@ export const cacheKeys = {
   },
   child: {
     list: () => `child:list`,
-    byRole: (role: string) => `child:parent:${role}`,
     byID: (id: string) => `child:id:${id}`,
+    byParent: (id: string) => `child:parent:${id}`,
     byPosyanduList: (posyandu: string) => `child:posyandu:list:${posyandu}`,
   },
   parent: {
