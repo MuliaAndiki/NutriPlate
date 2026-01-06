@@ -1,5 +1,3 @@
-import { RoleType } from "../partial";
-
 export interface IAuth {
   id: string;
   email: string;

@@ -19,3 +19,11 @@ export function useGetChildById(id: string) {
     enabled: !!id,
   });
 }
+
+export function useGetProfile() {
+  return useQuery({
+    queryKey: cacheKey.profile.user(),
+    queryFn: () => Api.User.getProfile(),
+    staleTime: 1000 * 60 * 5,
+  });
+}

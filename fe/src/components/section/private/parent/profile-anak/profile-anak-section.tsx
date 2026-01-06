@@ -35,8 +35,8 @@ const ProfileAnakHeroSection: React.FC<ProfileAnakSectionProps> = ({
       </div>
 
       <div className="w-full flex items-center ">
-        <Icon icon="ph:baby" width="30" height="30" className="text-primary" />
-        <h1 className="text-lg font-extrabold">Daftar Anak</h1>
+        <Icon icon="ph:baby" width="45" height="45" className="text-primary" />
+        <h1 className="text-2xl font-extrabold">Daftar Anak</h1>
       </div>
 
       {profileAnak.length > 0 ? (

@@ -1,32 +1,37 @@
 import { Icon } from "@iconify/react";
-
 import { NagivationType } from "@/types/ui";
 
+const routing = {
+  parent: "/parent",
+  kader: "/kader",
+  posyandu: "/posyandu",
+  admin: "/admin",
+};
 export const NavigationParent: NagivationType[] = [
   {
     name: "Home",
     icon: <Icon icon="streamline-ultimate:house-4-bold" />,
-    href: "/parent/home",
+    href: `${routing.parent}/home"`,
   },
   {
     name: "Profile Anak",
     icon: <Icon icon="healthicons:child-program" />,
-    href: "/parent/profile-anak",
+    href: `${routing.parent}/profile-anak`,
   },
   {
     name: "Asupan Gizi",
     icon: <Icon icon="fa7-solid:cutlery" />,
-    href: "/parent/asupan-gizi",
+    href: `${routing.parent}/asupan-gizi`,
   },
   {
     name: "Programs",
     icon: <Icon icon="hugeicons:note" />,
-    href: "/parent/program",
+    href: `${routing.parent}/program`,
   },
   {
     name: "Profile",
     icon: <Icon icon="mdi:account-outline" />,
-    href: "#",
+    href: `${routing.parent}/profile`,
   },
 ];
 
