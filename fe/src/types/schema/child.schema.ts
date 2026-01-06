@@ -10,4 +10,6 @@ export interface IChild {
   gender: string;
   avaChild?: string;
   profileChild: ProfileChild;
+  createdAt: string;
+  updatedAt: string;
 }

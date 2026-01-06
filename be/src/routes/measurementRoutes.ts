@@ -20,7 +20,7 @@ class MeasurementRoutes {
 
   private routes() {
     this.measurementRoutes.post(
-      '/create',
+      '/:childID',
       (c: AppContext) => MeasurementController.createMeasurement(c),
       {
         beforeHandle: [verifyToken().beforeHandle, requireRole(['POSYANDU']).beforeHandle],

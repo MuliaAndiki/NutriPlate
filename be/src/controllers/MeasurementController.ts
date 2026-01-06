@@ -4,6 +4,7 @@ import { JwtPayload } from '@/types/auth.types';
 import whoGrowthCalculationService from '@/service/whoGrowth.service';
 import { cacheKeys } from '@/cache/cacheKey';
 import { getRedis } from '@/utils/redis';
+import { PickCreateMeasurements, PickMeasurementsChildID } from '@/types/measurement.types';
 
 class MeasurementController {
   private get redis() {
@@ -12,23 +13,25 @@ class MeasurementController {
   public async createMeasurement(c: AppContext) {
     try {
       const jwtUser = c.user as JwtPayload;
-      const body = c.body as any;
+      const body = c.body as PickCreateMeasurements;
+      const params = c.params as PickMeasurementsChildID;
 
       if (!jwtUser) {
         return c.json?.({ status: 401, message: 'Unauthorized' }, 401);
       }
-      // tuker dengan params nanti
-      const { childId, measurementDate, heightCm, weightKg } = body;
 
-      if (!childId || !measurementDate || !heightCm || !weightKg) {
+      if (!params?.childID) {
+        return c.json?.({ status: 400, message: 'childID param is required' }, 400);
+      }
+
+      if (!body.measurementDate || !body.heightCm || !body.weightKg) {
         return c.json?.(
-          { status: 400, message: 'childId, measurementDate, heightCm, weightKg required' },
+          { status: 400, message: 'measurementDate, heightCm, weightKg required' },
           400,
         );
       }
-
       const child = await prisma.child.findUnique({
-        where: { id: childId },
+        where: { id: params.childID },
         select: {
           id: true,
           parentId: true,
@@ -42,20 +45,12 @@ class MeasurementController {
         return c.json?.({ status: 404, message: 'Child not found' }, 404);
       }
 
-      const measurement = await prisma.measurement.create({
-        data: {
-          childId,
-          measurementDate: new Date(measurementDate),
-          heightCm: Number(heightCm),
-          weightKg: Number(weightKg),
-          nutritionStatus: 'normal',
-        },
-      });
+      const measurementDateObj = new Date(body.measurementDate);
 
       const ageMonths = Math.max(
         0,
         Math.floor(
-          (measurement.measurementDate.getTime() - child.dateOfBirth.getTime()) /
+          (measurementDateObj.getTime() - child.dateOfBirth.getTime()) /
             (1000 * 60 * 60 * 24 * 30.4375),
         ),
       );
@@ -71,7 +66,8 @@ class MeasurementController {
       const who = whoData.reduce((prev, curr) =>
         Math.abs(curr.ageMonths - ageMonths) < Math.abs(prev.ageMonths - ageMonths) ? curr : prev,
       );
-      const zScore = whoGrowthCalculationService.calculateZScore(Number(measurement.heightCm), {
+
+      const zScore = whoGrowthCalculationService.calculateZScore(Number(body.heightCm), {
         median: who.median,
         sdMinus3: who.sdMinus3,
         sdMinus2: who.sdMinus2,
@@ -80,11 +76,10 @@ class MeasurementController {
         sdPlus2: who.sdPlus2,
         sdPlus3: who.sdPlus3,
       });
-
       const classification = whoGrowthCalculationService.classifyGrowthStatus(
         zScore.zScore,
         who.median,
-        Number(measurement.heightCm),
+        Number(body.heightCm),
       );
 
       const recommendation = whoGrowthCalculationService.generateRecommendation(
@@ -92,30 +87,41 @@ class MeasurementController {
         ageMonths,
       );
 
-      const classificationJson = JSON.parse(JSON.stringify(classification));
-      const recommendationJson = JSON.parse(JSON.stringify(recommendation));
+      const nutritionStatus = (() => {
+        if (zScore.zScore < -3) return 'severely_underweight';
+        if (zScore.zScore < -2) return 'underweight';
+        if (zScore.zScore <= 2) return 'normal';
+        return 'overweight';
+      })();
 
-      if (ageMonths < 3 && heightCm > 70) {
-        return c.json?.({ status: 400, message: 'Invalid height for age' }, 400);
-      }
+      const measurement = await prisma.measurement.create({
+        data: {
+          childId: child.id,
+          measurementDate: measurementDateObj,
+          heightCm: Number(body.heightCm),
+          weightKg: Number(body.weightKg),
+          nutritionStatus,
+          note: body.note,
+        },
+      });
 
       const evaluation = await prisma.whoEvaluation.create({
         data: {
-          childId,
+          childId: child.id,
           measurementId: measurement.id,
           ageMonths,
           heightCm: measurement.heightCm,
           weightKg: measurement.weightKg,
           zScore: zScore.zScore,
-          classification: classificationJson,
-          recommendation: recommendationJson,
+          classification: JSON.parse(JSON.stringify(classification)),
+          recommendation: JSON.parse(JSON.stringify(recommendation)),
         },
       });
 
       return c.json?.(
         {
           status: 201,
-          message: 'Measurement created & evaluated',
+          message: 'Measurement created & automatically evaluated',
           data: {
             measurement,
             evaluation,
@@ -319,13 +325,16 @@ class MeasurementController {
       const measurement = await prisma.measurement.findMany({
         where: { childId },
         orderBy: { createdAt: 'asc' },
-        take: 10,
+        take: 20,
       });
       if (!measurement) {
-        return c.json?.({
-          status: 400,
-          message: 'server internal error',
-        });
+        return c.json?.(
+          {
+            status: 400,
+            message: 'server internal error',
+          },
+          400,
+        );
       } else {
         await this.redis.set(cacheKey, JSON.stringify(measurement), { EX: 60 });
       }

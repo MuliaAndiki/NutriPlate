@@ -21,7 +21,7 @@ export const NavigationParent: NagivationType[] = [
   {
     name: "Programs",
     icon: <Icon icon="hugeicons:note" />,
-    href: "#",
+    href: "/parent/program",
   },
   {
     name: "Profile",

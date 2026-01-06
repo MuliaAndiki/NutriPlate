@@ -5,6 +5,7 @@ import { SidebarLayout } from "@/core/layouts/sidebar.layout";
 import useService from "@/hooks/mutation/prop.service";
 import { useAppNameSpace } from "@/hooks/useAppNameSpace";
 import { useParams } from "next/navigation";
+import { useEffect } from "react";
 
 const GrafikPertumbuhanAnakContainer = () => {
   const nameSpace = useAppNameSpace();
@@ -12,7 +13,12 @@ const GrafikPertumbuhanAnakContainer = () => {
   const service = useService();
 
   const growthChartQuery = service.measuremnt.query.growthChart(id);
+  const measurementQuery = service.measuremnt.query.measurement(id);
   const growthChartData = growthChartQuery.data?.data ?? null;
+  const measurementData = measurementQuery.data?.data ?? [];
+  useEffect(() => {
+    console.log("data", measurementData);
+  }, [measurementData]);
 
   const heightChartData =
     growthChartData?.heightChart?.lines?.child?.map(
@@ -41,6 +47,7 @@ const GrafikPertumbuhanAnakContainer = () => {
           heightChartData={heightChartData}
           weightChartData={weightChartData}
           summary={growthChartData?.summary}
+          historyMeasument={measurementData ?? []}
         />
       </main>
     </SidebarLayout>

@@ -5,7 +5,16 @@ import { useQuery } from "@tanstack/react-query";
 export function useGetGrowthChart(id: string) {
   return useQuery({
     queryKey: cacheKey.evaluate.byChild(id),
-    queryFn: () => Api.Measurement.getEvaluation(id),
+    queryFn: () => Api.Measurement.getGrowth(id),
+    staleTime: 1000 * 60 * 5,
+    enabled: !!id,
+  });
+}
+
+export function useGetMeasurement(id: string) {
+  return useQuery({
+    queryKey: cacheKey.measurement.byChild(id),
+    queryFn: async () => Api.Measurement.getMeasurement(id),
     staleTime: 1000 * 60 * 5,
     enabled: !!id,
   });

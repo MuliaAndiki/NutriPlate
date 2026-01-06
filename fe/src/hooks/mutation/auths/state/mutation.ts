@@ -48,6 +48,37 @@ export function useLogin() {
     },
   });
 }
+export function useLoginGoogle() {
+  const nameSpace = useAppNameSpace();
+  return useMutation<TResponse<any>, Error, any>({
+    mutationFn: (payload) => Api.Auth.LoginGoogle(payload),
+    onSuccess: (res) => {
+      const token = res.data.token;
+      const role = res.data.role;
+      setCookie(APP_SESSION_COOKIE_KEY, token, {
+        maxAge: APP_REFRESH_TOKEN_COOKIE_EXPIRES_IN,
+        path: "/",
+      });
+      setCookie("user_role", role, {
+        maxAge: 60 * 60 * 24 * 7,
+        path: "/",
+      });
+      nameSpace.alert.toast({
+        title: "succes",
+        message: "welcom to nutriplate",
+        icon: "success",
+      });
+    },
+    onError: (err) => {
+      console.error(err);
+      nameSpace.alert.toast({
+        title: "failed",
+        message: "try again",
+        icon: "error",
+      });
+    },
+  });
+}
 
 export function useLogout() {
   const nameSpace = useAppNameSpace();
@@ -205,38 +236,6 @@ export function useResetPassword() {
       nameSpace.alert.toast({
         title: "failed",
         message: "failed reset password",
-        icon: "error",
-      });
-    },
-  });
-}
-
-export function useLoginGoogle() {
-  const nameSpace = useAppNameSpace();
-  return useMutation<TResponse<any>, Error, any>({
-    mutationFn: (payload) => Api.Auth.LoginGoogle(payload),
-    onSuccess: (res) => {
-      const token = res.data.token;
-      const role = res.data.role;
-      setCookie(APP_SESSION_COOKIE_KEY, token, {
-        maxAge: APP_REFRESH_TOKEN_COOKIE_EXPIRES_IN,
-        path: "/home",
-      });
-      setCookie("user_role", role, {
-        maxAge: 60 * 60 * 24 * 7,
-        path: "/home",
-      });
-      nameSpace.alert.toast({
-        title: "succes",
-        message: "welcom to nutriplate",
-        icon: "success",
-      });
-    },
-    onError: (err) => {
-      console.error(err);
-      nameSpace.alert.toast({
-        title: "failed",
-        message: "try again",
         icon: "error",
       });
     },
