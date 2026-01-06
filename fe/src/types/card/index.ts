@@ -1,5 +1,4 @@
-import { IconifyIcon } from "@iconify/react";
-
+import { NutritionStatus } from "../partial";
 import { IChild } from "../schema/child.schema";
 export interface HistoryFoodType {
   id: string;
@@ -20,6 +19,7 @@ export type ChildCardType = Pick<
   | "placeOfBirth"
   | "id"
   | "profileChild"
+  | "updatedAt"
 >;
 
 export interface ProfileChildType {
@@ -32,4 +32,16 @@ export interface ProfileChildType {
   text: string;
   border: string;
   getValue: (profile: any) => number | string | null;
+}
+
+export interface GrowthStatusType {
+  id: string;
+  childId: string;
+  measurementDate: string;
+  weightKg: string;
+  heightCm: string;
+  headCircumferenceCm?: string;
+  nutritionStatus: NutritionStatus;
+  note?: string;
+  createdAt: string;
 }

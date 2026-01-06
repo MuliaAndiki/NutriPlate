@@ -3,13 +3,15 @@ import { FormcreateMeasurement } from "@/types/form/measurement.type";
 import AxiosClient from "@/utils/axios.client";
 
 class MeasurementApi {
+  // Posyandu
   public async createMeasurementChild(
-    payload: FormcreateMeasurement
+    payload: FormcreateMeasurement,
+    id: string
   ): Promise<TResponse<any>> {
-    const res = await AxiosClient.post("/api/measurement/create", payload);
+    const res = await AxiosClient.post(`/api/measurement/${id}`, payload);
     return res.data;
   }
-  public async getEvaluation(id: string): Promise<TResponse<any>> {
+  public async getGrowth(id: string): Promise<TResponse<any>> {
     const res = await AxiosClient.get(`/api/measurement/evaluation/${id}`);
     return res.data;
   }

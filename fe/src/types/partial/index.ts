@@ -28,9 +28,8 @@ export enum NotifType {
   edukasi,
 }
 
-export enum NutritionStatus {
-  severely_underweight,
-  underweight,
-  normal,
-  overweight,
-}
+export type NutritionStatus =
+  | "severely_underweight"
+  | "underweight"
+  | "normal"
+  | "overweight";

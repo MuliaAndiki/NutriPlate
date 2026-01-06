@@ -1,4 +1,4 @@
-import { useGetGrowthChart } from "./state/query";
+import { useGetGrowthChart, useGetMeasurement } from "./state/query";
 
 export function useMeasuremnet() {
   return {
@@ -7,6 +7,7 @@ export function useMeasuremnet() {
     },
     query: {
       growthChart: useGetGrowthChart,
+      measurement: useGetMeasurement,
     },
   };
 }

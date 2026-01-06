@@ -12,6 +12,7 @@ import {
   RouteDetailChild,
 } from "@/configs/component.config";
 import { ChildCardProps } from "@/types/props.type";
+import { formatDate, getTime } from "@/utils/string.format";
 
 interface DetailProfileAnakProps {
   isPending: boolean;
@@ -43,7 +44,9 @@ const DetailProfileAnakHeroSection: React.FC<
         </div>
         <div className="w-full flex justify-between items-center">
           <h1 className="font-extralight text-xs">Terakhir Diperbarui</h1>
-          <h1 className="font-extralight text-xs">09 Juli 2025 14.39 WIB</h1>
+          <h1 className="font-extralight text-xs">
+            {formatDate(data.updatedAt)} {getTime(data.updatedAt)}
+          </h1>
         </div>
         <div className="w-full grid grid-cols-3 grid-rows-1 justify-center items-center gap-2">
           {profileChildCardsConfig.map((item) => (
