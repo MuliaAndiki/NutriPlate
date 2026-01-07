@@ -61,7 +61,7 @@ export function SidebarLayout({ children }: AppLayoutProps) {
             </div>
 
             <div className="flex-1  overflow-auto w-full">
-              <div className="container pb-15 max-w-7xl w-full mx-auto p-1">
+              <div className="container pb-15 max-w-7xl w-full mx-auto p-2">
                 {children}
               </div>
             </div>

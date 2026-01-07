@@ -11,7 +11,7 @@ export const NavigationParent: NagivationType[] = [
   {
     name: "Home",
     icon: <Icon icon="streamline-ultimate:house-4-bold" />,
-    href: `${routing.parent}/home"`,
+    href: `${routing.parent}/home`,
   },
   {
     name: "Profile Anak",

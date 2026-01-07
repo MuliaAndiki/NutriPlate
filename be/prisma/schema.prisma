@@ -18,7 +18,7 @@ model User {
   otp           String?
   expOtp        DateTime?
   token         String?
-  photoUrl      String?
+  avaUrl      String?
   activateExp   DateTime?
   activateToken String?
   createdAt     DateTime            @default(now())

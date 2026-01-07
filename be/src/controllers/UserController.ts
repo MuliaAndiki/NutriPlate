@@ -7,6 +7,8 @@ import { getRedis } from '@/utils/redis';
 import { PickChilID } from '@/types/child.types';
 import { cacheKeys } from '@/cache/cacheKey';
 import { error } from 'console';
+import { generateOtp } from '@/utils/generate-otp';
+import { sendOTPEmail } from '@/utils/mailer';
 class UserController {
   private get redis() {
     return getRedis();
@@ -92,34 +94,59 @@ class UserController {
         );
       }
       const cacheKey = [cacheKeys.user.byID(jwtUser.id)];
-      let documentUrl: { photoUrl: string } = { photoUrl: '' };
-      if (c.files?.photoUrl?.[0]) {
-        const file = c.files.photoUrl[0];
+
+      const isUpdateEmail = typeof user.email === 'string' && user.email.length > 0;
+      const isUpdatePhone = typeof user.email === 'string' && user.email.length > 0;
+      let documentUrl: { avaUrl: string } = { avaUrl: '' };
+      if (c.files?.avaUrl?.[0]) {
+        const file = c.files.avaUrl[0];
         const buffer = file.buffer;
 
-        const result = await uploadCloudinary(buffer, 'photoUrl', file.originalname);
-        documentUrl.photoUrl = result.secure_url;
+        const result = await uploadCloudinary(buffer, 'avaUrl', file.originalname);
+        documentUrl.avaUrl = result.secure_url;
       } else if (
-        user.photoUrl &&
-        typeof user.photoUrl === 'string' &&
-        user.photoUrl.startsWith('data:image')
+        user.avaUrl &&
+        typeof user.avaUrl === 'string' &&
+        user.avaUrl.startsWith('data:image')
       ) {
-        const base64 = user.photoUrl;
+        const base64 = user.avaUrl;
         const buffer = Buffer.from(base64.split(',')[1], 'base64');
-
-        const result = await uploadCloudinary(buffer, 'photoUrl', 'image.png');
-        documentUrl.photoUrl = result.secure_url;
+        const result = await uploadCloudinary(buffer, 'avaUrl', 'image.png');
+        documentUrl.avaUrl = result.secure_url;
       }
-      const Auth = await prisma.user.update({
-        where: {
-          id: jwtUser.id,
-        },
-        data: {
-          fullName: user.fullName,
-          email: user.email,
-          photoUrl: documentUrl.photoUrl,
-          phone: user.phone,
-        },
+      const updateUser = await prisma.$transaction(async (tx) => {
+        const data: any = {};
+
+        if (user.fullName) data.fullName = user.fullName;
+        if (documentUrl.avaUrl) {
+          data.avaUrl = documentUrl.avaUrl;
+        }
+
+        if (isUpdateEmail) {
+          const otp = generateOtp(6);
+          const expOtp = new Date(Date.now() + 5 * 60 * 1000);
+
+          data.email = user.email;
+          data.phone = null;
+          data.isVerify = false;
+          data.otp = otp;
+          data.expOtp = expOtp;
+
+          await sendOTPEmail(user.email!, otp);
+        }
+
+        if (isUpdatePhone) {
+          data.phone = user.phone;
+          data.email = null;
+          data.isVerify = true;
+          data.otp = null;
+          data.expOtp = null;
+        }
+
+        return tx.user.update({
+          where: { id: jwtUser.id },
+          data,
+        });
       });
 
       await this.redis.del(cacheKey).catch(error);
@@ -127,7 +154,10 @@ class UserController {
         {
           status: 201,
           message: 'succes update profile',
-          data: Auth,
+          data: {
+            updateUser,
+            isUpdateEmail,
+          },
         },
         201,
       );

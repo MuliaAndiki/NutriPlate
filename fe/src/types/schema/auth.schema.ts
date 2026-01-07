@@ -7,7 +7,7 @@ export interface IAuth {
   phone: string;
   token?: string;
   role: string;
-  photoUrl: string;
+  avaUrl: string;
   createdAt: Date;
   updatedAt: Date;
   otp?: string;
