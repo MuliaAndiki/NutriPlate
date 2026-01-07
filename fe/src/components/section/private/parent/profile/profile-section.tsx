@@ -2,22 +2,36 @@ import { IAuth } from "@/types/schema/auth.schema";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@iconify/react/dist/iconify.js";
-import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 export interface ProfileProps {
   userProfileType: IAuth;
+  onLogout: () => void;
 }
 const ProfileParentHeroSection: React.FC<ProfileProps> = ({
   userProfileType,
+  onLogout,
 }) => {
-  // Bikin Routeing lalu map
+  const Routing = [
+    {
+      title: "Edit Profile",
+      icon: "akar-icons:edit",
+      icon2: "mingcute:arrow-right-fill",
+      href: "/parent/profile/edit-profile",
+    },
+    {
+      title: "Ubah Kata Sandi",
+      icon: "material-symbols:lock-outline",
+      icon2: "mingcute:arrow-right-fill",
+      href: "/",
+    },
+  ];
   return (
     <div className="w-full min-h-full flex justify-start items-start flex-col">
       <h1 className="text-2xl font-extrabold">Akun</h1>
       <div className="w-full flex justify-center items-center flex-col space-y-5">
         <Image
           alt="profile"
-          src={userProfileType.photoUrl ?? "/avatars/1.png"}
+          src={userProfileType.avaUrl ?? "/avatars/1.png"}
           width={150}
           height={150}
           className="object-cover rounded-full"
@@ -28,21 +42,39 @@ const ProfileParentHeroSection: React.FC<ProfileProps> = ({
           {userProfileType.email ?? userProfileType.phone}
         </h1>
       </div>
-      <div className="w-full my-2 flex justify-center items-center">
+      <div className="w-full flex flex-col h-full max-h-lg  items-center justify-between">
+        <div className="w-full my-2 flex  space-y-2 justify-center flex-col items-center">
+          {Routing.map((items, key) => (
+            <Button
+              className="w-full flex items-start  justify-start p-1 h-auto"
+              key={key}
+              variant={"liner"}
+            >
+              <Link
+                className="w-full flex items-center justify-between h-auto p-2"
+                href={items.href}
+              >
+                <div className="flex h-auto justify-start items-center w-full space-x-4 ">
+                  <Icon
+                    icon={items.icon}
+                    width={34}
+                    height={34}
+                    className="text-primary scale-150 "
+                  />
+                  <h1 className="text-lg font-semibold">{items.title}</h1>
+                </div>
+                <Icon icon={items.icon2} width={34} height={34} />
+              </Link>
+            </Button>
+          ))}
+        </div>
+
         <Button
-          className="w-full flex items-center justify-between p-1 h-auto"
-          variant={"liner"}
+          className="w-full"
+          variant={"destructive"}
+          onClick={() => onLogout()}
         >
-          <div className="flex h-auto justify-start items-center w-full ">
-            <Icon
-              icon="mage:edit"
-              width="104"
-              height="104"
-              className="text-primary "
-            />
-            <h1 className="text-lg font-semibold">Edit Profile</h1>
-          </div>
-          <ChevronRight />
+          Keluar
         </Button>
       </div>
     </div>

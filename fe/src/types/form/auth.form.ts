@@ -12,7 +12,7 @@ export type FormSendOtp = Pick<IAuth, "email">;
 export type FormResetPassword = Pick<IAuth, "password" | "identifier">;
 export type FormUpdateProfile = Pick<
   IAuth,
-  "email" | "fullName" | "photoUrl" | "phone"
+  "identifier" | "fullName" | "avaUrl"
 >;
 export type FormUpdatePassword = Pick<IAuth, "password">;
 export type FormActiveAccount = Pick<IAuth, "activateToken" | "password">;

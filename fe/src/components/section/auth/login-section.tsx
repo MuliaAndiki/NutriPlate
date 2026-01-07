@@ -39,7 +39,7 @@ const LoginHeroSection: React.FC<LoginSectionProps> = ({
             e.preventDefault();
             onLogin();
           }}
-          className="w-full max-w-sm flex justify-center items-center flex-col gap-4 mt-4"
+          className="w-full max-w-sm flex  justify-center items-center flex-col gap-4 mt-4"
         >
           <div className="w-full">
             <label htmlFor="phone/email" className="text-lg font-semibold">
