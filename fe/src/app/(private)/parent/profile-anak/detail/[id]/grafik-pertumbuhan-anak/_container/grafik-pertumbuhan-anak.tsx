@@ -5,7 +5,7 @@ import { SidebarLayout } from "@/core/layouts/sidebar.layout";
 import useService from "@/hooks/mutation/prop.service";
 import { useAppNameSpace } from "@/hooks/useAppNameSpace";
 import { useParams } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const GrafikPertumbuhanAnakContainer = () => {
   const nameSpace = useAppNameSpace();
@@ -36,15 +36,29 @@ const GrafikPertumbuhanAnakContainer = () => {
       child: childPoint.value,
     })) ?? [];
 
+  const title = {
+    weight: "Grafik Berat Badan vs Usia",
+    height: "Grafik Tinggi Badan vs Usia",
+  };
+
   return (
     <SidebarLayout>
       <main className="w-full">
         <GrafikPertumbuhanAnakHeroSection
-          router={nameSpace.router}
-          heightChartData={heightChartData}
-          weightChartData={weightChartData}
-          summary={growthChartData?.summary}
-          historyMeasument={measurementData ?? []}
+          namespace={{
+            router: nameSpace.router,
+          }}
+          servive={{
+            query: {
+              heightChartData: heightChartData,
+              historyMeasument: measurementData,
+              summary: growthChartData?.summary,
+              weightChartData: weightChartData,
+            },
+          }}
+          state={{
+            title: title,
+          }}
         />
       </main>
     </SidebarLayout>

@@ -4,13 +4,16 @@ import { Button } from "@/components/ui/button";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import Link from "next/link";
 export interface ProfileProps {
-  userProfileType: IAuth;
-  onLogout: () => void;
+  service: {
+    mutation: {
+      onLogout: () => void;
+    };
+    query: {
+      userProfileType: IAuth;
+    };
+  };
 }
-const ProfileParentHeroSection: React.FC<ProfileProps> = ({
-  userProfileType,
-  onLogout,
-}) => {
+const ProfileParentHeroSection: React.FC<ProfileProps> = ({ service }) => {
   const Routing = [
     {
       title: "Edit Profile",
@@ -22,7 +25,7 @@ const ProfileParentHeroSection: React.FC<ProfileProps> = ({
       title: "Ubah Kata Sandi",
       icon: "material-symbols:lock-outline",
       icon2: "mingcute:arrow-right-fill",
-      href: "/",
+      href: "/parent/profile/ubah-password",
     },
   ];
   return (
@@ -31,15 +34,18 @@ const ProfileParentHeroSection: React.FC<ProfileProps> = ({
       <div className="w-full flex justify-center items-center flex-col space-y-5">
         <Image
           alt="profile"
-          src={userProfileType.avaUrl ?? "/avatars/1.png"}
+          src={service.query.userProfileType.avaUrl ?? "/avatars/1.png"}
           width={150}
           height={150}
           className="object-cover rounded-full"
         />
 
-        <h1 className="text-2xl font-bold">{userProfileType.fullName}</h1>
+        <h1 className="text-2xl font-bold">
+          {service.query.userProfileType.fullName}
+        </h1>
         <h1 className="font-light">
-          {userProfileType.email ?? userProfileType.phone}
+          {service.query.userProfileType.email ??
+            service.query.userProfileType.phone}
         </h1>
       </div>
       <div className="w-full flex flex-col h-full max-h-lg  items-center justify-between">
@@ -72,7 +78,7 @@ const ProfileParentHeroSection: React.FC<ProfileProps> = ({
         <Button
           className="w-full"
           variant={"destructive"}
-          onClick={() => onLogout()}
+          onClick={() => service.mutation.onLogout()}
         >
           Keluar
         </Button>

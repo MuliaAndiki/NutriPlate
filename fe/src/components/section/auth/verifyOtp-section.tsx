@@ -11,23 +11,24 @@ import { Spinner } from "@/components/ui/spinner";
 import { FormVerify } from "@/types/form/auth.form";
 
 interface VerifikasiOtpProps {
-  formVerifyOtp: FormVerify;
-  setFormVerifyOtp: React.Dispatch<React.SetStateAction<FormVerify>>;
-  isPending: boolean;
-  onVerify: () => void;
-  colldown: number;
-  resendOtp: () => void;
-  hashIdentifer: string;
+  state: {
+    formVerifyOtp: FormVerify;
+    setFormVerifyOtp: React.Dispatch<React.SetStateAction<FormVerify>>;
+    hashIdentifer: string;
+    colldown: number;
+  };
+  service: {
+    mutation: {
+      isPending: boolean;
+      onVerify: () => void;
+      resendOtp: () => void;
+    };
+  };
 }
 
 const VerifyOtpHeroSection: React.FC<VerifikasiOtpProps> = ({
-  formVerifyOtp,
-  isPending,
-  onVerify,
-  setFormVerifyOtp,
-  resendOtp,
-  colldown,
-  hashIdentifer,
+  service,
+  state,
 }) => {
   return (
     <div className="w-full min-h-screen flex justify-center items-center flex-col">
@@ -41,21 +42,21 @@ const VerifyOtpHeroSection: React.FC<VerifikasiOtpProps> = ({
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          onVerify();
+          service.mutation.onVerify();
         }}
       >
         <div className="w-full max-w-sm flex justify-center items-center flex-col space-y-5">
           <h1 className="text-center font-semibold">
             Kami telah mengirimkan kode verifikasi 6 digit ke Email ****
-            {hashIdentifer}
+            {state.hashIdentifer}
           </h1>
           <InputOTP
             maxLength={6}
             pattern={REGEXP_ONLY_DIGITS_AND_CHARS}
-            value={formVerifyOtp.otp}
+            value={state.formVerifyOtp.otp}
             required
             onChange={(e) =>
-              setFormVerifyOtp((prev) => ({
+              state.setFormVerifyOtp((prev) => ({
                 ...prev,
                 otp: e,
               }))
@@ -73,13 +74,16 @@ const VerifyOtpHeroSection: React.FC<VerifikasiOtpProps> = ({
 
           <p>
             Tidak Menerima Kode ?
-            {colldown > 0 ? (
+            {state.colldown > 0 ? (
               <span className="text-primary">
-                Kirim Ulang OTP ({Math.floor(colldown / 60)}:
-                {(colldown % 60).toString().padStart(2, "0")})
+                Kirim Ulang OTP ({Math.floor(state.colldown / 60)}:
+                {(state.colldown % 60).toString().padStart(2, "0")})
               </span>
             ) : (
-              <span className="text-primary" onClick={() => resendOtp()}>
+              <span
+                className="text-primary"
+                onClick={() => service.mutation.resendOtp()}
+              >
                 Kirim Ulang OTP
               </span>
             )}
@@ -89,9 +93,9 @@ const VerifyOtpHeroSection: React.FC<VerifikasiOtpProps> = ({
             className="w-full text-bold"
             variant={"btn"}
             type="submit"
-            disabled={isPending}
+            disabled={service.mutation.isPending}
           >
-            {isPending ? <Spinner /> : "Verifikasi"}
+            {service.mutation.isPending ? <Spinner /> : "Verifikasi"}
           </Button>
         </div>
       </form>

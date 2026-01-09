@@ -16,35 +16,39 @@ import { Textarea } from "@/components/ui/textarea";
 import { FormUpdateProfileChild } from "@/types/form/child.form";
 
 interface ProfileKesehatanAnakSectionProps {
-  router: AppRouterInstance;
-  formUpdateProfileChild: FormUpdateProfileChild | null;
-  setFormUpdateProfileChild: React.Dispatch<
-    React.SetStateAction<FormUpdateProfileChild | null>
-  >;
-  isEdit: boolean;
-  setIsEdit: React.Dispatch<React.SetStateAction<boolean>>;
-  onUpdate: () => void;
+  namespace: {
+    router: AppRouterInstance;
+  };
+  service: {
+    mutation: {
+      onUpdate: () => void;
+    };
+  };
+  state: {
+    formUpdateProfileChild: FormUpdateProfileChild | null;
+    setFormUpdateProfileChild: React.Dispatch<
+      React.SetStateAction<FormUpdateProfileChild | null>
+    >;
+    isEdit: boolean;
+    setIsEdit: React.Dispatch<React.SetStateAction<boolean>>;
+  };
 }
 const ProfileKesehatanAnakHeroSection: React.FC<
   ProfileKesehatanAnakSectionProps
-> = ({
-  router,
-  formUpdateProfileChild,
-  setFormUpdateProfileChild,
-  isEdit,
-  setIsEdit,
-  onUpdate,
-}) => {
+> = ({ namespace, service, state }) => {
   return (
     <div className="w-full min-h-screen flex justify-start items-center flex-col p-2 space-y-2">
       <div className="w-full flex justify-start items-center">
-        <ChevronLeft className="scale-120" onClick={() => router.back()} />
+        <ChevronLeft
+          className="scale-120"
+          onClick={() => namespace.router.back()}
+        />
         <h1 className="text-2xl font-bold">Profile Kesehatan Anak</h1>
       </div>
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          onUpdate();
+          service.mutation.onUpdate();
         }}
         className="w-full h-auto"
       >
@@ -68,10 +72,12 @@ const ProfileKesehatanAnakHeroSection: React.FC<
                   placeholder="kg"
                   type="number"
                   required
-                  disabled={!isEdit}
-                  value={formUpdateProfileChild?.profileChild.birthWeightKg}
+                  disabled={!state.isEdit}
+                  value={
+                    state.formUpdateProfileChild?.profileChild.birthWeightKg
+                  }
                   onChange={(e) =>
-                    setFormUpdateProfileChild((prev) => {
+                    state.setFormUpdateProfileChild((prev) => {
                       if (!prev) return prev;
                       return {
                         ...prev,
@@ -92,10 +98,12 @@ const ProfileKesehatanAnakHeroSection: React.FC<
                 <Input
                   placeholder="cm"
                   type="number"
-                  disabled={!isEdit}
-                  value={formUpdateProfileChild?.profileChild.birthHeightCm}
+                  disabled={!state.isEdit}
+                  value={
+                    state.formUpdateProfileChild?.profileChild.birthHeightCm
+                  }
                   onChange={(e) =>
-                    setFormUpdateProfileChild((prev) => {
+                    state.setFormUpdateProfileChild((prev) => {
                       if (!prev) return prev;
                       return {
                         ...prev,
@@ -115,10 +123,10 @@ const ProfileKesehatanAnakHeroSection: React.FC<
             <h1 className="text-lg font-bold">Alergi Makanan</h1>
             <Input
               placeholder="Masukkan Alergi makanan anak (optional)"
-              value={formUpdateProfileChild?.profileChild.allergicFoods}
-              disabled={!isEdit}
+              value={state.formUpdateProfileChild?.profileChild.allergicFoods}
+              disabled={!state.isEdit}
               onChange={(e) =>
-                setFormUpdateProfileChild((prev) => {
+                state.setFormUpdateProfileChild((prev) => {
                   if (!prev) return prev;
                   return {
                     ...prev,
@@ -138,10 +146,12 @@ const ProfileKesehatanAnakHeroSection: React.FC<
             <div className="w-full ">
               <Textarea
                 placeholder="Masukan Catatan Kesehatan Anak"
-                disabled={!isEdit}
-                value={formUpdateProfileChild?.profileChild.chronicConditions}
+                disabled={!state.isEdit}
+                value={
+                  state.formUpdateProfileChild?.profileChild.chronicConditions
+                }
                 onChange={(e) =>
-                  setFormUpdateProfileChild((prev) => {
+                  state.setFormUpdateProfileChild((prev) => {
                     if (!prev) return prev;
                     return {
                       ...prev,
@@ -161,12 +171,13 @@ const ProfileKesehatanAnakHeroSection: React.FC<
             <Input
               placeholder="minggu (contoh: 38)"
               type="number"
-              disabled={!isEdit}
+              disabled={!state.isEdit}
               value={
-                formUpdateProfileChild?.profileChild.pregnancyAgeWeeks ?? ""
+                state.formUpdateProfileChild?.profileChild.pregnancyAgeWeeks ??
+                ""
               }
               onChange={(e) =>
-                setFormUpdateProfileChild((prev) => {
+                state.setFormUpdateProfileChild((prev) => {
                   if (!prev) return prev;
                   return {
                     ...prev,
@@ -186,11 +197,15 @@ const ProfileKesehatanAnakHeroSection: React.FC<
               <div className="w-full">
                 <h1 className="text-sm font-bold">Jenis Pemberian Makan</h1>
                 <Select
-                  disabled={!isEdit}
-                  key={formUpdateProfileChild?.profileChild.feedingType ?? ""}
-                  value={formUpdateProfileChild?.profileChild.feedingType ?? ""}
+                  disabled={!state.isEdit}
+                  key={
+                    state.formUpdateProfileChild?.profileChild.feedingType ?? ""
+                  }
+                  value={
+                    state.formUpdateProfileChild?.profileChild.feedingType ?? ""
+                  }
                   onValueChange={(value) =>
-                    setFormUpdateProfileChild((prev) => {
+                    state.setFormUpdateProfileChild((prev) => {
                       if (!prev) return prev;
                       return {
                         ...prev,
@@ -218,13 +233,17 @@ const ProfileKesehatanAnakHeroSection: React.FC<
                 <h1 className="text-sm font-bold ">Tingkat Aktivitas Anak</h1>
 
                 <Select
-                  disabled={!isEdit}
-                  key={formUpdateProfileChild?.profileChild.activityLevel ?? ""}
+                  disabled={!state.isEdit}
+                  key={
+                    state.formUpdateProfileChild?.profileChild.activityLevel ??
+                    ""
+                  }
                   value={
-                    formUpdateProfileChild?.profileChild.activityLevel ?? ""
+                    state.formUpdateProfileChild?.profileChild.activityLevel ??
+                    ""
                   }
                   onValueChange={(value) =>
-                    setFormUpdateProfileChild((prev) => {
+                    state.setFormUpdateProfileChild((prev) => {
                       if (!prev) return prev;
                       return {
                         ...prev,
@@ -253,12 +272,12 @@ const ProfileKesehatanAnakHeroSection: React.FC<
         </div>
 
         <div className="w-full">
-          {!isEdit ? (
+          {!state.isEdit ? (
             <Button
               className="w-full h-auto "
               variant={"btn"}
               type="button"
-              onClick={() => setIsEdit(true)}
+              onClick={() => state.setIsEdit(true)}
             >
               Edit Profile
             </Button>
@@ -268,7 +287,7 @@ const ProfileKesehatanAnakHeroSection: React.FC<
                 className=""
                 type="button"
                 variant={"destructive"}
-                onClick={() => setIsEdit(false)}
+                onClick={() => state.setIsEdit(false)}
               >
                 Batalkan
               </Button>

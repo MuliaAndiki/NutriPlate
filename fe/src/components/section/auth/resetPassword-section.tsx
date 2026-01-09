@@ -7,28 +7,34 @@ import { Spinner } from "@/components/ui/spinner";
 import { FormResetPassword } from "@/types/form/auth.form";
 
 interface ResetPasswordSectionProps {
-  router: AppRouterInstance;
-  formResetPassword: FormResetPassword;
-  setFormResetPassword: React.Dispatch<React.SetStateAction<FormResetPassword>>;
-  isPending: boolean;
-  onReset: () => void;
-  confirmPassword: string;
-  setConfirmPassword: React.Dispatch<React.SetStateAction<string>>;
+  namespace: {
+    router: AppRouterInstance;
+  };
+  state: {
+    formResetPassword: FormResetPassword;
+    setFormResetPassword: React.Dispatch<
+      React.SetStateAction<FormResetPassword>
+    >;
+    confirmPassword: string;
+    setConfirmPassword: React.Dispatch<React.SetStateAction<string>>;
+  };
+  service: {
+    mutation: {
+      isPending: boolean;
+      onReset: () => void;
+    };
+  };
 }
 const ResetPasswordHeroSection: React.FC<ResetPasswordSectionProps> = ({
-  router,
-  formResetPassword,
-  isPending,
-  onReset,
-  confirmPassword,
-  setConfirmPassword,
-  setFormResetPassword,
+  namespace,
+  service,
+  state,
 }) => {
   return (
     <div className="w-full min-h-screen flex justify-center items-center flex-col">
       <div className="flex justify-center items-center  w-full">
         <div className="absolute left-0">
-          <ChevronLeft size={50} onClick={() => router.back()} />
+          <ChevronLeft size={50} onClick={() => namespace.router.back()} />
         </div>
         <h1 className="text-4xl font-extrabold">Ganti Kata Sandi</h1>
       </div>
@@ -42,18 +48,18 @@ const ResetPasswordHeroSection: React.FC<ResetPasswordSectionProps> = ({
         className="w-full max-w-sm"
         onSubmit={(e) => {
           e.preventDefault();
-          onReset();
+          service.mutation.onReset();
         }}
       >
         <div className="w-full ">
           <label className="font-bold text-lg">Kata Sandi Baru</label>
           <Input
             placeholder="Kata Sandi Minimal 8 Karakter"
-            value={formResetPassword.password}
+            value={state.formResetPassword.password}
             required
             type="password"
             onChange={(e) =>
-              setFormResetPassword((prev) => ({
+              state.setFormResetPassword((prev) => ({
                 ...prev,
                 password: e.target.value,
               }))
@@ -66,20 +72,20 @@ const ResetPasswordHeroSection: React.FC<ResetPasswordSectionProps> = ({
           </label>
           <Input
             placeholder="Konfirmasi Kata Sandi"
-            value={confirmPassword}
+            value={state.confirmPassword}
             required
             type="password"
-            onChange={(e) => setConfirmPassword(e.target.value)}
+            onChange={(e) => state.setConfirmPassword(e.target.value)}
           />
         </div>
         <div className="w-full mt-4 ">
           <Button
             variant={"btn"}
             className="w-full"
-            disabled={isPending}
+            disabled={service.mutation.isPending}
             type="submit"
           >
-            {isPending ? <Spinner /> : "Perbarui Kata Sandi"}
+            {service.mutation.isPending ? <Spinner /> : "Perbarui Kata Sandi"}
           </Button>
         </div>
       </form>

@@ -12,7 +12,7 @@ import { fileToBase64 } from "@/utils/base64";
 const FormCreateChildContainer = () => {
   const nameSpace = useAppNameSpace();
   const service = useService();
-  const createChild = service.child.mutation.create();
+  const createChildMutation = service.child.mutation.create();
   const { avatar, removePreview, selectAvatar } = useAvatarReducer();
   const [formCreateChiild, setFormCreateChild] = useState<FormCreateChild>({
     dateOfBirth: "",
@@ -43,7 +43,7 @@ const FormCreateChildContainer = () => {
         icon: "warning",
       });
     } else {
-      createChild.mutate(formCreateChiild, {
+      createChildMutation.mutate(formCreateChiild, {
         onSuccess: () => {
           nameSpace.router.push("/parent/profile-anak");
         },
@@ -79,14 +79,24 @@ const FormCreateChildContainer = () => {
     <SidebarLayout>
       <div className="w-full min-h-screen overflow-x-hidden">
         <FormCreateChildSection
-          router={nameSpace.router}
-          formCreateChild={formCreateChiild}
-          setFormCreateChild={setFormCreateChild}
-          preview={avatar.preview}
-          onChangeAva={handleChangeAvaChild}
-          onRemovePreview={handleRemovePreview}
-          isPending={createChild.isPending}
-          onCreate={() => handleCreateChild()}
+          namespace={{
+            router: nameSpace.router,
+          }}
+          service={{
+            general: {
+              onChangeAva: handleChangeAvaChild,
+              onRemovePreview: handleRemovePreview,
+            },
+            mutation: {
+              isPending: createChildMutation.isPending,
+              onCreate: () => handleCreateChild(),
+            },
+          }}
+          state={{
+            formCreateChild: formCreateChiild,
+            setFormCreateChild: setFormCreateChild,
+            preview: avatar.preview,
+          }}
         />
       </div>
     </SidebarLayout>

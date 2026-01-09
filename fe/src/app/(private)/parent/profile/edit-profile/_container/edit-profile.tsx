@@ -4,7 +4,7 @@ import { SidebarLayout } from "@/core/layouts/sidebar.layout";
 import useService from "@/hooks/mutation/prop.service";
 import { useAppNameSpace } from "@/hooks/useAppNameSpace";
 import { FormUpdateProfile } from "@/types/form/auth.form";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useAvatarReducer } from "@/hooks/useAvatarReducer";
 import { fileToBase64 } from "@/utils/base64";
 import { parsePayload } from "@/utils/parse.format";
@@ -86,23 +86,29 @@ const EditProfileContainer = () => {
     }
   };
 
-  //  ilmu
   return (
     <SidebarLayout>
       <main className="w-full min-h-screen overflow-x-hidden">
         <EditProfileSection
-          router={nameSpace.router}
-          profileUser={useGetProfileData}
-          isLoading={useGetProfileQuery.isLoading}
-          isEdit={isEdit}
-          setIsEdit={setIsEdit}
-          onUpdateProfile={() => handleUpdateProfile()}
-          formUpdate={formUpdateProfile}
-          setFormUpdateProfile={setFormUpdateProfile}
-          preview={avatar.preview}
-          onChangeAvatars={handleChangeAvatar}
-          logic={{
-            onRemovePreview: handleRemovePreview,
+          namespace={{
+            router: nameSpace.router,
+          }}
+          service={{
+            mutation: {
+              onChangeAvatars: handleChangeAvatar,
+              onRemovePreview: handleRemovePreview,
+              onUpdateProfile: () => handleUpdateProfile(),
+            },
+            query: {
+              profileUser: useGetProfileData,
+              isLoading: useGetProfileQuery.isLoading,
+            },
+          }}
+          state={{
+            isEdit: isEdit,
+            preview: avatar.preview,
+            setFormUpdateProfile: setFormUpdateProfile,
+            setIsEdit: setIsEdit,
           }}
         />
       </main>

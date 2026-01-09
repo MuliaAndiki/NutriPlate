@@ -37,7 +37,7 @@ const ProfileKesehatanAnakContainer = () => {
         onSuccess: () => {
           nameSpace.router.back();
         },
-      },
+      }
     );
   };
   useEffect(() => {
@@ -74,12 +74,20 @@ const ProfileKesehatanAnakContainer = () => {
     <SidebarLayout>
       <main className="w-full min-h-screen overflow-x-hidden">
         <ProfileKesehatanAnakHeroSection
-          router={nameSpace.router}
-          formUpdateProfileChild={formUpdateProfileChild}
-          setFormUpdateProfileChild={setFormUpdateProfileChild}
-          isEdit={isEdit}
-          onUpdate={() => handleUpdateProfileChild()}
-          setIsEdit={setIsEdit}
+          namespace={{
+            router: nameSpace.router,
+          }}
+          state={{
+            formUpdateProfileChild: formUpdateProfileChild,
+            setFormUpdateProfileChild: setFormUpdateProfileChild,
+            isEdit: isEdit,
+            setIsEdit: setIsEdit,
+          }}
+          service={{
+            mutation: {
+              onUpdate: () => handleUpdateProfileChild(),
+            },
+          }}
         />
       </main>
     </SidebarLayout>
