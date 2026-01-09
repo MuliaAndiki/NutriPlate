@@ -19,6 +19,10 @@ class MeasurementApi {
     const res = await AxiosClient.get(`/api/measurement/${id}`);
     return res.data;
   }
+  public async updateMeasuremntController(id: string): Promise<TResponse<any>> {
+    const res = await AxiosClient.put(`/api/measurement/${id}`);
+    return res.data;
+  }
 }
 
 export default MeasurementApi;
