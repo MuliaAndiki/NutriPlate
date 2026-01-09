@@ -4,7 +4,7 @@ import { SidebarLayout } from "@/core/layouts/sidebar.layout";
 import useService from "@/hooks/mutation/prop.service";
 import { useAppNameSpace } from "@/hooks/useAppNameSpace";
 import { FormUpdateProfile } from "@/types/form/auth.form";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useAvatarReducer } from "@/hooks/useAvatarReducer";
 import { fileToBase64 } from "@/utils/base64";
 import { parsePayload } from "@/utils/parse.format";

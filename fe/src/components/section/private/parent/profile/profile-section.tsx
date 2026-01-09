@@ -22,7 +22,7 @@ const ProfileParentHeroSection: React.FC<ProfileProps> = ({
       title: "Ubah Kata Sandi",
       icon: "material-symbols:lock-outline",
       icon2: "mingcute:arrow-right-fill",
-      href: "/",
+      href: "/parent/profile/ubah-password",
     },
   ];
   return (

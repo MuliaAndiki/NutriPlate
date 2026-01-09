@@ -1,7 +1,7 @@
 import { useAppNameSpace } from "@/hooks/useAppNameSpace";
 import { TResponse } from "@/pkg/react-query/mutation-wrapper.type";
 import Api from "@/services/props.module";
-import { FormUpdateProfile } from "@/types/form/auth.form";
+import { FormUpdatePassword, FormUpdateProfile } from "@/types/form/auth.form";
 import { useMutation } from "@tanstack/react-query";
 
 export function useUpdateProfile() {
@@ -21,6 +21,28 @@ export function useUpdateProfile() {
       nameSpace.alert.toast({
         title: "failed",
         message: "failed update profile user",
+        icon: "error",
+      });
+    },
+  });
+}
+
+export function useUpdatePassword() {
+  const nameSpace = useAppNameSpace();
+  return useMutation<TResponse<any>, Error, FormUpdatePassword>({
+    mutationFn: (payload) => Api.User.updatePassword(payload),
+    onSuccess: () => {
+      nameSpace.alert.toast({
+        title: "succes",
+        message: "succesfully update password",
+        icon: "success",
+      });
+    },
+    onError: (err) => {
+      console.error(err);
+      nameSpace.alert.toast({
+        title: "failed",
+        message: "failed update password",
         icon: "error",
       });
     },

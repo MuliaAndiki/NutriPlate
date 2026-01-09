@@ -17,6 +17,8 @@ import {
 } from "@/components/ui/select";
 import { Spinner } from "@/components/ui/spinner";
 import { FormRegister } from "@/types/form/auth.form";
+import VectorSvg from "@/components/svg/vector-auth-svg";
+import Image from "next/image";
 
 interface RegisterProps {
   formRegister: FormRegister;
@@ -45,116 +47,130 @@ const RegisterHeroSection: React.FC<RegisterProps> = ({
   });
   return (
     <div className="w-full min-h-screen overflow-x-hidden">
-      <div className="w-full min-h-screen flex justify-center items-center flex-col space-y-5">
-        <div className="flex justify-center items-center w-full relative">
-          <h1 className="text-4xl font-extrabold">Daftar Akun</h1>
+      <div className="flex w-full flex-col justify-center h-screen bg-primary relative z-0">
+        <div className="absolute top-0 z-[-1]">
+          <VectorSvg />
         </div>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            onRegister();
-          }}
-          className="w-full max-w-sm flex justify-center items-center flex-col gap-4 mt-4"
-        >
-          <div className="w-full">
-            <label htmlFor="Nomor Hp" className="font-bold text-lg">
-              Nomor HP/Email:
-            </label>
-            <Input
-              placeholder="No Hp/Email"
-              value={formRegister.identifier}
-              onChange={(e) =>
-                setFormRegister((prev) => ({
-                  ...prev,
-                  identifier: e.target.value,
-                }))
-              }
-            />
+        <div className="flex absolute flex-col items-center top-0 w-full z-[-1]">
+          <Image alt="icon" src={"/images/auth.png"} width={300} height={300} />
+        </div>
+        <div className="w-full h-full mt-55 bg-background flex items-center justify-start flex-col rounded-t-3xl py-5 z-0">
+          <div className="w-full px-6">
+            <h1 className="text-3xl font-bold">Daftar Akun</h1>
           </div>
-          <div className="w-full">
-            <label htmlFor="fullname" className="font-bold text-lg">
-              Nama Lengkap:
-            </label>
-            <Input
-              placeholder="Masukkan Nama lengkap Anda"
-              value={formRegister.fullName}
-              onChange={(e) =>
-                setFormRegister((prev) => ({
-                  ...prev,
-                  fullName: e.target.value,
-                }))
-              }
-            />
-          </div>
-          <div className="w-full">
-            <label htmlFor="password" className="text-lg font-bold">
-              Kata Sandi:
-            </label>
-            <Input
-              placeholder="Kata Sandi Minimal 8 Karakter"
-              type="password"
-              value={formRegister.password}
-              onChange={(e) =>
-                setFormRegister((prev) => ({
-                  ...prev,
-                  password: e.target.value,
-                }))
-              }
-            />
-          </div>
-          <div className="w-full">
-            <label htmlFor="role" className="text-lg font-bold">
-              Peran:
-            </label>
-            <Select
-              value={formRegister.role}
-              onValueChange={(value) =>
-                setFormRegister((prev) => ({
-                  ...prev,
-                  role: value,
-                }))
-              }
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Pilih Peran" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectLabel>Peran</SelectLabel>
-                  <SelectItem value="PARENT">Parent</SelectItem>
-                  <SelectItem value="KADER">Kader</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="w-full">
-            <Button
-              className="w-full"
-              variant={"btn"}
-              type="submit"
-              disabled={isPending}
-            >
-              {isPending ? <Spinner /> : "Daftar"}
-            </Button>
-          </div>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              onRegister();
+            }}
+            className="w-full max-w-sm flex justify-center items-center flex-col gap-4 mt-4"
+          >
+            <div className="w-full">
+              <label htmlFor="Nomor Hp" className="font-bold text-lg">
+                Nomor HP/Email:
+              </label>
+              <Input
+                placeholder="No Hp/Email"
+                value={formRegister.identifier}
+                onChange={(e) =>
+                  setFormRegister((prev) => ({
+                    ...prev,
+                    identifier: e.target.value,
+                  }))
+                }
+              />
+            </div>
+            <div className="w-full">
+              <label htmlFor="fullname" className="font-bold text-lg">
+                Nama Lengkap:
+              </label>
+              <Input
+                placeholder="Masukkan Nama lengkap Anda"
+                value={formRegister.fullName}
+                onChange={(e) =>
+                  setFormRegister((prev) => ({
+                    ...prev,
+                    fullName: e.target.value,
+                  }))
+                }
+              />
+            </div>
+            <div className="w-full">
+              <label htmlFor="password" className="text-lg font-bold">
+                Kata Sandi:
+              </label>
+              <Input
+                placeholder="Kata Sandi Minimal 8 Karakter"
+                type="password"
+                value={formRegister.password}
+                onChange={(e) =>
+                  setFormRegister((prev) => ({
+                    ...prev,
+                    password: e.target.value,
+                  }))
+                }
+              />
+            </div>
+            <div className="w-full">
+              <label htmlFor="role" className="text-lg font-bold">
+                Peran:
+              </label>
+              <Select
+                value={formRegister.role}
+                onValueChange={(value) =>
+                  setFormRegister((prev) => ({
+                    ...prev,
+                    role: value,
+                  }))
+                }
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Pilih Peran" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>Peran</SelectLabel>
+                    <SelectItem value="PARENT">Parent</SelectItem>
+                    <SelectItem value="KADER">Kader</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="w-full">
+              <Button
+                className="w-full"
+                variant={"btn"}
+                type="submit"
+                disabled={
+                  isPending ||
+                  !formRegister.fullName ||
+                  !formRegister.identifier ||
+                  !formRegister.password ||
+                  !formRegister.role
+                }
+              >
+                {isPending ? <Spinner /> : "Daftar"}
+              </Button>
+            </div>
 
-          <div className="w-full flex justify-center items-center flex-col space-y-3">
-            <h1 className="text-lg font-bold">Atau Masuk Dengan</h1>
-            <button
-              type="button"
-              disabled={isPending}
-              onClick={() => googleLogin()}
-            >
-              <GoogleSvg />
-            </button>
-            <p>
-              Sudah Memiliki Akun?
-              <Link href={"/login"}>
-                <span className="text-primary">Masuk</span>
-              </Link>
-            </p>
-          </div>
-        </form>
+            <div className="w-full flex justify-center items-center flex-col space-y-3">
+              <h1 className="text-lg font-bold">Atau Masuk Dengan</h1>
+              <button
+                type="button"
+                disabled={isPending}
+                onClick={() => googleLogin()}
+              >
+                <GoogleSvg />
+              </button>
+              <p>
+                Sudah Memiliki Akun?
+                <Link href={"/login"}>
+                  <span className="text-primary">Masuk</span>
+                </Link>
+              </p>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );

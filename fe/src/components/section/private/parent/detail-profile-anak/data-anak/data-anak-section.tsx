@@ -208,7 +208,7 @@ const DataAnakHeroSection: React.FC<DataAnakHeroSectionProps> = ({
           >
             Batalkan
           </Button>
-          <Button variant={"btn"} className="w-full" onClick={() => onUpdate()}>
+          <Button className="w-full" onClick={() => onUpdate()}>
             Simpan
           </Button>
         </div>

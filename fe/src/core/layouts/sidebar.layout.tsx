@@ -2,8 +2,6 @@
 
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-
-import { Button } from "@/components/ui/button";
 import {
   SidebarInset,
   SidebarProvider,
@@ -11,10 +9,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/core/components/app-sidebar";
-
-import useService from "@/hooks/mutation/prop.service";
 import { useAppNameSpace } from "@/hooks/useAppNameSpace";
-
 import FooterApp from "../components/footer-app";
 import { getCookie } from "cookies-next";
 import { UserRole } from "@/configs/app.config";
@@ -28,14 +23,11 @@ export function SidebarLayout({ children }: AppLayoutProps) {
   const pathname = usePathname();
   const { state } = useSidebar();
   const isCollapsed = state === "collapsed";
-  const service = useService();
+
   const currentRole = getCookie("user_role") as UserRole | undefined;
-  const logout = service.auth.mutation.logout();
+
   const [isActive, setIsActive] = useState<string>("");
 
-  const handleLogout = () => {
-    return logout.mutate({});
-  };
   return (
     <SidebarProvider defaultOpen>
       <div className="flex min-h-screen w-full">
@@ -49,12 +41,6 @@ export function SidebarLayout({ children }: AppLayoutProps) {
                   {/* <ThemeToggle />
                   <LanguageDropdown />
                   <NotificationDropdown /> */}
-                  <Button
-                    variant={"destructive"}
-                    onClick={() => handleLogout()}
-                  >
-                    Out
-                  </Button>
                   {/* <UserDropdown /> */}
                 </div>
               </div>
