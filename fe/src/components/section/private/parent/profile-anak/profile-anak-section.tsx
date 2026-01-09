@@ -7,10 +7,14 @@ import { Button } from "@/components/ui/button";
 import { ChildCardType } from "@/types/card";
 
 interface ProfileAnakSectionProps {
-  profileAnak: ChildCardType[];
+  servive: {
+    query: {
+      profileAnak: ChildCardType[];
+    };
+  };
 }
 const ProfileAnakHeroSection: React.FC<ProfileAnakSectionProps> = ({
-  profileAnak,
+  servive,
 }) => {
   return (
     <div className="w-full min-h-screen flex justify-start items-center flex-col p-2 space-y-2">
@@ -39,9 +43,9 @@ const ProfileAnakHeroSection: React.FC<ProfileAnakSectionProps> = ({
         <h1 className="text-2xl font-extrabold">Daftar Anak</h1>
       </div>
 
-      {profileAnak.length > 0 ? (
+      {servive.query.profileAnak.length > 0 ? (
         <div className="w-full flex flex-col space-y-3 ">
-          {profileAnak.map((item) => (
+          {servive.query.profileAnak.map((item) => (
             <ChildCard key={item.id} data={item} />
           ))}
         </div>

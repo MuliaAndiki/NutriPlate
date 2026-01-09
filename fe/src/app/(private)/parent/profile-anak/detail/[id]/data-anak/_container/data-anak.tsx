@@ -23,7 +23,7 @@ const DataAnakContainer = () => {
     useState<FormUpdateChild | null>(null);
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const { avatar, selectAvatar, removePreview } = useAvatarReducer(
-    chilDataByID?.avaChild ?? null,
+    chilDataByID?.avaChild ?? null
   );
 
   useEffect(() => {
@@ -42,7 +42,7 @@ const DataAnakContainer = () => {
   }, [chilDataByID]);
 
   const handleChangeAvaChild = async (
-    e: React.ChangeEvent<HTMLInputElement>,
+    e: React.ChangeEvent<HTMLInputElement>
   ) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -51,7 +51,7 @@ const DataAnakContainer = () => {
       selectAvatar(previewUrl, base64);
 
       setFormUpdateChild((prev) =>
-        prev ? { ...prev, avaChild: base64 } : prev,
+        prev ? { ...prev, avaChild: base64 } : prev
       );
     }
   };
@@ -59,7 +59,7 @@ const DataAnakContainer = () => {
   const handleRemovePreview = () => {
     removePreview();
     setFormUpdateChild((prev) =>
-      prev ? { ...prev, avaChild: avatar.original ?? "" } : prev,
+      prev ? { ...prev, avaChild: avatar.original ?? "" } : prev
     );
   };
 
@@ -82,7 +82,7 @@ const DataAnakContainer = () => {
         onSuccess: () => {
           nameSpace.router.back();
         },
-      },
+      }
     );
   };
 
@@ -95,7 +95,7 @@ const DataAnakContainer = () => {
         onSuccess: () => {
           nameSpace.router.push("/parent/profile-anak");
         },
-      },
+      }
     );
   };
 
@@ -103,17 +103,25 @@ const DataAnakContainer = () => {
     <SidebarLayout>
       <main className="w-full min-h-screen overflow-x-hidden">
         <DataAnakHeroSection
-          router={nameSpace.router}
-          formUpdateChild={formUpdateChild}
-          setFormUpdateChild={setFormUpdateChild}
-          isEdit={isEdit}
-          setIsEdit={setIsEdit}
-          onUpdate={() => handleUpdateChild()}
-          onChangeAva={handleChangeAvaChild}
-          preview={avatar.preview}
-          onRemovePreview={handleRemovePreview}
-          alert={nameSpace.alert}
-          onDelete={handleDeleteChild}
+          namespace={{
+            router: nameSpace.router,
+            alert: nameSpace.alert,
+          }}
+          service={{
+            mutation: {
+              onChangeAva: handleChangeAvaChild,
+              onDelete: handleDeleteChild,
+              onRemovePreview: handleRemovePreview,
+              onUpdate: () => handleUpdateChild(),
+            },
+          }}
+          state={{
+            formUpdateChild: formUpdateChild,
+            setFormUpdateChild: setFormUpdateChild,
+            isEdit: isEdit,
+            preview: avatar.preview,
+            setIsEdit: setIsEdit,
+          }}
         />
       </main>
     </SidebarLayout>

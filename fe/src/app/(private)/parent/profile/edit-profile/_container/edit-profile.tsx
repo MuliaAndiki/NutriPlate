@@ -86,23 +86,29 @@ const EditProfileContainer = () => {
     }
   };
 
-  //  ilmu
   return (
     <SidebarLayout>
       <main className="w-full min-h-screen overflow-x-hidden">
         <EditProfileSection
-          router={nameSpace.router}
-          profileUser={useGetProfileData}
-          isLoading={useGetProfileQuery.isLoading}
-          isEdit={isEdit}
-          setIsEdit={setIsEdit}
-          onUpdateProfile={() => handleUpdateProfile()}
-          formUpdate={formUpdateProfile}
-          setFormUpdateProfile={setFormUpdateProfile}
-          preview={avatar.preview}
-          onChangeAvatars={handleChangeAvatar}
-          logic={{
-            onRemovePreview: handleRemovePreview,
+          namespace={{
+            router: nameSpace.router,
+          }}
+          service={{
+            mutation: {
+              onChangeAvatars: handleChangeAvatar,
+              onRemovePreview: handleRemovePreview,
+              onUpdateProfile: () => handleUpdateProfile(),
+            },
+            query: {
+              profileUser: useGetProfileData,
+              isLoading: useGetProfileQuery.isLoading,
+            },
+          }}
+          state={{
+            isEdit: isEdit,
+            preview: avatar.preview,
+            setFormUpdateProfile: setFormUpdateProfile,
+            setIsEdit: setIsEdit,
           }}
         />
       </main>

@@ -20,29 +20,34 @@ import { FormCreateChild } from "@/types/form/child.form";
 import UploadsTrigger from "@/utils/uploadTrigger";
 
 interface FormCreateChildProps {
-  router: AppRouterInstance;
-  formCreateChild: FormCreateChild;
-  setFormCreateChild: React.Dispatch<React.SetStateAction<FormCreateChild>>;
-  preview: string | null;
-  onChangeAva: (e: any) => void;
-  isPending: boolean;
-  onCreate: () => void;
-  onRemovePreview: () => void;
+  namespace: {
+    router: AppRouterInstance;
+  };
+  state: {
+    formCreateChild: FormCreateChild;
+    setFormCreateChild: React.Dispatch<React.SetStateAction<FormCreateChild>>;
+    preview: string | null;
+  };
+  service: {
+    mutation: {
+      isPending: boolean;
+      onCreate: () => void;
+    };
+    general: {
+      onChangeAva: (e: any) => void;
+      onRemovePreview: () => void;
+    };
+  };
 }
 const FormCreateChildSection: React.FC<FormCreateChildProps> = ({
-  router,
-  formCreateChild,
-  setFormCreateChild,
-  preview,
-  onChangeAva,
-  isPending,
-  onCreate,
-  onRemovePreview,
+  namespace,
+  service,
+  state,
 }) => {
   return (
     <div className="w-full min-h-screen flex flex-col p-2 space-y-2 overflow-y-auto">
       <div className="w-full flex justify-start items-center">
-        <ChevronLeft size={40} onClick={() => router.back()} />
+        <ChevronLeft size={40} onClick={() => namespace.router.back()} />
         <h1 className="text-2xl font-extrabold">Tambah Data Anak</h1>
       </div>
 
@@ -62,9 +67,9 @@ const FormCreateChildSection: React.FC<FormCreateChildProps> = ({
             placeholder="Masukkan Nama Lengkap Anak"
             required
             type="text"
-            value={formCreateChild.fullName}
+            value={state.formCreateChild.fullName}
             onChange={(e) => {
-              setFormCreateChild((prev) => ({
+              state.setFormCreateChild((prev) => ({
                 ...prev,
                 fullName: e.target.value,
               }));
@@ -77,9 +82,9 @@ const FormCreateChildSection: React.FC<FormCreateChildProps> = ({
               placeholder="Tempat Lahir"
               type="text"
               required
-              value={formCreateChild.placeOfBirth}
+              value={state.formCreateChild.placeOfBirth}
               onChange={(e) =>
-                setFormCreateChild((prev) => ({
+                state.setFormCreateChild((prev) => ({
                   ...prev,
                   placeOfBirth: e.target.value,
                 }))
@@ -89,9 +94,9 @@ const FormCreateChildSection: React.FC<FormCreateChildProps> = ({
               placeholder="hr/bln/thn"
               type="date"
               required
-              value={formCreateChild.dateOfBirth}
+              value={state.formCreateChild.dateOfBirth}
               onChange={(e) =>
-                setFormCreateChild((prev) => ({
+                state.setFormCreateChild((prev) => ({
                   ...prev,
                   dateOfBirth: e.target.value,
                 }))
@@ -101,7 +106,7 @@ const FormCreateChildSection: React.FC<FormCreateChildProps> = ({
           <h1 className="text-lg font-bold">Jenis Kelamin</h1>
           <Select
             onValueChange={(value) => {
-              setFormCreateChild((prev) => ({
+              state.setFormCreateChild((prev) => ({
                 ...prev,
                 gender: value,
               }));
@@ -121,11 +126,11 @@ const FormCreateChildSection: React.FC<FormCreateChildProps> = ({
 
           <h1 className="text-lg font-bold">Foto Anak</h1>
           <div className="w-full border border-primary h-full rounded-lg border-dashed p-10">
-            {!preview ? (
+            {!state.preview ? (
               <UploadsTrigger
                 accept="image/*"
                 multiple={false}
-                onChange={(e) => onChangeAva(e)}
+                onChange={(e) => service.general.onChangeAva(e)}
               >
                 <Button
                   type="button"
@@ -140,15 +145,15 @@ const FormCreateChildSection: React.FC<FormCreateChildProps> = ({
               </UploadsTrigger>
             ) : (
               <div className="w-full flex justify-center flex-col items-center space-y-3">
-                {preview && (
+                {state.preview && (
                   <UploadsTrigger
                     accept="image/*"
                     multiple={false}
-                    onChange={(e) => onChangeAva(e)}
+                    onChange={(e) => service.general.onChangeAva(e)}
                   >
                     <Image
                       alt="preview"
-                      src={preview}
+                      src={state.preview}
                       width={150}
                       height={150}
                       className="aspect-square object-cover rounded-full "
@@ -159,7 +164,7 @@ const FormCreateChildSection: React.FC<FormCreateChildProps> = ({
                   <Button
                     className="w-auto border-2 border-dashed "
                     variant={"ghost"}
-                    onClick={() => onRemovePreview()}
+                    onClick={() => service.general.onRemovePreview()}
                   >
                     Hapus
                   </Button>
@@ -190,9 +195,9 @@ const FormCreateChildSection: React.FC<FormCreateChildProps> = ({
                 placeholder="kg"
                 type="number"
                 required
-                value={formCreateChild.profileChild.birthWeightKg}
+                value={state.formCreateChild.profileChild.birthWeightKg}
                 onChange={(e) =>
-                  setFormCreateChild((prev) => ({
+                  state.setFormCreateChild((prev) => ({
                     ...prev,
                     profileChild: {
                       ...prev.profileChild,
@@ -210,9 +215,9 @@ const FormCreateChildSection: React.FC<FormCreateChildProps> = ({
               <Input
                 placeholder="cm"
                 type="number"
-                value={formCreateChild.profileChild.birthHeightCm}
+                value={state.formCreateChild.profileChild.birthHeightCm}
                 onChange={(e) =>
-                  setFormCreateChild((prev) => ({
+                  state.setFormCreateChild((prev) => ({
                     ...prev,
                     profileChild: {
                       ...prev.profileChild,
@@ -229,9 +234,9 @@ const FormCreateChildSection: React.FC<FormCreateChildProps> = ({
           <h1 className="text-lg font-bold">Alergi Makanan</h1>
           <Input
             placeholder="Masukkan Alergi makanan anak (optional)"
-            value={formCreateChild.profileChild.allergicFoods}
+            value={state.formCreateChild.profileChild.allergicFoods}
             onChange={(e) =>
-              setFormCreateChild((prev) => ({
+              state.setFormCreateChild((prev) => ({
                 ...prev,
                 profileChild: {
                   ...prev.profileChild,
@@ -249,9 +254,9 @@ const FormCreateChildSection: React.FC<FormCreateChildProps> = ({
           <div className="w-full ">
             <Textarea
               placeholder="Masukan Catatan Kesehatan Anak"
-              value={formCreateChild.profileChild.chronicConditions}
+              value={state.formCreateChild.profileChild.chronicConditions}
               onChange={(e) =>
-                setFormCreateChild((prev) => ({
+                state.setFormCreateChild((prev) => ({
                   ...prev,
                   profileChild: {
                     ...prev.profileChild,
@@ -266,9 +271,9 @@ const FormCreateChildSection: React.FC<FormCreateChildProps> = ({
           <Input
             placeholder="minggu (contoh: 38)"
             type="number"
-            value={formCreateChild.profileChild.pregnancyAgeWeeks ?? ""}
+            value={state.formCreateChild.profileChild.pregnancyAgeWeeks ?? ""}
             onChange={(e) =>
-              setFormCreateChild((prev) => ({
+              state.setFormCreateChild((prev) => ({
                 ...prev,
                 profileChild: {
                   ...prev.profileChild,
@@ -283,9 +288,9 @@ const FormCreateChildSection: React.FC<FormCreateChildProps> = ({
             <div className="w-full">
               <h1 className="text-sm font-bold">Jenis Pemberian Makan</h1>
               <Select
-                value={formCreateChild.profileChild.feedingType}
+                value={state.formCreateChild.profileChild.feedingType}
                 onValueChange={(value) =>
-                  setFormCreateChild((prev) => ({
+                  state.setFormCreateChild((prev) => ({
                     ...prev,
                     profileChild: {
                       ...prev.profileChild,
@@ -310,9 +315,9 @@ const FormCreateChildSection: React.FC<FormCreateChildProps> = ({
               <h1 className="text-sm font-bold ">Tingkat Aktivitas Anak</h1>
 
               <Select
-                value={formCreateChild.profileChild.activityLevel}
+                value={state.formCreateChild.profileChild.activityLevel}
                 onValueChange={(value) =>
-                  setFormCreateChild((prev) => ({
+                  state.setFormCreateChild((prev) => ({
                     ...prev,
                     profileChild: {
                       ...prev.profileChild,
@@ -339,19 +344,19 @@ const FormCreateChildSection: React.FC<FormCreateChildProps> = ({
 
       <div className="w-full h-full ">
         <Button
-          onClick={() => onCreate()}
+          onClick={() => service.mutation.onCreate()}
           className="w-full flex justify-center items-center "
           variant={"btn"}
           disabled={
-            !formCreateChild.fullName ||
-            !formCreateChild.gender ||
-            !formCreateChild.dateOfBirth ||
-            isPending
+            !state.formCreateChild.fullName ||
+            !state.formCreateChild.gender ||
+            !state.formCreateChild.dateOfBirth ||
+            service.mutation.isPending
           }
         >
           <Icon icon="ix:success" width="28" height="28" />
           <h1 className="text-lg">
-            {isPending ? <Spinner /> : "Simpan Data Anak"}
+            {service.mutation.isPending ? <Spinner /> : "Simpan Data Anak"}
           </h1>
         </Button>
       </div>

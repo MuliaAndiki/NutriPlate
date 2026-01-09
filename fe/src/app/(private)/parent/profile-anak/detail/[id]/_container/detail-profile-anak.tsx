@@ -1,6 +1,5 @@
 "use client";
 import { useParams } from "next/navigation";
-import { useEffect } from "react";
 
 import DetailProfileAnakHeroSection from "@/components/section/private/parent/detail-profile-anak/detail-profile-anak-section";
 import { SidebarLayout } from "@/core/layouts/sidebar.layout";
@@ -17,10 +16,16 @@ const DetailProfileAnakContainer = () => {
     <SidebarLayout>
       <main className="w-full min-h-screen overflow-x-hidden">
         <DetailProfileAnakHeroSection
-          data={chilDataByID ?? []}
-          isPending={childQueryByID.isPending}
-          router={nameSpace.router}
-          isLoading={childQueryByID.isLoading}
+          namespace={{
+            router: nameSpace.router,
+          }}
+          service={{
+            query: {
+              ChildCard: chilDataByID ?? [],
+              isLoading: childQueryByID.isLoading,
+              isPending: childQueryByID.isPending,
+            },
+          }}
         />
       </main>
     </SidebarLayout>

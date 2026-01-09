@@ -13,8 +13,8 @@ const LoginContainer = () => {
     password: "",
   });
   const service = useService();
-  const login = service.auth.mutation.login();
-  const loginGoogle = service.auth.mutation.loginGoogle();
+  const loginMutation = service.auth.mutation.login();
+  const loginGoogleMutation = service.auth.mutation.loginGoogle();
 
   const handleLogin = () => {
     const payload: any = {
@@ -26,7 +26,7 @@ const LoginContainer = () => {
     } else {
       payload.phone = formLogin.identifier;
     }
-    login.mutate(payload, {
+    loginMutation.mutate(payload, {
       onSuccess: (res) => {
         const baseRole = res.data.role;
         switch (baseRole) {
@@ -48,7 +48,7 @@ const LoginContainer = () => {
   };
 
   const handleLoginGoogle = (code: string) => {
-    loginGoogle.mutate(
+    loginGoogleMutation.mutate(
       { code },
       {
         onSuccess: (res) => {
@@ -76,11 +76,17 @@ const LoginContainer = () => {
   return (
     <main className="w-full min-h-screen overflow-x-hidden">
       <LoginHeroSection
-        formLogin={formLogin}
-        setFormLogin={setFormLogin}
-        onLogin={() => handleLogin()}
-        isPending={login.isPending}
-        onLoginGoogle={handleLoginGoogle}
+        service={{
+          mutation: {
+            isPending: loginGoogleMutation.isPending || loginMutation.isPending,
+            onLogin: () => handleLogin(),
+            onLoginGoogle: handleLoginGoogle,
+          },
+        }}
+        state={{
+          formLogin: formLogin,
+          setFormLogin: setFormLogin,
+        }}
       />
     </main>
   );

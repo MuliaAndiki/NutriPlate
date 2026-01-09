@@ -10,23 +10,23 @@ import VectorSvg from "@/components/svg/vector-auth-svg";
 import Image from "next/image";
 
 interface LoginSectionProps {
-  formLogin: FormLogin;
-  setFormLogin: React.Dispatch<React.SetStateAction<FormLogin>>;
-  isPending: boolean;
-  onLogin: () => void;
-  onLoginGoogle: (code: string) => void;
+  state: {
+    formLogin: FormLogin;
+    setFormLogin: React.Dispatch<React.SetStateAction<FormLogin>>;
+  };
+  service: {
+    mutation: {
+      isPending: boolean;
+      onLogin: () => void;
+      onLoginGoogle: (code: string) => void;
+    };
+  };
 }
-const LoginHeroSection: React.FC<LoginSectionProps> = ({
-  formLogin,
-  isPending,
-  onLogin,
-  setFormLogin,
-  onLoginGoogle,
-}) => {
+const LoginHeroSection: React.FC<LoginSectionProps> = ({ service, state }) => {
   const googleLogin = useGoogleLogin({
     flow: "auth-code",
     onSuccess: async (codeResponse) => {
-      onLoginGoogle(codeResponse.code);
+      service.mutation.onLoginGoogle(codeResponse.code);
     },
     onError: () => {
       console.log("Google Login Failed");
@@ -48,7 +48,7 @@ const LoginHeroSection: React.FC<LoginSectionProps> = ({
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              onLogin();
+              service.mutation.onLogin();
             }}
             className="w-full max-w-sm flex  justify-center items-center flex-col gap-4 mt-4"
           >
@@ -59,9 +59,9 @@ const LoginHeroSection: React.FC<LoginSectionProps> = ({
               <Input
                 placeholder="No Hp/Email"
                 type="text"
-                value={formLogin.identifier}
+                value={state.formLogin.identifier}
                 onChange={(e) =>
-                  setFormLogin((prev) => ({
+                  state.setFormLogin((prev) => ({
                     ...prev,
                     identifier: e.target.value,
                   }))
@@ -75,9 +75,9 @@ const LoginHeroSection: React.FC<LoginSectionProps> = ({
               <Input
                 placeholder="Kata Sandi"
                 type="password"
-                value={formLogin.password}
+                value={state.formLogin.password}
                 onChange={(e) =>
-                  setFormLogin((prev) => ({
+                  state.setFormLogin((prev) => ({
                     ...prev,
                     password: e.target.value,
                   }))
@@ -96,11 +96,13 @@ const LoginHeroSection: React.FC<LoginSectionProps> = ({
                 className="w-full"
                 variant={"btn"}
                 disabled={
-                  isPending || !formLogin.identifier || !formLogin.password
+                  service.mutation.isPending ||
+                  !state.formLogin.identifier ||
+                  !state.formLogin.password
                 }
                 type="submit"
               >
-                {isPending ? <Spinner /> : "Masuk"}
+                {service.mutation.isPending ? <Spinner /> : "Masuk"}
               </Button>
             </div>
             <p>

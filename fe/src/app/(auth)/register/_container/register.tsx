@@ -16,8 +16,8 @@ const RegisterContainer = () => {
   });
 
   const service = useService();
-  const registered = service.auth.mutation.register();
-  const loginGoogle = service.auth.mutation.loginGoogle();
+  const registerMutation = service.auth.mutation.register();
+  const loginGoogleMutation = service.auth.mutation.loginGoogle();
   const handleRegister = () => {
     const payload: any = {
       fullName: formRegister.fullName,
@@ -32,11 +32,11 @@ const RegisterContainer = () => {
       payload.phone = formRegister.identifier;
     }
 
-    registered.mutate(payload);
+    registerMutation.mutate(payload);
   };
 
   const handleLoginGoogle = (code: string) => {
-    loginGoogle.mutate(
+    loginGoogleMutation.mutate(
       {
         code,
       },
@@ -54,18 +54,24 @@ const RegisterContainer = () => {
               return nameSpace.router.push("/admin/home");
           }
         },
-      },
+      }
     );
   };
   return (
     <main className="w-full min-h-screen ">
       <RegisterHeroSection
-        formRegister={formRegister}
-        setFormRegister={setFormRegister}
-        isPending={registered.isPending || loginGoogle.isPending}
-        onRegister={() => handleRegister()}
-        router={nameSpace.router}
-        onLoginGoogle={handleLoginGoogle}
+        service={{
+          mutation: {
+            isPending:
+              registerMutation.isPending || loginGoogleMutation.isPending,
+            onLoginGoogle: handleLoginGoogle,
+            onRegister: () => handleRegister(),
+          },
+        }}
+        state={{
+          formRegister: formRegister,
+          setFormRegister: setFormRegister,
+        }}
       />
     </main>
   );

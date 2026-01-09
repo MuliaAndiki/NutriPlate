@@ -15,8 +15,14 @@ const ProfileParentContainer = () => {
     <SidebarLayout>
       <main className="w-full min-h-screen overflow-x-hidden">
         <ProfileParentHeroSection
-          userProfileType={useGetProfileData ?? []}
-          onLogout={handleLogout}
+          service={{
+            mutation: {
+              onLogout: () => handleLogout(),
+            },
+            query: {
+              userProfileType: useGetProfileData ?? [],
+            },
+          }}
         />
       </main>
     </SidebarLayout>

@@ -1,8 +1,5 @@
 import { useGoogleLogin } from "@react-oauth/google";
-import { ChevronLeft } from "lucide-react";
-import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import Link from "next/link";
-
 import GoogleSvg from "@/components/svg/google-svg";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,25 +18,23 @@ import VectorSvg from "@/components/svg/vector-auth-svg";
 import Image from "next/image";
 
 interface RegisterProps {
-  formRegister: FormRegister;
-  setFormRegister: React.Dispatch<React.SetStateAction<FormRegister>>;
-  isPending: boolean;
-  onRegister: () => void;
-  router: AppRouterInstance;
-  onLoginGoogle: (code: string) => void;
+  state: {
+    formRegister: FormRegister;
+    setFormRegister: React.Dispatch<React.SetStateAction<FormRegister>>;
+  };
+  service: {
+    mutation: {
+      isPending: boolean;
+      onRegister: () => void;
+      onLoginGoogle: (code: string) => void;
+    };
+  };
 }
-const RegisterHeroSection: React.FC<RegisterProps> = ({
-  formRegister,
-  isPending,
-  onRegister,
-  setFormRegister,
-  router,
-  onLoginGoogle,
-}) => {
+const RegisterHeroSection: React.FC<RegisterProps> = ({ service, state }) => {
   const googleLogin = useGoogleLogin({
     flow: "auth-code",
     onSuccess: async (codeResponse) => {
-      onLoginGoogle(codeResponse.code);
+      service.mutation.onLoginGoogle(codeResponse.code);
     },
     onError: () => {
       console.log("Google Login Failed");
@@ -61,7 +56,7 @@ const RegisterHeroSection: React.FC<RegisterProps> = ({
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              onRegister();
+              service.mutation.onRegister();
             }}
             className="w-full max-w-sm flex justify-center items-center flex-col gap-4 mt-4"
           >
@@ -71,9 +66,9 @@ const RegisterHeroSection: React.FC<RegisterProps> = ({
               </label>
               <Input
                 placeholder="No Hp/Email"
-                value={formRegister.identifier}
+                value={state.formRegister.identifier}
                 onChange={(e) =>
-                  setFormRegister((prev) => ({
+                  state.setFormRegister((prev) => ({
                     ...prev,
                     identifier: e.target.value,
                   }))
@@ -86,9 +81,9 @@ const RegisterHeroSection: React.FC<RegisterProps> = ({
               </label>
               <Input
                 placeholder="Masukkan Nama lengkap Anda"
-                value={formRegister.fullName}
+                value={state.formRegister.fullName}
                 onChange={(e) =>
-                  setFormRegister((prev) => ({
+                  state.setFormRegister((prev) => ({
                     ...prev,
                     fullName: e.target.value,
                   }))
@@ -102,9 +97,9 @@ const RegisterHeroSection: React.FC<RegisterProps> = ({
               <Input
                 placeholder="Kata Sandi Minimal 8 Karakter"
                 type="password"
-                value={formRegister.password}
+                value={state.formRegister.password}
                 onChange={(e) =>
-                  setFormRegister((prev) => ({
+                  state.setFormRegister((prev) => ({
                     ...prev,
                     password: e.target.value,
                   }))
@@ -116,9 +111,9 @@ const RegisterHeroSection: React.FC<RegisterProps> = ({
                 Peran:
               </label>
               <Select
-                value={formRegister.role}
+                value={state.formRegister.role}
                 onValueChange={(value) =>
-                  setFormRegister((prev) => ({
+                  state.setFormRegister((prev) => ({
                     ...prev,
                     role: value,
                   }))
@@ -142,14 +137,14 @@ const RegisterHeroSection: React.FC<RegisterProps> = ({
                 variant={"btn"}
                 type="submit"
                 disabled={
-                  isPending ||
-                  !formRegister.fullName ||
-                  !formRegister.identifier ||
-                  !formRegister.password ||
-                  !formRegister.role
+                  service.mutation.isPending ||
+                  !state.formRegister.fullName ||
+                  !state.formRegister.identifier ||
+                  !state.formRegister.password ||
+                  !state.formRegister.role
                 }
               >
-                {isPending ? <Spinner /> : "Daftar"}
+                {service.mutation.isPending ? <Spinner /> : "Daftar"}
               </Button>
             </div>
 
@@ -157,7 +152,7 @@ const RegisterHeroSection: React.FC<RegisterProps> = ({
               <h1 className="text-lg font-bold">Atau Masuk Dengan</h1>
               <button
                 type="button"
-                disabled={isPending}
+                disabled={service.mutation.isPending}
                 onClick={() => googleLogin()}
               >
                 <GoogleSvg />

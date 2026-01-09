@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useState } from "react";
-
 import ResetPasswordHeroSection from "@/components/section/auth/resetPassword-section";
 import useService from "@/hooks/mutation/prop.service";
 import { useAppNameSpace } from "@/hooks/useAppNameSpace";
@@ -11,17 +10,16 @@ const ResetPasswordContainer = () => {
   const nameSpace = useAppNameSpace();
   const searchParams = useSearchParams();
   const identifier = searchParams.get("identifier");
-
   const [formResetPassword, setFormResetPassword] = useState<FormResetPassword>(
     {
       identifier: "",
       password: "",
-    },
+    }
   );
 
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const service = useService();
-  const resetPassword = service.auth.mutation.resetPassword();
+  const resetPasswordMutation = service.auth.mutation.resetPassword();
 
   useEffect(() => {
     if (!identifier) {
@@ -49,7 +47,7 @@ const ResetPasswordContainer = () => {
       password: formResetPassword.password,
     };
     const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
-      formResetPassword.identifier,
+      formResetPassword.identifier
     );
     if (isEmail) {
       payload.email = formResetPassword.identifier;
@@ -57,7 +55,7 @@ const ResetPasswordContainer = () => {
       payload.phone = formResetPassword.identifier;
     }
 
-    resetPassword.mutate(payload, {
+    resetPasswordMutation.mutate(payload, {
       onSuccess: () => {
         nameSpace.router.push("/login");
       },
@@ -66,13 +64,21 @@ const ResetPasswordContainer = () => {
   return (
     <main className="w-full min-h-screen">
       <ResetPasswordHeroSection
-        router={nameSpace.router}
-        confirmPassword={confirmPassword}
-        setConfirmPassword={setConfirmPassword}
-        formResetPassword={formResetPassword}
-        setFormResetPassword={setFormResetPassword}
-        isPending={resetPassword.isPending}
-        onReset={() => handleResetPassword()}
+        namespace={{
+          router: nameSpace.router,
+        }}
+        service={{
+          mutation: {
+            isPending: resetPasswordMutation.isPending,
+            onReset: () => handleResetPassword(),
+          },
+        }}
+        state={{
+          confirmPassword: confirmPassword,
+          setConfirmPassword: setConfirmPassword,
+          formResetPassword: formResetPassword,
+          setFormResetPassword: setFormResetPassword,
+        }}
       />
     </main>
   );

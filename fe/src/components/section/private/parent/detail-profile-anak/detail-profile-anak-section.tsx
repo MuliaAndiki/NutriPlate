@@ -2,7 +2,6 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import { ChevronLeft } from "lucide-react";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import Link from "next/link";
-
 import ChildCard from "@/components/card/child-card";
 import ProfileChildCard from "@/components/card/profile-child";
 import StatusAsupan from "@/components/card/status-asupan";
@@ -11,26 +10,37 @@ import {
   profileChildCardsConfig,
   RouteDetailChild,
 } from "@/configs/component.config";
-import { ChildCardProps } from "@/types/props.type";
 import { formatDate, getTime } from "@/utils/string.format";
+import { ChildCardType } from "@/types/card";
 
 interface DetailProfileAnakProps {
-  isPending: boolean;
-  router: AppRouterInstance;
-  isLoading: boolean;
+  namespace: {
+    router: AppRouterInstance;
+  };
+  service: {
+    query: {
+      ChildCard: ChildCardType;
+      isPending: boolean;
+      isLoading: boolean;
+    };
+  };
 }
-const DetailProfileAnakHeroSection: React.FC<
-  ChildCardProps & DetailProfileAnakProps
-> = ({ data, isPending, router, isLoading }) => {
+const DetailProfileAnakHeroSection: React.FC<DetailProfileAnakProps> = ({
+  namespace,
+  service,
+}) => {
   // fallback skeleton
-  if (isLoading) {
+  if (service.query.isLoading) {
     return <div>loading</div>;
   }
   return (
     <div className="w-full min-h-screen flex justify-start items-center flex-col p-2">
       <div className="w-full flex  flex-col space-y-4">
         <div className="w-full flex justify-start items-center">
-          <ChevronLeft onClick={() => router.back()} className="scale-120" />
+          <ChevronLeft
+            onClick={() => namespace.router.back()}
+            className="scale-120"
+          />
           <h1 className="text-3xl font-bold">Profil Anak</h1>
         </div>
 
@@ -40,12 +50,13 @@ const DetailProfileAnakHeroSection: React.FC<
           </h1>
         </div>
         <div className="w-full">
-          <ChildCard data={data} />
+          <ChildCard data={service.query.ChildCard} />
         </div>
         <div className="w-full flex justify-between items-center">
           <h1 className="font-extralight text-xs">Terakhir Diperbarui</h1>
           <h1 className="font-extralight text-xs">
-            {formatDate(data.updatedAt)} {getTime(data.updatedAt)}
+            {formatDate(service.query.ChildCard.updatedAt)}{" "}
+            {getTime(service.query.ChildCard.updatedAt)}
           </h1>
         </div>
         <div className="w-full grid grid-cols-3 grid-rows-1 justify-center items-center gap-2">
@@ -54,7 +65,7 @@ const DetailProfileAnakHeroSection: React.FC<
               color={item.color}
               icon={item.icon}
               label={item.label}
-              value={item.getValue(data.profileChild)}
+              value={item.getValue(service.query.ChildCard.profileChild)}
               key={item.key}
               border={item.border}
               header={item.header}
@@ -80,7 +91,7 @@ const DetailProfileAnakHeroSection: React.FC<
             {RouteDetailChild.map((items, key) => (
               <Button variant={"btn"} className="w-full h-auto " key={key}>
                 <Link
-                  href={`${items.href}/${data.id}/${items.slice}`}
+                  href={`${items.href}/${service.query.ChildCard.id}/${items.slice}`}
                   className="w-full h-auto  "
                 >
                   <div className="w-full grid grid-cols-2 grid-rows-1 items-center ">

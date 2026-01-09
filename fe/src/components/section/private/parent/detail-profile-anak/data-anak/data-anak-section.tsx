@@ -18,38 +18,42 @@ import { FormUpdateChild } from "@/types/form/child.form";
 import { AlertContexType } from "@/types/ui";
 import UploadsTrigger from "@/utils/uploadTrigger";
 interface DataAnakHeroSectionProps {
-  router: AppRouterInstance;
-  formUpdateChild: FormUpdateChild | null;
-  setFormUpdateChild: React.Dispatch<
-    React.SetStateAction<FormUpdateChild | null>
-  >;
-  isEdit: boolean;
-  setIsEdit: React.Dispatch<React.SetStateAction<boolean>>;
-  onUpdate: () => void;
-  onChangeAva: (e: any) => void;
-  preview: string | null;
-  onRemovePreview: () => void;
-  onDelete: (id: string) => void;
-  alert: AlertContexType;
+  namespace: {
+    router: AppRouterInstance;
+    alert: AlertContexType;
+  };
+  state: {
+    formUpdateChild: FormUpdateChild | null;
+    setFormUpdateChild: React.Dispatch<
+      React.SetStateAction<FormUpdateChild | null>
+    >;
+    isEdit: boolean;
+    setIsEdit: React.Dispatch<React.SetStateAction<boolean>>;
+    preview: string | null;
+  };
+
+  service: {
+    mutation: {
+      onUpdate: () => void;
+      onChangeAva: (e: any) => void;
+      onRemovePreview: () => void;
+      onDelete: (id: string) => void;
+    };
+  };
 }
 
 const DataAnakHeroSection: React.FC<DataAnakHeroSectionProps> = ({
-  router,
-  formUpdateChild,
-  setFormUpdateChild,
-  isEdit,
-  setIsEdit,
-  onUpdate,
-  onChangeAva,
-  preview,
-  onRemovePreview,
-  onDelete,
-  alert,
+  namespace,
+  service,
+  state,
 }) => {
   return (
     <div className="w-full min-h-screen flex justify-start items-center flex-col p-2 space-y-2">
       <div className="w-full flex justify-start items-center">
-        <ChevronLeft onClick={() => router.back()} className="scale-120" />
+        <ChevronLeft
+          onClick={() => namespace.router.back()}
+          className="scale-120"
+        />
         <h1 className="text-2xl font-bold">Data Anak</h1>
       </div>
       <div className="w-full flex flex-col border rounded-lg">
@@ -63,18 +67,18 @@ const DataAnakHeroSection: React.FC<DataAnakHeroSectionProps> = ({
           <h1 className="font-bold text-lg text-background">Data Diri</h1>
         </div>
         <div className="flex justify-center items-center p-4 flex-col ">
-          {!preview ? (
+          {!state.preview ? (
             <UploadsTrigger
               accept="image/*"
               multiple={false}
-              onChange={(e) => onChangeAva(e)}
-              disable={!isEdit}
+              onChange={(e) => service.mutation.onChangeAva(e)}
+              disable={!state.isEdit}
             >
               <Image
                 alt="child"
                 src={
-                  formUpdateChild?.avaChild
-                    ? formUpdateChild.avaChild
+                  state.formUpdateChild?.avaChild
+                    ? state.formUpdateChild.avaChild
                     : "/images/childDummy.png"
                 }
                 width={250}
@@ -87,12 +91,12 @@ const DataAnakHeroSection: React.FC<DataAnakHeroSectionProps> = ({
               <UploadsTrigger
                 accept="image/*"
                 multiple={false}
-                onChange={(e) => onChangeAva(e)}
-                disable={!isEdit}
+                onChange={(e) => service.mutation.onChangeAva(e)}
+                disable={!state.isEdit}
               >
                 <Image
                   alt="child"
-                  src={preview}
+                  src={state.preview}
                   width={250}
                   height={250}
                   className="rounded-full aspect-square object-cover"
@@ -101,7 +105,7 @@ const DataAnakHeroSection: React.FC<DataAnakHeroSectionProps> = ({
               <Button
                 className="border-4 border-dashed"
                 variant={"ghost"}
-                onClick={() => onRemovePreview()}
+                onClick={() => service.mutation.onRemovePreview()}
               >
                 Hapus
               </Button>
@@ -111,11 +115,11 @@ const DataAnakHeroSection: React.FC<DataAnakHeroSectionProps> = ({
           <div className="w-full space-y-3">
             <label className="text-lg font-bold">Nama Lengkap</label>
             <Input
-              value={formUpdateChild?.fullName ?? ""}
-              disabled={!isEdit}
+              value={state.formUpdateChild?.fullName ?? ""}
+              disabled={!state.isEdit}
               type="text"
               onChange={(e) =>
-                setFormUpdateChild((prev) =>
+                state.setFormUpdateChild((prev) =>
                   prev ? { ...prev, fullName: e.target.value } : prev
                 )
               }
@@ -123,21 +127,21 @@ const DataAnakHeroSection: React.FC<DataAnakHeroSectionProps> = ({
             <label className="text-lg font-bold">Tempat/Tanggal Lahir</label>
             <div className="w-full grid grid-cols-2 grid-rows-1 items-center gap-4">
               <Input
-                value={formUpdateChild?.placeOfBirth ?? ""}
-                disabled={!isEdit}
+                value={state.formUpdateChild?.placeOfBirth ?? ""}
+                disabled={!state.isEdit}
                 type="text"
                 onChange={(e) =>
-                  setFormUpdateChild((prev) =>
+                  state.setFormUpdateChild((prev) =>
                     prev ? { ...prev, placeOfBirth: e.target.value } : prev
                   )
                 }
               />
               <Input
-                value={formUpdateChild?.dateOfBirth ?? ""}
-                disabled={!isEdit}
+                value={state.formUpdateChild?.dateOfBirth ?? ""}
+                disabled={!state.isEdit}
                 type="date"
                 onChange={(e) =>
-                  setFormUpdateChild((prev) =>
+                  state.setFormUpdateChild((prev) =>
                     prev ? { ...prev, dateOfBirth: e.target.value } : prev
                   )
                 }
@@ -146,11 +150,11 @@ const DataAnakHeroSection: React.FC<DataAnakHeroSectionProps> = ({
             <div className="w-full">
               <h1 className="text-lg font-bold">Jenis Kelamin</h1>
               <Select
-                value={formUpdateChild?.gender ?? ""}
-                key={formUpdateChild?.gender ?? ""}
-                disabled={!isEdit}
+                value={state.formUpdateChild?.gender ?? ""}
+                key={state.formUpdateChild?.gender ?? ""}
+                disabled={!state.isEdit}
                 onValueChange={(value) => {
-                  setFormUpdateChild!((prev) =>
+                  state.setFormUpdateChild!((prev) =>
                     prev ? { ...prev, gender: value } : prev
                   );
                 }}
@@ -171,18 +175,18 @@ const DataAnakHeroSection: React.FC<DataAnakHeroSectionProps> = ({
         </div>
       </div>
 
-      {!isEdit ? (
+      {!state.isEdit ? (
         <div className="w-full grid grid-cols-2 grid-rows-1  items-center gap-4 mt-4 ">
           <Button
             variant={"destructive"}
             className="w-full"
             onClick={() => {
-              alert.modal({
+              namespace.alert.modal({
                 title: "Perhatian",
                 deskripsi: "Kamu Ingin Menghapus Profile Anak ini ?",
                 icon: "warning",
                 onConfirm: () => {
-                  onDelete(formUpdateChild!.id);
+                  service.mutation.onDelete(state.formUpdateChild!.id);
                 },
                 onClose: () => {},
               });
@@ -193,7 +197,7 @@ const DataAnakHeroSection: React.FC<DataAnakHeroSectionProps> = ({
           <Button
             variant={"btn"}
             className="w-full"
-            onClick={() => setIsEdit(true)}
+            onClick={() => state.setIsEdit(true)}
           >
             Edit Data
           </Button>
@@ -203,12 +207,15 @@ const DataAnakHeroSection: React.FC<DataAnakHeroSectionProps> = ({
           <Button
             variant={"destructive"}
             onClick={() => {
-              setIsEdit(false);
+              state.setIsEdit(false);
             }}
           >
             Batalkan
           </Button>
-          <Button className="w-full" onClick={() => onUpdate()}>
+          <Button
+            className="w-full"
+            onClick={() => service.mutation.onUpdate()}
+          >
             Simpan
           </Button>
         </div>

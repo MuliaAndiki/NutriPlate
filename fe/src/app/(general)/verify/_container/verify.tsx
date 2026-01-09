@@ -19,8 +19,8 @@ const VerifyContainer = () => {
   });
   const [colldown, setColldown] = useState<number>(0);
   const service = useService();
-  const verifikasi = service.auth.mutation.verifyOtp();
-  const resend = service.auth.mutation.resend();
+  const verifikasiMutation = service.auth.mutation.verifyOtp();
+  const resendMutation = service.auth.mutation.resend();
   const hash = identifier?.slice(-12);
 
   if (!identifier || !target) {
@@ -29,7 +29,7 @@ const VerifyContainer = () => {
     return null;
   }
   const handleVerfiyOtp = () => {
-    verifikasi.mutate(formVerifyOtp, {
+    verifikasiMutation.mutate(formVerifyOtp, {
       onSuccess: () => {
         nameSpace.router.push(`${target}`);
       },
@@ -37,7 +37,7 @@ const VerifyContainer = () => {
   };
 
   const handleResend = () => {
-    resend.mutate(
+    resendMutation.mutate(
       {
         email: identifier ?? "",
       },
@@ -74,13 +74,19 @@ const VerifyContainer = () => {
   return (
     <main className="w-full min-h-full">
       <VerifyOtpHeroSection
-        formVerifyOtp={formVerifyOtp}
-        setFormVerifyOtp={setFormVerifyOtp}
-        isPending={verifikasi.isPending}
-        onVerify={() => handleVerfiyOtp()}
-        colldown={colldown}
-        resendOtp={() => handleResend()}
-        hashIdentifer={hash!}
+        service={{
+          mutation: {
+            isPending: verifikasiMutation.isPending || resendMutation.isPending,
+            onVerify: () => handleVerfiyOtp(),
+            resendOtp: () => handleResend(),
+          },
+        }}
+        state={{
+          colldown: colldown,
+          formVerifyOtp: formVerifyOtp,
+          hashIdentifer: hash!,
+          setFormVerifyOtp: setFormVerifyOtp,
+        }}
       />
     </main>
   );
