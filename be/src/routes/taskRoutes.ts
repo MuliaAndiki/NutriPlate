@@ -23,6 +23,12 @@ class TaskRoutes {
     this.taskRoutes.get('/', (c: AppContext) => TaskController.getTaskForChild(c), {
       beforeHandle: [verifyToken().beforeHandle],
     });
+    this.taskRoutes.put('/:id', (c: AppContext) => TaskController.updateTask(c), {
+      beforeHandle: [verifyToken().beforeHandle, requireRole(['POSYANDU']).beforeHandle],
+    });
+    this.taskRoutes.delete('/:id', (c: AppContext) => TaskController.deleteTask(c), {
+      beforeHandle: [verifyToken().beforeHandle, requireRole(['POSYANDU']).beforeHandle],
+    });
   }
 }
 

@@ -18,11 +18,11 @@ model User {
   otp           String?
   expOtp        DateTime?
   token         String?
-  avaUrl      String?
   activateExp   DateTime?
   activateToken String?
   createdAt     DateTime            @default(now())
   updatedAt     DateTime            @updatedAt
+  avaUrl        String?
   children      Child[]
   footImage     FoodRawImage[]
   iotDevices    IotDevice[]
@@ -51,7 +51,8 @@ model Child {
   foodIntake      Food[]
   measurements    Measurement[]
   programProgress NutritionProgramProgress[]
-  whoEvaluation WhoEvaluation[]
+  whoEvaluation   WhoEvaluation[]
+
   @@index([parentId])
   @@index([posyanduId])
   @@map("children")
@@ -110,7 +111,8 @@ model Measurement {
   note                String?
   createdAt           DateTime        @default(now())
   child               Child           @relation(fields: [childId], references: [id])
-  whoEvaluation WhoEvaluation[]
+  whoEvaluation       WhoEvaluation?
+
   @@index([childId])
   @@map("measurements")
 }
@@ -208,6 +210,7 @@ model TaskProgram {
   isComplated Boolean                  @default(false)
   createdAt   DateTime                 @default(now())
   updatedAt   DateTime                 @updatedAt
+  isBroadcast Boolean                  @default(false)
   progres     NutritionProgramProgress @relation(fields: [progresId], references: [id])
 
   @@index([progresId])
@@ -273,43 +276,39 @@ model MlModel {
 }
 
 model WhoHeightForAge {
-  id          String  @id @default(uuid())
-  gender      GenderType
-  ageMonths   Int
-
-  sdMinus3    Float
-  sdMinus2    Float
-  sdMinus1    Float
-  median      Float
-  sdPlus1     Float
-  sdPlus2     Float
-  sdPlus3     Float
-
-  createdAt  DateTime @default(now())
+  id        String     @id @default(uuid())
+  gender    GenderType
+  ageMonths Int
+  sdMinus3  Float
+  sdMinus2  Float
+  sdMinus1  Float
+  median    Float
+  sdPlus1   Float
+  sdPlus2   Float
+  sdPlus3   Float
+  createdAt DateTime   @default(now())
 
   @@unique([gender, ageMonths])
   @@map("who_height_for_age")
 }
 
 model WhoEvaluation {
-  id            String   @id @default(uuid())
-  childId       String
-  measurementId String @unique
-  ageMonths     Int
-  heightCm      Decimal
-  weightKg      Decimal
-  zScore        Float
-  classification Json
+  id             String      @id @default(uuid())
+  childId        String
+  measurementId  String      @unique
+  ageMonths      Int
+  heightCm       Decimal
+  weightKg       Decimal
+  zScore         Float
   recommendation Json
-  createdAt     DateTime @default(now())
-  child       Child       @relation(fields: [childId], references: [id])
-  measurement Measurement @relation(fields: [measurementId], references: [id])
+  createdAt      DateTime    @default(now())
+  classification Json
+  child          Child       @relation(fields: [childId], references: [id])
+  measurement    Measurement @relation(fields: [measurementId], references: [id])
 
   @@index([childId])
   @@map("who_evaluations")
 }
-
-
 
 enum RoleType {
   PARENT
