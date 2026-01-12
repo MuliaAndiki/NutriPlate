@@ -23,9 +23,7 @@ export function SidebarLayout({ children }: AppLayoutProps) {
   const pathname = usePathname();
   const { state } = useSidebar();
   const isCollapsed = state === "collapsed";
-
   const currentRole = getCookie("user_role") as UserRole | undefined;
-
   const [isActive, setIsActive] = useState<string>("");
 
   return (

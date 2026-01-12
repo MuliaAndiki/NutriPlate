@@ -9,3 +9,12 @@ export function useGetPropgrams() {
     staleTime: 1000 * 60 * 5,
   });
 }
+
+export function useGetPropgramsByID(id: string) {
+  return useQuery({
+    queryKey: cacheKey.program.byID(id),
+    queryFn: () => Api.Program.getProgrambyID(id),
+    staleTime: 1000 * 60 * 5,
+    enabled: !!id,
+  });
+}

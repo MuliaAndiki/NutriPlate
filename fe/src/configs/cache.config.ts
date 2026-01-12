@@ -14,5 +14,6 @@ export const cacheKey = {
   },
   program: {
     list: () => [`programs:list`],
+    byID: (id: string) => [`programs:id:${id}`],
   },
 };

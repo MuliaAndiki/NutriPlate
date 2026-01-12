@@ -1,4 +1,4 @@
-import { useGetPropgrams } from "./state/query";
+import { useGetPropgrams, useGetPropgramsByID } from "./state/query";
 
 export function useProgram() {
   return {
@@ -7,6 +7,7 @@ export function useProgram() {
     },
     query: {
       getPrograms: useGetPropgrams,
+      getProgramById: useGetPropgramsByID,
     },
   };
 }

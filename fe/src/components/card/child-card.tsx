@@ -1,9 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
-
 import { ChildCardProps } from "@/types/props.type";
 import { GenderFormat } from "@/utils/string.format";
-
 import { Card } from "../ui/card";
 
 const ChildCard: React.FC<ChildCardProps> = ({ data }) => {

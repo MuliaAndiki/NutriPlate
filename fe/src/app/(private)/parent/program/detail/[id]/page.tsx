@@ -1,5 +1,4 @@
-import DetailProfileAnakContainer from "../../../profile-anak/detail/[id]/_container/detail-profile-anak";
-
+import DetailProgramContainer from "./_container/detail-program";
 export default function DetailProgram() {
-  return <DetailProfileAnakContainer />;
+  return <DetailProgramContainer />;
 }

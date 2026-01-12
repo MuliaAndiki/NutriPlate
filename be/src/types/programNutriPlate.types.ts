@@ -4,8 +4,8 @@ export interface IProgramNutriPlate {
   name: string;
   description: string;
   startPrograms: Date;
-  activity: string;
-  benefit: string;
+  activity: string[];
+  benefit: string[];
   durationRegister: Date;
   endPrograms: Date;
   createdAt: Date;

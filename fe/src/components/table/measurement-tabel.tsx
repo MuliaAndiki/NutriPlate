@@ -32,7 +32,7 @@ const MeasurementTable: React.FC<MeasurementTableProps> = ({
           historyMeasument.map((data) => (
             <div key={data.id} className="p-3">
               <div className="w-full grid grid-cols-3">
-                <div className="flex justify-center items-center flex-col">
+                <div className="flex justify-center  items-center flex-col">
                   <h1 className="text-sm font-bold">Tanggal</h1>
                   <p className="text-sm">
                     {formatDateTime(data.createdAt, { style: "date" })}
