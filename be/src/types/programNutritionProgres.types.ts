@@ -3,14 +3,11 @@ export interface INutritionProgramProgress {
   childId: string;
   programId: string;
   isAccep: boolean;
-  dayNumber: number;
+
   isCompleted: boolean;
   createdAt: string;
 }
 
-export type PickAssingPrograms = Pick<
-  INutritionProgramProgress,
-  'childId' | 'programId' | 'dayNumber'
->;
+export type PickAssingPrograms = Pick<INutritionProgramProgress, 'childId' | 'programId'>;
 export type PickProgramProgresID = Pick<INutritionProgramProgress, 'id'>;
 export type PickCancelPrograms = Pick<INutritionProgramProgress, 'childId'>;

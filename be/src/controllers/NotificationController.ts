@@ -7,6 +7,7 @@ import prisma from 'prisma/client';
 import app from '@/app';
 import { error } from 'console';
 import { Tuple_Roles } from '@/utils/roleTuple';
+import { NotificationService } from '@/service/notifikasi.service';
 
 class NotificationController {
   private get redis() {
@@ -15,7 +16,7 @@ class NotificationController {
   public async createNotification(c: AppContext) {
     try {
       const jwtUser = c.user as JwtPayload;
-      const notBody = c.body as PickCreateNotification;
+      const body = c.body as PickCreateNotification;
 
       if (!jwtUser) {
         return c.json?.(
@@ -26,51 +27,23 @@ class NotificationController {
           401,
         );
       }
-
-      if (!notBody.message || !notBody.title || !notBody.type) {
-        return c.json?.(
-          {
-            status: 400,
-            message: 'body is required',
-          },
-          400,
-        );
-      }
-      const notify = await prisma.notifications.create({
+      const notification = await prisma.notifications.create({
         data: {
-          title: notBody.title,
-          message: notBody.message,
-          type: notBody.type,
           userId: jwtUser.id,
+          title: body.title,
+          message: body.message,
+          type: body.type,
+          isBroadcast: false,
         },
       });
-
-      app.server?.publish(
-        `user:${jwtUser.id}`,
-        JSON.stringify({
-          type: 'notification:new',
-          payload: notify,
-        }),
+      return c.json?.(
+        {
+          status: 200,
+          message: 'succesfully create notification',
+          data: notification,
+        },
+        200,
       );
-
-      if (!notify) {
-        return c.json?.(
-          {
-            status: 400,
-            message: 'server internal error',
-          },
-          400,
-        );
-      } else {
-        return c.json?.(
-          {
-            status: 200,
-            message: 'succesfuly create notify',
-            data: notify,
-          },
-          200,
-        );
-      }
     } catch (error) {
       console.error(error);
       return c.json?.(
@@ -224,7 +197,7 @@ class NotificationController {
         );
       }
 
-      const cacheKey = cacheKeys.notify.byRole(user.role);
+      const cacheKey = cacheKeys.notification.byRole(user.role);
       try {
         const cacheNotif = await this.redis.get(cacheKey);
         if (cacheNotif) {
@@ -316,7 +289,7 @@ class NotificationController {
           400,
         );
       }
-      const cacheKey = cacheKeys.notify.byID(notParams.id);
+      const cacheKey = cacheKeys.notification.byID(notParams.id);
       try {
         const cacheNotify = await this.redis.get(cacheKey);
         if (cacheNotify) {
@@ -403,7 +376,7 @@ class NotificationController {
           400,
         );
       }
-      const cacheKey = cacheKeys.notify.byID(notParams.id);
+      const cacheKey = cacheKeys.notification.byID(notParams.id);
 
       const notafication = await prisma.notifications.update({
         where: {
@@ -480,7 +453,7 @@ class NotificationController {
           400,
         );
       }
-      const cacheKey = cacheKeys.notify.byID(notParams.id);
+      const cacheKey = cacheKeys.notification.byID(notParams.id);
       const notafication = await prisma.notifications.delete({
         where: {
           id: notParams.id,
@@ -526,98 +499,24 @@ class NotificationController {
   }
   public async broadcastNotifications(c: AppContext) {
     try {
-      const jwtPayload = c.user as JwtPayload;
+      const jwtUser = c.user as JwtPayload;
       const notParams = c.params as PickNotifID;
-      if (!jwtPayload) {
+      if (!jwtUser) {
         return c.json?.(
           {
-            status: 404,
-            message: ' user not found',
+            status: 401,
+            message: ' Unauthorized',
           },
-          404,
+          401,
         );
       }
-      if (!notParams) {
-        return c.json?.(
-          {
-            status: 400,
-            message: 'params is required',
-          },
-          400,
-        );
-      }
+      const notification = await NotificationService.broadcastFromDraft(jwtUser.id, notParams.id);
 
-      const user = await prisma.user.findFirst({
-        where: {
-          id: jwtPayload.id,
-        },
-        select: {
-          role: true,
-          id: true,
-        },
+      return c.json?.({
+        status: 200,
+        message: 'notification broadcasted',
+        data: notification,
       });
-
-      if (!user || (user.role !== 'ADMIN' && user.role !== 'POSYANDU')) {
-        return c.json?.(
-          {
-            status: 403,
-            message: 'acces forenbaden',
-          },
-          403,
-        );
-      }
-      const cacheKey = Tuple_Roles.map((role) => cacheKeys.notify.byRole(role));
-      const notif = await prisma.notifications.findFirst({
-        where: {
-          id: notParams.id,
-          userId: user.id,
-        },
-      });
-
-      if (!notif) {
-        return c.json?.(
-          {
-            status: 404,
-            message: 'notafication not found',
-          },
-          404,
-        );
-      }
-
-      const notification = await prisma.notifications.update({
-        where: {
-          id: notif.id,
-        },
-        data: {
-          isBroadcast: true,
-        },
-      });
-      await this.redis.del(cacheKey).catch(error);
-
-      app.server?.publish(
-        `user:${jwtPayload.id}`,
-        JSON.stringify({
-          type: 'notification:broadcast',
-          payload: notification,
-        }),
-      );
-      if (!notification) {
-        return c.json?.(
-          {
-            status: 400,
-            message: 'server internal error',
-          },
-          400,
-        );
-      }
-      return c.json?.(
-        {
-          status: 200,
-          message: 'succesfully update notafication',
-          data: notification,
-        },
-        200,
-      );
     } catch (error) {
       console.error(error);
       return c.json?.(

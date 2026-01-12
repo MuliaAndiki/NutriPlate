@@ -1,6 +1,6 @@
 "use client";
 
-import GrafikPertumbuhanAnakHeroSection from "@/components/section/private/parent/detail-profile-anak/grafik-pertumbuhan-anak/grafik-pertumbuhan-anak-section";
+import GrafikPertumbuhanAnakHeroSection from "@/components/section/private/parent/profile-anak/detail-profile-anak/grafik-pertumbuhan-anak/grafik-pertumbuhan-anak-section";
 import { SidebarLayout } from "@/core/layouts/sidebar.layout";
 import useService from "@/hooks/mutation/prop.service";
 import { useAppNameSpace } from "@/hooks/useAppNameSpace";

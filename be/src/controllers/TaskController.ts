@@ -305,7 +305,7 @@ class SubtaskController {
           403,
         );
       }
-      const cacheKey = cacheKeys.task.byid(params.id);
+      const cacheKey = cacheKeys.task.byID(params.id);
 
       const buildPayload = ParseUpdateData(TaskBody);
       const updateTask = await prisma.taskProgram.update({
@@ -371,7 +371,7 @@ class SubtaskController {
         );
       }
 
-      const cacheKey = cacheKeys.task.byid(params.id);
+      const cacheKey = cacheKeys.task.byID(params.id);
       const posyandu = await prisma.posyandu.findFirst({
         where: {
           userID: jwtUser.id,

@@ -10,8 +10,8 @@ import {
   profileChildCardsConfig,
   RouteDetailChild,
 } from "@/configs/component.config";
-import { formatDate, getTime } from "@/utils/string.format";
 import { ChildCardType } from "@/types/card";
+import { formatDateTime } from "@/utils/time.format";
 
 interface DetailProfileAnakProps {
   namespace: {
@@ -55,8 +55,12 @@ const DetailProfileAnakHeroSection: React.FC<DetailProfileAnakProps> = ({
         <div className="w-full flex justify-between items-center">
           <h1 className="font-extralight text-xs">Terakhir Diperbarui</h1>
           <h1 className="font-extralight text-xs">
-            {formatDate(service.query.ChildCard.updatedAt)}{" "}
-            {getTime(service.query.ChildCard.updatedAt)}
+            {formatDateTime(service.query.ChildCard.updatedAt, {
+              style: "date",
+            })}
+            {formatDateTime(service.query.ChildCard.updatedAt, {
+              style: "time",
+            })}
           </h1>
         </div>
         <div className="w-full grid grid-cols-3 grid-rows-1 justify-center items-center gap-2">

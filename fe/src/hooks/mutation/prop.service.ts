@@ -1,3 +1,4 @@
+import { useProgram } from "../program/useProgram";
 import { useAuth } from "./auths/useAuth";
 import { useChild } from "./childs/useChild";
 import { useMeasuremnet } from "./measurement/useMeasuremnet";
@@ -14,6 +15,7 @@ export const useService = () => ({
   service: useServices(),
   child: useChild(),
   measuremnt: useMeasuremnet(),
+  program: useProgram(),
 });
 
 export default useService;

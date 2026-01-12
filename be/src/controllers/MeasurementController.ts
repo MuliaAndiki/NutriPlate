@@ -477,7 +477,7 @@ class MeasurementController {
 
       await Promise.allSettled([
         this.redis.del(cacheKeys.measurement.byChild(child.id)),
-        this.redis.del(cacheKeys.evalution.byChild(child.id)),
+        this.redis.del(cacheKeys.evaluation.byChild(child.id)),
       ]);
 
       return c.json?.(

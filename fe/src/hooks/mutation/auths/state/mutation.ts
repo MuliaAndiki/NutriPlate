@@ -1,6 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
 import { deleteCookie, setCookie } from "cookies-next";
-
 import {
   APP_REFRESH_TOKEN_COOKIE_EXPIRES_IN,
   APP_SESSION_COOKIE_KEY,
@@ -15,6 +14,7 @@ import {
   FormSendOtp,
   FormVerify,
 } from "@/types/form/auth.form";
+import { disconnectSocket } from "@/lib/socket";
 
 export function useLogin() {
   const nameSpace = useAppNameSpace();
@@ -94,6 +94,7 @@ export function useLogout() {
       deleteCookie(APP_SESSION_COOKIE_KEY);
       deleteCookie("user_role");
       nameSpace.router.replace("/login");
+      disconnectSocket();
     },
     onError: (err) => {
       console.error(err);
@@ -106,6 +107,7 @@ export function useLogout() {
       deleteCookie("user_role");
       deleteCookie(APP_SESSION_COOKIE_KEY);
       nameSpace.router.replace("/login");
+      disconnectSocket();
     },
   });
 }

@@ -20,11 +20,12 @@ AxiosClient.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       deleteCookie("user_role", { path: "/" });
+      deleteCookie(APP_SESSION_COOKIE_KEY);
       window.location.href = "/login";
     }
 
     return Promise.reject(error);
-  },
+  }
 );
 
 export default AxiosClient;

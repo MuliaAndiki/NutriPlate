@@ -1,5 +1,4 @@
 import { useQuery } from "@tanstack/react-query";
-
 import { cacheKey } from "@/configs/cache.config";
 import Api from "@/services/props.module";
 

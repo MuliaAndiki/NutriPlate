@@ -1,5 +1,5 @@
 "use client";
-import RiwayatAsupanGiziHeroSection from "@/components/section/private/parent/riwayat-asupan-gizi/riwayat-asupan-gizi-section";
+import RiwayatAsupanGiziHeroSection from "@/components/section/private/parent/asupan-gizi/riwayat-asupan-gizi/riwayat-asupan-gizi-section";
 import { HistoryFoodData } from "@/configs/component.config";
 import { SidebarLayout } from "@/core/layouts/sidebar.layout";
 import { useAppNameSpace } from "@/hooks/useAppNameSpace";
