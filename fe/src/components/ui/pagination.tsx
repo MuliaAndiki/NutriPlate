@@ -6,7 +6,7 @@ import {
 import * as React from "react";
 
 import { Button, buttonVariants } from "@/components/ui/button";
-import { cn } from "@/utils/classname";
+import { cn } from "@/lib/classname";
 
 function Pagination({ className, ...props }: React.ComponentProps<"nav">) {
   return (
@@ -58,7 +58,7 @@ function PaginationLink({
           variant: isActive ? "outline" : "ghost",
           size,
         }),
-        className,
+        className
       )}
       {...props}
     />

@@ -11,6 +11,8 @@ import progresRoutes from './routes/progresRoutes';
 import { swagger } from '@elysiajs/swagger';
 import taskRoutes from './routes/taskRoutes';
 import measurementRoutes from './routes/measurementRoutes';
+import { nutriplateProgramCron, otpCleanupCron, sessionCleanupCron } from './job';
+import { env } from './config/env.config';
 
 class App {
   public app: Elysia;
@@ -19,6 +21,7 @@ class App {
     this.app = new Elysia();
     this.middlewares();
     this.plugins();
+    this.crons();
     this.routes();
   }
   private plugins() {
@@ -42,6 +45,11 @@ class App {
   }
   private routes(): void {
     this.app.get('/', () => 'Hello Elysia! Bun js');
+  }
+  private crons(): void {
+    if (env.NODE_ENV !== 'test') {
+      this.app.use(nutriplateProgramCron).use(otpCleanupCron).use(sessionCleanupCron);
+    }
   }
 
   private middlewares() {

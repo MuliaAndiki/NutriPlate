@@ -9,7 +9,9 @@ import {
 } from '@/types/programNutritionProgres.types';
 import { getRedis } from '@/utils/redis';
 import { error } from 'console';
+import { NotificationService } from '@/service/notifikasi.service';
 import prisma from 'prisma/client';
+import { NotifType } from '@prisma/client';
 
 class ProgresController {
   private get redis() {
@@ -28,7 +30,7 @@ class ProgresController {
           401,
         );
       }
-      if (!Array.isArray(progresBody.childId) || !progresBody.dayNumber || !progresBody.programId) {
+      if (!Array.isArray(progresBody.childId) || !progresBody.programId) {
         return c.json?.(
           {
             status: 400,
@@ -37,59 +39,94 @@ class ProgresController {
           400,
         );
       }
-      const posyandu = await prisma.user.findFirst({
-        where: {
-          id: jwtUser.id,
-        },
-        select: {
-          role: true,
-        },
+      const user = await prisma.user.findUnique({
+        where: { id: jwtUser.id },
+        select: { role: true },
       });
-      if (!posyandu || posyandu.role !== 'POSYANDU') {
-        return c.json?.(
-          {
-            status: 403,
-            message: 'server error & cant no acces role',
-          },
-          403,
-        );
+
+      if (!user || user.role !== 'POSYANDU') {
+        return c.json?.({ status: 403, message: 'forbidden access' }, 403);
       }
       const program = await prisma.nutriplateProgram.findFirst({
         where: {
           id: progresBody.programId,
+          posyandu: {
+            userID: jwtUser.id,
+          },
         },
         select: {
-          durationDays: true,
+          id: true,
+          name: true,
+          startPrograms: true,
+          endPrograms: true,
+          posyanduId: true,
         },
       });
 
-      if (!program || program.durationDays < progresBody.dayNumber) {
+      if (!program || !program.startPrograms || !program.endPrograms) {
+        return c.json?.({ status: 400, message: 'program not active or invalid' }, 400);
+      }
+
+      const now = new Date();
+
+      if (now < program.startPrograms) {
         return c.json?.(
           {
             status: 400,
-            message: 'invalid programs, durationDay more than dayNumber',
+            message: 'program has not started yet',
           },
           400,
         );
       }
 
-      const data = progresBody.childId.map((childId) => ({
+      if (now > program.endPrograms) {
+        return c.json?.(
+          {
+            status: 400,
+            message: 'program has already ended',
+          },
+          400,
+        );
+      }
+
+      const children = await prisma.child.findMany({
+        where: {
+          id: {
+            in: progresBody.childId,
+          },
+          posyanduId: program.posyanduId,
+        },
+        select: {
+          id: true,
+          parentId: true,
+        },
+      });
+
+      if (children.length !== progresBody.childId.length) {
+        return c.json?.(
+          { status: 400, message: 'some children are invalid or not belong to this posyandu' },
+          400,
+        );
+      }
+
+      const data = progresBody.childId.map((child) => ({
         programId: progresBody.programId,
-        dayNumber: progresBody.dayNumber,
-        childId,
+        childId: child,
       }));
 
       const result = await prisma.nutritionProgramProgress.createMany({
         data,
         skipDuplicates: true,
       });
-      app.server?.publish(
-        `user:${jwtUser.id}`,
-        JSON.stringify({
-          type: 'Program:assing',
-          payload: result,
-        }),
-      );
+
+      for (const child of children) {
+        await NotificationService.notify({
+          userId: child.parentId,
+          type: NotifType.reminder,
+          title: 'Program Nutrisi Baru',
+          message: `Anak Anda telah ditambahkan ke program "${program.name}, Mohon Untuk DiKonfirmasi`,
+        });
+      }
       if (!result) {
         return c.json?.(
           {
@@ -193,7 +230,7 @@ class ProgresController {
 
         childrenIds = children.map((c) => c.id);
       }
-      const cacheKey = cacheKeys.progres.byRole(jwtUser.role);
+      const cacheKey = cacheKeys.progress.byRole(jwtUser.role);
 
       try {
         const cacheProgres = await this.redis.get(cacheKey);
@@ -319,7 +356,10 @@ class ProgresController {
       }
       //   Redis Not Fix
       //   debug nanti
-      const cacheKey = (cacheKeys.progres.byID(params.id), cacheKeys.progres.byRole(jwtUser.role));
+      const cacheKey = [
+        cacheKeys.progress.byID(params.id),
+        cacheKeys.progress.byRole(jwtUser.role),
+      ];
       const progress = await prisma.nutritionProgramProgress.delete({
         where: {
           childId: child.id,
@@ -575,7 +615,7 @@ class ProgresController {
         );
       }
 
-      const cacheKey = cacheKeys.progres.byID(progres.id);
+      const cacheKey = cacheKeys.progress.byID(progres.id);
       const patch = await prisma.nutritionProgramProgress.update({
         where: {
           id: progresParams.id,
@@ -742,7 +782,7 @@ class ProgresController {
         whereCondicional = progres.map((c) => c.id);
       }
 
-      const cacheKey = cacheKeys.progres.byRole(user.role);
+      const cacheKey = cacheKeys.progress.byRole(user.role);
 
       try {
         const cacheAccep = await this.redis.get(cacheKey);

@@ -170,16 +170,20 @@ model UserSession {
 }
 
 model NutriplateProgram {
-  id           String                     @id @default(uuid())
-  posyanduId   String
-  name         String
-  description  String
-  durationDays Int
-  createdAt    DateTime                   @default(now())
-  userId       String
-  posyandu     Posyandu                   @relation(fields: [posyanduId], references: [id])
-  user         User                       @relation(fields: [userId], references: [id])
-  progress     NutritionProgramProgress[]
+  id               String                     @id @default(uuid())
+  posyanduId       String
+  name             String
+  description      String
+  createdAt        DateTime                   @default(now())
+  userId           String
+  activity         String?
+  benefit          String?
+  durationRegister DateTime?
+  startPrograms    DateTime?
+  endPrograms      DateTime?
+  posyandu         Posyandu                   @relation(fields: [posyanduId], references: [id])
+  user             User                       @relation(fields: [userId], references: [id])
+  progress         NutritionProgramProgress[]
 
   @@index([posyanduId])
   @@map("nutriplate_programs")
@@ -189,7 +193,6 @@ model NutritionProgramProgress {
   id          String            @id @default(uuid())
   childId     String?
   programId   String
-  dayNumber   Int
   isCompleted Boolean           @default(false)
   createdAt   DateTime          @default(now())
   isAccep     Boolean           @default(false)
@@ -199,6 +202,7 @@ model NutritionProgramProgress {
 
   @@index([childId])
   @@index([programId])
+   @@unique([childId, programId])
   @@map("program_progress")
 }
 

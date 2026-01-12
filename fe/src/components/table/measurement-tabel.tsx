@@ -1,6 +1,5 @@
 import { Icon } from "@iconify/react/dist/iconify.js";
-import { Card } from "../ui/card";
-import { formatDate } from "@/utils/string.format";
+import { formatDateTime } from "@/utils/time.format";
 import { GrowthStatusType } from "@/types/card";
 
 interface MeasurementTableProps {
@@ -35,7 +34,9 @@ const MeasurementTable: React.FC<MeasurementTableProps> = ({
               <div className="w-full grid grid-cols-3">
                 <div className="flex justify-center items-center flex-col">
                   <h1 className="text-sm font-bold">Tanggal</h1>
-                  <p className="text-sm">{formatDate(data.createdAt)}</p>
+                  <p className="text-sm">
+                    {formatDateTime(data.createdAt, { style: "date" })}
+                  </p>
                 </div>
 
                 <div className="flex justify-center items-center flex-col">

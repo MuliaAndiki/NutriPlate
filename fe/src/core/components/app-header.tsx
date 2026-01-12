@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/navigation-menu";
 import { navigationMenuConfig } from "@/configs/app.config";
 import useService from "@/hooks/mutation/prop.service";
-import { cn } from "@/utils/classname";
+import { cn } from "@/lib/classname";
 
 // import UserDropdown from './user.dropdown';
 import LanguageDropdown from "./language.dropdown";
@@ -47,7 +47,7 @@ export default function AppHeader() {
     <nav
       className={cn(
         "fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-sm p-6 border-b transition-all duration-200",
-        isScrolled ? "border-b-border shadow-md" : "border-b-transparent",
+        isScrolled ? "border-b-border shadow-md" : "border-b-transparent"
       )}
     >
       <div className="flex items-center justify-between max-w-7xl mx-auto">

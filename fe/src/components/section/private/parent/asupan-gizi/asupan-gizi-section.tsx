@@ -1,10 +1,10 @@
 import { Icon } from "@iconify/react/dist/iconify.js";
 import Link from "next/link";
-
 import HistoryFood from "@/components/card/history-food";
 import IotStatus from "@/components/card/iot-status";
 import { Button } from "@/components/ui/button";
 import { HistoryFoodType } from "@/types/card";
+import { ButtonWrapper } from "@/components/wrapper/ButtonWrapper";
 
 interface AsupanGiziSectionProps {
   HistoryFoodData: HistoryFoodType[];
@@ -25,15 +25,20 @@ const AsupanGiziHeroSection: React.FC<AsupanGiziSectionProps> = ({
       <div className="w-full">
         <IotStatus />
       </div>
-      <Button variant={"btn"} className="w-full h-auto flex items-center  p-4">
-        <Icon
-          icon="tabler:line-scan"
-          width="50"
-          height="50"
-          className="scale-150"
-        />
-        <h1 className="text-lg">Scan Makanan</h1>
-      </Button>
+      <ButtonWrapper
+        variant={"btn"}
+        className="w-full h-auto text-lg p-4"
+        startIcon={
+          <Icon
+            icon="tabler:line-scan"
+            width="50"
+            height="50"
+            className="scale-150"
+          />
+        }
+      >
+        Scan Makanan
+      </ButtonWrapper>
       <div className="w-full flex items-center justify-between">
         <div className="w-full flex space-x-2 items-center">
           <Icon

@@ -6,7 +6,7 @@ import { SidebarMenuItem } from "@/components/ui/sidebar";
 import { SidebarMenuButton } from "@/components/ui/sidebar";
 import { SidebarIconDefault } from "@/types/icons";
 import { SidebarContentType } from "@/types/partial";
-import { cn } from "@/utils/classname";
+import { cn } from "@/lib/classname";
 
 interface SidebarSectionProps {
   MenuData: any;
@@ -38,7 +38,7 @@ const SidebarSection: React.FC<SidebarSectionProps> = ({
                   className={cn(
                     "flex items-center gap-3 rounded-lg px-3 py-2 text-gray-500 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50 h-10",
                     isActive &&
-                      "bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-gray-50",
+                      "bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-gray-50"
                   )}
                 >
                   {Icon && <Icon className="h-6 w-6 lg:h-10 lg:w-10" />}

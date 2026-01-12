@@ -12,4 +12,7 @@ export const cacheKey = {
   measurement: {
     byChild: (id: string) => [`measurement:child:${id}`],
   },
+  program: {
+    list: () => [`programs:list`],
+  },
 };

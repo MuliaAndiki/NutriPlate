@@ -5,6 +5,7 @@ import ChildCard from "@/components/card/child-card";
 import ChildFallback from "@/components/fallback/child.fallback";
 import { Button } from "@/components/ui/button";
 import { ChildCardType } from "@/types/card";
+import { ButtonWrapper } from "@/components/wrapper/ButtonWrapper";
 
 interface ProfileAnakSectionProps {
   servive: {
@@ -26,15 +27,20 @@ const ProfileAnakHeroSection: React.FC<ProfileAnakSectionProps> = ({
       </p>
       <div className="w-full h-full ">
         <Link href={"/parent/profile-anak/form"}>
-          <Button className="w-full flex  p-4 h-auto" variant={"btn"}>
-            <Icon
-              icon="ph:baby"
-              width="256"
-              height="256"
-              className="scale-170"
-            />
-            <h1 className="font-semibold text-lg">Tambah Data Anak</h1>
-          </Button>
+          <ButtonWrapper
+            className="w-full font-semibold text-lg p-4 h-auto"
+            variant={"btn"}
+            startIcon={
+              <Icon
+                icon="ph:baby"
+                width="256"
+                height="256"
+                className="scale-170"
+              />
+            }
+          >
+            Tambah Data Anak
+          </ButtonWrapper>
         </Link>
       </div>
 

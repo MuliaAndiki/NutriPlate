@@ -1,39 +1,56 @@
+/**
+ * Cache Key Naming Convention:
+ * Format: <resource>:<scope>:<identifier?>
+ *
+ * Examples:
+ * - user:id:<id>          (single user by id)
+ * - user:list             (all users/admins)
+ * - child:id:<id>         (single child by id)
+ * - child:parent:<id>     (children by parent id)
+ * - program:id:<id>       (single program by id)
+ * - program:posyandu:<id> (programs by posyandu id)
+ * - notification:id:<id>  (single notification by id)
+ * - notification:role:<role> (notifications by role)
+ */
+
 export const cacheKeys = {
   user: {
-    byID: (id: string) => `user:${id}`,
+    byID: (id: string) => `user:id:${id}`,
     list: () => `user:list`,
   },
   kader: {
     list: () => `kader:list`,
-    byID: (id: string) => `kader:posyandu:${id}`,
+    byID: (id: string) => `kader:id:${id}`,
   },
   posyandu: {
-    byID: (id: string) => `posyandu:${id}`,
+    byID: (id: string) => `posyandu:id:${id}`,
     list: () => `posyandu:list`,
   },
   child: {
     list: () => `child:list`,
     byID: (id: string) => `child:id:${id}`,
     byParent: (id: string) => `child:parent:${id}`,
-    byPosyanduList: (posyandu: string) => `child:posyandu:list:${posyandu}`,
+    byPosyandu: (id: string) => `child:posyandu:${id}`,
   },
   parent: {
     list: () => `parent:list`,
-    byID: (id: string) => `parent:${id}`,
+    byID: (id: string) => `parent:id:${id}`,
   },
-  notify: {
-    list: () => `notif:list`,
-    byID: (id: string) => `notif:${id}`,
-    byRole: (role: string) => `notif:role:${role}`,
+  notification: {
+    list: () => `notification:list`,
+    byID: (id: string) => `notification:id:${id}`,
+    byRole: (role: string) => `notification:role:${role}`,
   },
   program: {
     list: () => `program:list`,
     byID: (id: string) => `program:id:${id}`,
+    byUser: (id: string) => `program:user:${id}`,
+    byPosyandu: (id: string) => `program:posyandu:${id}`,
   },
-  progres: {
-    list: () => `progres:list`,
-    byID: (id: string) => `progres:id:${id}`,
-    byRole: (role: string) => `progres:role:${role}`,
+  progress: {
+    list: () => `progress:list`,
+    byID: (id: string) => `progress:id:${id}`,
+    byRole: (role: string) => `progress:role:${role}`,
   },
   history: {
     list: () => `history:list`,
@@ -42,19 +59,19 @@ export const cacheKeys = {
   },
   task: {
     list: () => `task:list`,
+    byID: (id: string) => `task:id:${id}`,
     byRole: (role: string) => `task:role:${role}`,
-    byid: (id: string) => `task:id:${id}`,
   },
   who: {
     list: () => `who:list`,
-    byGrowt: (id: string) => `who:child:${id}`,
+    byChild: (id: string) => `who:child:${id}`,
   },
   measurement: {
     list: () => `measurement:list`,
     byChild: (id: string) => `measurement:child:${id}`,
   },
-  evalution: {
-    list: () => `evalution:list`,
-    byChild: (id: string) => `evalution:child:${id}`,
+  evaluation: {
+    list: () => `evaluation:list`,
+    byChild: (id: string) => `evaluation:child:${id}`,
   },
 };

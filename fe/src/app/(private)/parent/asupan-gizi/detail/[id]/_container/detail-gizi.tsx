@@ -1,8 +1,7 @@
 "use client";
 import { useParams } from "next/navigation";
-import { useEffect } from "react";
 
-import DetailGiziHeroSection from "@/components/section/private/parent/detail-gizi/detail-gizi-section";
+import DetailGiziHeroSection from "@/components/section/private/parent/asupan-gizi/detail-gizi/detail-gizi-section";
 import { SidebarLayout } from "@/core/layouts/sidebar.layout";
 import useService from "@/hooks/mutation/prop.service";
 import { useAppNameSpace } from "@/hooks/useAppNameSpace";

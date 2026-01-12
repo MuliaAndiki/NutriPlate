@@ -9,6 +9,8 @@ import { cacheKeys } from '@/cache/cacheKey';
 import { error } from 'console';
 import { generateOtp } from '@/utils/generate-otp';
 import { sendOTPEmail } from '@/utils/mailer';
+import { invalidateCache, getRelatedCacheKeys } from '@/utils/cacheHelper';
+
 class UserController {
   private get redis() {
     return getRedis();
@@ -748,7 +750,7 @@ class UserController {
           );
         }
         whereCondicional.posyanduId = posyandu.id;
-        cacheKey = cacheKeys.child.byPosyanduList(posyandu.id);
+        cacheKey = cacheKeys.child.byPosyandu(posyandu.id);
       }
 
       try {

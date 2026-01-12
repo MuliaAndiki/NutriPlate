@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { ButtonWrapper } from "@/components/wrapper/ButtonWrapper";
 import { FormUpdateProfile } from "@/types/form/auth.form";
 import { IAuth } from "@/types/schema/auth.schema";
 import UploadsTrigger from "@/utils/uploadTrigger";
@@ -71,14 +72,12 @@ const EditProfileSection: React.FC<EditProfileSectionProps> = ({
             </Button>
           </div>
         ) : (
-          <Button
-            variant={"btn"}
-            className="flex items-center"
-            onClick={() => state.setIsEdit(true)}
+          <ButtonWrapper
+            startIcon={<Icon icon="bxs:edit" width="24" height="24" />}
+            onClick={() => state.setIsEdit(false)}
           >
-            <Icon icon="bxs:edit" width="24" height="24" />
-            <h1>Edit</h1>
-          </Button>
+            Edit
+          </ButtonWrapper>
         )}
       </div>
       <div className="w-full flex items-center justify-center mt-4">

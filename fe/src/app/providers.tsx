@@ -15,24 +15,26 @@ import { ThemeProvider } from "@/core/providers/theme.provider";
 import { AlertProvinder } from "@/hooks/useAlert/costum-alert";
 import { ReactQueryClientProvider } from "@/pkg/react-query/query-client.pkg";
 import { persistor, store } from "@/stores/store";
-
 import { composeProviders } from "./composeProvinders";
+import { SocketProvider } from "@/core/providers/socket.provinder";
 
 const Providers = composeProviders([
-  ({ children }) => (
-    <SidebarProvider defaultOpen={false}>{children}</SidebarProvider>
-  ),
-  ({ children }) => <Provider store={store}>{children}</Provider>,
-  ({ children }) => <PersistGate persistor={persistor}>{children}</PersistGate>,
   ({ children }) => (
     <GoogleOAuthProvider clientId={env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}>
       {children}
     </GoogleOAuthProvider>
   ),
+  ({ children }) => <Provider store={store}>{children}</Provider>,
+  ({ children }) => <PersistGate persistor={persistor}>{children}</PersistGate>,
   AuthProvider,
+  SocketProvider,
   ThemeProvider,
   AlertProvinder,
   ReactQueryClientProvider,
+
+  ({ children }) => (
+    <SidebarProvider defaultOpen={false}>{children}</SidebarProvider>
+  ),
 ]);
 
 export function AppProviders({ children }: { children: React.ReactNode }) {
@@ -42,16 +44,12 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
       once: true,
     });
   }, []);
+
   return (
     <Providers>
       {children}
       <ReactQueryDevtools initialIsOpen={false} />
-      <Toaster
-        position="top-center"
-        toastOptions={{
-          duration: 900,
-        }}
-      />
+      <Toaster position="top-center" toastOptions={{ duration: 900 }} />
     </Providers>
   );
 }

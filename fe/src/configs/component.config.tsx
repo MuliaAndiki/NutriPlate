@@ -1,5 +1,3 @@
-import { Icon } from "@iconify/react";
-
 import { HistoryFoodType, ProfileChildType } from "@/types/card";
 import { RouteDetailChildType } from "@/types/components";
 export const HistoryFoodData: HistoryFoodType[] = [

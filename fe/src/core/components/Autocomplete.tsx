@@ -32,7 +32,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { cn } from "@/utils/classname";
+import { cn } from "@/lib/classname";
 
 const multiSelectVariants = cva("m-1 transition ease-in-out", {
   variants: {
@@ -95,7 +95,7 @@ export default function Autocomplete({
   maxCount = 3,
 }: SelectBaseProps) {
   const [selectedValues, setSelectedValues] = React.useState<string[]>(
-    multiple ? (defaultValue as string[]) || [] : [],
+    multiple ? (defaultValue as string[]) || [] : []
   );
   const [isPopoverOpen, setIsPopoverOpen] = React.useState(false);
   const [isAnimating, setIsAnimating] = React.useState(false);
@@ -236,7 +236,7 @@ export default function Autocomplete({
                             className={cn(
                               "font-medium",
                               isAnimating ? "animate-bounce" : "",
-                              multiSelectVariants({ variant }),
+                              multiSelectVariants({ variant })
                             )}
                             style={{ animationDuration: `${animation}s` }}
                           >
@@ -260,7 +260,7 @@ export default function Autocomplete({
                         className={cn(
                           "bg-transparent text-foreground border-foreground/10 hover:bg-transparent",
                           isAnimating ? "animate-bounce" : "",
-                          multiSelectVariants({ variant }),
+                          multiSelectVariants({ variant })
                         )}
                         style={{ animationDuration: `${animation}s` }}
                       >
@@ -323,7 +323,7 @@ export default function Autocomplete({
                         "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
                         allSelected
                           ? "bg-primary text-primary-foreground"
-                          : "opacity-50 [&_svg]:invisible",
+                          : "opacity-50 [&_svg]:invisible"
                       )}
                     >
                       <CheckIcon className="h-4 w-4" />
@@ -346,7 +346,7 @@ export default function Autocomplete({
                             "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
                             isSelected
                               ? "bg-primary text-primary-foreground"
-                              : "opacity-50 [&_svg]:invisible",
+                              : "opacity-50 [&_svg]:invisible"
                           )}
                         >
                           <CheckIcon className="h-4 w-4" />
@@ -392,7 +392,7 @@ export default function Autocomplete({
             <WandSparkles
               className={cn(
                 "cursor-pointer my-2 text-foreground bg-background w-3 h-3",
-                isAnimating ? "" : "text-muted-foreground",
+                isAnimating ? "" : "text-muted-foreground"
               )}
               onClick={() => setIsAnimating(!isAnimating)}
             />

@@ -14,114 +14,72 @@ class ProgramController {
   public async createProgram(c: AppContext) {
     try {
       const jwtUser = c.user as JwtPayload;
-      const prog = c.body as PickCreateProgram;
-      const progParams = c.params as PickPosyanduID;
+      const body = c.body as PickCreateProgram;
+      const params = c.params as PickPosyanduID;
 
       if (!jwtUser) {
-        return c.json?.(
-          {
-            status: 401,
-            message: 'Unauthorized',
-          },
-          401,
-        );
-      }
-      if (!prog.description || !prog.durationDays || !prog.name) {
-        return c.json?.(
-          {
-            status: 400,
-            message: 'body is required',
-          },
-          40,
-        );
+        return c.json?.({ status: 401, message: 'Unauthorized' }, 401);
       }
 
-      if (!progParams) {
+      if (!body.name || !body.description || !body.durationRegister || !body.endPrograms) {
         return c.json?.(
-          {
-            status: 400,
-            message: 'params is required',
-          },
+          { status: 400, message: 'name, description, durationRegister, endPrograms required' },
           400,
         );
       }
-      const posyandu = await prisma.posyandu.findFirst({
-        where: {
-          id: progParams.id,
-        },
+
+      if (new Date(body.endPrograms) <= new Date(body.durationRegister)) {
+        return c.json?.(
+          { status: 400, message: 'endPrograms must be after durationRegister' },
+          400,
+        );
+      }
+
+      const posyandu = await prisma.posyandu.findUnique({
+        where: { id: params.id },
       });
 
       if (!posyandu) {
-        return c.json?.(
-          {
-            status: 404,
-            message: 'posyandu is missing',
-          },
-          404,
-        );
+        return c.json?.({ status: 404, message: 'posyandu not found' }, 404);
       }
 
-      const user = await prisma.user.findFirst({
-        where: {
-          id: jwtUser.id,
-        },
-        select: {
-          role: true,
-          id: true,
-        },
+      const user = await prisma.user.findUnique({
+        where: { id: jwtUser.id },
+        select: { id: true, role: true },
       });
 
       if (!user || user.role !== 'POSYANDU') {
-        return c.json?.(
-          {
-            status: 403,
-            message: 'failed posyandu not found ',
-          },
-          403,
-        );
+        return c.json?.({ status: 403, message: 'access denied' }, 403);
       }
+
       const program = await prisma.nutriplateProgram.create({
         data: {
-          name: prog.name,
-          description: prog.description,
-          durationDays: prog.durationDays,
+          name: body.name,
+          description: body.description,
+          durationRegister: new Date(body.durationRegister),
+          endPrograms: new Date(body.endPrograms),
+          activity: body.activity,
+          benefit: body.benefit,
           posyanduId: posyandu.id,
           userId: user.id,
+          startPrograms: null,
         },
       });
 
-      app.server?.publish(
-        `user:${jwtUser.id}`,
-        JSON.stringify({
-          type: 'programs:create',
-          payload: program,
-        }),
+      return c.json?.(
+        {
+          status: 200,
+          message: 'successfully created nutriplate program',
+          data: program,
+        },
+        200,
       );
-
-      if (!program) {
-        return c.json?.(
-          {
-            status: 400,
-            message: 'server internal error',
-          },
-          400,
-        );
-      } else {
-        return c.json?.(
-          {
-            status: 200,
-            message: 'succesfully create programs',
-            data: program,
-          },
-          200,
-        );
-      }
     } catch (error) {
       console.error(error);
       return c.json?.(
         {
           status: 500,
-          message: 'server internal error',
+          message: 'internal server error',
           error: error instanceof Error ? error.message : error,
         },
         500,
@@ -239,34 +197,47 @@ class ProgramController {
     try {
       const jwtUser = c.user as JwtPayload;
       if (!jwtUser) {
-        return c.json?.(
-          {
-            status: 401,
-            message: 'Unauthorized',
-          },
-          401,
-        );
-      }
-      const user = await prisma.user.findFirst({
-        where: {
-          id: jwtUser.id,
-        },
-        select: {
-          id: true,
-          role: true,
-        },
-      });
-      if (!user) {
-        return c.json?.(
-          {
-            status: 400,
-            message: 'server error ',
-          },
-          403,
-        );
+        return c.json?.({ status: 401, message: 'Unauthorized' }, 401);
       }
 
-      const cacheKey = cacheKeys.program.list();
+      const user = await prisma.user.findFirst({
+        where: { id: jwtUser.id },
+        select: { id: true, role: true },
+      });
+
+      if (!user) {
+        return c.json?.({ status: 404, message: 'user not found' }, 404);
+      }
+      let whereConditional: any = {};
+      let cacheKey = '';
+
+      if (user.role === 'PARENT') {
+        const child = await prisma.child.findFirst({
+          where: { parentId: user.id },
+          select: { posyanduId: true },
+        });
+
+        if (!child || !child.posyanduId) {
+          return c.json?.({ status: 404, message: 'child or posyandu not found' }, 404);
+        }
+
+        whereConditional.posyanduId = child.posyanduId;
+        cacheKey = cacheKeys.program.byPosyandu(child.posyanduId);
+      } else if (user.role === 'POSYANDU' || user.role === 'KADER') {
+        const posyandu = await prisma.posyandu.findFirst({
+          where: { userID: user.id },
+          select: { id: true },
+        });
+
+        if (!posyandu) {
+          return c.json?.({ status: 404, message: 'posyandu not found' }, 404);
+        }
+
+        whereConditional.posyanduId = posyandu.id;
+        cacheKey = cacheKeys.program.byPosyandu(posyandu.id);
+      } else {
+        return c.json?.({ status: 403, message: 'forbidden role' }, 403);
+      }
 
       try {
         const cachePrograms = await this.redis.get(cacheKey);
@@ -274,40 +245,32 @@ class ProgramController {
           return c.json?.(
             {
               status: 200,
-              message: 'succesfully get by programs',
+              message: 'successfully get programs (cache)',
               data: JSON.parse(cachePrograms),
             },
             200,
           );
         }
       } catch (error) {
-        console.warn(`redis error, fallback db :${error}`);
+        console.warn(`redis error, fallback db: ${error}`);
       }
-      const program = await prisma.nutriplateProgram.findMany({
-        where: {
-          userId: user.id,
-        },
-        orderBy: {
-          createdAt: 'asc',
-        },
+
+      const programs = await prisma.nutriplateProgram.findMany({
+        where: whereConditional,
+        orderBy: { createdAt: 'asc' },
       });
-      if (!program) {
-        return c.json?.(
-          {
-            status: 400,
-            message: 'server internal error,',
-          },
-          400,
-        );
-      } else if (program && program.length > 0) {
-        await this.redis.set(cacheKey, JSON.stringify(program), { EX: 60 }).catch(error);
+
+      if (!programs || programs.length === 0) {
+        return c.json?.({ status: 404, message: 'programs not found' }, 404);
       }
+
+      await this.redis.set(cacheKey, JSON.stringify(programs), { EX: 60 }).catch(console.error);
 
       return c.json?.(
         {
           status: 200,
-          message: 'succesfully get programs',
-          data: program,
+          message: 'successfully get programs',
+          data: programs,
         },
         200,
       );
@@ -362,7 +325,7 @@ class ProgramController {
         console.warn(`redis error, fallback db: ${error}`);
       }
 
-      const program = await prisma.nutriplateProgram.findUnique({
+      const program = await prisma.nutriplateProgram.findFirst({
         where: {
           id: progParams.id,
         },

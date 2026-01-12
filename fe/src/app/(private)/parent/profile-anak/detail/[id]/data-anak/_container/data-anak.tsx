@@ -2,7 +2,7 @@
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import DataAnakHeroSection from "@/components/section/private/parent/detail-profile-anak/data-anak/data-anak-section";
+import DataAnakHeroSection from "@/components/section/private/parent/profile-anak/detail-profile-anak/data-anak/data-anak-section";
 import { SidebarLayout } from "@/core/layouts/sidebar.layout";
 import useService from "@/hooks/mutation/prop.service";
 import { useAppNameSpace } from "@/hooks/useAppNameSpace";
