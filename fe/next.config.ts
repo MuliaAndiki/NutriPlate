@@ -1,4 +1,3 @@
-import { env } from "@/configs/env.config";
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
@@ -6,7 +5,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: "/",
-        destination: env.NEXT_PUBLIC_BASEPATH || "/home",
+        destination: process.env.NEXT_PUBLIC_BASEPATH || "/home",
         permanent: true,
       },
     ];
