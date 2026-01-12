@@ -29,8 +29,10 @@ const buttonVariants = cva(
           "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
         link: "text-primary underline-offset-4 hover:underline",
         btn: "bg-primary text-primary-foreground hover:bg-primary/90 p-4 rounded-lg font-bold h-auto w-auto",
-
         liner: "bg-transparent border border-foreground font-semibold",
+        linter:
+          "bg-transparent border rounded-full border-primary text-primary",
+        notLinter: "bg-primary rounded-full text-background border",
       },
 
       size: {

@@ -3,6 +3,10 @@ export interface IProgramNutriPlate {
   posyanduId: string;
   name: string;
   description: string;
-  durationDays: number;
+  startPrograms: Date;
+  activity: string[];
+  benefit: string[];
+  durationRegister: string;
+  endPrograms: string;
   createdAt: Date;
 }

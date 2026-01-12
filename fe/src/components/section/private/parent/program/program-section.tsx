@@ -44,10 +44,14 @@ const ProgramHeroSection: React.FC<ProgramSectionProps> = ({ service }) => {
       </div>
       <div className="flex w-full justify-between items-center gap-4 ">
         <div className="w-full">
-          <Button className="w-full">Semua Program</Button>
+          <Button className="w-full" variant={"linter"}>
+            Semua Program
+          </Button>
         </div>
         <div className="w-full">
-          <Button className="w-full">Program Diikuti</Button>
+          <Button className="w-full" variant={"notLinter"}>
+            Program Diikuti
+          </Button>
         </div>
       </div>
       <div className="w-full space-y-2">

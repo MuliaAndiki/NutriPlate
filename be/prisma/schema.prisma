@@ -176,8 +176,8 @@ model NutriplateProgram {
   description      String
   createdAt        DateTime                   @default(now())
   userId           String
-  activity         String?
-  benefit          String?
+  activity         String[]
+  benefit          String[]
   durationRegister DateTime?
   startPrograms    DateTime?
   endPrograms      DateTime?

@@ -4,6 +4,7 @@ import { AppContext } from '@/contex/appContex';
 import { JwtPayload } from '@/types/auth.types';
 import { PickPosyanduID } from '@/types/posyandu.types';
 import { PickCreateProgram, PickProgramID } from '@/types/programNutriPlate.types';
+import { parseDateTime } from '@/utils/form.helper';
 import { getRedis } from '@/utils/redis';
 import { error } from 'console';
 import prisma from 'prisma/client';
@@ -52,12 +53,15 @@ class ProgramController {
         return c.json?.({ status: 403, message: 'access denied' }, 403);
       }
 
+      const registerdate = parseDateTime(body.durationRegister, 'durationRegister');
+      const programsEnd = parseDateTime(body.endPrograms, 'endPrograms');
+
       const program = await prisma.nutriplateProgram.create({
         data: {
           name: body.name,
           description: body.description,
-          durationRegister: new Date(body.durationRegister),
-          endPrograms: new Date(body.endPrograms),
+          durationRegister: registerdate,
+          endPrograms: programsEnd,
           activity: body.activity,
           benefit: body.benefit,
           posyanduId: posyandu.id,
@@ -258,6 +262,14 @@ class ProgramController {
       const programs = await prisma.nutriplateProgram.findMany({
         where: whereConditional,
         orderBy: { createdAt: 'asc' },
+        select: {
+          id: true,
+          name: true,
+          description: true,
+          activity: true,
+          benefit: true,
+          durationRegister: true,
+        },
       });
 
       if (!programs || programs.length === 0) {
