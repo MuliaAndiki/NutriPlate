@@ -1,8 +1,12 @@
 import AktifitasPropgramCard from "@/components/card/aktivitas-program";
 import BenefitPropgramCard from "@/components/card/benefit-program";
 import DeskripsiPropgramCard from "@/components/card/deskripsi-program";
+import PopUp from "@/components/ui/pop-up";
+import { ButtonWrapper } from "@/components/wrapper/ButtonWrapper";
 import { IProgramNutriPlate } from "@/types/schema/program.schema";
+import { PopUpNavigate } from "@/types/ui";
 import { formatDateTime } from "@/utils/time.format";
+import { Icon } from "@iconify/react/dist/iconify.js";
 import { ChevronLeft } from "lucide-react";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
@@ -16,10 +20,15 @@ interface DetailProgramSectionProps {
   namespace: {
     router: AppRouterInstance;
   };
+  state: {
+    popUp: PopUpNavigate;
+    setPopUp: React.Dispatch<React.SetStateAction<PopUpNavigate>>;
+  };
 }
 const DetailProgramHeroSection: React.FC<DetailProgramSectionProps> = ({
   service,
   namespace,
+  state,
 }) => {
   //falback skeleton
   if (service.query.isLoading) {
@@ -48,6 +57,21 @@ const DetailProgramHeroSection: React.FC<DetailProgramSectionProps> = ({
       </div>
       <AktifitasPropgramCard res={service.query.program} />
       <BenefitPropgramCard res={service.query.program} />
+      <div className="w-full h-auto">
+        <ButtonWrapper
+          className="w-full p-4"
+          onClick={() => state.setPopUp("fProgram")}
+          startIcon={<Icon icon="mingcute:plus-fill" width="24" height="24" />}
+        >
+          Ikuti Program
+        </ButtonWrapper>
+      </div>
+      <PopUp
+        isOpen={state.popUp === "fProgram"}
+        onClose={() => state.setPopUp(null)}
+      >
+        <div>initial</div>
+      </PopUp>
     </section>
   );
 };
