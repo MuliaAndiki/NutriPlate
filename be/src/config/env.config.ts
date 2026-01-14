@@ -2,7 +2,8 @@ import { z } from 'zod';
 
 const envSchema = z.object({
   DATABASE_URL: z.string().url(),
-  SERVICE_APP: z.string().url(),
+  ML_APP: z.string().url(),
+  IOT_APP: z.string().url(),
   NODE_ENV: z.string(),
   REDIS_URL: z.string().url(),
   PORT: z.string(),

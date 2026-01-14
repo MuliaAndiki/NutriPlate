@@ -118,27 +118,47 @@ model Measurement {
 }
 
 model Food {
-  id             String         @id @default(uuid())
+  id             String           @id @default(uuid())
   childId        String
   iotId          String?
   photoUrl       String?
-  foodLabel      String?
-  mlConfidence   Decimal?
-  weightGram     Decimal?
-  energyKcal     Decimal?
-  proteinGram    Decimal?
-  fatGram        Decimal?
-  carbGram       Decimal?
-  vitamins       Json?
-  nutritionScore Decimal?
-  createdAt      DateTime       @default(now())
-  child          Child          @relation(fields: [childId], references: [id])
-  iot            IotDevice?     @relation(fields: [iotId], references: [id])
+  totalWeightGram Decimal         
+  mlModelVersion String?          
+  inferenceHash  String?          
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  child          Child            @relation(fields: [childId], references: [id])
+  iot            IotDevice?       @relation(fields: [iotId], references: [id])
+  items          FoodIntakeItem[] 
   food           FoodRawImage[]
 
   @@index([childId])
   @@index([iotId])
   @@map("food_intakes")
+}
+
+model FoodIntakeItem {
+  id              String    @id @default(uuid())
+  foodIntakeId    String
+  foodClassName   String    
+  mlConfidence    Decimal   
+  areaRatio       Decimal   
+  weightGram      Decimal   
+  energyKcal      Decimal?  
+  proteinGram     Decimal?  
+  fatGram         Decimal? 
+  carbGram        Decimal?  
+  fiberGram       Decimal?
+  calciumMg       Decimal?
+  ironMg          Decimal?
+  vitaminA        Decimal?
+  vitaminC        Decimal?
+  metadata        Json?     // Store bounding box, nutrient source, etc
+  createdAt       DateTime  @default(now())
+  foodIntake      Food      @relation(fields: [foodIntakeId], references: [id], onDelete: Cascade)
+
+  @@index([foodIntakeId])
+  @@map("food_intake_items")
 }
 
 model Notifications {
