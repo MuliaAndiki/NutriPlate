@@ -16,6 +16,8 @@ class ServiceRoutes {
   }
   private routes() {
     this.serviceRoutes.get('/', (c: AppContext) => ServiceController.getFastApi(c));
+    this.serviceRoutes.get('/health', (c: AppContext) => ServiceController.getHealth(c));
+    this.serviceRoutes.get('/status', (c: AppContext) => ServiceController.getStatusIot(c));
   }
 }
 

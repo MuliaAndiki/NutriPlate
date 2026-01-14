@@ -15,3 +15,4 @@ app.add_middleware(
 )
 
 from routes.checkpoint import *
+from routes.inference import *

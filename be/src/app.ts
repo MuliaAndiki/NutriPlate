@@ -8,6 +8,8 @@ import serviceRoutes from './routes/serviceRoutes';
 import notificationRoutes from './routes/notificationRoutes';
 import programRoutes from './routes/programRoutes';
 import progresRoutes from './routes/progresRoutes';
+import foodIntakeRoutes from './routes/foodIntakeRoutes';
+import foodIntakeSummaryRoutes from './routes/foodIntakeSummaryRoutes';
 import { swagger } from '@elysiajs/swagger';
 import taskRoutes from './routes/taskRoutes';
 import measurementRoutes from './routes/measurementRoutes';
@@ -64,6 +66,8 @@ class App {
         .use(notificationRoutes)
         .use(programRoutes)
         .use(progresRoutes)
+        .use(foodIntakeRoutes)
+        .use(foodIntakeSummaryRoutes)
         .use(taskRoutes)
         .use(measurementRoutes),
     );
