@@ -1,4 +1,4 @@
-export interface INutritionProgramProgress {
+export interface IProgress {
   id: string;
   childId: string;
   programId: string;

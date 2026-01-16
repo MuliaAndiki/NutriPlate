@@ -3,26 +3,32 @@ import BenefitPropgramCard from "@/components/card/program/benefit-program";
 import DeskripsiPropgramCard from "@/components/card/program/deskripsi-program";
 import PopUp from "@/components/ui/pop-up";
 import { ButtonWrapper } from "@/components/wrapper/ButtonWrapper";
-import { IProgramNutriPlate } from "@/types/schema/program.schema";
+import { IProgram } from "@/types/schema/program.schema";
 import { PopUpNavigate } from "@/types/ui";
 import { formatDateTime } from "@/utils/time.format";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { ChevronLeft } from "lucide-react";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+import RegisterProgram from "./_register-program/register-program";
+import { ChildRespone } from "@/types/res/child.respone";
 
 interface DetailProgramSectionProps {
   service: {
     query: {
-      program: IProgramNutriPlate;
+      program: IProgram;
       isLoading: boolean;
+      children: ChildRespone[];
     };
   };
   namespace: {
     router: AppRouterInstance;
+    pathname: string;
   };
   state: {
     popUp: PopUpNavigate;
     setPopUp: React.Dispatch<React.SetStateAction<PopUpNavigate>>;
+    setIdChild: React.Dispatch<React.SetStateAction<string | null>>;
+    idChild: string | null;
   };
 }
 const DetailProgramHeroSection: React.FC<DetailProgramSectionProps> = ({
@@ -49,7 +55,7 @@ const DetailProgramHeroSection: React.FC<DetailProgramSectionProps> = ({
       <DeskripsiPropgramCard res={service.query.program} />
       <div className="p-4 w-full rounded-lg border border-primary">
         <h1 className="">
-          Batas Pendaftaran:{" "}
+          Batas Pendaftaran:
           {formatDateTime(service.query.program.durationRegister, {
             style: "day-date-slash",
           })}
@@ -70,7 +76,12 @@ const DetailProgramHeroSection: React.FC<DetailProgramSectionProps> = ({
         isOpen={state.popUp === "fProgram"}
         onClose={() => state.setPopUp(null)}
       >
-        <div>initial</div>
+        <RegisterProgram
+          idChild={state.idChild}
+          setIdChild={state.setIdChild}
+          children={service.query.children}
+          pathname={namespace.pathname}
+        />
       </PopUp>
     </section>
   );

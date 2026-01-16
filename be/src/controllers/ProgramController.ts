@@ -269,6 +269,17 @@ class ProgramController {
           activity: true,
           benefit: true,
           durationRegister: true,
+
+          progress: {
+            select: {
+              child: {
+                select: {
+                  id: true,
+                  fullName: true,
+                },
+              },
+            },
+          },
         },
       });
 
