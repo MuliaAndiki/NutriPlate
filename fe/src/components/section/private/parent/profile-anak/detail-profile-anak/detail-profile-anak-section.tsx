@@ -2,9 +2,9 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import { ChevronLeft } from "lucide-react";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import Link from "next/link";
-import ChildCard from "@/components/card/child-card";
-import ProfileChildCard from "@/components/card/profile-child";
-import StatusAsupan from "@/components/card/status-asupan";
+import ChildCard from "@/components/card/child/child-card";
+import ProfileChildCard from "@/components/card/user/profile-child";
+import StatusAsupan from "@/components/card/growth/status-asupan";
 import { Button } from "@/components/ui/button";
 import {
   profileChildCardsConfig,

@@ -8,3 +8,11 @@ export interface ProfileChild {
   feedingType?: string;
   activityLevel?: string;
 }
+
+export interface MetricsRespone {
+  [key: string]: unknown;
+  precision: Number;
+  recall: Number;
+  mAP50: Number;
+  mAP50_95: Number;
+}

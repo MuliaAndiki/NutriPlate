@@ -4,7 +4,7 @@ import authRoutes from './routes/authRoutes';
 import userRoutes from './routes/userRoutes';
 import posyanduRoutes from './routes/posyanduRoutes';
 import childRoutes from './routes/childRoutes';
-import serviceRoutes from './routes/serviceRoutes';
+import ProxyRoutes from './routes/ProxyRoutes';
 import notificationRoutes from './routes/notificationRoutes';
 import programRoutes from './routes/programRoutes';
 import progresRoutes from './routes/progresRoutes';
@@ -15,6 +15,8 @@ import taskRoutes from './routes/taskRoutes';
 import measurementRoutes from './routes/measurementRoutes';
 import { nutriplateProgramCron, otpCleanupCron, sessionCleanupCron } from './job';
 import { env } from './config/env.config';
+import iotRoutes from './routes/iotRoutes';
+import modelsRoutes from './routes/modelsRoutes';
 
 class App {
   public app: Elysia;
@@ -62,14 +64,16 @@ class App {
         .use(userRoutes)
         .use(posyanduRoutes)
         .use(childRoutes)
-        .use(serviceRoutes)
+        .use(ProxyRoutes)
         .use(notificationRoutes)
         .use(programRoutes)
         .use(progresRoutes)
         .use(foodIntakeRoutes)
         .use(foodIntakeSummaryRoutes)
         .use(taskRoutes)
-        .use(measurementRoutes),
+        .use(measurementRoutes)
+        .use(iotRoutes)
+        .use(modelsRoutes),
     );
   }
 }

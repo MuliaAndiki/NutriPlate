@@ -1,7 +1,7 @@
 import { Icon } from "@iconify/react/dist/iconify.js";
 import Link from "next/link";
 
-import ChildCard from "@/components/card/child-card";
+import ChildCard from "@/components/card/child/child-card";
 import ChildFallback from "@/components/fallback/child.fallback";
 import { Button } from "@/components/ui/button";
 import { ChildCardType } from "@/types/card";

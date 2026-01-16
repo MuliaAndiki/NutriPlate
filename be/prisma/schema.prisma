@@ -118,19 +118,19 @@ model Measurement {
 }
 
 model Food {
-  id             String           @id @default(uuid())
-  childId        String
-  iotId          String?
-  photoUrl       String?
-  totalWeightGram Decimal         
-  mlModelVersion String?          
-  inferenceHash  String?          
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @updatedAt
-  child          Child            @relation(fields: [childId], references: [id])
-  iot            IotDevice?       @relation(fields: [iotId], references: [id])
-  items          FoodIntakeItem[] 
-  food           FoodRawImage[]
+  id              String           @id @default(uuid())
+  childId         String
+  iotId           String?
+  photoUrl        String?
+  createdAt       DateTime         @default(now())
+  inferenceHash   String?
+  mlModelVersion  String?
+  totalWeightGram Decimal
+  updatedAt       DateTime         @updatedAt
+  items           FoodIntakeItem[]
+  child           Child            @relation(fields: [childId], references: [id])
+  iot             IotDevice?       @relation(fields: [iotId], references: [id])
+  food            FoodRawImage[]
 
   @@index([childId])
   @@index([iotId])
@@ -138,24 +138,24 @@ model Food {
 }
 
 model FoodIntakeItem {
-  id              String    @id @default(uuid())
-  foodIntakeId    String
-  foodClassName   String    
-  mlConfidence    Decimal   
-  areaRatio       Decimal   
-  weightGram      Decimal   
-  energyKcal      Decimal?  
-  proteinGram     Decimal?  
-  fatGram         Decimal? 
-  carbGram        Decimal?  
-  fiberGram       Decimal?
-  calciumMg       Decimal?
-  ironMg          Decimal?
-  vitaminA        Decimal?
-  vitaminC        Decimal?
-  metadata        Json?     // Store bounding box, nutrient source, etc
-  createdAt       DateTime  @default(now())
-  foodIntake      Food      @relation(fields: [foodIntakeId], references: [id], onDelete: Cascade)
+  id            String   @id @default(uuid())
+  foodIntakeId  String
+  foodClassName String
+  mlConfidence  Decimal
+  areaRatio     Decimal
+  weightGram    Decimal
+  energyKcal    Decimal?
+  proteinGram   Decimal?
+  fatGram       Decimal?
+  carbGram      Decimal?
+  fiberGram     Decimal?
+  calciumMg     Decimal?
+  ironMg        Decimal?
+  vitaminA      Decimal?
+  vitaminC      Decimal?
+  metadata      Json?
+  createdAt     DateTime @default(now())
+  foodIntake    Food     @relation(fields: [foodIntakeId], references: [id], onDelete: Cascade)
 
   @@index([foodIntakeId])
   @@map("food_intake_items")
@@ -196,11 +196,11 @@ model NutriplateProgram {
   description      String
   createdAt        DateTime                   @default(now())
   userId           String
-  activity         String[]
-  benefit          String[]
   durationRegister DateTime?
   startPrograms    DateTime?
   endPrograms      DateTime?
+  activity         String[]
+  benefit          String[]
   posyandu         Posyandu                   @relation(fields: [posyanduId], references: [id])
   user             User                       @relation(fields: [userId], references: [id])
   progress         NutritionProgramProgress[]
@@ -220,9 +220,9 @@ model NutritionProgramProgress {
   program     NutriplateProgram @relation(fields: [programId], references: [id])
   subtask     TaskProgram[]
 
+  @@unique([childId, programId])
   @@index([childId])
   @@index([programId])
-   @@unique([childId, programId])
   @@map("program_progress")
 }
 
@@ -248,7 +248,7 @@ model FoodRawImage {
   image_url      String
   status         DatasetStatus
   createdAt      DateTime         @default(now())
-  labeled_at     DateTime
+  labeled_at     DateTime?
   labels         FoodAnnotation[]
   food           Food             @relation(fields: [source_food_id], references: [id])
   uploader       User             @relation(fields: [uploader_id], references: [id])
@@ -265,6 +265,11 @@ model FoodClasses {
   fatGram     Decimal?
   carbGram    Decimal?
   edibleRatio Decimal?
+  calciumMg     Decimal?
+  ironMg        Decimal?
+  vitaminA      Decimal?
+  vitaminC      Decimal?
+  metadata      Json?
   createdAt   DateTime         @default(now())
   annotations FoodAnnotation[]
 
@@ -293,7 +298,7 @@ model MlModel {
   version   String
   modelPath String
   metrics   Json?
-  isActive  Boolean  @default(false)
+  isActive  Boolean
   createdAt DateTime @default(now())
 
   @@map("ml_models")

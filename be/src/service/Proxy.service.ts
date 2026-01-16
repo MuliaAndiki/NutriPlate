@@ -44,7 +44,7 @@ class Proxy {
       throw error;
     }
   }
-  // valid
+
   public async getStatusIot() {
     try {
       const res = await this.IotGate.get('/status');

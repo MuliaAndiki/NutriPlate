@@ -1,4 +1,4 @@
-import GrowthStatusCard from "@/components/card/growth-status";
+import GrowthStatusCard from "@/components/card/growth/growth-status";
 import { ChevronLeft } from "lucide-react";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import ChartGrowthWeight from "@/components/chart/ChartGrowthWeight";

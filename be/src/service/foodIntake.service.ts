@@ -3,6 +3,9 @@ import { getRedis } from '@/utils/redis';
 import prisma from 'prisma/client';
 import crypto from 'crypto';
 import { FoodDetection } from '@/types/foodIntake.types';
+import { Prisma } from '@prisma/client';
+import { cacheKeys } from '@/cache/cacheKey';
+import foodIntakeSummaryService from './foodIntakeSummary.service';
 
 /**
  * FoodIntakeService
@@ -43,7 +46,7 @@ class FoodIntakeService {
       const startTime = Date.now();
 
       const imageHash = crypto.createHash('sha256').update(imageBuffer).digest('hex');
-      const cacheKey = `ml:detect:${imageHash}`;
+      const cacheKey = cacheKeys.models.detect(imageHash);
 
       try {
         const cached = await this.redis.get(cacheKey);
@@ -57,8 +60,6 @@ class FoodIntakeService {
           `  Redis get error: ${redisError instanceof Error ? redisError.message : redisError}`,
         );
       }
-
-      // Hit ML FastAPI endpoint
       const formData = new FormData();
       const blob = new Blob([imageBuffer], { type: 'image/jpeg' });
       formData.append('image', blob, 'food.jpg');
@@ -77,16 +78,16 @@ class FoodIntakeService {
 
       try {
         await this.redis.setEx(cacheKey, 86400, JSON.stringify(detections));
-        console.log(`✅ Cache SET: ${cacheKey} (24h TTL)`);
+        console.log(`Cache SET: ${cacheKey} (24h TTL)`);
       } catch (redisError) {
         console.warn(
-          `⚠️  Redis set error: ${redisError instanceof Error ? redisError.message : redisError}`,
+          ` Redis set error: ${redisError instanceof Error ? redisError.message : redisError}`,
         );
       }
 
       return detections;
     } catch (error) {
-      console.error('❌ Inference error:', error);
+      console.error(' Inference error:', error);
       throw new Error(`Inference failed: ${error instanceof Error ? error.message : error}`);
     }
   }
@@ -102,26 +103,12 @@ class FoodIntakeService {
    */
   private async getNutrientPer100g(foodClassName: string) {
     try {
-      const cacheKey = `nutrient:${foodClassName.toLowerCase()}`;
-
-      try {
-        const cached = await this.redis.get(cacheKey);
-        if (cached) {
-          console.log(` Cache HIT: ${cacheKey} (nutrient)`);
-          return JSON.parse(cached);
-        }
-      } catch (redisError) {
-        console.warn(
-          `  Redis get error: ${redisError instanceof Error ? redisError.message : redisError}`,
-        );
-      }
-
       const foodClass = await prisma.foodClasses.findUnique({
         where: { name: foodClassName },
       });
 
       if (!foodClass) {
-        console.warn(`⚠️  FoodClass not found: ${foodClassName}, using defaults`);
+        console.warn(` FoodClass not found: ${foodClassName}, using defaults`);
         return {
           energyKcal: 0,
           proteinGram: 0,
@@ -146,15 +133,6 @@ class FoodIntakeService {
         vitaminA: 0,
         vitaminC: 0,
       };
-
-      try {
-        await this.redis.setEx(cacheKey, 604800, JSON.stringify(nutrient));
-        console.log(` Cache SET: ${cacheKey} (7d TTL)`);
-      } catch (redisError) {
-        console.warn(
-          ` Redis set error: ${redisError instanceof Error ? redisError.message : redisError}`,
-        );
-      }
 
       return nutrient;
     } catch (error) {
@@ -227,39 +205,46 @@ class FoodIntakeService {
    */
   private async handleModelVersionChange(newVersion: string): Promise<void> {
     try {
-      const cacheKey = 'ml:model:current_version';
-      const currentVersion = await this.redis.get(cacheKey);
+      const activeModel = await prisma.mlModel.findFirst({
+        where: { isActive: true },
+        select: { version: true },
+      });
 
-      if (currentVersion && currentVersion !== newVersion) {
-        console.log(`🔄 Model version changed: ${currentVersion} → ${newVersion}`);
-        console.log(`🗑️  Invalidating inference cache (ml:detect:*)`);
-
-        try {
-          let cursor: string = '0';
-          do {
-            const scanResult = await this.redis.scan(cursor, {
-              MATCH: 'ml:detect:*',
-              COUNT: 100,
-            });
-            cursor = String(scanResult.cursor);
-            const keys = scanResult.keys;
-
-            if (keys.length > 0) {
-              await this.redis.del(keys);
-              console.log(`  ✅ Deleted ${keys.length} inference cache entries`);
-            }
-          } while (cursor !== '0');
-        } catch (scanError) {
-          console.warn(
-            `⚠️  Could not scan cache: ${scanError instanceof Error ? scanError.message : scanError}`,
-          );
-        }
+      if (!activeModel) {
+        console.warn('⚠️ No active ML model found in database');
+        return;
       }
 
-      await this.redis.set(cacheKey, newVersion);
+      if (activeModel.version === newVersion) {
+        return;
+      }
+
+      console.log(` ML model version changed: ${activeModel.version} → ${newVersion}`);
+      try {
+        let cursor = '0';
+        do {
+          const { cursor: nextCursor, keys } = await this.redis.scan(cursor, {
+            MATCH: 'ml:detect:*',
+            COUNT: 100,
+          });
+
+          cursor = String(nextCursor);
+
+          if (keys.length > 0) {
+            await this.redis.del(keys);
+            console.log(`   Deleted ${keys.length} inference cache entries`);
+          }
+        } while (cursor !== '0');
+      } catch (redisError) {
+        console.warn(
+          ` Failed to invalidate inference cache: ${
+            redisError instanceof Error ? redisError.message : redisError
+          }`,
+        );
+      }
     } catch (error) {
       console.warn(
-        `⚠️  handleModelVersionChange error: ${error instanceof Error ? error.message : error}`,
+        ` handleModelVersionChange error: ${error instanceof Error ? error.message : error}`,
       );
     }
   }
@@ -281,24 +266,18 @@ class FoodIntakeService {
     mlModelVersion: string,
   ) {
     try {
-      // Validate input
       if (!totalWeightGram || totalWeightGram <= 0) {
         throw new Error('totalWeightGram must be > 0');
       }
-
-      // Validate detections
       const validation = this.validateDetections(detections);
       if (!validation.valid) {
         throw new Error(`Detection validation failed: ${validation.errors.join('; ')}`);
       }
-
-      // Handle model version change
       await this.handleModelVersionChange(mlModelVersion);
 
       const processedItems = [];
 
       for (const detection of detections) {
-        // Weight distribution
         const itemWeightGram = Number((totalWeightGram * detection.area_ratio).toFixed(2));
 
         // Lookup nutrition per 100g
@@ -355,7 +334,7 @@ class FoodIntakeService {
 
       return processedItems;
     } catch (error) {
-      console.error('❌ processDetectionsAndCalculateNutrition error:', error);
+      console.error(' processDetectionsAndCalculateNutrition error:', error);
       throw error;
     }
   }
@@ -377,9 +356,7 @@ class FoodIntakeService {
     inferenceHash: string | undefined,
   ) {
     try {
-      // Use transaction untuk atomic operation
       const result = await prisma.$transaction(async (tx) => {
-        // Create Food record
         const foodIntake = await tx.food.create({
           data: {
             childId,
@@ -391,7 +368,6 @@ class FoodIntakeService {
           },
         });
 
-        // Create FoodIntakeItem records
         const items = await Promise.all(
           processedItems.map((item) =>
             tx.foodIntakeItem.create({
@@ -419,9 +395,6 @@ class FoodIntakeService {
         return { foodIntake, items };
       });
 
-      // After successful save, invalidate daily summary cache
-      // Import at the top of file to avoid circular dependency
-      const foodIntakeSummaryService = require('@/service/foodIntakeSummary.service').default;
       if (result.foodIntake.createdAt) {
         await foodIntakeSummaryService.invalidateDailySummaryCache(
           childId,
@@ -431,14 +404,12 @@ class FoodIntakeService {
 
       return result;
     } catch (error) {
-      console.error('❌ saveToDatabase error:', error);
+      console.error(' saveToDatabase error:', error);
       throw new Error(
         `Failed to save food intake: ${error instanceof Error ? error.message : error}`,
       );
     }
   }
 }
-
-import { Prisma } from '@prisma/client';
 
 export default new FoodIntakeService();
