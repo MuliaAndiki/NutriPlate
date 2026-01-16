@@ -1,5 +1,4 @@
 import { NutritionStatus } from "../partial";
-import { IChild } from "../schema/child.schema";
 export interface HistoryFoodType {
   id: string;
   image: string;
@@ -8,19 +7,6 @@ export interface HistoryFoodType {
   weight: number;
   gizi: number;
 }
-
-export type ChildCardType = Pick<
-  IChild,
-  | "avaChild"
-  | "dateOfBirth"
-  | "fullName"
-  | "gender"
-  | "parentId"
-  | "placeOfBirth"
-  | "id"
-  | "profileChild"
-  | "updatedAt"
->;
 
 export interface ProfileChildType {
   key: string;

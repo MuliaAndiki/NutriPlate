@@ -15,12 +15,7 @@ interface FooterAppProps {
   setIsActive: React.Dispatch<React.SetStateAction<string>>;
   baseRole: string;
 }
-const FooterApp: React.FC<FooterAppProps> = ({
-  router,
-  isActive,
-  setIsActive,
-  baseRole,
-}) => {
+const FooterApp: React.FC<FooterAppProps> = ({ router, baseRole }) => {
   const pathname = usePathname();
   const navigationRole = () => {
     switch (baseRole) {

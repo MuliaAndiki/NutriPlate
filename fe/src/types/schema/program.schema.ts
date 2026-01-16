@@ -1,4 +1,4 @@
-export interface IProgramNutriPlate {
+export interface IProgram {
   id: string;
   posyanduId: string;
   name: string;

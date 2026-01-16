@@ -13,7 +13,11 @@ const DetailProgramContainer = () => {
   const { id } = useParams<{ id: string }>();
   const programQuery = service.program.query.getProgramById(id);
   const programData = programQuery.data?.data ?? null;
+  const childQuery = service.user.query.childAll();
+  const childData = childQuery.data?.data ?? [];
   const [PopUp, setPopUP] = useState<PopUpNavigate>(null);
+  const [idChild, setIdChild] = useState<string | null>(null);
+
   return (
     <SidebarLayout>
       <main className="w-full min-h-screen overflow-x-hidden">
@@ -21,15 +25,19 @@ const DetailProgramContainer = () => {
           service={{
             query: {
               program: programData ?? null,
-              isLoading: programQuery.isLoading,
+              isLoading: programQuery.isLoading || childQuery.isLoading,
+              children: childData ?? [],
             },
           }}
           namespace={{
             router: namespace.router,
+            pathname: namespace.pathname,
           }}
           state={{
             popUp: PopUp,
             setPopUp: setPopUP,
+            idChild: idChild,
+            setIdChild: setIdChild,
           }}
         />
       </main>

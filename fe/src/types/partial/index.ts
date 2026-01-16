@@ -33,3 +33,10 @@ export type NutritionStatus =
   | "underweight"
   | "normal"
   | "overweight";
+
+export interface childPartial {
+  child: {
+    id: string;
+    fullName: string;
+  };
+}
