@@ -1,7 +1,7 @@
 import { Icon } from "@iconify/react/dist/iconify.js";
 import Link from "next/link";
-import HistoryFood from "@/components/card/history-food";
-import IotStatus from "@/components/card/iot-status";
+import HistoryFood from "@/components/card/food/history-food";
+import IotStatus from "@/components/card/iot/iot-status";
 import { Button } from "@/components/ui/button";
 import { HistoryFoodType } from "@/types/card";
 import { ButtonWrapper } from "@/components/wrapper/ButtonWrapper";

@@ -1,6 +1,7 @@
 import { Elysia } from 'elysia';
 import { verifyToken, requireRole } from '@/middlewares/auth';
 import foodIntakeSummaryController from '@/controllers/FoodIntakeSummaryController';
+import { AppContext } from '@/contex/appContex';
 
 /**
  * Food Intake Summary Routes
@@ -13,21 +14,41 @@ import foodIntakeSummaryController from '@/controllers/FoodIntakeSummaryControll
  */
 
 class FoodIntakeSummaryRoutes {
-  public route() {
-    return new Elysia({ prefix: '/food/intake' })
-      .get('/daily/:childId', (c: any) => foodIntakeSummaryController.getDailySummary(c), {
+  public foodIntakeSummaryRoutes;
+
+  constructor() {
+    this.foodIntakeSummaryRoutes = new Elysia({ prefix: '/food/intake' }).derive(() => ({
+      json(data: any, status = 200) {
+        return new Response(JSON.stringify(data), {
+          status,
+          headers: { 'Content-Type': 'application/json' },
+        });
+      },
+    }));
+    this.routes();
+  }
+  private routes() {
+    this.foodIntakeSummaryRoutes.get(
+      '/daily/:childId',
+      (c: AppContext) => foodIntakeSummaryController.getDailySummary(c),
+      {
         beforeHandle: [
           verifyToken().beforeHandle,
           requireRole(['PARENT', 'KADER', 'POSYANDU']).beforeHandle,
         ],
-      })
-      .get('/range/:childId', (c: any) => foodIntakeSummaryController.getDateRangeSummary(c), {
+      },
+    );
+    this.foodIntakeSummaryRoutes.get(
+      '/range/:childId',
+      (c: AppContext) => foodIntakeSummaryController.getDateRangeSummary(c),
+      {
         beforeHandle: [
           verifyToken().beforeHandle,
           requireRole(['PARENT', 'KADER', 'POSYANDU']).beforeHandle,
         ],
-      });
+      },
+    );
   }
 }
 
-export default new FoodIntakeSummaryRoutes().route();
+export default new FoodIntakeSummaryRoutes().foodIntakeSummaryRoutes;

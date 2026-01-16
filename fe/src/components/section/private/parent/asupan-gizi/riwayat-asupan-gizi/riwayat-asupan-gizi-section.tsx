@@ -1,7 +1,6 @@
 import { ChevronLeft } from "lucide-react";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
-
-import HistoryFood from "@/components/card/history-food";
+import HistoryFood from "@/components/card/food/history-food";
 import { HistoryFoodType } from "@/types/card";
 
 interface RiwayatGiziSectionProps {

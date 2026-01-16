@@ -186,7 +186,15 @@ class FoodIntakeController {
       }
 
       const processingTime = Date.now() - startTime;
-
+      // create for dataset here
+      await prisma.foodRawImage.create({
+        data: {
+          uploader_id: jwtUser.id,
+          source_food_id: savedData.foodIntake.id,
+          image_url: photoUrl,
+          status: 'pending_label',
+        },
+      });
       return c.json?.(
         {
           status: 201,

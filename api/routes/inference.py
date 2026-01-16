@@ -4,40 +4,13 @@ from app import app
 import numpy as np
 import cv2
 from io import BytesIO
-from config import config
+from config.config import config
 
 
 
 
 @app.post("/detect")
 async def detect_food(image: UploadFile = File(...)):
-    """
-    Detect food items in image
-    
-    Args:
-        image: Image file (jpg, png, etc)
-    
-    Returns:
-        {
-            "success": bool,
-            "detections": [
-                {
-                    "class": "nasi",
-                    "class_id": 0,
-                    "confidence": 0.95,
-                    "bounding_box": {"x1": 10, "y1": 10, "x2": 100, "y2": 100},
-                    "area_ratio": 0.50  // (bbox_area / image_area)
-                },
-                ...
-            ],
-            "image_size": {"width": 640, "height": 480},
-            "model_info": {
-                "name": "YOLOv8s",
-                "version": "dietary_yolov8s",
-                "threshold": 0.5
-            }
-        }
-    """
     config.load_model()
     
     try:
@@ -100,11 +73,3 @@ async def detect_food(image: UploadFile = File(...)):
         print(f" Inference error: {e}")
         raise HTTPException(status_code=500, detail=f"Inference failed: {str(e)}")
 
-@app.get("/health")
-async def health_check():
-    """Health check endpoint"""
-    return {
-        "status": "ok",
-        "service": "food-detection",
-        "model_loaded": config.model is not None
-    }

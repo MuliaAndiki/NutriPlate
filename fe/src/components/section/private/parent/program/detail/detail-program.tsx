@@ -1,6 +1,6 @@
-import AktifitasPropgramCard from "@/components/card/aktivitas-program";
-import BenefitPropgramCard from "@/components/card/benefit-program";
-import DeskripsiPropgramCard from "@/components/card/deskripsi-program";
+import AktifitasPropgramCard from "@/components/card/program/aktivitas-program";
+import BenefitPropgramCard from "@/components/card/program/benefit-program";
+import DeskripsiPropgramCard from "@/components/card/program/deskripsi-program";
 import PopUp from "@/components/ui/pop-up";
 import { ButtonWrapper } from "@/components/wrapper/ButtonWrapper";
 import { IProgramNutriPlate } from "@/types/schema/program.schema";

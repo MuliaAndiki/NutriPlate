@@ -1,5 +1,5 @@
-import ChildProgramCard from "@/components/card/child-program-card";
-import ProgramCard from "@/components/card/program-card";
+import ChildProgramCard from "@/components/card/child/child-program-card";
+import ProgramCard from "@/components/card/program/program-card";
 import { Button } from "@/components/ui/button";
 import { ButtonWrapper } from "@/components/wrapper/ButtonWrapper";
 import { ChildCardType } from "@/types/card";

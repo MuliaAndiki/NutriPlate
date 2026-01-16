@@ -74,4 +74,7 @@ export const cacheKeys = {
     list: () => `evaluation:list`,
     byChild: (id: string) => `evaluation:child:${id}`,
   },
+  models: {
+    detect: (image: any) => `ml:detect:${image}`,
+  },
 };
