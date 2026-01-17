@@ -1,7 +1,7 @@
-import { INutritionProgramProgress } from "../schema/progres.schema";
+import { IProgress } from "../schema/progres.schema";
 export type FormAssingPrograms = Pick<
-  INutritionProgramProgress,
+  IProgress,
   "childId" | "programId" | "dayNumber"
 >;
-export type ParamsProgramProgresID = Pick<INutritionProgramProgress, "id">;
-export type FormCancelPrograms = Pick<INutritionProgramProgress, "childId">;
+export type ParamsProgramProgresID = Pick<IProgress, "id">;
+export type FormCancelPrograms = Pick<IProgress, "childId">;

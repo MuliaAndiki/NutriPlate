@@ -47,6 +47,13 @@ class ProgresRoutes {
     this.progresRoutes.get('/accepted', (c: AppContext) => ProgresController.getAccepProgram(c), {
       beforeHandle: [verifyToken().beforeHandle, requireRole(['PARENT', 'POSYANDU']).beforeHandle],
     });
+    this.progresRoutes.get(
+      '/:childId',
+      (c: AppContext) => ProgresController.getChildInProgramByID(c),
+      {
+        beforeHandle: [verifyToken().beforeHandle],
+      },
+    );
   }
 }
 

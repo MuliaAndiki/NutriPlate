@@ -24,7 +24,7 @@ const ChildProgramCard: React.FC<ChildProgramCard> = ({
   }
 
   const isComplate = childType.programProgress.filter(
-    (item) => item.isCompleted === true
+    (item) => item.isCompleted === true,
   ).length;
 
   const content = (

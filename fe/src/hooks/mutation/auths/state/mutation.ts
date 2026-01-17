@@ -197,7 +197,7 @@ export function useForgotPasswsord() {
       const email = res.data.email;
       if (email) {
         nameSpace.router.push(
-          `/verify-otp?identifier=${email}&target=/reset-password`
+          `/verify-otp?identifier=${email}&target=/reset-password`,
         );
         return;
       }

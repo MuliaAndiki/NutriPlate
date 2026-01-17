@@ -28,6 +28,20 @@ class FoodIntakeRoutes {
         ],
       },
     );
+    this.foodIntakeRoutes.get(
+      '/history',
+      (c: AppContext) => FoodIntakeController.getHistoryFood(c),
+      {
+        beforeHandle: [verifyToken().beforeHandle],
+      },
+    );
+    this.foodIntakeRoutes.get(
+      '/history/:id',
+      (c: AppContext) => FoodIntakeController.getHisoryFoodByID(c),
+      {
+        beforeHandle: [verifyToken().beforeHandle],
+      },
+    );
   }
 }
 

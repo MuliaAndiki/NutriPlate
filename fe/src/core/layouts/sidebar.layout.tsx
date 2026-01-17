@@ -5,7 +5,6 @@ import { useState } from "react";
 import {
   SidebarInset,
   SidebarProvider,
-  SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/core/components/app-sidebar";
@@ -30,26 +29,16 @@ export function SidebarLayout({ children }: AppLayoutProps) {
     <SidebarProvider defaultOpen>
       <div className="flex min-h-screen w-full">
         <AppSidebar isCollapsed={isCollapsed} pathname={pathname} />
-        <SidebarInset>
-          <div className="flex h-full flex-col w-full">
-            <div className="flex p-4 items-center gap-2  w-full h-20">
-              <div className="flex items-center justify-between max-w-7xl mx-auto w-full">
-                <SidebarTrigger />
-                <div className="flex items-center gap-4">
-                  {/* <ThemeToggle />
-                  <LanguageDropdown />
-                  <NotificationDropdown /> */}
-                  {/* <UserDropdown /> */}
-                </div>
-              </div>
-            </div>
 
-            <div className="flex-1  overflow-auto w-full">
-              <div className="container pb-15 max-w-7xl w-full mx-auto p-2">
+        <SidebarInset>
+          <div className="flex flex-col min-h-screen w-full">
+            <div className="flex-1 overflow-auto w-full">
+              <div className="container max-w-7xl mx-auto p-2 pb-20">
                 {children}
               </div>
             </div>
-            <div className="fixed bottom-0 left-0 w-full z-20 ">
+
+            <div className="fixed bottom-0 left-0 w-full z-20">
               <FooterApp
                 isActive={isActive}
                 setIsActive={setIsActive}

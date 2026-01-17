@@ -50,6 +50,7 @@ export const cacheKeys = {
   progress: {
     list: () => `progress:list`,
     byID: (id: string) => `progress:id:${id}`,
+    byChild: (id: string) => `progres:child:${id}`,
     byRole: (role: string) => `progress:role:${role}`,
   },
   history: {
@@ -76,5 +77,9 @@ export const cacheKeys = {
   },
   models: {
     detect: (image: any) => `ml:detect:${image}`,
+  },
+  food: {
+    byUser: (id: string) => `food:parent:${id}`,
+    byId: (id: string) => `food:id:${id}`,
   },
 };
