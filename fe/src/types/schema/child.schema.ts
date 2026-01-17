@@ -1,3 +1,5 @@
+import { ProfileChild } from "../partial";
+
 export interface IChild {
   id: string;
   parentId: string;
@@ -9,4 +11,5 @@ export interface IChild {
   avaChild?: string;
   createdAt: string;
   updatedAt: string;
+  profileChild: ProfileChild;
 }
