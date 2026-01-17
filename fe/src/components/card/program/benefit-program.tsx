@@ -1,7 +1,7 @@
-import { IProgramNutriPlate } from "@/types/schema/program.schema";
+import { IProgram } from "@/types/schema/program.schema";
 
 interface BenefitPropgramProps {
-  res: IProgramNutriPlate;
+  res: IProgram;
 }
 const BenefitPropgramCard: React.FC<BenefitPropgramProps> = ({ res }) => {
   return (

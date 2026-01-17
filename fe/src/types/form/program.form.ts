@@ -1,6 +1,6 @@
-import { IProgramNutriPlate } from "../schema/program.schema";
+import { IProgram } from "../schema/program.schema";
 export type FormCreateProgram = Pick<
-  IProgramNutriPlate,
+  IProgram,
   | "name"
   | "description"
   | "durationRegister"

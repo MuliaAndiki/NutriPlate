@@ -36,6 +36,10 @@ class ProgresApi {
     const res = await AxiosClient.patch(`/api/progres/accepted/${id}`);
     return res.data;
   }
+  public async getChildInProgramById(id: string): Promise<TResponse<any>> {
+    const res = await AxiosClient.get(`/api/progres/${id}`);
+    return res.data;
+  }
 }
 
 export default ProgresApi;

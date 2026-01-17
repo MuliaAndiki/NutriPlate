@@ -31,7 +31,7 @@ const ProgramHeroSection: React.FC<ProgramSectionProps> = ({
     return program.progress.length > 0;
   });
   return (
-    <div className="w-full min-h-full flex justify-start items-start flex-col space-y-2">
+    <div className="w-full min-h-full flex justify-start items-start flex-col space-y-5">
       <h1 className="text-3xl font-extrabold">Program Gizi Anak</h1>
       <p className="text-lg font-bold text-foreground/80">
         Ikuti program pendampingan gizi untuk mendukung tumbuh kembang anak

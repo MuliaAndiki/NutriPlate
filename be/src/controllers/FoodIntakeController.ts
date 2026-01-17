@@ -3,8 +3,15 @@ import { JwtPayload } from '@/types/auth.types';
 import foodIntakeService from '@/service/foodIntake.service';
 import prisma from 'prisma/client';
 import crypto from 'crypto';
+import { cacheKeys } from '@/cache/cacheKey';
+import { getRedis } from '@/utils/redis';
+import { error } from 'console';
+import { PickFoodID } from '@/types/food.types';
 
 class FoodIntakeController {
+  private get redis() {
+    return getRedis();
+  }
   /**
    * POST /api/food/intake
    *
@@ -235,6 +242,159 @@ class FoodIntakeController {
         {
           status: 500,
           message: 'Server internal error',
+          error: error instanceof Error ? error.message : error,
+        },
+        500,
+      );
+    }
+  }
+  public async getHistoryFood(c: AppContext) {
+    try {
+      const jwtUser = c.user as JwtPayload;
+      if (!jwtUser) {
+        return c.json?.(
+          {
+            status: 401,
+            message: 'Unauthorized',
+          },
+          401,
+        );
+      }
+
+      const cacheKey = cacheKeys.food.byUser(jwtUser.id);
+
+      try {
+        const cache = await this.redis.get(cacheKey);
+        if (cache) {
+          return c.json?.(
+            {
+              status: 200,
+              message: 'succesfully get history Food',
+              data: JSON.parse(cache),
+            },
+            200,
+          );
+        }
+      } catch (error) {
+        console.warn(`redis error, fallback db ${error}`);
+      }
+
+      const history = await prisma.food.findMany({
+        where: {
+          child: {
+            parentId: jwtUser.id,
+          },
+        },
+        take: 10,
+      });
+      if (!history) {
+        return c.json?.(
+          {
+            status: 400,
+            message: 'failed get history',
+          },
+          400,
+        );
+      } else {
+        await this.redis.set(cacheKey, JSON.stringify(history), {
+          EX: 60,
+        });
+      }
+      return c.json?.(
+        {
+          status: 200,
+          message: 'succesfully get history',
+          data: history,
+        },
+        200,
+      );
+    } catch (error) {
+      console.error(error);
+      return c.json?.(
+        {
+          status: 500,
+          message: 'server internal error',
+          error: error instanceof Error ? error.message : error,
+        },
+        500,
+      );
+    }
+  }
+  public async getHisoryFoodByID(c: AppContext) {
+    try {
+      const jwtUser = c.user as JwtPayload;
+      const params = c.params as PickFoodID;
+      if (!jwtUser) {
+        return c.json?.(
+          {
+            status: 401,
+            message: 'Unauthorized',
+          },
+          401,
+        );
+      }
+
+      if (!params) {
+        return c.json?.(
+          {
+            status: 400,
+            message: 'params is required',
+          },
+          400,
+        );
+      }
+
+      const cacheKey = cacheKeys.food.byId(params.id);
+
+      try {
+        const cache = await this.redis.get(cacheKey);
+        if (cache) {
+          return c.json?.(
+            {
+              status: 200,
+              message: 'succesfully get food by id (cache)',
+              data: JSON.parse(cache),
+            },
+            200,
+          );
+        }
+      } catch (error) {
+        console.warn(`redis error, fallback db ${error}`);
+      }
+
+      const food = await prisma.food.findUnique({
+        where: {
+          id: params.id,
+        },
+        include: {
+          items: true,
+        },
+      });
+
+      if (!food) {
+        return c.json?.(
+          {
+            status: 400,
+            message: 'server error',
+          },
+          400,
+        );
+      } else {
+        await this.redis.set(cacheKey, JSON.stringify(food), { EX: 60 });
+      }
+      return c.json?.(
+        {
+          status: 200,
+          message: 'succesfully get food',
+          data: food,
+        },
+        200,
+      );
+    } catch (error) {
+      return c.json?.(
+        {
+          status: 500,
+          message: 'server internal error',
           error: error instanceof Error ? error.message : error,
         },
         500,

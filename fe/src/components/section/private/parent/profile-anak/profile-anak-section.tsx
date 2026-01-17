@@ -3,14 +3,13 @@ import Link from "next/link";
 
 import ChildCard from "@/components/card/child/child-card";
 import ChildFallback from "@/components/fallback/child.fallback";
-import { Button } from "@/components/ui/button";
-import { ChildCardType } from "@/types/card";
 import { ButtonWrapper } from "@/components/wrapper/ButtonWrapper";
+import { ChildRespone } from "@/types/res/child.respone";
 
 interface ProfileAnakSectionProps {
   servive: {
     query: {
-      profileAnak: ChildCardType[];
+      profileAnak: ChildRespone[];
     };
   };
 }
@@ -52,7 +51,7 @@ const ProfileAnakHeroSection: React.FC<ProfileAnakSectionProps> = ({
       {servive.query.profileAnak.length > 0 ? (
         <div className="w-full flex flex-col space-y-3 ">
           {servive.query.profileAnak.map((item) => (
-            <ChildCard key={item.id} data={item} />
+            <ChildCard key={item.id} res={item} />
           ))}
         </div>
       ) : (

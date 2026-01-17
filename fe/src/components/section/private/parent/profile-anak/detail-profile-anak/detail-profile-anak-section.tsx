@@ -10,8 +10,8 @@ import {
   profileChildCardsConfig,
   RouteDetailChild,
 } from "@/configs/component.config";
-import { ChildCardType } from "@/types/card";
 import { formatDateTime } from "@/utils/time.format";
+import { ChildRespone } from "@/types/res/child.respone";
 
 interface DetailProfileAnakProps {
   namespace: {
@@ -19,7 +19,7 @@ interface DetailProfileAnakProps {
   };
   service: {
     query: {
-      ChildCard: ChildCardType;
+      ChildCard: ChildRespone;
       isPending: boolean;
       isLoading: boolean;
     };
@@ -50,7 +50,7 @@ const DetailProfileAnakHeroSection: React.FC<DetailProfileAnakProps> = ({
           </h1>
         </div>
         <div className="w-full">
-          <ChildCard data={service.query.ChildCard} />
+          <ChildCard res={service.query.ChildCard} />
         </div>
         <div className="w-full flex justify-between items-center">
           <h1 className="font-extralight text-xs">Terakhir Diperbarui</h1>

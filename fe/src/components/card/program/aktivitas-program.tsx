@@ -1,7 +1,7 @@
-import { IProgramNutriPlate } from "@/types/schema/program.schema";
+import { IProgram } from "@/types/schema/program.schema";
 
 interface AktifitasPropgramProps {
-  res: IProgramNutriPlate;
+  res: IProgram;
 }
 const AktifitasPropgramCard: React.FC<AktifitasPropgramProps> = ({ res }) => {
   return (

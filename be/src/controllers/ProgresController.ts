@@ -4,7 +4,7 @@ import { AppContext } from '@/contex/appContex';
 import { JwtPayload } from '@/types/auth.types';
 import {
   PickAssingPrograms,
-  PickCancelPrograms,
+  PickPorgramChildId,
   PickProgramProgresID,
 } from '@/types/programNutritionProgres.types';
 import { getRedis } from '@/utils/redis';
@@ -12,6 +12,7 @@ import { error } from 'console';
 import { NotificationService } from '@/service/notifikasi.service';
 import prisma from 'prisma/client';
 import { NotifType } from '@prisma/client';
+import { waitForDebugger } from 'inspector';
 
 class ProgresController {
   private get redis() {
@@ -302,11 +303,115 @@ class ProgresController {
       );
     }
   }
+
+  public async getChildInProgramByID(c: AppContext) {
+    try {
+      const jwtUser = c.user as JwtPayload;
+      const params = c.params as PickPorgramChildId;
+
+      if (!params) {
+        return c.json?.(
+          {
+            status: 400,
+            message: 'params is required',
+          },
+          400,
+        );
+      }
+
+      if (!jwtUser) {
+        return c.json?.(
+          {
+            status: 401,
+            message: 'Unauthorized',
+          },
+          401,
+        );
+      }
+
+      const cacheKey = cacheKeys.progress.byChild(params.childId);
+      try {
+        const cache = await this.redis.get(cacheKey);
+        if (cache) {
+          return c.json?.(
+            {
+              status: 200,
+              message: 'succesfully get ChildInProgres (cache)',
+              data: JSON.parse(cache),
+            },
+            200,
+          );
+        }
+      } catch (error) {
+        console.warn(`redis error, fallback Db ${error}`);
+      }
+
+      const progres = await prisma.nutritionProgramProgress.findFirst({
+        where: {
+          childId: params.childId,
+        },
+        include: {
+          child: true,
+          program: true,
+          subtask: true,
+        },
+      });
+
+      if (!progres) {
+        return c.json?.(
+          {
+            status: 400,
+            message: 'server error',
+          },
+          400,
+        );
+      }
+
+      const totalTask = progres.subtask.length;
+      const completeTask = progres.subtask.filter((task) => task.isComplated === true).length;
+      const percentage = totalTask > 0 ? Math.round((completeTask / totalTask) * 100) : 0;
+      const remainingTask = totalTask - completeTask;
+      const status =
+        percentage === 100 ? 'COMPLETED' : percentage > 0 ? 'ON_PROGRESS' : 'NOT_STARTED';
+      const isComplated = percentage === 100;
+      const responeData = {
+        ...progres,
+        isComplated,
+        progressSummary: {
+          totalTask,
+          completeTask,
+          remainingTask,
+          percentage,
+          status,
+        },
+      };
+
+      await this.redis.set(cacheKey, JSON.stringify(responeData), { EX: 60 });
+
+      return c.json?.(
+        {
+          status: 200,
+          message: 'succesfully get child in progres',
+          data: responeData,
+        },
+        200,
+      );
+    } catch (error) {
+      return c.json?.(
+        {
+          status: 500,
+          message: 'server internal error',
+          error: error instanceof Error ? error.message : error,
+        },
+        500,
+      );
+    }
+  }
   public async cancelChildProgram(c: AppContext) {
     try {
       const jwtUser = c.user as JwtPayload;
       const params = c.params as PickProgramProgresID;
-      const prog = c.body as PickCancelPrograms;
+      const prog = c.body as PickPorgramChildId;
 
       if (!prog) {
         return c.json?.(
