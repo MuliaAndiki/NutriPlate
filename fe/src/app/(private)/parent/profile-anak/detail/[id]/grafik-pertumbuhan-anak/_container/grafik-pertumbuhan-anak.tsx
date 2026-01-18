@@ -5,7 +5,6 @@ import { SidebarLayout } from "@/core/layouts/sidebar.layout";
 import useService from "@/hooks/mutation/prop.service";
 import { useAppNameSpace } from "@/hooks/useAppNameSpace";
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
 
 const GrafikPertumbuhanAnakContainer = () => {
   const nameSpace = useAppNameSpace();
@@ -27,7 +26,7 @@ const GrafikPertumbuhanAnakContainer = () => {
           child: childPoint.value,
           whoMedian: whoPoint?.value ?? null,
         };
-      }
+      },
     ) ?? [];
 
   const weightChartData =
