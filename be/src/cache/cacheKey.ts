@@ -25,6 +25,7 @@ export const cacheKeys = {
   posyandu: {
     byID: (id: string) => `posyandu:id:${id}`,
     list: () => `posyandu:list`,
+    byUser: (id: string) => `posyandu:user:${id}`,
   },
   child: {
     list: () => `child:list`,

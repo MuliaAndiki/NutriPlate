@@ -5,7 +5,6 @@ import DetailProfileAnakHeroSection from "@/components/section/private/parent/pr
 import { SidebarLayout } from "@/core/layouts/sidebar.layout";
 import useService from "@/hooks/mutation/prop.service";
 import { useAppNameSpace } from "@/hooks/useAppNameSpace";
-import { useEffect } from "react";
 const DetailProfileAnakContainer = () => {
   const nameSpace = useAppNameSpace();
   const service = useService();
@@ -16,6 +15,13 @@ const DetailProfileAnakContainer = () => {
   //measurement
   const measurementQuery = service.measuremnt.query.measurement(id);
   const measurementData = measurementQuery.data?.data ?? null;
+  // food Summary Daily
+  const foodSummaryDailyQuery = service.foodSummary.query.foodSummaryDaily(id);
+  const foodSummaryDailyData = foodSummaryDailyQuery.data?.data ?? null;
+
+  //posyandu
+  const posyanduQuery = service.posyandu.query.getPosyandu();
+  const posyanduData = posyanduQuery.data?.data ?? [];
 
   return (
     <SidebarLayout>
@@ -27,8 +33,14 @@ const DetailProfileAnakContainer = () => {
           service={{
             query: {
               ChildCard: chilDataByID ?? [],
-              isLoading: childQueryByID.isLoading || measurementQuery.isLoading,
+              isLoading:
+                childQueryByID.isLoading ||
+                measurementQuery.isLoading ||
+                foodSummaryDailyQuery.isLoading ||
+                posyanduQuery.isLoading,
               Measuremnt: measurementData ?? null,
+              foodSummaryDaily: foodSummaryDailyData ?? null,
+              Posyandu: posyanduData ?? [],
             },
           }}
         />

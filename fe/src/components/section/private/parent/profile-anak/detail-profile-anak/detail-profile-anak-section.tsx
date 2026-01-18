@@ -13,6 +13,18 @@ import {
 import { formatDateTime } from "@/utils/time.format";
 import { ChildRespone } from "@/types/res/child.respone";
 import { MeasurementRespone } from "@/types/res/measurement.respone";
+import { DailySummaryResponse } from "@/types/res/foodSummary.respone";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import PosyanduSelectionCard from "@/components/card/posyandu/posyanduSelectionCard";
+import { PosyanduRespone } from "@/types/res/posyandu.respone";
 
 interface DetailProfileAnakProps {
   namespace: {
@@ -23,6 +35,8 @@ interface DetailProfileAnakProps {
       ChildCard: ChildRespone;
       isLoading: boolean;
       Measuremnt: MeasurementRespone[];
+      foodSummaryDaily: DailySummaryResponse;
+      Posyandu: PosyanduRespone[];
     };
   };
 }
@@ -122,6 +136,34 @@ const DetailProfileAnakHeroSection: React.FC<DetailProfileAnakProps> = ({
                 </Link>
               </Button>
             ))}
+            <div className="w-full  rounded-lg border">
+              <div className="w-full p-4 bg-primary rounded-t-lg">
+                <h1 className="text-lg font-bold text-background">
+                  Data Posyandu
+                </h1>
+              </div>
+              <div className="w-full p-2">
+                <Select>
+                  <SelectTrigger className="w-full h-auto min-h-[64px] ">
+                    <SelectValue placeholder="Pilih Posyandu" />
+                  </SelectTrigger>
+                  <SelectContent className="">
+                    <SelectGroup>
+                      <SelectLabel>Posyandu</SelectLabel>
+                      {service.query.Posyandu.map((items) => (
+                        <SelectItem
+                          value="#"
+                          key={items.id}
+                          className="w-full h-auto"
+                        >
+                          <PosyanduSelectionCard res={items} />
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
           </div>
           <div className="w-full">
             <div className="w-full flex justify-start items-center space-x-2">
@@ -137,7 +179,10 @@ const DetailProfileAnakHeroSection: React.FC<DetailProfileAnakProps> = ({
               Kondisi gizi anak berdasarkan makanan hari ini
             </p>
             <div className="w-full mb-15">
-              <StatusAsupan />
+              <StatusAsupan
+                id={service.query.ChildCard.id}
+                data={service.query.foodSummaryDaily}
+              />
             </div>
           </div>
         </div>

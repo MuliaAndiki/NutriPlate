@@ -1,4 +1,6 @@
-import { Icon } from "@iconify/react/dist/iconify.js";
+"use client";
+
+import { Icon } from "@iconify/react";
 import {
   Label,
   PolarGrid,
@@ -14,27 +16,52 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { type ChartConfig, ChartContainer } from "@/components/ui/chart";
+import { ChartContainer, type ChartConfig } from "@/components/ui/chart";
+import { Button } from "@/components/ui/button";
+import { DailySummaryResponse } from "@/types/res/foodSummary.respone";
+import { useRouter } from "next/navigation";
+import { isPolarViewBox } from "@/utils/polar";
+interface StatusAsupanProps {
+  data: DailySummaryResponse;
+  id: string;
+}
 
-import { Button } from "../../ui/button";
-const StatusAsupan = () => {
+const StatusAsupan: React.FC<StatusAsupanProps> = ({ data, id }) => {
+  const router = useRouter();
+
+  const percent = data.progress.energyPercent;
+  const energy = data.totals.energyKcal;
+  const target = data.target.energyKcal;
+
+  const statusLabel =
+    data.progress.status === "GOOD"
+      ? "Baik"
+      : data.progress.status === "ENOUGH"
+        ? "Cukup"
+        : "Kurang";
+
+  const statusColor =
+    data.progress.status === "GOOD"
+      ? "text-primary"
+      : data.progress.status === "ENOUGH"
+        ? "text-yellow-500"
+        : "text-red-600";
+
   const chartData = [
-    { browser: "safari", visitors: 77, fill: "var(--color-primary)" },
+    {
+      value: percent,
+      fill: "var(--color-primary)",
+    },
   ];
 
   const chartConfig = {
-    visitors: {
-      label: "Visitors",
-    },
-    safari: {
-      label: "Safari",
-      color: "var(--chart-2)",
-    },
+    value: { label: "Asupan (%)" },
   } satisfies ChartConfig;
+
   return (
-    <Card className="flex  ">
+    <Card className="flex">
       <div className="w-full flex">
-        <CardContent className="flex flex-col  pb-0">
+        <CardContent className="flex flex-col pb-0">
           <ChartContainer
             config={chartConfig}
             className="mx-auto aspect-square w-[100px] h-[100px]"
@@ -53,60 +80,70 @@ const StatusAsupan = () => {
                 className="first:fill-muted last:fill-background"
                 polarRadius={[46, 34]}
               />
-              <RadialBar dataKey="visitors" background cornerRadius={10} />
-              <PolarRadiusAxis tick={false} tickLine={false} axisLine={false}>
+              <RadialBar dataKey="value" background cornerRadius={10} />
+              <PolarRadiusAxis tick={false} axisLine={false}>
                 <Label
                   content={({ viewBox }) => {
-                    if (viewBox && "cx" in viewBox && "cy" in viewBox) {
-                      return (
-                        <text
-                          x={viewBox.cx}
-                          y={viewBox.cy}
-                          textAnchor="middle"
-                          dominantBaseline="middle"
-                        >
-                          <tspan
-                            x={viewBox.cx}
-                            y={viewBox.cy}
-                            className=" text-lg font-bold text-primary"
-                          >
-                            {chartData[0].visitors.toLocaleString()}%
-                          </tspan>
-                        </text>
-                      );
-                    }
+                    if (!isPolarViewBox(viewBox)) return null;
+
+                    return (
+                      <text
+                        x={viewBox.cx}
+                        y={viewBox.cy}
+                        textAnchor="middle"
+                        dominantBaseline="middle"
+                      >
+                        <tspan className="text-lg font-bold text-primary">
+                          {percent}%
+                        </tspan>
+                      </text>
+                    );
                   }}
                 />
               </PolarRadiusAxis>
             </RadialBarChart>
           </ChartContainer>
-          <div className="w-full flex justify-center items-center">
-            <h1 className="text-lg font-bold text-primary">Baik</h1>
+
+          <div className="w-full flex justify-center">
+            <h1 className={`text-lg font-bold ${statusColor}`}>
+              {statusLabel}
+            </h1>
           </div>
         </CardContent>
+
         <div className="w-full">
-          <CardHeader className="items-center w-full pb-0">
+          <CardHeader className="pb-0">
             <CardTitle className="text-lg">Status Asupan Hari Ini</CardTitle>
           </CardHeader>
+
           <CardFooter className="flex-col gap-2 text-sm">
-            <div className="flex items-start w-full flex-col  gap-2 leading-none font-medium">
-              <h1 className="font-light">Total energi: 990 kkal</h1>
-              <div className="w-full flex items-center justify-start ">
+            <h1 className="font-light">
+              Total energi: {energy} / {target} kkal
+            </h1>
+
+            {data.progress.status === "LOW" && (
+              <div className="flex items-center gap-1">
                 <Icon
                   icon="carbon:warning"
-                  width="15"
-                  height="15"
+                  width={14}
                   className="text-red-600"
                 />
-                <p className="text-xs text-red-600 font-extralight ">
-                  Protein dan kalori belum tercukupi
+                <p className="text-xs text-red-600 font-extralight">
+                  Kalori dan protein belum tercukupi
                 </p>
               </div>
-              <div className="w-full  text-end">
-                <Button className="font-light" variant={"btn"}>
-                  Lihat Detail
-                </Button>
-              </div>
+            )}
+
+            <div className="w-full text-end">
+              <Button
+                className="font-light"
+                variant="btn"
+                onClick={() =>
+                  router.push(`/parent/profile-anak/detail/${id}/daily-summary`)
+                }
+              >
+                Lihat Detail
+              </Button>
             </div>
           </CardFooter>
         </div>
