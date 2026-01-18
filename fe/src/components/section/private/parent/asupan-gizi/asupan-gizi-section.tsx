@@ -5,6 +5,7 @@ import IotStatus from "@/components/card/iot/iot-status";
 import { Button } from "@/components/ui/button";
 import { HistoryFoodType } from "@/types/card";
 import { ButtonWrapper } from "@/components/wrapper/ButtonWrapper";
+import IotControllerCard from "@/components/card/iot/iot-controller";
 
 interface AsupanGiziSectionProps {
   HistoryFoodData: HistoryFoodType[];
@@ -24,6 +25,18 @@ const AsupanGiziHeroSection: React.FC<AsupanGiziSectionProps> = ({
       </div>
       <div className="w-full">
         <IotStatus />
+      </div>
+      <div className="w-full flex items-center">
+        <Icon
+          icon="fluent:iot-16-regular"
+          width="36"
+          height="36"
+          className="text-primary"
+        />
+        <h1 className="text-2xl font-bold">Kontrol Timbangan</h1>
+      </div>
+      <div className="w-full">
+        <IotControllerCard />
       </div>
       <ButtonWrapper
         variant={"btn"}

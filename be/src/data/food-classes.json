@@ -1,0 +1,398 @@
+[
+  {
+    "name": "nasi_putih",
+    "category": "serealia",
+    "energyKcal": 180,
+    "proteinGram": 3.0,
+    "fatGram": 0.3,
+    "carbGram": 39.8,
+    "edibleRatio": 1.0,
+    "calciumMg": 25,
+    "ironMg": 0.4,
+    "vitaminA": null,
+    "vitaminC": 0,
+    "metadata": {
+      "label": "Nasi Putih",
+      "source": "TKPI",
+      "note": "nasi matang"
+    }
+  },
+  {
+    "name": "nasi_goreng",
+    "category": "serealia",
+    "energyKcal": 168,
+    "proteinGram": 3.5,
+    "fatGram": 4.5,
+    "carbGram": 28.0,
+    "edibleRatio": 1.0,
+    "calciumMg": 15,
+    "ironMg": 1.2,
+    "vitaminA": 45,
+    "vitaminC": 0,
+    "metadata": {
+      "label": "Nasi Goreng",
+      "source": "TKPI estimasi",
+      "note": "nasi + minyak + telur sedikit"
+    }
+  },
+  {
+    "name": "mie",
+    "category": "serealia",
+    "energyKcal": 138,
+    "proteinGram": 4.5,
+    "fatGram": 2.1,
+    "carbGram": 25.0,
+    "edibleRatio": 1.0,
+    "calciumMg": 12,
+    "ironMg": 1.3,
+    "vitaminA": 0,
+    "vitaminC": 0,
+    "metadata": {
+      "label": "Mie Basah",
+      "source": "TKPI",
+      "note": "mie rebus"
+    }
+  },
+  {
+    "name": "bihun",
+    "category": "serealia",
+    "energyKcal": 109,
+    "proteinGram": 1.8,
+    "fatGram": 0.2,
+    "carbGram": 25.6,
+    "edibleRatio": 1.0,
+    "calciumMg": 3,
+    "ironMg": 0.5,
+    "vitaminA": 0,
+    "vitaminC": 0,
+    "metadata": {
+      "label": "Bihun",
+      "source": "TKPI",
+      "note": "bihun rebus"
+    }
+  },
+  {
+    "name": "roti",
+    "category": "serealia",
+    "energyKcal": 248,
+    "proteinGram": 8.0,
+    "fatGram": 3.2,
+    "carbGram": 46.0,
+    "edibleRatio": 1.0,
+    "calciumMg": 144,
+    "ironMg": 3.6,
+    "vitaminA": 0,
+    "vitaminC": 0,
+    "metadata": {
+      "label": "Roti Tawar",
+      "source": "USDA",
+      "note": "roti putih"
+    }
+  },
+  {
+    "name": "ayam_goreng",
+    "category": "protein_hewani",
+    "energyKcal": 244,
+    "proteinGram": 36.7,
+    "fatGram": 9.2,
+    "carbGram": 1.0,
+    "edibleRatio": 0.75,
+    "calciumMg": 81,
+    "ironMg": 6.1,
+    "vitaminA": 20,
+    "vitaminC": 0,
+    "metadata": {
+      "label": "Ayam Goreng",
+      "source": "TKPI",
+      "note": "dada tanpa tulang"
+    }
+  },
+  {
+    "name": "ayam_bakar",
+    "category": "protein_hewani",
+    "energyKcal": 167,
+    "proteinGram": 25.0,
+    "fatGram": 6.6,
+    "carbGram": 0,
+    "edibleRatio": 0.75,
+    "calciumMg": 15,
+    "ironMg": 1.5,
+    "vitaminA": 245,
+    "vitaminC": 0,
+    "metadata": {
+      "label": "Ayam Bakar",
+      "source": "TKPI",
+      "note": "tanpa kulit"
+    }
+  },
+  {
+    "name": "rendang",
+    "category": "protein_hewani",
+    "energyKcal": 193,
+    "proteinGram": 22.6,
+    "fatGram": 7.9,
+    "carbGram": 7.8,
+    "edibleRatio": 0.85,
+    "calciumMg": 474,
+    "ironMg": 14.9,
+    "vitaminA": 21,
+    "vitaminC": 0,
+    "metadata": {
+      "label": "Rendang",
+      "source": "TKPI",
+      "note": "rendang daging sapi"
+    }
+  },
+  {
+    "name": "sate",
+    "category": "protein_hewani",
+    "energyKcal": 210,
+    "proteinGram": 19.0,
+    "fatGram": 13.0,
+    "carbGram": 5.0,
+    "edibleRatio": 0.9,
+    "calciumMg": 22,
+    "ironMg": 2.3,
+    "vitaminA": 15,
+    "vitaminC": 0,
+    "metadata": {
+      "label": "Sate Ayam",
+      "source": "TKPI estimasi",
+      "note": "tanpa lontong"
+    }
+  },
+  {
+    "name": "ikan_goreng",
+    "category": "protein_hewani",
+    "energyKcal": 206,
+    "proteinGram": 22.0,
+    "fatGram": 12.0,
+    "carbGram": 0,
+    "edibleRatio": 0.7,
+    "calciumMg": 20,
+    "ironMg": 1.1,
+    "vitaminA": 30,
+    "vitaminC": 0,
+    "metadata": {
+      "label": "Ikan Goreng",
+      "source": "TKPI",
+      "note": "ikan laut"
+    }
+  },
+  {
+    "name": "udang",
+    "category": "protein_hewani",
+    "energyKcal": 99,
+    "proteinGram": 24.0,
+    "fatGram": 0.3,
+    "carbGram": 0.2,
+    "edibleRatio": 0.6,
+    "calciumMg": 70,
+    "ironMg": 2.6,
+    "vitaminA": 54,
+    "vitaminC": 0,
+    "metadata": {
+      "label": "Udang",
+      "source": "USDA",
+      "note": "tanpa kulit"
+    }
+  },
+  {
+    "name": "telur",
+    "category": "protein_hewani",
+    "energyKcal": 155,
+    "proteinGram": 13.0,
+    "fatGram": 11.0,
+    "carbGram": 1.1,
+    "edibleRatio": 0.9,
+    "calciumMg": 50,
+    "ironMg": 1.2,
+    "vitaminA": 160,
+    "vitaminC": 0,
+    "metadata": {
+      "label": "Telur Ayam",
+      "source": "USDA",
+      "note": "tanpa cangkang"
+    }
+  },
+  {
+    "name": "tahu",
+    "category": "protein_nabati",
+    "energyKcal": 76,
+    "proteinGram": 8.0,
+    "fatGram": 4.8,
+    "carbGram": 1.9,
+    "edibleRatio": 1.0,
+    "calciumMg": 350,
+    "ironMg": 5.4,
+    "vitaminA": 0,
+    "vitaminC": 0,
+    "metadata": {
+      "label": "Tahu",
+      "source": "TKPI",
+      "note": "tahu putih"
+    }
+  },
+  {
+    "name": "tempe",
+    "category": "protein_nabati",
+    "energyKcal": 193,
+    "proteinGram": 20.3,
+    "fatGram": 10.8,
+    "carbGram": 7.6,
+    "edibleRatio": 1.0,
+    "calciumMg": 155,
+    "ironMg": 4.0,
+    "vitaminA": 0,
+    "vitaminC": 0,
+    "metadata": {
+      "label": "Tempe",
+      "source": "TKPI",
+      "note": "tempe kedelai"
+    }
+  },
+  {
+    "name": "bakso",
+    "category": "olahan_daging",
+    "energyKcal": 202,
+    "proteinGram": 14.0,
+    "fatGram": 10.0,
+    "carbGram": 11.0,
+    "edibleRatio": 1.0,
+    "calciumMg": 11,
+    "ironMg": 2.0,
+    "vitaminA": 0,
+    "vitaminC": 0,
+    "metadata": {
+      "label": "Bakso",
+      "source": "TKPI estimasi",
+      "note": "tanpa kuah"
+    }
+  },
+  {
+    "name": "nugget",
+    "category": "olahan_daging",
+    "energyKcal": 296,
+    "proteinGram": 14.0,
+    "fatGram": 20.0,
+    "carbGram": 15.0,
+    "edibleRatio": 1.0,
+    "calciumMg": 15,
+    "ironMg": 1.3,
+    "vitaminA": 20,
+    "vitaminC": 0,
+    "metadata": {
+      "label": "Nugget Ayam",
+      "source": "USDA",
+      "note": "digoreng"
+    }
+  },
+  {
+    "name": "sosis",
+    "category": "olahan_daging",
+    "energyKcal": 301,
+    "proteinGram": 12.0,
+    "fatGram": 27.0,
+    "carbGram": 2.0,
+    "edibleRatio": 1.0,
+    "calciumMg": 11,
+    "ironMg": 1.1,
+    "vitaminA": 0,
+    "vitaminC": 0,
+    "metadata": {
+      "label": "Sosis",
+      "source": "USDA",
+      "note": "sosis daging"
+    }
+  },
+  {
+    "name": "capcay",
+    "category": "sayuran",
+    "energyKcal": 71,
+    "proteinGram": 3.0,
+    "fatGram": 3.5,
+    "carbGram": 7.5,
+    "edibleRatio": 1.0,
+    "calciumMg": 40,
+    "ironMg": 1.2,
+    "vitaminA": 120,
+    "vitaminC": 18,
+    "metadata": {
+      "label": "Capcay",
+      "source": "TKPI estimasi",
+      "note": "tumis"
+    }
+  },
+  {
+    "name": "gado_gado",
+    "category": "sayuran",
+    "energyKcal": 137,
+    "proteinGram": 6.1,
+    "fatGram": 7.6,
+    "carbGram": 12.0,
+    "edibleRatio": 1.0,
+    "calciumMg": 95,
+    "ironMg": 2.5,
+    "vitaminA": 350,
+    "vitaminC": 12,
+    "metadata": {
+      "label": "Gado-gado",
+      "source": "TKPI",
+      "note": "dengan saus kacang"
+    }
+  },
+  {
+    "name": "tumis_kangkung",
+    "category": "sayuran",
+    "energyKcal": 45,
+    "proteinGram": 2.6,
+    "fatGram": 1.9,
+    "carbGram": 6.0,
+    "edibleRatio": 1.0,
+    "calciumMg": 77,
+    "ironMg": 2.5,
+    "vitaminA": 315,
+    "vitaminC": 48,
+    "metadata": {
+      "label": "Tumis Kangkung",
+      "source": "TKPI",
+      "note": "tumis ringan"
+    }
+  },
+  {
+    "name": "bakwan",
+    "category": "gorengan",
+    "energyKcal": 240,
+    "proteinGram": 4.0,
+    "fatGram": 15.0,
+    "carbGram": 22.0,
+    "edibleRatio": 1.0,
+    "calciumMg": 35,
+    "ironMg": 1.8,
+    "vitaminA": 40,
+    "vitaminC": 0,
+    "metadata": {
+      "label": "Bakwan",
+      "source": "TKPI estimasi",
+      "note": "gorengan sayur"
+    }
+  },
+  {
+    "name": "kerupuk",
+    "category": "snack",
+    "energyKcal": 500,
+    "proteinGram": 6.0,
+    "fatGram": 25.0,
+    "carbGram": 65.0,
+    "edibleRatio": 1.0,
+    "calciumMg": 40,
+    "ironMg": 1.5,
+    "vitaminA": 0,
+    "vitaminC": 0,
+    "metadata": {
+      "label": "Kerupuk",
+      "source": "TKPI",
+      "note": "kerupuk goreng"
+    }
+  }
+]

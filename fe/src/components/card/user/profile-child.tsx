@@ -21,22 +21,31 @@ const ProfileChildCard: React.FC<ProfileChildCardProps> = ({
   border,
   text,
 }) => {
-  if (value === null || value === undefined) return null;
+  const isEmpty = value === null || value === undefined || value === "";
 
   return (
-    <div className={`w-full border rounded-lg ${border}`}>
+    <div
+      className={`w-full border rounded-lg ${border} ${
+        isEmpty ? "opacity-60" : ""
+      }`}
+    >
       <div
-        className={`w-full flex justify-start items-center rounded-t-lg ${header} p-2 `}
+        className={`w-full flex justify-start items-center rounded-t-lg ${header} p-2`}
       >
-        {/* blum fix warna */}
-        <Icon icon={icon} width={28} height={28} className={`${text}`} />
+        <Icon icon={icon} width={28} height={28} className={text} />
       </div>
 
       <div className={`flex flex-col p-2 ${color}`}>
         <h1 className="text-sm font-semibold">{label}</h1>
-        <p className="text-lg font-extrabold ">
-          {value} <span className="font-light">{unit}</span>
-        </p>
+
+        {isEmpty ? (
+          <p className="text-sm italic text-muted-foreground">Belum ada data</p>
+        ) : (
+          <p className="text-lg font-extrabold">
+            {value}
+            {unit && <span className="font-light ml-1">{unit}</span>}
+          </p>
+        )}
       </div>
     </div>
   );

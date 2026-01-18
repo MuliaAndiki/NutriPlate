@@ -17,6 +17,7 @@ export interface ProfileChildType {
   color: string;
   text: string;
   border: string;
+  source: string;
   // Not Fix
   getValue: (profile: any) => number | string | null;
 }

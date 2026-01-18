@@ -12,6 +12,7 @@ import {
 } from "@/configs/component.config";
 import { formatDateTime } from "@/utils/time.format";
 import { ChildRespone } from "@/types/res/child.respone";
+import { MeasurementRespone } from "@/types/res/measurement.respone";
 
 interface DetailProfileAnakProps {
   namespace: {
@@ -20,8 +21,8 @@ interface DetailProfileAnakProps {
   service: {
     query: {
       ChildCard: ChildRespone;
-      isPending: boolean;
       isLoading: boolean;
+      Measuremnt: MeasurementRespone[];
     };
   };
 }
@@ -33,6 +34,7 @@ const DetailProfileAnakHeroSection: React.FC<DetailProfileAnakProps> = ({
   if (service.query.isLoading) {
     return <div>loading</div>;
   }
+  const lastMeasurement = service.query.Measuremnt?.[0] ?? null;
   return (
     <div className="w-full min-h-screen flex justify-start items-center flex-col p-2">
       <div className="w-full flex  flex-col space-y-4">
@@ -63,20 +65,25 @@ const DetailProfileAnakHeroSection: React.FC<DetailProfileAnakProps> = ({
             })}
           </h1>
         </div>
-        <div className="w-full grid grid-cols-3 grid-rows-1 justify-center items-center gap-2">
-          {profileChildCardsConfig.map((item) => (
-            <ProfileChildCard
-              color={item.color}
-              icon={item.icon}
-              label={item.label}
-              value={item.getValue(service.query.ChildCard.profileChild)}
-              key={item.key}
-              border={item.border}
-              header={item.header}
-              unit={item.unit}
-              text={item.text}
-            />
-          ))}
+        <div className="w-full grid grid-cols-3 gap-2">
+          {profileChildCardsConfig.map((item) => {
+            const sourceData =
+              item.source === "measurement" ? lastMeasurement : null;
+            const value = item.getValue(sourceData);
+            return (
+              <ProfileChildCard
+                key={item.key}
+                label={item.label}
+                value={value}
+                unit={item.unit}
+                icon={item.icon}
+                color={item.color}
+                border={item.border}
+                header={item.header}
+                text={item.text}
+              />
+            );
+          })}
         </div>
         <div className="w-full space-y-4">
           <div className="w-full flex items-center space-x-1">

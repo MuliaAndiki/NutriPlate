@@ -444,7 +444,7 @@ class SubtaskController {
       );
     }
   }
-  // Clear Task (Parent)
+  // Done Task (Parent)
   //
 }
 

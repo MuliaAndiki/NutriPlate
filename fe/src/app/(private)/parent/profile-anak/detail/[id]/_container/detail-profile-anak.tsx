@@ -5,12 +5,17 @@ import DetailProfileAnakHeroSection from "@/components/section/private/parent/pr
 import { SidebarLayout } from "@/core/layouts/sidebar.layout";
 import useService from "@/hooks/mutation/prop.service";
 import { useAppNameSpace } from "@/hooks/useAppNameSpace";
+import { useEffect } from "react";
 const DetailProfileAnakContainer = () => {
   const nameSpace = useAppNameSpace();
   const service = useService();
   const { id } = useParams<{ id: string }>();
+  //child
   const childQueryByID = service.user.query.childById(id);
   const chilDataByID = childQueryByID.data?.data ?? [];
+  //measurement
+  const measurementQuery = service.measuremnt.query.measurement(id);
+  const measurementData = measurementQuery.data?.data ?? null;
 
   return (
     <SidebarLayout>
@@ -22,8 +27,8 @@ const DetailProfileAnakContainer = () => {
           service={{
             query: {
               ChildCard: chilDataByID ?? [],
-              isLoading: childQueryByID.isLoading,
-              isPending: childQueryByID.isPending,
+              isLoading: childQueryByID.isLoading || measurementQuery.isLoading,
+              Measuremnt: measurementData ?? null,
             },
           }}
         />
