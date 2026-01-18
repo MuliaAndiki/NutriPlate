@@ -1,6 +1,7 @@
 import { useProgram } from "../program/useProgram";
 import { useAuth } from "./auths/useAuth";
 import { useChild } from "./childs/useChild";
+import { useFoodSummary } from "./foodsummary/useFoodSummary";
 import { useMeasuremnet } from "./measurement/useMeasuremnet";
 import { useNotification } from "./notafications/useNotifications";
 import { usePosyandu } from "./posyandu/usePosyandu";
@@ -18,6 +19,7 @@ export const useService = () => ({
   measuremnt: useMeasuremnet(),
   program: useProgram(),
   progres: useProgres(),
+  foodSummary: useFoodSummary(),
 });
 
 export default useService;

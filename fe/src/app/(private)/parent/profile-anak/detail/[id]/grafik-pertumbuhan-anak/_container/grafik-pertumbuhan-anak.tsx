@@ -42,7 +42,7 @@ const GrafikPertumbuhanAnakContainer = () => {
 
   return (
     <SidebarLayout>
-      <main className="w-full">
+      <main className="w-full min-h-screen overflow-x-hidden">
         <GrafikPertumbuhanAnakHeroSection
           namespace={{
             router: nameSpace.router,

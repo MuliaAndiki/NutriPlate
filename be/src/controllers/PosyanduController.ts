@@ -112,65 +112,79 @@ class PosyanduController {
   public async getPosyandu(c: AppContext) {
     try {
       const jwtUser = c.user as JwtPayload;
+
       if (!jwtUser) {
-        return c.json?.(
-          {
-            status: 401,
-            message: 'Unauthorized',
-          },
-          401,
-        );
+        return c.json?.({ status: 401, message: 'Unauthorized' }, 401);
       }
-      const cacheKey = cacheKeys.posyandu.list();
+
+      const user = await prisma.user.findFirst({
+        where: { id: jwtUser.id },
+        select: { id: true, role: true },
+      });
+
+      if (!user) {
+        return c.json?.({ status: 404, message: 'User not found' }, 404);
+      }
+
+      let whereConditional: any = {};
+      let cacheKey = cacheKeys.posyandu.list();
+
+      if (user.role === 'POSYANDU') {
+        whereConditional.userID = user.id;
+        cacheKey = cacheKeys.posyandu.byUser(user.id);
+      }
       try {
         const cachePosyandu = await this.redis.get(cacheKey);
         if (cachePosyandu) {
           return c.json?.(
             {
               status: 200,
-              message: 'succesfully get cache posyandu',
+              message: 'successfully get posyandu (cache)',
               data: JSON.parse(cachePosyandu),
             },
             200,
           );
         }
       } catch (error) {
-        console.warn(`Redis error, fallback to DB`);
+        console.warn('Redis error, fallback to DB');
       }
 
       const posyandu = await prisma.posyandu.findMany({
-        where: {
-          userID: jwtUser.id,
+        where: whereConditional,
+        orderBy: {
+          createdAt: 'desc',
         },
         select: {
           id: true,
           avaUrl: true,
           name: true,
           village: true,
-          _count: true,
+          subDistrict: true,
+          district: true,
+          _count: {
+            select: {
+              children: true,
+            },
+          },
         },
       });
-      if (posyandu.length === 0) {
-        await this.redis.set(cacheKey, JSON.stringify(posyandu), { EX: 60 }).catch(error);
+
+      if (!posyandu || posyandu.length === 0) {
+        return c.json?.({ status: 404, message: 'posyandu not found' }, 404);
       }
-      if (!posyandu) {
-        return c.json?.(
-          {
-            status: 400,
-            message: 'server internal error',
-          },
-          400,
-        );
-      } else {
-        return c.json?.(
-          {
-            status: 200,
-            message: 'succesfully get posyandu',
-            data: posyandu,
-          },
-          200,
-        );
-      }
+
+      await this.redis
+        .set(cacheKey, JSON.stringify(posyandu), { EX: 60 })
+        .catch((err) => console.warn('Redis set error', err));
+
+      return c.json?.(
+        {
+          status: 200,
+          message: 'successfully get posyandu',
+          data: posyandu,
+        },
+        200,
+      );
     } catch (error) {
       console.error(error);
       return c.json?.(
@@ -183,6 +197,7 @@ class PosyanduController {
       );
     }
   }
+
   public async getPosyanduByID(c: AppContext) {
     try {
       const jwtUser = c.user as JwtPayload;

@@ -1,7 +1,11 @@
 import { getRedis } from '@/utils/redis';
 import prisma from 'prisma/client';
 import { FoodIntakeDailySummary, FoodIntakeDailySummaryItem } from '@/types/foodIntake.types';
-
+import { getAgeInMonths } from '@/utils/age';
+import { getBaseEnergyKcal, getEnergyCorrectionFactor } from '@/utils/energyTarget.util';
+import { GrowthClassification, GrowthRecommendation } from '@/types/who.types';
+import { parsePrismaJson } from '@/utils/prisma.json';
+import { NutritionStatus } from '@prisma/client';
 /**
  * FoodIntakeSummaryService
  *
@@ -28,133 +32,128 @@ class FoodIntakeSummaryService {
    * @param date - Date to get summary for (ISO string or Date object)
    * @returns {FoodIntakeDailySummary} Daily summary with totals
    */
-  public async getDailySummary(
-    childId: string,
-    date: string | Date,
-  ): Promise<FoodIntakeDailySummary> {
-    try {
-      // Normalize date to ISO string for cache key
-      const dateObj = typeof date === 'string' ? new Date(date) : date;
-      const dateStr = dateObj.toISOString().split('T')[0]; // YYYY-MM-DD
-      const cacheKey = `summary:daily:${childId}:${dateStr}`;
+  public async getDailySummary(childId: string, date: Date) {
+    const redis = getRedis();
+    const dateStr = date.toISOString().split('T')[0];
+    const cacheKey = `daily-summary:${childId}:${dateStr}`;
 
-      // Check Redis cache first (TTL: 24 hours)
-      try {
-        const cached = await this.redis.get(cacheKey);
-        if (cached) {
-          return JSON.parse(cached);
-        }
-      } catch (redisError) {
-        console.warn(`⚠️ Redis read failed for ${cacheKey}:`, redisError);
-        // Fall through to database query
-      }
+    /* ================= CACHE ================= */
+    const cached = await redis.get(cacheKey);
+    if (cached) return JSON.parse(cached);
 
-      // Calculate date range (start of day to end of day)
-      const dayStart = new Date(dateStr);
-      dayStart.setHours(0, 0, 0, 0);
+    /* ================= CHILD ================= */
+    const child = await prisma.child.findUnique({
+      where: { id: childId },
+      select: {
+        id: true,
+        dateOfBirth: true,
+      },
+    });
 
-      const dayEnd = new Date(dateStr);
-      dayEnd.setHours(23, 59, 59, 999);
+    if (!child) throw new Error('Child not found');
 
-      // Query all food intakes for this child on this date
-      const foodIntakes = await prisma.food.findMany({
-        where: {
-          childId,
-          createdAt: {
-            gte: dayStart,
-            lte: dayEnd,
-          },
-        },
-        include: {
-          items: true,
-        },
-        orderBy: {
-          createdAt: 'asc',
-        },
-      });
+    const ageMonths = getAgeInMonths(child.dateOfBirth, date);
 
-      // Aggregate totals across all items
-      const summary: FoodIntakeDailySummary = {
+    /* ================= WHO EVALUATION (HEIGHT) ================= */
+    const lastEvaluation = await prisma.whoEvaluation.findFirst({
+      where: { childId },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    const classification = parsePrismaJson<GrowthClassification>(lastEvaluation?.classification);
+
+    const recommendation = parsePrismaJson<GrowthRecommendation>(lastEvaluation?.recommendation);
+
+    /* ================= LAST MEASUREMENT (WEIGHT STATUS) ================= */
+    const lastMeasurement = await prisma.measurement.findFirst({
+      where: { childId },
+      orderBy: { measurementDate: 'desc' },
+      select: { nutritionStatus: true },
+    });
+
+    const nutritionStatus: NutritionStatus =
+      lastMeasurement?.nutritionStatus ?? NutritionStatus.normal;
+
+    /* ================= FOOD DATA ================= */
+    const dayStart = new Date(dateStr);
+    dayStart.setHours(0, 0, 0, 0);
+
+    const dayEnd = new Date(dateStr);
+    dayEnd.setHours(23, 59, 59, 999);
+
+    const foodIntakes = await prisma.food.findMany({
+      where: {
         childId,
-        date: dateStr,
-        totalIntakes: foodIntakes.length,
-        items: [],
-        totals: {
-          energyKcal: 0,
-          proteinGram: 0,
-          fatGram: 0,
-          carbGram: 0,
-          fiberGram: 0,
-          calciumMg: 0,
-          ironMg: 0,
-          vitaminA: 0,
-          vitaminC: 0,
-        },
-      };
+        createdAt: { gte: dayStart, lte: dayEnd },
+      },
+      include: { items: true },
+    });
 
-      // Iterate through all food intakes and items
-      for (const foodIntake of foodIntakes) {
-        for (const item of foodIntake.items) {
-          // Add individual item to summary
-          const summaryItem: FoodIntakeDailySummaryItem = {
-            foodClassName: item.foodClassName,
-            weightGram: Number(item.weightGram),
-            mlConfidence: Number(item.mlConfidence),
-            energyKcal: item.energyKcal ? Number(item.energyKcal) : 0,
-            proteinGram: item.proteinGram ? Number(item.proteinGram) : 0,
-            fatGram: item.fatGram ? Number(item.fatGram) : 0,
-            carbGram: item.carbGram ? Number(item.carbGram) : 0,
-            fiberGram: item.fiberGram ? Number(item.fiberGram) : 0,
-            calciumMg: item.calciumMg ? Number(item.calciumMg) : 0,
-            ironMg: item.ironMg ? Number(item.ironMg) : 0,
-            vitaminA: item.vitaminA ? Number(item.vitaminA) : 0,
-            vitaminC: item.vitaminC ? Number(item.vitaminC) : 0,
-            timestamp: item.createdAt,
-          };
+    const totals = {
+      energyKcal: 0,
+      proteinGram: 0,
+      fatGram: 0,
+      carbGram: 0,
+      fiberGram: 0,
+    };
 
-          summary.items.push(summaryItem);
-
-          // Add to totals
-          summary.totals.energyKcal += summaryItem.energyKcal;
-          summary.totals.proteinGram += summaryItem.proteinGram;
-          summary.totals.fatGram += summaryItem.fatGram;
-          summary.totals.carbGram += summaryItem.carbGram;
-          summary.totals.fiberGram += summaryItem.fiberGram;
-          summary.totals.calciumMg += summaryItem.calciumMg;
-          summary.totals.ironMg += summaryItem.ironMg;
-          summary.totals.vitaminA += summaryItem.vitaminA;
-          summary.totals.vitaminC += summaryItem.vitaminC;
-        }
+    for (const intake of foodIntakes) {
+      for (const item of intake.items) {
+        totals.energyKcal += Number(item.energyKcal ?? 0);
+        totals.proteinGram += Number(item.proteinGram ?? 0);
+        totals.fatGram += Number(item.fatGram ?? 0);
+        totals.carbGram += Number(item.carbGram ?? 0);
+        totals.fiberGram += Number(item.fiberGram ?? 0);
       }
-
-      // Round totals to 2 decimal places
-      summary.totals = {
-        energyKcal: Math.round(summary.totals.energyKcal * 100) / 100,
-        proteinGram: Math.round(summary.totals.proteinGram * 100) / 100,
-        fatGram: Math.round(summary.totals.fatGram * 100) / 100,
-        carbGram: Math.round(summary.totals.carbGram * 100) / 100,
-        fiberGram: Math.round(summary.totals.fiberGram * 100) / 100,
-        calciumMg: Math.round(summary.totals.calciumMg * 100) / 100,
-        ironMg: Math.round(summary.totals.ironMg * 100) / 100,
-        vitaminA: Math.round(summary.totals.vitaminA * 100) / 100,
-        vitaminC: Math.round(summary.totals.vitaminC * 100) / 100,
-      };
-
-      // Cache result in Redis (TTL: 24 hours)
-      try {
-        await this.redis.setEx(cacheKey, 86400, JSON.stringify(summary));
-      } catch (redisError) {
-        console.warn(`⚠️ Redis write failed for ${cacheKey}:`, redisError);
-        // Continue - cache failure is non-blocking
-      }
-
-      return summary;
-    } catch (error) {
-      console.error('❌ getDailySummary error:', error);
-      throw new Error(
-        `Failed to get daily summary: ${error instanceof Error ? error.message : 'Unknown error'}`,
-      );
     }
+
+    Object.keys(totals).forEach(
+      (k) => ((totals as any)[k] = Math.round((totals as any)[k] * 100) / 100),
+    );
+
+    /* ================= TARGET ENERGY ================= */
+    const baseEnergyKcal = getBaseEnergyKcal(ageMonths);
+
+    const correctionFactor = getEnergyCorrectionFactor(nutritionStatus);
+
+    const targetEnergyKcal = Math.round(baseEnergyKcal * correctionFactor);
+
+    const energyPercent = Math.min(Math.round((totals.energyKcal / targetEnergyKcal) * 100), 100);
+
+    const status = energyPercent >= 90 ? 'GOOD' : energyPercent >= 70 ? 'ENOUGH' : 'LOW';
+
+    /* ================= FINAL RESPONSE ================= */
+    const result = {
+      childId,
+      date: dateStr,
+      ageMonths,
+
+      who: classification
+        ? {
+            stuntingStatus: classification.stuntingStatus,
+            severity: classification.severity,
+            zScore: lastEvaluation?.zScore ?? null,
+            riskLevel: recommendation?.riskLevel ?? 'NORMAL',
+          }
+        : null,
+
+      totals,
+
+      target: {
+        energyKcal: targetEnergyKcal,
+        baseEnergyKcal,
+        correctionFactor,
+        nutritionStatus,
+      },
+
+      progress: {
+        energyPercent,
+        status,
+      },
+    };
+
+    await redis.setEx(cacheKey, 86400, JSON.stringify(result));
+    return result;
   }
 
   /**

@@ -19,4 +19,10 @@ export const cacheKey = {
   progres: {
     byID: (id: string) => [`progres:id:${id}`],
   },
+  foodSummaryDaily: {
+    byChild: (child: string) => [`food:summary:child:${child}`],
+  },
+  posyandu: {
+    list: () => [`posyandu:list`],
+  },
 };
