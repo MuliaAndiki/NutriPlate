@@ -18,7 +18,7 @@ class TaskRoutes {
   }
   private routes() {
     this.taskRoutes.post('/:id', (c: AppContext) => TaskController.createTask(c), {
-      beforeHandle: [verifyToken().beforeHandle, requireRole(['POSYANDU']).beforeHandle],
+      beforeHandle: [verifyToken().beforeHandle, requireRole(['POSYANDU', 'KADER']).beforeHandle],
     });
     this.taskRoutes.get('/', (c: AppContext) => TaskController.getTaskForChild(c), {
       beforeHandle: [verifyToken().beforeHandle],
@@ -28,6 +28,15 @@ class TaskRoutes {
     });
     this.taskRoutes.delete('/:id', (c: AppContext) => TaskController.deleteTask(c), {
       beforeHandle: [verifyToken().beforeHandle, requireRole(['POSYANDU']).beforeHandle],
+    });
+    this.taskRoutes.get('/notBroadcast', (c: AppContext) => TaskController.getTaskNotBroadCast(c), {
+      beforeHandle: [verifyToken().beforeHandle, requireRole(['POSYANDU', 'KADER']).beforeHandle],
+    });
+    this.taskRoutes.patch('/broadcast', (c: AppContext) => TaskController.broadcastTasks(c), {
+      beforeHandle: [verifyToken().beforeHandle, requireRole(['POSYANDU']).beforeHandle],
+    });
+    this.taskRoutes.post('/task/:id', (c: AppContext) => TaskController.doneTask(c), {
+      beforeHandle: [verifyToken().beforeHandle, requireRole(['PARENT']).beforeHandle],
     });
   }
 }

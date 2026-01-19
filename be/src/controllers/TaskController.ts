@@ -1,9 +1,11 @@
 import { cacheKeys } from '@/cache/cacheKey';
 import { AppContext } from '@/contex/appContex';
+import { NotificationService } from '@/service/notifikasi.service';
 import { JwtPayload } from '@/types/auth.types';
 import { PickCreateTask, PickTaskID, PickTaskProgresID } from '@/types/task.types';
 import { ParseUpdateData } from '@/utils/parseUpdateData';
 import { getRedis } from '@/utils/redis';
+import { NotifType } from '@prisma/client';
 import { error } from 'console';
 import prisma from 'prisma/client';
 
@@ -431,7 +433,60 @@ class SubtaskController {
   }
   public async getTaskNotBroadCast(c: AppContext) {
     try {
-      // initia;
+      const jwtUser = c.user as JwtPayload;
+      if (!jwtUser) {
+        return c.json?.(
+          {
+            status: 401,
+            message: 'Unauthorized',
+          },
+          401,
+        );
+      }
+      const cacheKey = cacheKeys.task.list();
+
+      try {
+        const cache = await this.redis.get(cacheKey);
+        if (cache) {
+          return c.json?.(
+            {
+              status: 200,
+              message: 'successfully get cache',
+              data: JSON.parse(cache),
+            },
+            200,
+          );
+        }
+      } catch (error) {
+        console.warn(`redis error, fallback db ${error}`);
+      }
+
+      const task = await prisma.taskProgram.findMany({
+        where: {
+          isBroadcast: false,
+        },
+        take: 10,
+      });
+
+      if (!task) {
+        return c.json?.(
+          {
+            status: 400,
+            message: 'server error',
+          },
+          400,
+        );
+      } else {
+        await this.redis.set(cacheKey, JSON.stringify(task), { EX: 60 });
+      }
+      return c.json?.(
+        {
+          status: 200,
+          message: 'succesfully get task not brodcast',
+          data: task,
+        },
+        200,
+      );
     } catch (error) {
       console.error(error);
       return c.json?.(
@@ -444,6 +499,180 @@ class SubtaskController {
       );
     }
   }
+
+  // not fix
+
+  public async broadcastTasks(c: AppContext) {
+    try {
+      const jwtUser = c.user as JwtPayload;
+      const body = c.body as { taskIds: string[] };
+
+      if (!jwtUser) {
+        return c.json?.({ status: 401, message: 'Unauthorized' }, 401);
+      }
+
+      if (jwtUser.role !== 'POSYANDU') {
+        return c.json?.({ status: 403, message: 'Forbidden' }, 403);
+      }
+
+      if (!body?.taskIds || body.taskIds.length === 0) {
+        return c.json?.({ status: 400, message: 'taskIds is required' }, 400);
+      }
+
+      const posyandu = await prisma.posyandu.findFirst({
+        where: { userID: jwtUser.id },
+        select: { id: true },
+      });
+
+      if (!posyandu) {
+        return c.json?.({ status: 403, message: 'posyandu not found' }, 403);
+      }
+
+      const tasks = await prisma.taskProgram.findMany({
+        where: {
+          id: { in: body.taskIds },
+          isBroadcast: false,
+        },
+        include: {
+          progres: {
+            include: {
+              program: {
+                select: {
+                  userId: true,
+                },
+              },
+              child: {
+                select: {
+                  fullName: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      if (tasks.length === 0) {
+        return c.json?.({ status: 400, message: 'no valid task to broadcast' }, 400);
+      }
+
+      const updated = await prisma.taskProgram.updateMany({
+        where: {
+          id: { in: tasks.map((t) => t.id) },
+          isBroadcast: false,
+        },
+        data: {
+          isBroadcast: true,
+        },
+      });
+
+      const parentIds = new Set(tasks.map((t) => t.progres.program.userId));
+
+      for (const parentId of parentIds) {
+        await NotificationService.notify({
+          userId: parentId,
+          title: 'Tugas Baru',
+          message: `Ada ${tasks.length} tugas baru dari posyandu`,
+          type: NotifType.alert,
+          isBroadcast: true,
+        });
+      }
+
+      await this.redis.del(cacheKeys.task.byRole('PARENT')).catch(console.error);
+
+      return c.json?.(
+        {
+          status: 200,
+          message: 'tasks successfully broadcast',
+          affected: updated.count,
+        },
+        200,
+      );
+    } catch (error) {
+      console.error(error);
+      return c.json?.(
+        {
+          status: 500,
+          message: 'server internal error',
+          error: error instanceof Error ? error.message : error,
+        },
+        500,
+      );
+    }
+  }
+
+  public async doneTask(c: AppContext) {
+    try {
+      const jwtUser = c.user as JwtPayload;
+      const params = c.params as PickTaskID;
+
+      if (!jwtUser) {
+        return c.json?.({ status: 401, message: 'Unauthorized' }, 401);
+      }
+
+      if (jwtUser.role !== 'PARENT') {
+        return c.json?.({ status: 403, message: 'Forbidden' }, 403);
+      }
+
+      if (!params?.id) {
+        return c.json?.({ status: 400, message: 'task id is required' }, 400);
+      }
+
+      const task = await prisma.taskProgram.findFirst({
+        where: {
+          id: params.id,
+          isBroadcast: true,
+          progres: {
+            program: {
+              userId: jwtUser.id,
+            },
+          },
+        },
+        select: {
+          id: true,
+          isComplated: true,
+          progresId: true,
+        },
+      });
+
+      if (!task) {
+        return c.json?.({ status: 404, message: 'task not found or not authorized' }, 404);
+      }
+
+      if (task.isComplated) {
+        return c.json?.({ status: 400, message: 'task already completed' }, 400);
+      }
+
+      const doneTask = await prisma.taskProgram.update({
+        where: { id: task.id },
+        data: { isComplated: true },
+      });
+
+      await Promise.all([
+        this.redis.del(cacheKeys.task.byRole('PARENT')),
+        this.redis.del(cacheKeys.progress.byChild(task.progresId)),
+      ]).catch(console.error);
+
+      return c.json?.(
+        {
+          status: 200,
+          message: 'task completed successfully',
+          data: doneTask,
+        },
+        200,
+      );
+    } catch (error) {
+      console.error(error);
+      return c.json?.(
+        {
+          status: 500,
+          message: 'server internal error',
+          error: error instanceof Error ? error.message : error,
+        },
+        500,
+      );
+    }
+  }
+
   // Done Task (Parent)
   //
 }
