@@ -1,11 +1,12 @@
 import { getRedis } from '@/utils/redis';
 import prisma from 'prisma/client';
-import { FoodIntakeDailySummary, FoodIntakeDailySummaryItem } from '@/types/foodIntake.types';
+import { FoodIntakeDailySummary } from '@/types/foodIntake.types';
 import { getAgeInMonths } from '@/utils/age';
 import { getBaseEnergyKcal, getEnergyCorrectionFactor } from '@/utils/energyTarget.util';
 import { GrowthClassification, GrowthRecommendation } from '@/types/who.types';
 import { parsePrismaJson } from '@/utils/prisma.json';
 import { NutritionStatus } from '@prisma/client';
+import { getMacroTargets } from '@/utils/akg';
 /**
  * FoodIntakeSummaryService
  *
@@ -24,24 +25,14 @@ class FoodIntakeSummaryService {
     this.redis = getRedis();
   }
 
-  /**
-   * Get daily summary for a child
-   * Aggregates all food intakes for a given day across items
-   *
-   * @param childId - UUID of child
-   * @param date - Date to get summary for (ISO string or Date object)
-   * @returns {FoodIntakeDailySummary} Daily summary with totals
-   */
   public async getDailySummary(childId: string, date: Date) {
     const redis = getRedis();
     const dateStr = date.toISOString().split('T')[0];
     const cacheKey = `daily-summary:${childId}:${dateStr}`;
 
-    /* ================= CACHE ================= */
     const cached = await redis.get(cacheKey);
     if (cached) return JSON.parse(cached);
 
-    /* ================= CHILD ================= */
     const child = await prisma.child.findUnique({
       where: { id: childId },
       select: {
@@ -54,7 +45,6 @@ class FoodIntakeSummaryService {
 
     const ageMonths = getAgeInMonths(child.dateOfBirth, date);
 
-    /* ================= WHO EVALUATION (HEIGHT) ================= */
     const lastEvaluation = await prisma.whoEvaluation.findFirst({
       where: { childId },
       orderBy: { createdAt: 'desc' },
@@ -64,7 +54,6 @@ class FoodIntakeSummaryService {
 
     const recommendation = parsePrismaJson<GrowthRecommendation>(lastEvaluation?.recommendation);
 
-    /* ================= LAST MEASUREMENT (WEIGHT STATUS) ================= */
     const lastMeasurement = await prisma.measurement.findFirst({
       where: { childId },
       orderBy: { measurementDate: 'desc' },
@@ -74,7 +63,6 @@ class FoodIntakeSummaryService {
     const nutritionStatus: NutritionStatus =
       lastMeasurement?.nutritionStatus ?? NutritionStatus.normal;
 
-    /* ================= FOOD DATA ================= */
     const dayStart = new Date(dateStr);
     dayStart.setHours(0, 0, 0, 0);
 
@@ -111,8 +99,9 @@ class FoodIntakeSummaryService {
       (k) => ((totals as any)[k] = Math.round((totals as any)[k] * 100) / 100),
     );
 
-    /* ================= TARGET ENERGY ================= */
     const baseEnergyKcal = getBaseEnergyKcal(ageMonths);
+
+    const macroTarget = getMacroTargets(ageMonths);
 
     const correctionFactor = getEnergyCorrectionFactor(nutritionStatus);
 
@@ -122,7 +111,6 @@ class FoodIntakeSummaryService {
 
     const status = energyPercent >= 90 ? 'GOOD' : energyPercent >= 70 ? 'ENOUGH' : 'LOW';
 
-    /* ================= FINAL RESPONSE ================= */
     const result = {
       childId,
       date: dateStr,
@@ -144,6 +132,12 @@ class FoodIntakeSummaryService {
         baseEnergyKcal,
         correctionFactor,
         nutritionStatus,
+        macro: {
+          proteinGram: macroTarget.proteinGram,
+          carbGram: macroTarget.carbGram,
+          fatGram: macroTarget.fatGram,
+          fiberGram: macroTarget.fiberGram,
+        },
       },
 
       progress: {
@@ -156,13 +150,6 @@ class FoodIntakeSummaryService {
     return result;
   }
 
-  /**
-   * Invalidate daily summary cache when new food intake is saved
-   * Called by FoodIntakeService after successful POST /intake
-   *
-   * @param childId - UUID of child
-   * @param date - Date of food intake
-   */
   public async invalidateDailySummaryCache(childId: string, date: string | Date): Promise<void> {
     try {
       const dateObj = typeof date === 'string' ? new Date(date) : date;
@@ -196,19 +183,17 @@ class FoodIntakeSummaryService {
 
       const summaries: FoodIntakeDailySummary[] = [];
 
-      // Generate date range
       const current = new Date(start);
       while (current <= end) {
         const summary = await this.getDailySummary(childId, new Date(current));
         summaries.push(summary);
 
-        // Move to next day
         current.setDate(current.getDate() + 1);
       }
 
       return summaries;
     } catch (error) {
-      console.error('❌ getDateRangeSummary error:', error);
+      console.error(' getDateRangeSummary error:', error);
       throw new Error(
         `Failed to get date range summary: ${error instanceof Error ? error.message : 'Unknown error'}`,
       );

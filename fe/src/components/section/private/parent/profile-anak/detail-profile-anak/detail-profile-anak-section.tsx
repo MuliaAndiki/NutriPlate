@@ -25,12 +25,19 @@ import {
 } from "@/components/ui/select";
 import PosyanduSelectionCard from "@/components/card/posyandu/posyanduSelectionCard";
 import { PosyanduRespone } from "@/types/res/posyandu.respone";
+import { FormRegisteredChild } from "@/types/form/child.form";
+import { ButtonWrapper } from "@/components/wrapper/ButtonWrapper";
+import { Spinner } from "@/components/ui/spinner";
 
 interface DetailProfileAnakProps {
   namespace: {
     router: AppRouterInstance;
   };
   service: {
+    mutation: {
+      onRegisterd: () => void;
+      isPending: boolean;
+    };
     query: {
       ChildCard: ChildRespone;
       isLoading: boolean;
@@ -39,16 +46,27 @@ interface DetailProfileAnakProps {
       Posyandu: PosyanduRespone[];
     };
   };
+  state: {
+    formRegisterdChild: FormRegisteredChild;
+    setFormRegisterdChild: React.Dispatch<
+      React.SetStateAction<FormRegisteredChild>
+    >;
+  };
 }
 const DetailProfileAnakHeroSection: React.FC<DetailProfileAnakProps> = ({
   namespace,
   service,
+  state,
 }) => {
   // fallback skeleton
   if (service.query.isLoading) {
     return <div>loading</div>;
   }
   const lastMeasurement = service.query.Measuremnt?.[0] ?? null;
+  const isPosyanduLocked = Boolean(
+    service.query.ChildCard.id || service.query.Posyandu,
+  );
+
   return (
     <div className="w-full min-h-screen flex justify-start items-center flex-col p-2">
       <div className="w-full flex  flex-col space-y-4">
@@ -143,17 +161,27 @@ const DetailProfileAnakHeroSection: React.FC<DetailProfileAnakProps> = ({
                 </h1>
               </div>
               <div className="w-full p-2">
-                <Select>
-                  <SelectTrigger className="w-full h-auto min-h-[64px] ">
+                <Select
+                  value={state.formRegisterdChild.posyanduID}
+                  disabled={isPosyanduLocked}
+                  onValueChange={(value) =>
+                    state.setFormRegisterdChild((prev) => ({
+                      ...prev,
+                      posyanduID: value,
+                    }))
+                  }
+                >
+                  <SelectTrigger className="w-full h-auto min-h-[64px]">
                     <SelectValue placeholder="Pilih Posyandu" />
                   </SelectTrigger>
-                  <SelectContent className="">
+
+                  <SelectContent>
                     <SelectGroup>
                       <SelectLabel>Posyandu</SelectLabel>
                       {service.query.Posyandu.map((items) => (
                         <SelectItem
-                          value="#"
                           key={items.id}
+                          value={items.id}
                           className="w-full h-auto"
                         >
                           <PosyanduSelectionCard res={items} />
@@ -163,6 +191,18 @@ const DetailProfileAnakHeroSection: React.FC<DetailProfileAnakProps> = ({
                   </SelectContent>
                 </Select>
               </div>
+              {state.formRegisterdChild.posyanduID && !isPosyanduLocked ? (
+                <ButtonWrapper
+                  className="w-full"
+                  disabled={
+                    !state.formRegisterdChild.posyanduID ||
+                    service.mutation.isPending
+                  }
+                  onClick={() => service.mutation.onRegisterd()}
+                >
+                  {service.mutation.isPending ? <Spinner /> : "Daftarkan"}
+                </ButtonWrapper>
+              ) : null}
             </div>
           </div>
           <div className="w-full">
@@ -178,7 +218,7 @@ const DetailProfileAnakHeroSection: React.FC<DetailProfileAnakProps> = ({
             <p className="font-light">
               Kondisi gizi anak berdasarkan makanan hari ini
             </p>
-            <div className="w-full mb-15">
+            <div className="w-full ">
               <StatusAsupan
                 id={service.query.ChildCard.id}
                 data={service.query.foodSummaryDaily}

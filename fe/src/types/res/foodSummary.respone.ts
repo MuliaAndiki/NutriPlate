@@ -32,6 +32,12 @@ export interface DailySummaryResponse {
     baseEnergyKcal: number;
     correctionFactor: number;
     nutritionStatus: NutritionStatus;
+    macro: {
+      proteinGram: number;
+      carbGram: number;
+      fatGram: number;
+      fiberGram: number;
+    };
   };
 
   progress: {
