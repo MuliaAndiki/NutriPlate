@@ -19,7 +19,7 @@ import {
 import { ChartContainer, type ChartConfig } from "@/components/ui/chart";
 import { Button } from "@/components/ui/button";
 import { DailySummaryResponse } from "@/types/res/foodSummary.respone";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { isPolarViewBox } from "@/utils/polar";
 interface StatusAsupanProps {
   data: DailySummaryResponse;
@@ -28,7 +28,10 @@ interface StatusAsupanProps {
 
 const StatusAsupan: React.FC<StatusAsupanProps> = ({ data, id }) => {
   const router = useRouter();
-
+  const pathname = usePathname();
+  const hiddenButton = pathname.includes(
+    `/parent/profile-anak/detail/${id}/daily-summary`,
+  );
   const percent = data.progress.energyPercent;
   const energy = data.totals.energyKcal;
   const target = data.target.energyKcal;
@@ -135,15 +138,19 @@ const StatusAsupan: React.FC<StatusAsupanProps> = ({ data, id }) => {
             )}
 
             <div className="w-full text-end">
-              <Button
-                className="font-light"
-                variant="btn"
-                onClick={() =>
-                  router.push(`/parent/profile-anak/detail/${id}/daily-summary`)
-                }
-              >
-                Lihat Detail
-              </Button>
+              {!hiddenButton && (
+                <Button
+                  className="font-light"
+                  variant="btn"
+                  onClick={() =>
+                    router.push(
+                      `/parent/profile-anak/detail/${id}/daily-summary`,
+                    )
+                  }
+                >
+                  Lihat Detail
+                </Button>
+              )}
             </div>
           </CardFooter>
         </div>

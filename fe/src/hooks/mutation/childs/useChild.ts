@@ -1,6 +1,7 @@
 import {
   useCreateChild,
   useDeleteChild,
+  useRegisterdChildInPosyandu,
   useUpdateChild,
 } from "./state/mutation";
 
@@ -10,6 +11,7 @@ export function useChild() {
       create: useCreateChild,
       update: useUpdateChild,
       delete: useDeleteChild,
+      registerd: useRegisterdChildInPosyandu,
     },
     query: {
       //

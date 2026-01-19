@@ -777,6 +777,7 @@ class UserController {
 
         include: {
           programProgress: true,
+          posyandu: true,
         },
       });
 
