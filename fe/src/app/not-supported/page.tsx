@@ -2,8 +2,6 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-
-import { useAppSelector } from "@/hooks/dispatch/dispatch";
 import { getCookie } from "cookies-next";
 
 const MOBILE_BREAKPOINT = 768;

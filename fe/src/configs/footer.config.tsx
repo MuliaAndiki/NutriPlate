@@ -36,11 +36,54 @@ export const NavigationParent: NagivationType[] = [
 ];
 
 export const NavigationKader: NagivationType[] = [
-  //
+  {
+    name: "Beranda",
+    icon: <Icon icon="fa7-solid:house" />,
+    href: `${routing.kader}/home`,
+  },
+  {
+    name: "Daftar Balita",
+    icon: <Icon icon="healthicons:child-program" />,
+    href: `${routing.kader}/`,
+  },
+  {
+    name: "Laporan",
+    icon: <Icon icon="proicons:note" />,
+    href: `${routing.kader}/`,
+  },
+  {
+    name: "Akun",
+    icon: <Icon icon="mdi:user" />,
+    href: `${routing.kader}/profile`,
+  },
 ];
 
 export const NavigationPosyandu: NagivationType[] = [
-  //
+  {
+    name: "Beranda",
+    icon: <Icon icon="fa7-solid:house" />,
+    href: `${routing.posyandu}/home`,
+  },
+  {
+    name: "Kelola Anak",
+    icon: <Icon icon="healthicons:child-program" />,
+    href: `${routing.posyandu}/`,
+  },
+  {
+    name: "Pengukuran",
+    icon: <Icon icon="ion:scale-sharp" />,
+    href: `${routing.posyandu}/`,
+  },
+  {
+    name: "Program",
+    icon: <Icon icon="proicons:note" />,
+    href: `${routing.posyandu}/`,
+  },
+  {
+    name: "Akun",
+    icon: <Icon icon="mdi:user" />,
+    href: `${routing.posyandu}/profile`,
+  },
 ];
 
 export const NavigationAdmin: NagivationType[] = [
