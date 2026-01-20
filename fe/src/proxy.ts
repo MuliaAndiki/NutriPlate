@@ -17,10 +17,11 @@ export function proxy(req: NextRequest) {
     "/forgot-password",
     "/reset-password",
     "/verify-otp",
+    "/home",
   ];
 
   const isPrivateRoute = privateRoutes.some((route) =>
-    pathname.startsWith(route)
+    pathname.startsWith(route),
   );
   if (!isPrivateRoute) {
     return NextResponse.next();
@@ -46,5 +47,6 @@ export const config = {
     "/reset-password/:path*",
     "/verify-otp/:path*",
     "/admin/:path*",
+    "/home/:path*",
   ],
 };

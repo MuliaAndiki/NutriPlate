@@ -1,5 +1,4 @@
 import BlankLayout from "@/core/layouts/blank.layout";
-import { ClientGate } from "@/core/providers/client-gate";
 
 export default function AuthLayout({
   children,
@@ -8,9 +7,7 @@ export default function AuthLayout({
 }) {
   return (
     <main className="w-full">
-      <ClientGate>
-        <BlankLayout>{children}</BlankLayout>
-      </ClientGate>
+      <BlankLayout>{children}</BlankLayout>
     </main>
   );
 }

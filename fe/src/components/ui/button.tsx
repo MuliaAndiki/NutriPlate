@@ -33,6 +33,7 @@ const buttonVariants = cva(
         linter:
           "bg-transparent border rounded-full border-primary text-primary",
         notLinter: "bg-primary rounded-full text-background border",
+        splash: "bg-background p-8  rounded-full text-primary",
       },
 
       size: {
@@ -49,7 +50,7 @@ const buttonVariants = cva(
       variant: "default",
       size: "default",
     },
-  }
+  },
 );
 
 export interface ButtonProps
@@ -71,7 +72,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         {...props}
       />
     );
-  }
+  },
 );
 
 Button.displayName = "Button";
