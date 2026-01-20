@@ -1,6 +1,5 @@
 "use client";
 import { useEffect } from "react";
-
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useAppNameSpace } from "@/hooks/useAppNameSpace";
 import { getCookie } from "cookies-next";

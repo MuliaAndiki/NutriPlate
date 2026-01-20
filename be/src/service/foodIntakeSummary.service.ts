@@ -132,11 +132,14 @@ class FoodIntakeSummaryService {
         baseEnergyKcal,
         correctionFactor,
         nutritionStatus,
+
         macro: {
           proteinGram: macroTarget.proteinGram,
           carbGram: macroTarget.carbGram,
           fatGram: macroTarget.fatGram,
           fiberGram: macroTarget.fiberGram,
+          source: macroTarget.source,
+          referenceAgeMonths: macroTarget.referenceAgeMonths,
         },
       },
 
