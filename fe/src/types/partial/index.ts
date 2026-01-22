@@ -13,6 +13,7 @@ export enum NotifType {
   alert,
   edukasi,
 }
+export type NotifTypeInterface = "reminder" | "result" | "alert" | "edukasi";
 
 export type NutritionStatus =
   | "severely_underweight"
