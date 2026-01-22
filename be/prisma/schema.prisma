@@ -30,6 +30,7 @@ model User {
   program       NutriplateProgram[]
   posyandu      Posyandu[]
   session       UserSession[]
+  kaderRegistrations KaderRegistration[] @relation("KaderRegistrations")
 
   @@map("users")
 }
@@ -74,6 +75,7 @@ model Posyandu {
   iotDevices  IotDevice[]
   programs    NutriplateProgram[]
   user        User                @relation(fields: [userID], references: [id])
+  kaderRegistrations KaderRegistration[]
 
   @@map("posyandu")
 }
@@ -339,6 +341,22 @@ model WhoEvaluation {
   @@map("who_evaluations")
 }
 
+model KaderRegistration {
+  id          String               @id @default(uuid())
+  kaderId     String
+  posyanduId  String
+  status      RegistrationStatus   @default(pending)
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+  kader       User                 @relation("KaderRegistrations", fields: [kaderId], references: [id], onDelete: Cascade)
+  posyandu    Posyandu             @relation(fields: [posyanduId], references: [id], onDelete: Cascade)
+
+  @@unique([kaderId, posyanduId])
+  @@index([kaderId])
+  @@index([posyanduId])
+  @@map("kader_registrations")
+}
+
 enum RoleType {
   PARENT
   KADER
@@ -375,5 +393,11 @@ enum DatasetStatus {
   pending_label
   labeled
   approved
+  rejected
+}
+
+enum RegistrationStatus {
+  pending
+  accepted
   rejected
 }

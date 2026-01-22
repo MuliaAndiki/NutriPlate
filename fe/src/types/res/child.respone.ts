@@ -12,3 +12,44 @@ export interface ChildRespone extends IChild {
   programProgress: IProgress[];
   posyandu: IPosyandu;
 }
+
+export interface CreateChildResponse {
+  status: number;
+  message: string;
+  data: ChildRespone;
+}
+
+export interface UpdateChildResponse {
+  status: number;
+  message: string;
+  data: ChildRespone;
+}
+
+export interface DeleteChildResponse {
+  status: number;
+  message: string;
+}
+
+export interface RegisterChildResponse {
+  status: number;
+  message: string;
+  data: ChildRespone;
+}
+
+export interface CancelRegisterResponse {
+  status: number;
+  message: string;
+  data: ChildRespone;
+}
+
+export interface GetChildResponse {
+  status: number;
+  message: string;
+  data: ChildRespone[];
+}
+
+export interface GetChildByIDResponse {
+  status: number;
+  message: string;
+  data: ChildRespone;
+}

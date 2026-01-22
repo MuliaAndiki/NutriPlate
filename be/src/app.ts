@@ -17,6 +17,7 @@ import { nutriplateProgramCron, otpCleanupCron, sessionCleanupCron } from './job
 import { env } from './config/env.config';
 import iotRoutes from './routes/iotRoutes';
 import modelsRoutes from './routes/modelsRoutes';
+import kaderRoutes from './routes/kaderRoutes';
 
 class App {
   public app: Elysia;
@@ -73,7 +74,8 @@ class App {
         .use(taskRoutes)
         .use(measurementRoutes)
         .use(iotRoutes)
-        .use(modelsRoutes),
+        .use(modelsRoutes)
+        .use(kaderRoutes),
     );
   }
 }

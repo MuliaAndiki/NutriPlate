@@ -45,3 +45,15 @@ export interface DailySummaryResponse {
     status: IntakeProgressStatus;
   };
 }
+
+export interface GetFoodSummaryDailyResponse {
+  status: number;
+  message: string;
+  data: DailySummaryResponse;
+}
+
+export interface GetFoodSummaryRangeResponse {
+  status: number;
+  message: string;
+  data: DailySummaryResponse[];
+}
