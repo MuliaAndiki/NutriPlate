@@ -8,3 +8,9 @@ export const SidebarIconDefault = {
   Settings,
 } as const;
 export type SidebarIconsKey = keyof typeof SidebarIconDefault;
+
+export interface notifikasiIconMap {
+  title: string;
+  icon: string;
+  color: string;
+}

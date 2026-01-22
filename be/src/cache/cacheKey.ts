@@ -40,7 +40,7 @@ export const cacheKeys = {
   notification: {
     list: () => `notification:list`,
     byID: (id: string) => `notification:id:${id}`,
-    byRole: (role: string) => `notification:role:${role}`,
+    byUser: (id: string) => `notification:user:${id}`,
   },
   program: {
     list: () => `program:list`,

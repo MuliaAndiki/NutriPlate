@@ -1,5 +1,6 @@
 import { HistoryFoodType, ProfileChildType } from "@/types/card";
 import { RouteDetailChildType } from "@/types/components";
+import { notifikasiIconMap } from "@/types/icons";
 export const HistoryFoodData: HistoryFoodType[] = [
   {
     id: "1",
@@ -95,5 +96,28 @@ export const RouteDetailChild: RouteDetailChildType[] = [
     icon2: "mingcute:arrow-right-fill",
     href: "/parent/profile-anak/detail",
     slice: "/grafik-pertumbuhan-anak",
+  },
+];
+
+export const NotifikasiIcons: notifikasiIconMap[] = [
+  {
+    title: "Pengingat",
+    icon: "fe:notice-active",
+    color: "text-warning border-warning",
+  },
+  {
+    title: "Hasil",
+    icon: "solar:chart-bold",
+    color: "text-primary border-primary",
+  },
+  {
+    title: "Peringatan",
+    icon: "fluent:warning-20-filled",
+    color: "text-destructive border-destructive",
+  },
+  {
+    title: "Edukasi",
+    icon: "mdi:book-open-page-variant",
+    color: "text-success border-success",
   },
 ];
