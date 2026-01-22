@@ -2,20 +2,18 @@ from pathlib import Path
 import yaml
 import shutil
 
-ROOT = Path(__file__).resolve().parents[1]      # preprocessing/
+ROOT = Path(__file__).resolve().parents[1]     
 DATA_DIR = ROOT / "data"
 OUT_DIR = ROOT / "data_merged"
 
 ORIGINAL_DATASET_NAME = "Dietary App Segment.v1i.yolov8"
 
 BASE_CLASS_INDEX = {
-    "tahu": 21,
     "tempe": 23,
     "udang": 25,
 }
 
 VARIANT_DATASETS = {
-    "tahu.v3i.yolov8": "tahu",
     "Tempe.v3i.yolov8": "tempe",
     "udang.v1-roboflow-instant-1--eval-.yolov8": "udang",
 }
