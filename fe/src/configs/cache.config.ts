@@ -25,4 +25,7 @@ export const cacheKey = {
   posyandu: {
     list: () => [`posyandu:list`],
   },
+  notification: {
+    byUser: () => [`notifikasi:user`],
+  },
 };

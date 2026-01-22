@@ -6,7 +6,6 @@ import { getRedis } from '@/utils/redis';
 import prisma from 'prisma/client';
 import app from '@/app';
 import { error } from 'console';
-import { Tuple_Roles } from '@/utils/roleTuple';
 import { NotificationService } from '@/service/notifikasi.service';
 
 class NotificationController {
@@ -197,7 +196,7 @@ class NotificationController {
         );
       }
 
-      const cacheKey = cacheKeys.notification.byRole(user.role);
+      const cacheKey = cacheKeys.notification.byUser(jwtUser.id);
       try {
         const cacheNotif = await this.redis.get(cacheKey);
         if (cacheNotif) {
@@ -224,16 +223,6 @@ class NotificationController {
           createdAt: 'desc',
         },
       });
-
-      if (!notafication) {
-        return c.json?.(
-          {
-            status: 400,
-            message: 'server internal error',
-          },
-          400,
-        );
-      }
 
       if (notafication && notafication.length > 0) {
         await this.redis.set(cacheKey, JSON.stringify(notafication), { EX: 60 });
