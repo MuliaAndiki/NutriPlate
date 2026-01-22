@@ -3,15 +3,18 @@ import NotifikasiParentSection from "@/components/section/private/parent/notifik
 import { SidebarLayout } from "@/core/layouts/sidebar.layout";
 import useService from "@/hooks/mutation/prop.service";
 import { useAppNameSpace } from "@/hooks/useAppNameSpace";
+import { NotifTypeInterface } from "@/types/partial";
 import { useDebugLog } from "@/utils/useDebug";
+import { useState } from "react";
 
 const NotafikasiParentContainer = () => {
   const namespace = useAppNameSpace();
   const service = useService();
   const notifikasiQuery = service.notafication.query.getNotification();
   const notifikasiData = notifikasiQuery.data?.data ?? [];
+  const [filtered, setFiltered] = useState<"Read" | "NotRead">("NotRead");
+  const [selectTypes, setSelectedTypes] = useState<NotifTypeInterface[]>([]);
 
-  useDebugLog(notifikasiData, [notifikasiQuery], { label: "here" });
   return (
     <SidebarLayout>
       <main className="w-full overflow-x-hidden min-h-screen">
@@ -24,6 +27,12 @@ const NotafikasiParentContainer = () => {
               notifikasi: notifikasiData ?? [],
               isLoading: notifikasiQuery.isLoading,
             },
+          }}
+          state={{
+            filter: filtered,
+            setFilter: setFiltered,
+            selectedTypes: selectTypes,
+            setSelectedTypes: setSelectedTypes,
           }}
         />
       </main>

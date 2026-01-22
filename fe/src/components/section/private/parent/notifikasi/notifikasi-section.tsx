@@ -2,9 +2,23 @@ import NotifikasiCard from "@/components/card/notifikasi/notif-card";
 import { ButtonWrapper } from "@/components/wrapper/ButtonWrapper";
 import { INotification } from "@/types/schema/notafication.schema";
 import { Icon } from "@iconify/react/dist/iconify.js";
-import { ChevronLeft } from "lucide-react";
+import {
+  BellIcon,
+  Book,
+  ChevronLeft,
+  MailIcon,
+  MessageSquareIcon,
+} from "lucide-react";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { NotifikasiIcons } from "@/configs/component.config";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { NotifTypeInterface } from "@/types/partial";
 
 interface NotifikasiParentSectionProp {
   namespace: {
@@ -16,14 +30,40 @@ interface NotifikasiParentSectionProp {
       isLoading: boolean;
     };
   };
+  state: {
+    filter: "Read" | "NotRead";
+    setFilter: React.Dispatch<React.SetStateAction<"Read" | "NotRead">>;
+    selectedTypes: NotifTypeInterface[];
+    setSelectedTypes: React.Dispatch<
+      React.SetStateAction<NotifTypeInterface[]>
+    >;
+  };
 }
 const NotifikasiParentSection: React.FC<NotifikasiParentSectionProp> = ({
   namespace,
   service,
+  state,
 }) => {
+  const filtered = service.query.notifikasi.filter((item) => {
+    if (state.filter === "NotRead" && item.isRead) return false;
+    if (
+      state.selectedTypes.length > 0 &&
+      !state.selectedTypes.includes(item.type)
+    ) {
+      return false;
+    }
+    return true;
+  });
+
+  const toggleType = (type: NotifTypeInterface) => {
+    state.setSelectedTypes((prev) =>
+      prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type],
+    );
+  };
   if (service.query.isLoading) {
     return <div>loading...</div>;
   }
+
   return (
     <div className="w-full min-h-screen flex items-center justify-start flex-col overflow-x-hidden relative p-2 space-y-2 ">
       <div className="w-full flex items-center justify-between  mt-2">
@@ -34,21 +74,69 @@ const NotifikasiParentSection: React.FC<NotifikasiParentSectionProp> = ({
           />
           <h1 className="text-2xl font-bold">Notifikasi</h1>
         </div>
-        <Icon
-          icon="iconoir:filter-solid"
-          width="24"
-          height="24"
-          className="text-primary"
-        />
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Icon
+              icon="iconoir:filter-solid"
+              width={24}
+              height={24}
+              className="text-primary cursor-pointer"
+            />
+          </DropdownMenuTrigger>
+
+          <DropdownMenuContent className="w-52">
+            <DropdownMenuLabel>Filter Tipe</DropdownMenuLabel>
+
+            <DropdownMenuCheckboxItem
+              checked={state.selectedTypes.includes("reminder")}
+              onCheckedChange={() => toggleType("reminder")}
+            >
+              <MailIcon className="mr-2 h-4 w-4" />
+              Pengingat
+            </DropdownMenuCheckboxItem>
+
+            <DropdownMenuCheckboxItem
+              checked={state.selectedTypes.includes("result")}
+              onCheckedChange={() => toggleType("result")}
+            >
+              <MessageSquareIcon className="mr-2 h-4 w-4" />
+              Hasil
+            </DropdownMenuCheckboxItem>
+
+            <DropdownMenuCheckboxItem
+              checked={state.selectedTypes.includes("alert")}
+              onCheckedChange={() => toggleType("alert")}
+            >
+              <BellIcon className="mr-2 h-4 w-4" />
+              Peringatan
+            </DropdownMenuCheckboxItem>
+
+            <DropdownMenuCheckboxItem
+              checked={state.selectedTypes.includes("edukasi")}
+              onCheckedChange={() => toggleType("edukasi")}
+            >
+              <Book className="mr-2 h-4 w-4" />
+              Edukasi
+            </DropdownMenuCheckboxItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
       <div className="w-full flex justify-between items-center border-y py-3 space-x-3">
         <div className="w-full">
-          <ButtonWrapper className="w-full" variant={"linter"}>
+          <ButtonWrapper
+            className="w-full"
+            variant={state.filter === "Read" ? "notLinter" : "liner"}
+            onClick={() => state.setFilter("Read")}
+          >
             Semua
           </ButtonWrapper>
         </div>
         <div className="w-full">
-          <ButtonWrapper className=" w-full" variant={"notLinter"}>
+          <ButtonWrapper
+            className=" w-full"
+            variant={state.filter === "NotRead" ? "notLinter" : "liner"}
+            onClick={() => state.setFilter("NotRead")}
+          >
             Belum Dibaca
           </ButtonWrapper>
         </div>
@@ -70,7 +158,7 @@ const NotifikasiParentSection: React.FC<NotifikasiParentSectionProp> = ({
         ))}
       </div>
       <div className="w-full space-y-2">
-        {service.query.notifikasi.map((items) => (
+        {filtered.map((items) => (
           <NotifikasiCard key={items.id} res={items} />
         ))}
       </div>
