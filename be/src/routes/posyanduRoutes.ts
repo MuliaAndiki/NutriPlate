@@ -20,14 +20,15 @@ class PosyanduRoutes {
     this.posyanduRoutes.post('/', (c: AppContext) => PosyanduController.createPosyandu(c), {
       beforeHandle: [verifyToken().beforeHandle, requireRole(['ADMIN']).beforeHandle],
     });
-
     this.posyanduRoutes.get('/', (c: AppContext) => PosyanduController.getPosyandu(c), {
       beforeHandle: [verifyToken().beforeHandle],
     });
+    // Static routes before dynamic routes
+    this.posyanduRoutes.post('/active', (c) => PosyanduController.activeAccount(c));
+    // Dynamic routes
     this.posyanduRoutes.get('/:id', (c: AppContext) => PosyanduController.getPosyanduByID(c), {
       beforeHandle: [verifyToken().beforeHandle],
     });
-    this.posyanduRoutes.post('/active', (c) => PosyanduController.activeAccount(c));
     this.posyanduRoutes.put('/:id', (c: AppContext) => PosyanduController.updatePosyandu(c), {
       beforeHandle: [verifyToken().beforeHandle, requireRole(['POSYANDU', 'ADMIN']).beforeHandle],
     });

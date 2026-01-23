@@ -177,7 +177,11 @@ class ChildController {
         data: update,
       });
 
-      const cacheKey = [cacheKeys.child.byID(childID.id), cacheKeys.child.byParent(parent.id)];
+      const cacheKeysToDelete = [
+        cacheKeys.child.byID(childID.id),
+        cacheKeys.child.byParent(parent.id),
+        cacheKeys.child.byPosyandu(child.posyanduId || ''),
+      ];
       if (!child) {
         return c.json?.(
           {
@@ -187,7 +191,7 @@ class ChildController {
           400,
         );
       }
-      const delet = await this.redis.del(cacheKey).catch(error);
+      const delet = await this.redis.del(cacheKeysToDelete).catch(error);
       console.log('key redis', delet);
       return c.json?.(
         {
@@ -249,7 +253,11 @@ class ChildController {
           403,
         );
       }
-      const cacheKey = [cacheKeys.child.byParent(parent.id), cacheKeys.child.byID(childID.id)];
+      // Fetch child first to get posyanduId for cache deletion
+      const childData = await prisma.child.findUnique({
+        where: { id: childID.id },
+        select: { posyanduId: true },
+      });
 
       const child = await prisma.child.delete({
         where: {
@@ -257,7 +265,13 @@ class ChildController {
           parentId: parent.id,
         },
       });
-      const deletd = await this.redis.del(cacheKey).catch(error);
+
+      const cacheKeysToDelete = [
+        cacheKeys.child.byParent(parent.id),
+        cacheKeys.child.byID(childID.id),
+        cacheKeys.child.byPosyandu(childData?.posyanduId || ''),
+      ];
+      const deletd = await this.redis.del(cacheKeysToDelete).catch(error);
       console.log('Redis keys deleted:', deletd);
       if (!child) {
         return c.json?.(
@@ -399,7 +413,10 @@ class ChildController {
         );
       }
 
-      await this.redis.del(cacheKey).catch(error);
+      await Promise.all([
+        this.redis.del(cacheKey),
+        this.redis.del(cacheKeys.child.byPosyandu(registerd.posyanduId || '')),
+      ]).catch(error);
 
       return c.json?.(
         {
@@ -530,7 +547,10 @@ class ChildController {
           400,
         );
       } else {
-        await this.redis.del(cacheKey).catch(error);
+        await Promise.all([
+          this.redis.del(cacheKey),
+          this.redis.del(cacheKeys.child.byPosyandu(cancel.posyanduId || '')),
+        ]).catch(error);
       }
 
       return c.json?.(

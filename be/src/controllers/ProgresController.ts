@@ -18,36 +18,20 @@ class ProgresController {
   private get redis() {
     return getRedis();
   }
-  public async assingProgramChild(c: AppContext) {
+  // Assign children to program logic (bulk assignment by POSYANDU)
+  private async assignChildrenToProgramBulk(c: AppContext, jwtUser: JwtPayload) {
     try {
-      const jwtUser = c.user as JwtPayload;
       const progresBody = c.body as PickAssingPrograms;
-      if (!jwtUser) {
-        return c.json?.(
-          {
-            status: 401,
-            message: 'Unauthorized',
-          },
-          401,
-        );
-      }
       if (!Array.isArray(progresBody.childId) || !progresBody.programId) {
         return c.json?.(
           {
             status: 400,
-            message: 'body is required',
+            message: 'childId (array) dan programId harus diisi',
           },
           400,
         );
       }
-      const user = await prisma.user.findUnique({
-        where: { id: jwtUser.id },
-        select: { role: true },
-      });
 
-      if (!user || user.role !== 'POSYANDU') {
-        return c.json?.({ status: 403, message: 'forbidden access' }, 403);
-      }
       const program = await prisma.nutriplateProgram.findFirst({
         where: {
           id: progresBody.programId,
@@ -65,16 +49,15 @@ class ProgresController {
       });
 
       if (!program || !program.startPrograms || !program.endPrograms) {
-        return c.json?.({ status: 400, message: 'program not active or invalid' }, 400);
+        return c.json?.({ status: 400, message: 'program tidak aktif atau tidak valid' }, 400);
       }
 
       const now = new Date();
-
       if (now < program.startPrograms) {
         return c.json?.(
           {
             status: 400,
-            message: 'program has not started yet',
+            message: 'program belum dimulai',
           },
           400,
         );
@@ -84,7 +67,7 @@ class ProgresController {
         return c.json?.(
           {
             status: 400,
-            message: 'program has already ended',
+            message: 'program sudah berakhir',
           },
           400,
         );
@@ -105,14 +88,14 @@ class ProgresController {
 
       if (children.length !== progresBody.childId.length) {
         return c.json?.(
-          { status: 400, message: 'some children are invalid or not belong to this posyandu' },
+          { status: 400, message: 'beberapa anak tidak valid atau tidak termasuk posyandu ini' },
           400,
         );
       }
 
-      const data = progresBody.childId.map((child) => ({
+      const data = progresBody.childId.map((childId) => ({
         programId: progresBody.programId,
-        childId: child,
+        childId: childId,
       }));
 
       const result = await prisma.nutritionProgramProgress.createMany({
@@ -125,27 +108,23 @@ class ProgresController {
           userId: child.parentId,
           type: NotifType.reminder,
           title: 'Program Nutrisi Baru',
-          message: `Anak Anda telah ditambahkan ke program "${program.name}, Mohon Untuk DiKonfirmasi`,
+          message: `Anak Anda telah ditambahkan ke program "${program.name}". Mohon untuk dikonfirmasi.`,
         });
       }
-      if (!result) {
-        return c.json?.(
-          {
-            status: 400,
-            message: 'server internal error',
-          },
-          400,
-        );
-      } else {
-        return c.json?.(
-          {
-            status: 201,
-            message: 'succesfully assing',
-            data: result,
-          },
-          200,
-        );
-      }
+
+      await this.redis.del([
+        cacheKeys.progress.byRole('POSYANDU'),
+        cacheKeys.progress.byRole('PARENT'),
+      ]);
+
+      return c.json?.(
+        {
+          status: 201,
+          message: 'Anak berhasil ditugaskan ke program',
+          data: result,
+        },
+        201,
+      );
     } catch (error) {
       console.error(error);
       return c.json?.(
@@ -190,7 +169,7 @@ class ProgresController {
           400,
         );
       }
-      //   Ilmu
+
       let childrenIds: string[] = [];
 
       if (user.role === 'PARENT') {
@@ -231,7 +210,16 @@ class ProgresController {
 
         childrenIds = children.map((c) => c.id);
       }
-      const cacheKey = cacheKeys.progress.byRole(jwtUser.role);
+      let cacheKey = '';
+      if (user.role === 'PARENT') {
+        cacheKey = cacheKeys.progress.byRole('PARENT:' + user.id);
+      } else if (user.role === 'POSYANDU') {
+        const posyandu = await prisma.posyandu.findFirst({
+          where: { userID: user.id },
+          select: { id: true },
+        });
+        cacheKey = cacheKeys.progress.byRole('POSYANDU:' + (posyandu?.id || ''));
+      }
 
       try {
         const cacheProgres = await this.redis.get(cacheKey);
@@ -269,6 +257,7 @@ class ProgresController {
               name: true,
             },
           },
+          subtask: true,
         },
         orderBy: {
           createdAt: 'desc',
@@ -281,16 +270,41 @@ class ProgresController {
           message: 'server internal error',
         });
       } else if (progres && progres.length > 0) {
-        await this.redis.set(cacheKey, JSON.stringify(progres), { EX: 60 }).catch(console.error);
+        const progresWithSummary = progres.map((prog) => {
+          const totalTask = prog.subtask.length;
+          const completeTask = prog.subtask.filter((task) => task.isComplated === true).length;
+          const percentage = totalTask > 0 ? Math.round((completeTask / totalTask) * 100) : 0;
+          const remainingTask = totalTask - completeTask;
+          const status =
+            percentage === 100 ? 'COMPLETED' : percentage > 0 ? 'ON_PROGRESS' : 'NOT_STARTED';
+          const isComplated = percentage === 100;
+
+          return {
+            ...prog,
+            isComplated,
+            progressSummary: {
+              totalTask,
+              completeTask,
+              remainingTask,
+              percentage,
+              status,
+            },
+          };
+        });
+
+        await this.redis
+          .set(cacheKey, JSON.stringify(progresWithSummary), { EX: 60 })
+          .catch(console.error);
+
+        return c.json?.(
+          {
+            status: 200,
+            message: 'succesfully get all child in progress',
+            data: progresWithSummary,
+          },
+          200,
+        );
       }
-      return c.json?.(
-        {
-          status: 200,
-          message: 'succesfully get all child in progress',
-          data: progres,
-        },
-        200,
-      );
     } catch (error) {
       console.error(error);
       return c.json?.(
@@ -574,7 +588,16 @@ class ProgresController {
         };
       }
 
-      const cacheKey = cacheKeys.history.byRole(user.role);
+      let cacheKey = '';
+      if (user.role === 'PARENT') {
+        cacheKey = cacheKeys.history.byRole('PARENT:' + user.id);
+      } else if (user.role === 'POSYANDU') {
+        const posyandu = await prisma.posyandu.findFirst({
+          where: { userID: user.id },
+          select: { id: true },
+        });
+        cacheKey = cacheKeys.history.byRole('POSYANDU:' + (posyandu?.id || ''));
+      }
 
       try {
         const cacheHistory = await this.redis.get(cacheKey);
@@ -645,330 +668,6 @@ class ProgresController {
       );
     }
   }
-  public async accepProgram(c: AppContext) {
-    try {
-      const jwtUser = c.user as JwtPayload;
-      const progresParams = c.params as PickProgramProgresID;
-      if (!jwtUser) {
-        return c.json?.(
-          {
-            status: 401,
-            message: 'Unauthorized',
-          },
-          401,
-        );
-      }
-      if (!progresParams) {
-        return c.json?.(
-          {
-            status: 400,
-            message: 'params is required',
-          },
-          400,
-        );
-      }
-      const parent = await prisma.user.findFirst({
-        where: {
-          id: jwtUser.id,
-        },
-        select: {
-          id: true,
-          role: true,
-        },
-      });
-
-      if (!parent || parent.role !== 'PARENT') {
-        return c.json?.(
-          {
-            status: 403,
-            message: "server error & can't not acces",
-          },
-          403,
-        );
-      }
-
-      const progres = await prisma.nutritionProgramProgress.findUnique({
-        where: {
-          id: progresParams.id,
-        },
-        // later
-        include: {
-          child: {
-            select: {
-              parentId: true,
-            },
-          },
-        },
-      });
-
-      if (!progres) {
-        return c.json?.(
-          {
-            status: 404,
-            meesage: 'progress not Found',
-          },
-          404,
-        );
-      }
-      if (progres.child?.parentId !== jwtUser.id) {
-        return c.json?.(
-          {
-            status: 403,
-            message: 'not your child',
-          },
-          403,
-        );
-      }
-
-      const cacheKey = cacheKeys.progress.byID(progres.id);
-      const patch = await prisma.nutritionProgramProgress.update({
-        where: {
-          id: progresParams.id,
-        },
-        data: {
-          isAccep: true,
-        },
-      });
-
-      if (!patch) {
-        return c.json?.(
-          {
-            status: 400,
-            message: 'server internale error',
-          },
-          400,
-        );
-      } else {
-        await this.redis.del(cacheKey);
-      }
-
-      app.server?.publish(
-        `user:${jwtUser.id}`,
-        JSON.stringify({
-          type: 'Program:patch',
-          payload: patch,
-        }),
-      );
-
-      return c.json?.(
-        {
-          status: 200,
-          message: 'program accepted',
-          data: patch,
-        },
-        200,
-      );
-    } catch (error) {
-      console.error(error);
-      return c.json?.(
-        {
-          status: 500,
-          message: 'server internal error',
-          error: error instanceof Error ? error.message : error,
-        },
-        500,
-      );
-    }
-  }
-  public async getAccepProgram(c: AppContext) {
-    try {
-      const jwtUser = c.user as JwtPayload;
-      if (!jwtUser) {
-        return c.json?.(
-          {
-            status: 401,
-            message: 'Unauthorized',
-          },
-          401,
-        );
-      }
-      const user = await prisma.user.findFirst({
-        where: {
-          id: jwtUser.id,
-        },
-        select: {
-          role: true,
-          id: true,
-        },
-      });
-
-      if (!user) {
-        return c.json?.(
-          {
-            status: 404,
-            message: 'user not found',
-          },
-          404,
-        );
-      }
-      let whereCondicional: any = {};
-      if (user.role === 'PARENT') {
-        const parent = user.id;
-        if (!parent) {
-          return c.json?.(
-            {
-              status: 404,
-              message: 'user not found',
-            },
-            404,
-          );
-        }
-        const child = await prisma.child.findFirst({
-          where: {
-            parentId: parent,
-          },
-          select: {
-            id: true,
-          },
-        });
-        if (!child) {
-          return c.json?.(
-            {
-              status: 404,
-              message: 'child not found',
-            },
-            404,
-          );
-        }
-        const progres = await prisma.nutritionProgramProgress.findMany({
-          where: {
-            isCompleted: false,
-            childId: child.id,
-          },
-          select: {
-            id: true,
-            isAccep: true,
-          },
-        });
-
-        whereCondicional = progres.map((c) => c.id);
-      } else if (user.role === 'POSYANDU') {
-        const posyandu = await prisma.posyandu.findFirst({
-          where: {
-            userID: user.id,
-          },
-          select: {
-            id: true,
-          },
-        });
-        if (!posyandu) {
-          return c.json?.({
-            status: 404,
-            message: 'posyandu not found',
-          });
-        }
-        const program = await prisma.nutriplateProgram.findFirst({
-          where: {
-            posyanduId: posyandu.id,
-          },
-          select: {
-            id: true,
-          },
-        });
-        if (!program) {
-          return c.json?.(
-            {
-              status: 404,
-              message: 'program not found',
-            },
-            404,
-          );
-        }
-        const progres = await prisma.nutritionProgramProgress.findMany({
-          where: {
-            programId: program.id,
-            isCompleted: false,
-          },
-          select: {
-            id: true,
-            isAccep: true,
-          },
-        });
-        whereCondicional = progres.map((c) => c.id);
-      }
-
-      const cacheKey = cacheKeys.progress.byRole(user.role);
-
-      try {
-        const cacheAccep = await this.redis.get(cacheKey);
-        if (cacheAccep) {
-          return c.json?.(
-            {
-              status: 200,
-              message: 'succesfully get all accep by cache',
-              data: JSON.parse(cacheAccep),
-            },
-            200,
-          );
-        }
-      } catch (error) {
-        console.warn(`redis error, fallback db`);
-      }
-
-      const accep = await prisma.nutritionProgramProgress.findMany({
-        where: {
-          id: {
-            in: whereCondicional,
-          },
-        },
-        include: {
-          child: {
-            select: {
-              id: true,
-              parentId: true,
-              fullName: true,
-            },
-          },
-          program: {
-            select: {
-              id: true,
-              posyanduId: true,
-            },
-          },
-        },
-      });
-
-      if (!accep) {
-        return c.json?.(
-          {
-            status: 400,
-            message: 'server internal error',
-          },
-          400,
-        );
-      }
-
-      if (accep && accep.length > 0) {
-        await this.redis.set(cacheKey, JSON.stringify(accep), { EX: 60 });
-      }
-
-      app.server?.publish(
-        `user:${jwtUser.id}`,
-        JSON.stringify({
-          type: 'Program:accepted',
-          payload: accep,
-        }),
-      );
-      return c.json?.(
-        {
-          status: 200,
-          message: 'succesfully get all Accepted',
-          data: accep,
-        },
-        200,
-      );
-    } catch (error) {
-      console.error(error);
-      return c.json?.(
-        {
-          status: 500,
-          message: 'server internal error',
-          error: error instanceof Error ? error.message : error,
-        },
-        500,
-      );
-    }
-  }
 
   // Program Registration Methods (Parent registering child to program)
   public async registerChildToProgram(c: AppContext) {
@@ -992,11 +691,12 @@ class ProgresController {
         },
       });
 
-      if (!user || user.role !== 'PARENT') {
+      if (!user || (user.role !== 'PARENT' && user.role !== 'POSYANDU')) {
         return c.json?.(
           {
             status: 403,
-            message: 'Hanya parent yang dapat mendaftarkan anak',
+            message:
+              'Hanya parent atau posyandu yang dapat mendaftarkan/menugaskan anak ke program',
           },
           403,
         );
@@ -1012,41 +712,45 @@ class ProgresController {
         );
       }
 
-      const registration = await programRegistrationService.createRegistration({
-        parentId: jwtUser.id,
-        childId: body.childId,
-        programId: body.programId,
-      });
-
-      // Notify posyandu about new program registration
-      const posyandu = await prisma.posyandu.findUnique({
-        where: { id: registration.posyanduId },
-        select: { userID: true, name: true },
-      });
-
-      if (posyandu) {
-        await NotificationService.notify({
-          userId: posyandu.userID,
-          type: NotifType.reminder,
-          title: 'Pendaftaran Program Baru',
-          message: `${registration.parent?.fullName} mendaftarkan anak "${registration.child?.fullName}" ke program "${registration.program?.name}". Mohon untuk dikonfirmasi.`,
+      if (user.role === 'PARENT') {
+        const registration = await programRegistrationService.createRegistration({
+          parentId: jwtUser.id,
+          childId: body.childId,
+          programId: body.programId,
         });
+
+        const posyandu = await prisma.posyandu.findUnique({
+          where: { id: registration.posyanduId },
+          select: { userID: true, name: true },
+        });
+
+        if (posyandu) {
+          await NotificationService.notify({
+            userId: posyandu.userID,
+            type: NotifType.reminder,
+            title: 'Pendaftaran Program Baru',
+            message: `${registration.parent?.fullName} mendaftarkan anak "${registration.child?.fullName}" ke program "${registration.program?.name}". Mohon untuk dikonfirmasi.`,
+          });
+        }
+
+        await this.redis.del([
+          cacheKeys.programregistration.byParent(jwtUser.id),
+          cacheKeys.programregistration.pending(registration.posyanduId),
+          cacheKeys.programregistration.accepted(registration.posyanduId),
+          cacheKeys.programregistration.byPosyandu(registration.posyanduId, null),
+        ]);
+
+        return c.json?.(
+          {
+            status: 201,
+            message: 'Anak berhasil didaftarkan ke program',
+            data: registration,
+          },
+          201,
+        );
+      } else if (user.role === 'POSYANDU') {
+        return this.assignChildrenToProgramBulk(c, jwtUser);
       }
-
-      // Clear cache
-      await this.redis.del([
-        cacheKeys.programregistration.byParent(jwtUser.id),
-        cacheKeys.programregistration.pending(registration.posyanduId),
-      ]);
-
-      return c.json?.(
-        {
-          status: 201,
-          message: 'Anak berhasil didaftarkan ke program',
-          data: registration,
-        },
-        201,
-      );
     } catch (error) {
       console.error(error);
       if (error instanceof Error && error.message.includes('sudah terdaftar')) {
@@ -1214,7 +918,6 @@ class ProgresController {
         posyandu.id,
       );
 
-      // Notify parent
       await NotificationService.notify({
         userId: registration.parent?.id || '',
         type: NotifType.reminder,
@@ -1222,7 +925,6 @@ class ProgresController {
         message: `Program "${registration.program?.name}" untuk anak "${registration.child?.fullName}" telah diterima oleh ${posyandu.name}. Mohon konfirmasi terima program.`,
       });
 
-      // Invalidate related caches
       await this.redis.del([
         cacheKeys.programregistration.pending(posyandu.id),
         cacheKeys.programregistration.accepted(posyandu.id),

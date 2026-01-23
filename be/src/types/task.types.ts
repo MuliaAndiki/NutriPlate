@@ -5,8 +5,26 @@ export interface ITask {
   isBroadcast: boolean;
   description: string;
   isComplated: boolean;
+  mealType?: 'BREAKFAST' | 'LUNCH' | 'SNACK' | 'DINNER';
+  targetEnergyKcal?: number;
+  targetProteinGram?: number;
+  targetFatGram?: number;
+  targetCarbGram?: number;
+  targetFiberGram?: number;
 }
 
-export type PickCreateTask = Pick<ITask, 'title' | 'description' | 'isComplated' | 'isBroadcast'>;
+export type PickCreateTask = Pick<
+  ITask,
+  | 'title'
+  | 'description'
+  | 'isComplated'
+  | 'isBroadcast'
+  | 'mealType'
+  | 'targetEnergyKcal'
+  | 'targetProteinGram'
+  | 'targetFatGram'
+  | 'targetCarbGram'
+  | 'targetFiberGram'
+>;
 export type PickTaskProgresID = Pick<ITask, 'progressId'>;
 export type PickTaskID = Pick<ITask, 'id'>;

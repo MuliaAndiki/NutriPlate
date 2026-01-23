@@ -150,7 +150,10 @@ class ProgramController {
           403,
         );
       }
-      const cacheKey = cacheKeys.program.byID(programs.id);
+      const cacheKeysToDelete = [
+        cacheKeys.program.byID(programs.id),
+        cacheKeys.program.byPosyandu(programs.posyandu?.id || ''),
+      ];
 
       const programUpdate = await prisma.nutriplateProgram.update({
         where: {
@@ -160,7 +163,7 @@ class ProgramController {
           ...prog,
         },
       });
-      await this.redis.del(cacheKey).catch(error);
+      await this.redis.del(cacheKeysToDelete).catch(error);
       app.server?.publish(
         `user:${jwtUser.id}`,
         JSON.stringify({
@@ -424,7 +427,7 @@ class ProgramController {
           404,
         );
       }
-      const cacheKey = cacheKeys.program.byID(prog.id);
+      const cacheKeysToDelete = [cacheKeys.program.byID(prog.id)];
       const user = await prisma.user.findFirst({
         where: {
           id: jwtUser.id,
@@ -457,7 +460,9 @@ class ProgramController {
           400,
         );
       } else {
-        await this.redis.del(cacheKey).catch(error);
+        // Also delete byPosyandu cache
+        cacheKeysToDelete.push(cacheKeys.program.byPosyandu(program.posyanduId));
+        await this.redis.del(cacheKeysToDelete).catch(error);
       }
       return c.json?.(
         {

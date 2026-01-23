@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 export function useGetChildStatusInPrograms() {
   return useQuery({
     queryKey: cacheKey.regisProgram.list(),
-    queryFn: () => Api.ProgramRegistration.getMyProgramRegistrations(),
+    queryFn: () => Api.ProgramRegistration.getProgramRegistrations(),
     staleTime: 1000 * 60 * 5,
   });
 }

@@ -233,18 +233,34 @@ model NutritionProgramProgress {
 }
 
 model TaskProgram {
-  id          String                   @id @default(uuid())
-  progresId   String
-  title       String
-  description String
-  isComplated Boolean                  @default(false)
-  createdAt   DateTime                 @default(now())
-  updatedAt   DateTime                 @updatedAt
-  isBroadcast Boolean                  @default(false)
-  progres     NutritionProgramProgress @relation(fields: [progresId], references: [id], onDelete: Cascade )
+  id                  String                   @id @default(uuid())
+  progresId           String
+  title               String
+  description         String
+  isComplated         Boolean                  @default(false)
+  createdAt           DateTime                 @default(now())
+  updatedAt           DateTime                 @updatedAt
+  isBroadcast         Boolean                  @default(false)
+  
+  // Meal type & target nutrition fields
+  mealType            MealType?
+  targetEnergyKcal    Float?                   // Target energy in kcal
+  targetProteinGram   Float?                   // Target protein in grams
+  targetFatGram       Float?                   // Target fat in grams
+  targetCarbGram      Float?                   // Target carbohydrate in grams
+  targetFiberGram     Float?                   // Target fiber in grams
+  
+  progres             NutritionProgramProgress @relation(fields: [progresId], references: [id], onDelete: Cascade)
 
   @@index([progresId])
   @@map("subtask_program")
+}
+
+enum MealType {
+  BREAKFAST
+  LUNCH
+  SNACK
+  DINNER
 }
 
 model FoodRawImage {

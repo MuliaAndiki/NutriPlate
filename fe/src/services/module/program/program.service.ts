@@ -5,14 +5,14 @@ import AxiosClient from "@/utils/axios.client";
 class ProgramApi {
   public async createProgram(
     payload: FormCreateProgram,
-    id: string
+    id: string,
   ): Promise<TResponse<any>> {
     const res = await AxiosClient.post(`/api/programs/${id}`, payload);
     return res.data;
   }
   public async updateProgram(
     payload: FormCreateProgram,
-    id: string
+    id: string,
   ): Promise<TResponse<any>> {
     const res = await AxiosClient.put(`/api/programs/${id}`, payload);
     return res.data;
@@ -26,7 +26,7 @@ class ProgramApi {
     return res.data;
   }
   public async deleteProgram(id: string): Promise<TResponse<any>> {
-    const res = await AxiosClient.delete(`/api/programs${id}`);
+    const res = await AxiosClient.delete(`/api/programs/${id}`);
     return res.data;
   }
 }

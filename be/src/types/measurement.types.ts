@@ -16,4 +16,4 @@ export type PickCreateMeasurements = Pick<
   'headCircumferenceCm' | 'heightCm' | 'measurementDate' | 'note' | 'nutritionStatus' | 'weightKg'
 >;
 
-export type PickMeasurementsChildID = Pick<IMeasurements, 'childID'>;
+export type PickMeasurementsChildID = Pick<IMeasurements, 'childID'> & { id?: string };
