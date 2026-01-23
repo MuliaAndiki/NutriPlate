@@ -6,9 +6,6 @@ import { useAppNameSpace } from "@/hooks/useAppNameSpace";
 
 import { useParams } from "next/navigation";
 
-//SALAH INI SEHARUSNYA LIST PROGRAM YG UDAH DI IKUTI
-// ENDPOINT CHILD IN PORGRES ALL
-
 const ProgresProgramContainer = () => {
   const namespace = useAppNameSpace();
   const params = useParams();
@@ -23,35 +20,13 @@ const ProgresProgramContainer = () => {
   const progresInChildQuery = service.progres.query.progresInChild();
   const progresInChildData = progresInChildQuery.data?.data ?? [];
 
-  // Untuk Nantik
-  // const handleCancelProgram = () => {
-  //   if (!id || !progresInChildDataById?.id) return;
-
-  //   cancelProgramMutation.mutate(
-  //     {
-  //       payload: {
-  //         id: progresInChildDataById.id,
-  //         childId: id,
-  //       },
-  //     },
-  //     {
-  //       onSuccess: () => {
-  //         namespace.router.back();
-  //         //key
-  //         namespace.queryClient.invalidateQueries({
-  //           queryKey: cacheKey.child.byID(id),
-  //         });
-  //       },
-  //     },
-  //   );
-  // };
-
   return (
     <SidebarLayout>
       <main className="w-full min-h-screen overflow-x-hidden">
         <ProgresProgramSection
           namespace={{
             router: namespace.router,
+            pathname: namespace.pathname,
           }}
           service={{
             query: {
