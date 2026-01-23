@@ -17,16 +17,6 @@ class ProgresRoutes {
     this.routes();
   }
   private routes() {
-    this.progresRoutes.post(`/`, (c: AppContext) => ProgresController.assingProgramChild(c), {
-      beforeHandle: [verifyToken().beforeHandle, requireRole(['POSYANDU']).beforeHandle],
-    });
-    this.progresRoutes.get('/', (c: AppContext) => ProgresController.getChildInProgram(c), {
-      beforeHandle: [verifyToken().beforeHandle],
-    });
-
-    this.progresRoutes.patch('/:id', (c: AppContext) => ProgresController.cancelChildProgram(c), {
-      beforeHandle: [verifyToken().beforeHandle, requireRole(['POSYANDU', 'PARENT']).beforeHandle],
-    });
     this.progresRoutes.get(
       '/history',
       (c: AppContext) => ProgresController.getHistoryChildProgram(c),
@@ -37,53 +27,49 @@ class ProgresRoutes {
         ],
       },
     );
-    this.progresRoutes.patch(
-      '/accepted/:id',
-      (c: AppContext) => ProgresController.accepProgram(c),
+    this.progresRoutes.post(
+      '/registrations',
+      (c: AppContext) => ProgresController.registerChildToProgram(c),
       {
-        beforeHandle: [verifyToken().beforeHandle, requireRole(['PARENT']).beforeHandle],
+        beforeHandle: [
+          verifyToken().beforeHandle,
+          requireRole(['PARENT', 'POSYANDU']).beforeHandle,
+        ],
       },
     );
-    this.progresRoutes.get('/accepted', (c: AppContext) => ProgresController.getAccepProgram(c), {
-      beforeHandle: [verifyToken().beforeHandle, requireRole(['PARENT', 'POSYANDU']).beforeHandle],
+    this.progresRoutes.get(
+      '/registrations',
+      (c: AppContext) => ProgresController.getProgramRegistrations(c),
+      {
+        beforeHandle: [verifyToken().beforeHandle],
+      },
+    );
+    this.progresRoutes.put(
+      '/registrations/:id/accept',
+      (c: AppContext) => ProgresController.acceptProgramRegistration(c),
+      {
+        beforeHandle: [verifyToken().beforeHandle, requireRole(['POSYANDU']).beforeHandle],
+      },
+    );
+    this.progresRoutes.put(
+      '/registrations/:id/reject',
+      (c: AppContext) => ProgresController.rejectProgramRegistration(c),
+      {
+        beforeHandle: [verifyToken().beforeHandle, requireRole(['POSYANDU']).beforeHandle],
+      },
+    );
+
+    this.progresRoutes.get('/', (c: AppContext) => ProgresController.getChildInProgram(c), {
+      beforeHandle: [verifyToken().beforeHandle],
+    });
+    this.progresRoutes.patch('/:id', (c: AppContext) => ProgresController.cancelChildProgram(c), {
+      beforeHandle: [verifyToken().beforeHandle, requireRole(['POSYANDU', 'PARENT']).beforeHandle],
     });
     this.progresRoutes.get(
       '/:childId',
       (c: AppContext) => ProgresController.getChildInProgramByID(c),
       {
         beforeHandle: [verifyToken().beforeHandle],
-      },
-    );
-
-    this.progresRoutes.post(
-      '/registration/register',
-      (c: AppContext) => ProgresController.registerChildToProgram(c),
-      {
-        beforeHandle: [verifyToken().beforeHandle, requireRole(['PARENT']).beforeHandle],
-      },
-    );
-
-    this.progresRoutes.get(
-      '/registration',
-      (c: AppContext) => ProgresController.getProgramRegistrations(c),
-      {
-        beforeHandle: [verifyToken().beforeHandle],
-      },
-    );
-
-    this.progresRoutes.put(
-      '/registration/accept',
-      (c: AppContext) => ProgresController.acceptProgramRegistration(c),
-      {
-        beforeHandle: [verifyToken().beforeHandle, requireRole(['POSYANDU']).beforeHandle],
-      },
-    );
-
-    this.progresRoutes.put(
-      '/registration/reject',
-      (c: AppContext) => ProgresController.rejectProgramRegistration(c),
-      {
-        beforeHandle: [verifyToken().beforeHandle, requireRole(['POSYANDU']).beforeHandle],
       },
     );
   }

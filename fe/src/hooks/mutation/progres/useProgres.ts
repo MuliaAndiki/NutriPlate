@@ -1,5 +1,5 @@
 import { useCancelProgram } from "./state/mutation";
-import { useGetChildInProgramsById } from "./state/query";
+import { useGetChildInProgram, useGetChildInProgramsById } from "./state/query";
 
 export function useProgres() {
   return {
@@ -7,7 +7,8 @@ export function useProgres() {
       cancelProgram: useCancelProgram,
     },
     query: {
-      progresInChild: useGetChildInProgramsById,
+      progresInChildByID: useGetChildInProgramsById,
+      progresInChild: useGetChildInProgram,
     },
   };
 }

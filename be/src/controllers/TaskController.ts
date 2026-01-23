@@ -79,14 +79,27 @@ class SubtaskController {
           description: TaskBody.description,
           isComplated: false,
           isBroadcast: TaskBody.isBroadcast,
+          mealType: TaskBody.mealType,
+          targetEnergyKcal: TaskBody.targetEnergyKcal,
+          targetProteinGram: TaskBody.targetProteinGram,
+          targetFatGram: TaskBody.targetFatGram,
+          targetCarbGram: TaskBody.targetCarbGram,
+          targetFiberGram: TaskBody.targetFiberGram,
           progresId: progres.id,
         },
         select: {
           id: true,
           title: true,
+          description: true,
           createdAt: true,
           isBroadcast: true,
           isComplated: true,
+          mealType: true,
+          targetEnergyKcal: true,
+          targetProteinGram: true,
+          targetFatGram: true,
+          targetCarbGram: true,
+          targetFiberGram: true,
           progres: {
             select: {
               id: true,
@@ -577,7 +590,11 @@ class SubtaskController {
         });
       }
 
-      await this.redis.del(cacheKeys.task.byRole('PARENT')).catch(console.error);
+      await Promise.all([
+        this.redis.del(cacheKeys.task.byRole('PARENT')),
+        this.redis.del(cacheKeys.task.byRole('POSYANDU')),
+        this.redis.del(cacheKeys.task.byRole('KADER')),
+      ]).catch(console.error);
 
       return c.json?.(
         {
@@ -649,6 +666,8 @@ class SubtaskController {
 
       await Promise.all([
         this.redis.del(cacheKeys.task.byRole('PARENT')),
+        this.redis.del(cacheKeys.task.byRole('POSYANDU')),
+        this.redis.del(cacheKeys.task.byRole('KADER')),
         this.redis.del(cacheKeys.progress.byChild(task.progresId)),
       ]).catch(console.error);
 

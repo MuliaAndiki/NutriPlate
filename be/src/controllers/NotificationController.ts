@@ -35,6 +35,13 @@ class NotificationController {
           isBroadcast: false,
         },
       });
+
+      // Invalidate notification caches after creation
+      await Promise.all([
+        this.redis.del(cacheKeys.notification.list()),
+        this.redis.del(cacheKeys.notification.byUser(jwtUser.id)),
+      ]).catch(() => {});
+
       return c.json?.(
         {
           status: 200,
@@ -386,7 +393,11 @@ class NotificationController {
         }),
       );
 
-      await this.redis.del(cacheKey).catch(error);
+      // Invalidate both ID and user-scoped caches
+      await Promise.all([
+        this.redis.del(cacheKey),
+        this.redis.del(cacheKeys.notification.byUser(jwtUser.id)),
+      ]).catch(error);
       if (!notafication || notafication.isBroadcast === false) {
         return c.json?.(
           {
@@ -441,7 +452,7 @@ class NotificationController {
         );
       }
       const cacheKey = cacheKeys.notification.byID(notParams.id);
-      const notafication = await prisma.notifications.delete({
+      const notification = await prisma.notifications.delete({
         where: {
           id: notParams.id,
           userId: jwtUser.id,
@@ -450,25 +461,30 @@ class NotificationController {
           isBroadcast: true,
         },
       });
-      if (!notafication || notafication.isBroadcast === false) {
+      if (!notification || notification.isBroadcast === false) {
         return c.json?.({
           status: 400,
           message: 'server internal error & notif is broadcast',
         });
       }
-      await this.redis.del(cacheKey);
+
+      // Invalidate both ID and user-scoped caches
+      await Promise.all([
+        this.redis.del(cacheKey),
+        this.redis.del(cacheKeys.notification.byUser(jwtUser.id)),
+      ]).catch(error);
       app.server?.publish(
         `user:${jwtUser.id}`,
         JSON.stringify({
           type: 'notification:delete',
-          payload: notafication,
+          payload: notification,
         }),
       );
       return c.json?.(
         {
           status: 200,
           message: 'succesfully delete notification',
-          data: notafication,
+          data: notification,
         },
         200,
       );
@@ -498,6 +514,13 @@ class NotificationController {
         );
       }
       const notification = await NotificationService.broadcastFromDraft(jwtUser.id, notParams.id);
+
+      // Invalidate notification caches after broadcast
+      await Promise.all([
+        this.redis.del(cacheKeys.notification.byID(notParams.id)),
+        this.redis.del(cacheKeys.notification.list()),
+        this.redis.del(cacheKeys.notification.byUser(jwtUser.id)),
+      ]).catch(() => {});
 
       return c.json?.({
         status: 200,

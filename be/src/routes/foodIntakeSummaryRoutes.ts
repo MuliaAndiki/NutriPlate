@@ -39,6 +39,16 @@ class FoodIntakeSummaryRoutes {
       },
     );
     this.foodIntakeSummaryRoutes.get(
+      '/daily/:childId/with-tasks',
+      (c: AppContext) => foodIntakeSummaryController.getDailySummaryWithTasks(c),
+      {
+        beforeHandle: [
+          verifyToken().beforeHandle,
+          requireRole(['PARENT', 'KADER', 'POSYANDU']).beforeHandle,
+        ],
+      },
+    );
+    this.foodIntakeSummaryRoutes.get(
       '/range/:childId',
       (c: AppContext) => foodIntakeSummaryController.getDateRangeSummary(c),
       {

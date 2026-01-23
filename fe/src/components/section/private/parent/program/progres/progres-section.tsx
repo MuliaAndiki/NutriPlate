@@ -1,8 +1,8 @@
-import { Spinner } from "@/components/ui/spinner";
-import { ButtonWrapper } from "@/components/wrapper/ButtonWrapper";
+import ProgramListCard from "@/components/card/program/program-list";
+import { ProgresRespone } from "@/types/res";
 import { ChildRespone } from "@/types/res/child.respone";
 import { Icon } from "@iconify/react/dist/iconify.js";
-import { ChevronLeft, X } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
 interface ProgresProgramSectionProps {
@@ -13,10 +13,7 @@ interface ProgresProgramSectionProps {
     query: {
       childType: ChildRespone;
       isLoading: boolean;
-    };
-    mutation: {
-      cancelProgram: () => void;
-      isPending: boolean;
+      progres: ProgresRespone;
     };
   };
 }
@@ -41,15 +38,6 @@ const ProgresProgramSection: React.FC<ProgresProgramSectionProps> = ({
             Program <span>{service.query.childType.fullName}</span>
           </h1>
         </div>
-        <ButtonWrapper
-          variant={"destructive"}
-          startIcon={<X />}
-          onClick={() => service.mutation.cancelProgram()}
-          className="text-background"
-          disabled={service.mutation.isPending}
-        >
-          {service.mutation.isPending ? <Spinner /> : "Batalkan Program"}
-        </ButtonWrapper>
       </div>
       <div className="w-full flex items-center">
         <Icon
@@ -60,7 +48,9 @@ const ProgresProgramSection: React.FC<ProgresProgramSectionProps> = ({
         />
         <h1 className="text-2xl font-bold">Program Berjalan</h1>
       </div>
-      <div className="w-full">{/* Card */}</div>
+      <div className="w-full">
+        <ProgramListCard />
+      </div>
     </section>
   );
 };

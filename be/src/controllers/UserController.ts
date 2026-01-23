@@ -269,6 +269,9 @@ class UserController {
           400,
         );
       } else {
+        // Invalidate user cache after password update
+        await this.redis.del(cacheKeys.user.byID(jwtUser.id)).catch(error);
+
         return c.json?.(
           {
             status: 200,

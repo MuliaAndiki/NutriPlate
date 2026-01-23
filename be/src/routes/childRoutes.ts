@@ -21,6 +21,11 @@ class ChildRoutes {
     this.childRoutes.post('/', (c: AppContext) => ChildController.createChild(c), {
       beforeHandle: [verifyToken().beforeHandle, requireRole(['PARENT']).beforeHandle],
     });
+
+    this.childRoutes.patch('/cancel/:id', (c: AppContext) => ChildController.cancelRegister(c), {
+      beforeHandle: [verifyToken().beforeHandle, requireRole(['PARENT']).beforeHandle],
+    });
+
     this.childRoutes.put('/:id', (c: AppContext) => ChildController.updateChild(c), {
       beforeHandle: [verifyToken().beforeHandle, requireRole(['PARENT']).beforeHandle],
     });
@@ -28,9 +33,6 @@ class ChildRoutes {
       beforeHandle: [verifyToken().beforeHandle, requireRole(['PARENT']).beforeHandle],
     });
     this.childRoutes.patch('/:id', (c: AppContext) => ChildController.registerChild(c), {
-      beforeHandle: [verifyToken().beforeHandle, requireRole(['PARENT']).beforeHandle],
-    });
-    this.childRoutes.patch('/cancel/:id', (c: AppContext) => ChildController.cancelRegister(c), {
       beforeHandle: [verifyToken().beforeHandle, requireRole(['PARENT']).beforeHandle],
     });
   }

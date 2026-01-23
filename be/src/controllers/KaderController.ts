@@ -77,6 +77,8 @@ class KaderController {
       await this.redis.del([
         cacheKeys.kaderregistration.byKader(jwtUser.id),
         cacheKeys.kaderregistration.pending(body.posyanduId),
+        cacheKeys.kaderregistration.accepted(body.posyanduId),
+        cacheKeys.kaderregistration.byPosyandu(body.posyanduId),
       ]);
 
       return c.json?.(

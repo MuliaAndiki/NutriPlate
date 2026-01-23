@@ -13,7 +13,6 @@ class ProgramRegistrationService {
       throw new Error('Program tidak ditemukan');
     }
 
-    // Check if child exists and belongs to parent
     const child = await prisma.child.findFirst({
       where: {
         id: data.childId,
@@ -26,12 +25,10 @@ class ProgramRegistrationService {
       throw new Error('Anak tidak ditemukan atau bukan milik parent');
     }
 
-    // Check if child is registered in the posyandu
     if (child.posyanduId !== program.posyanduId) {
       throw new Error('Anak tidak terdaftar di posyandu tempat program berada');
     }
 
-    // Check if registration already exists
     const existingRegistration = await prisma.programRegistration.findFirst({
       where: {
         parentId: data.parentId,
@@ -158,7 +155,6 @@ class ProgramRegistrationService {
       throw new Error('Registrasi program tidak ditemukan');
     }
 
-    // Create nutrition program progress entry
     await prisma.nutritionProgramProgress.create({
       data: {
         childId: registration.childId,

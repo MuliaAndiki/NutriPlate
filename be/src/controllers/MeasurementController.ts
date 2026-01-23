@@ -20,8 +20,8 @@ class MeasurementController {
         return c.json?.({ status: 401, message: 'Unauthorized' }, 401);
       }
 
-      if (!params?.childID) {
-        return c.json?.({ status: 400, message: 'childID param is required' }, 400);
+      if (!params?.id) {
+        return c.json?.({ status: 400, message: 'id param is required' }, 400);
       }
 
       if (!body.measurementDate || !body.heightCm || !body.weightKg) {
@@ -31,7 +31,7 @@ class MeasurementController {
         );
       }
       const child = await prisma.child.findUnique({
-        where: { id: params.childID },
+        where: { id: params.id },
         select: {
           id: true,
           parentId: true,
@@ -117,6 +117,14 @@ class MeasurementController {
           recommendation: JSON.parse(JSON.stringify(recommendation)),
         },
       });
+
+      // Invalidate related caches
+      await Promise.all([
+        this.redis.del(cacheKeys.measurement.byChild(child.id)),
+        this.redis.del(cacheKeys.evaluation.byChild(child.id)),
+        this.redis.del(cacheKeys.measurement.list()),
+        this.redis.del(cacheKeys.evaluation.list()),
+      ]).catch(() => {});
 
       return c.json?.(
         {
@@ -475,10 +483,12 @@ class MeasurementController {
         },
       });
 
-      await Promise.allSettled([
+      await Promise.all([
         this.redis.del(cacheKeys.measurement.byChild(child.id)),
         this.redis.del(cacheKeys.evaluation.byChild(child.id)),
-      ]);
+        this.redis.del(cacheKeys.measurement.list()),
+        this.redis.del(cacheKeys.evaluation.list()),
+      ]).catch(() => {});
 
       return c.json?.(
         {

@@ -20,7 +20,7 @@ class MeasurementRoutes {
 
   private routes() {
     this.measurementRoutes.post(
-      '/:childID',
+      '/:id',
       (c: AppContext) => MeasurementController.createMeasurement(c),
       {
         beforeHandle: [verifyToken().beforeHandle, requireRole(['POSYANDU']).beforeHandle],
@@ -28,21 +28,17 @@ class MeasurementRoutes {
     );
 
     this.measurementRoutes.get(
-      '/evaluation/:childId',
+      '/evaluation/:id',
       (c: AppContext) => MeasurementController.getGrowthChart(c),
       {
         beforeHandle: [verifyToken().beforeHandle],
       },
     );
-    this.measurementRoutes.get(
-      '/:childId',
-      (c: AppContext) => MeasurementController.getMeasurement(c),
-      {
-        beforeHandle: [verifyToken().beforeHandle],
-      },
-    );
+    this.measurementRoutes.get('/:id', (c: AppContext) => MeasurementController.getMeasurement(c), {
+      beforeHandle: [verifyToken().beforeHandle],
+    });
     this.measurementRoutes.put(
-      '/:measurementId',
+      '/:id',
       (c: AppContext) => MeasurementController.updateMeasurement(c),
       {
         beforeHandle: [verifyToken().beforeHandle],
