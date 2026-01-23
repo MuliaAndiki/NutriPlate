@@ -54,6 +54,38 @@ class ProgresRoutes {
         beforeHandle: [verifyToken().beforeHandle],
       },
     );
+
+    this.progresRoutes.post(
+      '/registration/register',
+      (c: AppContext) => ProgresController.registerChildToProgram(c),
+      {
+        beforeHandle: [verifyToken().beforeHandle, requireRole(['PARENT']).beforeHandle],
+      },
+    );
+
+    this.progresRoutes.get(
+      '/registration',
+      (c: AppContext) => ProgresController.getProgramRegistrations(c),
+      {
+        beforeHandle: [verifyToken().beforeHandle],
+      },
+    );
+
+    this.progresRoutes.put(
+      '/registration/accept',
+      (c: AppContext) => ProgresController.acceptProgramRegistration(c),
+      {
+        beforeHandle: [verifyToken().beforeHandle, requireRole(['POSYANDU']).beforeHandle],
+      },
+    );
+
+    this.progresRoutes.put(
+      '/registration/reject',
+      (c: AppContext) => ProgresController.rejectProgramRegistration(c),
+      {
+        beforeHandle: [verifyToken().beforeHandle, requireRole(['POSYANDU']).beforeHandle],
+      },
+    );
   }
 }
 

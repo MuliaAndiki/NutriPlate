@@ -294,28 +294,26 @@ class NotificationController {
       } catch (error) {
         console.warn(`redis error, fallback db:${error}`);
       }
-      const notification = await prisma.notifications.findUnique({
+      const notification = await prisma.notifications.findFirst({
         where: {
           id: notParams.id,
-        },
-        select: {
           isBroadcast: true,
         },
       });
 
-      if (!notification || notification.isBroadcast === true) {
+      if (!notification) {
         return c.json?.(
           {
-            status: 400,
-            message: 'server internal error',
+            status: 404,
+            message: 'notification not found',
           },
-          400,
+          404,
         );
       }
+
       await prisma.notifications.update({
         where: {
-          id: notParams.id,
-          userId: jwtUser.id,
+          id: notification.id,
         },
         data: {
           isRead: true,

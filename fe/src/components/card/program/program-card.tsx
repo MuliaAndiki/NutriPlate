@@ -17,7 +17,9 @@ const ProgramCard: React.FC<ProgramCardProps> = ({ res }) => {
       <div className="w-full flex  bg-primary/20 flex-col items-start p-2">
         <h1 className="flex-1">
           Batas Daftar:{" "}
-          {formatDateTime(res.durationRegister, { style: "day-date-slash" })}
+          {res.durationRegister
+            ? formatDateTime(res.durationRegister, { style: "day-date-slash" })
+            : "-"}
         </h1>
         <div className="w-full flex items-center justify-between">
           <h1>

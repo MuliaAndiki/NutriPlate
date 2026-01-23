@@ -19,6 +19,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { NotifTypeInterface } from "@/types/partial";
+import { Button } from "@/components/ui/button";
 
 interface NotifikasiParentSectionProp {
   namespace: {
@@ -123,22 +124,22 @@ const NotifikasiParentSection: React.FC<NotifikasiParentSectionProp> = ({
       </div>
       <div className="w-full flex justify-between items-center border-y py-3 space-x-3">
         <div className="w-full">
-          <ButtonWrapper
+          <Button
             className="w-full"
-            variant={state.filter === "Read" ? "notLinter" : "liner"}
+            variant={state.filter === "Read" ? "notLinter" : "linter"}
             onClick={() => state.setFilter("Read")}
           >
             Semua
-          </ButtonWrapper>
+          </Button>
         </div>
         <div className="w-full">
-          <ButtonWrapper
+          <Button
             className=" w-full"
-            variant={state.filter === "NotRead" ? "notLinter" : "liner"}
+            variant={state.filter === "NotRead" ? "notLinter" : "linter"}
             onClick={() => state.setFilter("NotRead")}
           >
             Belum Dibaca
-          </ButtonWrapper>
+          </Button>
         </div>
       </div>
       <div className="w-full grid grid-cols-4 gap-2 py-3 border-b">

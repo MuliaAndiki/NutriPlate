@@ -1,14 +1,14 @@
 import { TResponse } from "@/pkg/react-query/mutation-wrapper.type";
 import {
-  FormAssingPrograms,
-  FormCancelPrograms,
+  FormAssignProgram,
+  FormCancelProgram,
 } from "@/types/form/progres.form";
 import AxiosClient from "@/utils/axios.client";
 
 class ProgresApi {
   // min intergrate
   public async assingProgramChild(
-    payload: FormAssingPrograms,
+    payload: FormAssignProgram,
   ): Promise<TResponse<any>> {
     const res = await AxiosClient.post("/api/progres", payload);
     return res.data;
@@ -19,7 +19,7 @@ class ProgresApi {
   }
   public async cancelChildProgram(
     id: string,
-    payload: FormCancelPrograms,
+    payload: FormCancelProgram,
   ): Promise<TResponse<any>> {
     const res = await AxiosClient.patch(`/api/progres/${id}`, payload);
     return res.data;

@@ -13,6 +13,8 @@ export enum NotifType {
   alert,
   edukasi,
 }
+
+export type RegistrationStatus = "pending" | "accepted" | "rejected";
 export type NotifTypeInterface = "reminder" | "result" | "alert" | "edukasi";
 
 export type NutritionStatus =

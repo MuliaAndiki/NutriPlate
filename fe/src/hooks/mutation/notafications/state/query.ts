@@ -10,3 +10,12 @@ export function useGetNotification() {
     staleTime: 1000 * 60 * 5,
   });
 }
+
+export function useGetNotificationByID(id: string) {
+  return useQuery({
+    queryKey: cacheKey.notification.byId(id),
+    queryFn: () => Api.Notification.getNotificationByID(id),
+    enabled: !!id,
+    staleTime: 1000 * 60 * 5,
+  });
+}

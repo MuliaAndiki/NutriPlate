@@ -1,7 +1,10 @@
-import { INotification } from "../schema/notafication.schema";
+import { INotification } from "../schema/notification.schema";
 
 export type FormCreateNotification = Pick<
   INotification,
-  "title" | "message" | "type"
+  "userId" | "title" | "message" | "type"
 >;
-export type FormNotifyType = Pick<INotification, "type">;
+
+export type FormMarkAsRead = Pick<INotification, "id">;
+
+export type FormDeleteNotification = Pick<INotification, "id">;

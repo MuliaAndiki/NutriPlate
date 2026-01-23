@@ -1,4 +1,5 @@
 import ChildProgramCard from "@/components/card/child/child-program-card";
+import { Spinner } from "@/components/ui/spinner";
 import { ButtonWrapper } from "@/components/wrapper/ButtonWrapper";
 import { ChildRespone } from "@/types/res/child.respone";
 
@@ -7,6 +8,8 @@ interface RegisterProgramProps {
   pathname: string;
   setIdChild: React.Dispatch<React.SetStateAction<string | null>>;
   idChild: string | null;
+  isPending: boolean;
+  onRegisterChild: () => void;
 }
 
 const RegisterProgram: React.FC<RegisterProgramProps> = ({
@@ -14,6 +17,8 @@ const RegisterProgram: React.FC<RegisterProgramProps> = ({
   pathname,
   idChild,
   setIdChild,
+  isPending,
+  onRegisterChild,
 }) => {
   return (
     <section className="w-full h-full flex items-center justify-center flex-col space-y-3">
@@ -29,7 +34,13 @@ const RegisterProgram: React.FC<RegisterProgramProps> = ({
           />
         ))}
       </div>
-      <ButtonWrapper className="w-full h-auto">Pilih</ButtonWrapper>
+      <ButtonWrapper
+        className="w-full h-auto"
+        disabled={isPending || !idChild}
+        onClick={() => onRegisterChild()}
+      >
+        {isPending ? <Spinner /> : "Pilih"}
+      </ButtonWrapper>
     </section>
   );
 };

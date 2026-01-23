@@ -1,39 +1,53 @@
 "use client";
 import ProgresProgramSection from "@/components/section/private/parent/program/progres/progres-section";
+import { cacheKey } from "@/configs/cache.config";
 import { SidebarLayout } from "@/core/layouts/sidebar.layout";
 import useService from "@/hooks/mutation/prop.service";
 import { useAppNameSpace } from "@/hooks/useAppNameSpace";
-import { FormCancelPrograms } from "@/types/form/progres.form";
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+
+//SALAH INI SEHARUSNYA LIST PROGRAM YG UDAH DI IKUTI
+// ENDPOINT CHILD IN PORGRES ALL
 
 const ProgresProgramContainer = () => {
   const namespace = useAppNameSpace();
-  const { id } = useParams<{ id: string }>();
+  const params = useParams();
+  const id = params?.id as string | undefined;
+
   const service = useService();
-  //child
-  const childQueryById = service.user.query.childById(id);
+
+  // query
+  const childQueryById = service.user.query.childById(id ?? "");
   const childDataById = childQueryById.data?.data ?? null;
-  //progres
-  const progresInChildQueryById = service.progres.query.progresInChild(id);
+
+  const progresInChildQueryById = service.progres.query.progresInChild(
+    id ?? "",
+  );
   const progresInChildDataById = progresInChildQueryById.data?.data ?? null;
 
-  //mutation
+  // mutation
   const cancelProgramMutation = service.progres.mutation.cancelProgram();
 
-  const [formCancelProgram, setFormCancelProgram] =
-    useState<FormCancelPrograms>({
-      childId: "",
-    });
-
   const handleCancelProgram = () => {
-    if (!progresInChildDataById.id || !formCancelProgram.childId) return null;
-    cancelProgramMutation.mutate({
-      id: progresInChildDataById.id,
-      payload: {
-        childId: id,
+    if (!id || !progresInChildDataById?.id) return;
+
+    cancelProgramMutation.mutate(
+      {
+        payload: {
+          id: progresInChildDataById.id,
+          childId: id,
+        },
       },
-    });
+      {
+        onSuccess: () => {
+          namespace.router.back();
+          //key
+          namespace.queryClient.invalidateQueries({
+            queryKey: cacheKey.child.byID(id),
+          });
+        },
+      },
+    );
   };
 
   return (

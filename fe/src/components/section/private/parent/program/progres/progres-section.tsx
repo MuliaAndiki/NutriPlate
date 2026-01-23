@@ -29,7 +29,7 @@ const ProgresProgramSection: React.FC<ProgresProgramSectionProps> = ({
     return <div>loading..</div>;
   }
   return (
-    <section className="w-full min-h-screen flex justify-start items-center flex-col overflow-x-hidden space-y-3">
+    <section className="w-full min-h-screen flex justify-start p-2 items-center flex-col overflow-x-hidden space-y-3">
       <div className="w-full flex items-center justify-between">
         <div className="w-full items-center flex">
           <ChevronLeft

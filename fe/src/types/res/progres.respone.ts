@@ -5,6 +5,5 @@ import { ChildPartial } from "./child.respone";
 export interface ProgresRespone extends IProgress {
   child: ChildPartial;
   program: IProgram;
-  //subtask
-  //progressSummary
+  subtask?: any[];
 }

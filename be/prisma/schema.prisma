@@ -30,6 +30,8 @@ model User {
   program       NutriplateProgram[]
   posyandu      Posyandu[]
   session       UserSession[]
+  kaderRegistrations KaderRegistration[] @relation("KaderRegistrations")
+  programRegistrations ProgramRegistration[] @relation("ProgramRegistrations")
 
   @@map("users")
 }
@@ -52,6 +54,7 @@ model Child {
   measurements    Measurement[]
   programProgress NutritionProgramProgress[]
   whoEvaluation   WhoEvaluation[]
+  programRegistrations ProgramRegistration[] @relation("ProgramRegistrations")
 
   @@index([parentId])
   @@index([posyanduId])
@@ -74,6 +77,8 @@ model Posyandu {
   iotDevices  IotDevice[]
   programs    NutriplateProgram[]
   user        User                @relation(fields: [userID], references: [id])
+  kaderRegistrations KaderRegistration[]
+  programRegistrations ProgramRegistration[] @relation("ProgramRegistrations")
 
   @@map("posyandu")
 }
@@ -204,6 +209,7 @@ model NutriplateProgram {
   posyandu         Posyandu                   @relation(fields: [posyanduId], references: [id])
   user             User                       @relation(fields: [userId], references: [id])
   progress         NutritionProgramProgress[]
+  registrations    ProgramRegistration[]
 
   @@index([posyanduId])
   @@map("nutriplate_programs")
@@ -235,7 +241,7 @@ model TaskProgram {
   createdAt   DateTime                 @default(now())
   updatedAt   DateTime                 @updatedAt
   isBroadcast Boolean                  @default(false)
-  progres     NutritionProgramProgress @relation(fields: [progresId], references: [id])
+  progres     NutritionProgramProgress @relation(fields: [progresId], references: [id], onDelete: Cascade )
 
   @@index([progresId])
   @@map("subtask_program")
@@ -339,6 +345,44 @@ model WhoEvaluation {
   @@map("who_evaluations")
 }
 
+model KaderRegistration {
+  id          String               @id @default(uuid())
+  kaderId     String
+  posyanduId  String
+  status      RegistrationStatus   @default(pending)
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+  kader       User                 @relation("KaderRegistrations", fields: [kaderId], references: [id], onDelete: Cascade)
+  posyandu    Posyandu             @relation(fields: [posyanduId], references: [id], onDelete: Cascade)
+
+  @@unique([kaderId, posyanduId])
+  @@index([kaderId])
+  @@index([posyanduId])
+  @@map("kader_registrations")
+}
+
+model ProgramRegistration {
+  id          String               @id @default(uuid())
+  parentId    String
+  childId     String
+  programId   String
+  posyanduId  String
+  status      RegistrationStatus   @default(pending)
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+  parent      User                 @relation("ProgramRegistrations", fields: [parentId], references: [id], onDelete: Cascade)
+  child       Child                @relation("ProgramRegistrations", fields: [childId], references: [id], onDelete: Cascade)
+  program     NutriplateProgram    @relation(fields: [programId], references: [id], onDelete: Cascade)
+  posyandu    Posyandu             @relation("ProgramRegistrations", fields: [posyanduId], references: [id], onDelete: Cascade)
+
+  @@unique([parentId, childId, programId])
+  @@index([parentId])
+  @@index([childId])
+  @@index([programId])
+  @@index([posyanduId])
+  @@map("program_registrations")
+}
+
 enum RoleType {
   PARENT
   KADER
@@ -375,5 +419,11 @@ enum DatasetStatus {
   pending_label
   labeled
   approved
+  rejected
+}
+
+enum RegistrationStatus {
+  pending
+  accepted
   rejected
 }
