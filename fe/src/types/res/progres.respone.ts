@@ -6,4 +6,11 @@ export interface ProgresRespone extends IProgress {
   child: ChildPartial;
   program: IProgram;
   subtask?: any[];
+  progressSummary: {
+    totalTask: number;
+    completeTask: number;
+    remainingTask: number;
+    percentage: number;
+    status: string;
+  };
 }
