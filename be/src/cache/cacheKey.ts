@@ -3,14 +3,17 @@
  * Format: <resource>:<scope>:<identifier?>
  *
  * Examples:
- * - user:id:<id>          (single user by id)
- * - user:list             (all users/admins)
- * - child:id:<id>         (single child by id)
- * - child:parent:<id>     (children by parent id)
- * - program:id:<id>       (single program by id)
- * - program:posyandu:<id> (programs by posyandu id)
- * - notification:id:<id>  (single notification by id)
- * - notification:role:<role> (notifications by role)
+ * - user:id:<id>                    (single user by id)
+ * - user:list                       (all users/admins)
+ * - child:id:<id>                   (single child by id)
+ * - child:parent:<id>               (children by parent id)
+ * - program:id:<id>                 (single program by id)
+ * - program:posyandu:<id>           (programs by posyandu id)
+ * - notification:id:<id>            (single notification by id)
+ * - notification:role:<role>        (notifications by role)
+ * - kaderregistration:id:<id>       (single kader registration by id)
+ * - kaderregistration:kader:<id>    (registrations by kader id)
+ * - kaderregistration:posyandu:<id> (registrations by posyandu id)
  */
 
 export const cacheKeys = {
@@ -70,17 +73,33 @@ export const cacheKeys = {
   },
   measurement: {
     list: () => `measurement:list`,
+    byID: (id: string) => `measurement:id:${id}`,
     byChild: (id: string) => `measurement:child:${id}`,
   },
   evaluation: {
     list: () => `evaluation:list`,
+    byID: (id: string) => `evaluation:id:${id}`,
     byChild: (id: string) => `evaluation:child:${id}`,
   },
   models: {
     detect: (image: any) => `ml:detect:${image}`,
   },
   food: {
-    byUser: (id: string) => `food:parent:${id}`,
-    byId: (id: string) => `food:id:${id}`,
+    byUser: (id: string) => `food:user:${id}`,
+    byID: (id: string) => `food:id:${id}`,
+  },
+  kaderregistration: {
+    byID: (id: string) => `kaderregistration:id:${id}`,
+    byKader: (id: string) => `kaderregistration:kader:${id}`,
+    byPosyandu: (id: string) => `kaderregistration:posyandu:${id}`,
+    pending: (posyanduId: string) => `kaderregistration:pending:${posyanduId}`,
+    accepted: (posyanduId: string) => `kaderregistration:accepted:${posyanduId}`,
+  },
+  programregistration: {
+    byID: (id: string) => `programregistration:id:${id}`,
+    byParent: (id: string) => `programregistration:parent:${id}`,
+    byPosyandu: (id: string, status: string | null) => `programregistration:posyandu:${id}`,
+    pending: (posyanduId: string) => `programregistration:pending:${posyanduId}`,
+    accepted: (posyanduId: string) => `programregistration:accepted:${posyanduId}`,
   },
 };

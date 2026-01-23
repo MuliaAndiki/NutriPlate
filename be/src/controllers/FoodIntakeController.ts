@@ -344,7 +344,7 @@ class FoodIntakeController {
         );
       }
 
-      const cacheKey = cacheKeys.food.byId(params.id);
+      const cacheKey = cacheKeys.food.byID(params.id);
 
       try {
         const cache = await this.redis.get(cacheKey);

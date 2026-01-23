@@ -3,10 +3,18 @@ export interface IProgram {
   posyanduId: string;
   name: string;
   description: string;
-  startPrograms: Date;
+  createdAt: string;
+  userId: string;
+  durationRegister?: string;
+  startPrograms?: string;
+  endPrograms?: string;
   activity: string[];
   benefit: string[];
-  durationRegister: string;
-  endPrograms: string;
-  createdAt: Date;
+}
+
+export interface IProgramWithRelations extends IProgram {
+  posyandu?: any;
+  user?: any;
+  progress?: any[];
+  registrations?: any[];
 }

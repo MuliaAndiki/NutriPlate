@@ -5,6 +5,7 @@ import { ButtonWrapper } from "@/components/wrapper/ButtonWrapper";
 import { ChildRespone } from "@/types/res/child.respone";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { ProgramRespone } from "@/types/res/program-with-progres";
+import Link from "next/link";
 
 interface ProgramSectionProps {
   service: {
@@ -31,8 +32,18 @@ const ProgramHeroSection: React.FC<ProgramSectionProps> = ({
     return program.progress.length > 0;
   });
   return (
-    <div className="w-full min-h-full flex justify-start items-start flex-col space-y-5">
-      <h1 className="text-3xl font-extrabold">Program Gizi Anak</h1>
+    <div className="w-full min-h-full flex justify-start items-start flex-col space-y-5 p-2">
+      <div className="w-full flex items-center justify-between">
+        <h1 className="text-2xl font-extrabold">Program Gizi Anak</h1>
+        <Link href={"/parent/program/status"}>
+          <Icon
+            icon="fluent:status-12-filled"
+            width="34"
+            height="34"
+            className="text-primary"
+          />
+        </Link>
+      </div>
       <p className="text-lg font-bold text-foreground/80">
         Ikuti program pendampingan gizi untuk mendukung tumbuh kembang anak
       </p>

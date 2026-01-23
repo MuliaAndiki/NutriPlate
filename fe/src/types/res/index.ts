@@ -43,5 +43,8 @@ export * from "./models.respone";
 // Kader Registration Response
 export * from "./kaderRegistration.respone";
 
+// Program Registration Response
+export * from "./programRegistration.respone";
+
 // Proxy Response
 export * from "./proxy.respone";

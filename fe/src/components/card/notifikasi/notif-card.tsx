@@ -1,3 +1,4 @@
+import { DefaultNotifIcon, NotifiIcon } from "@/types/icons";
 import { INotification } from "@/types/schema/notafication.schema";
 import { formatDateTime } from "@/utils/time.format";
 import { Icon } from "@iconify/react";
@@ -8,28 +9,7 @@ interface NotifikasiCardProps {
 }
 
 const NotifikasiCard: React.FC<NotifikasiCardProps> = ({ res }) => {
-  let iconName = "";
-  let classNames = "";
-  switch (res.type) {
-    case "reminder":
-      iconName = "fluent:warning-20-filled";
-      classNames = "text-warning border-warning";
-      break;
-    case "result":
-      iconName = "solar:chart-bold";
-      classNames = "text-primary border-primary";
-      break;
-    case "edukasi":
-      iconName = "mdi:book-open-page-variant";
-      classNames = "text-destructive border-destructive";
-      break;
-    case "alert":
-      iconName = "fe:notice-active";
-      classNames = "text-success border-success";
-      break;
-    default:
-      iconName = "mdi:bell-outline";
-  }
+  const { icon, className } = NotifiIcon[res.type] ?? DefaultNotifIcon;
 
   return (
     <Link href={`/parent/notifikasi/detail/${res.id}`}>
@@ -38,11 +18,11 @@ const NotifikasiCard: React.FC<NotifikasiCardProps> = ({ res }) => {
       >
         <div className="flex space-x-3">
           <div
-            className={`w-10 h-10 rounded-full border flex items-center justify-center ${classNames}`}
+            className={`w-10 h-10 rounded-full border flex items-center justify-center ${className}`}
           >
             <Icon
-              icon={iconName}
-              className={`${classNames}`}
+              icon={icon}
+              className={`${className}`}
               width={34}
               height={34}
             />

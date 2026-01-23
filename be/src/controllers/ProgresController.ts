@@ -7,12 +7,12 @@ import {
   PickPorgramChildId,
   PickProgramProgresID,
 } from '@/types/programNutritionProgres.types';
+import { PickCreateProgramRegistration } from '@/types/programRegistration.types';
 import { getRedis } from '@/utils/redis';
-import { error } from 'console';
+import programRegistrationService from '@/service/programRegistration.service';
 import { NotificationService } from '@/service/notifikasi.service';
-import prisma from 'prisma/client';
 import { NotifType } from '@prisma/client';
-import { waitForDebugger } from 'inspector';
+import prisma from 'prisma/client';
 
 class ProgresController {
   private get redis() {
@@ -281,7 +281,7 @@ class ProgresController {
           message: 'server internal error',
         });
       } else if (progres && progres.length > 0) {
-        await this.redis.set(cacheKey, JSON.stringify(progres), { EX: 60 }).catch(error);
+        await this.redis.set(cacheKey, JSON.stringify(progres), { EX: 60 }).catch(console.error);
       }
       return c.json?.(
         {
@@ -481,7 +481,7 @@ class ProgresController {
         },
       });
 
-      await this.redis.del(cacheKey).catch(error);
+      await this.redis.del(cacheKey).catch(console.error);
       if (!progress) {
         return c.json?.(
           {
@@ -622,7 +622,7 @@ class ProgresController {
         );
       }
       if (history && history.length > 0) {
-        await this.redis.set(cacheKey, JSON.stringify(history), { EX: 60 }).catch(error);
+        await this.redis.set(cacheKey, JSON.stringify(history), { EX: 60 }).catch(console.error);
       }
 
       return c.json?.(
@@ -963,6 +963,402 @@ class ProgresController {
         {
           status: 500,
           message: 'server internal error',
+          error: error instanceof Error ? error.message : error,
+        },
+        500,
+      );
+    }
+  }
+
+  // Program Registration Methods (Parent registering child to program)
+  public async registerChildToProgram(c: AppContext) {
+    try {
+      const jwtUser = c.user as JwtPayload;
+      const body = c.body as PickCreateProgramRegistration;
+
+      if (!jwtUser) {
+        return c.json?.(
+          {
+            status: 401,
+            message: 'Unauthorized',
+          },
+          401,
+        );
+      }
+
+      const user = await prisma.user.findFirst({
+        where: {
+          id: jwtUser.id,
+        },
+      });
+
+      if (!user || user.role !== 'PARENT') {
+        return c.json?.(
+          {
+            status: 403,
+            message: 'Hanya parent yang dapat mendaftarkan anak',
+          },
+          403,
+        );
+      }
+
+      if (!body.childId || !body.programId) {
+        return c.json?.(
+          {
+            status: 400,
+            message: 'childId dan programId harus diisi',
+          },
+          400,
+        );
+      }
+
+      const registration = await programRegistrationService.createRegistration({
+        parentId: jwtUser.id,
+        childId: body.childId,
+        programId: body.programId,
+      });
+
+      // Notify posyandu about new program registration
+      const posyandu = await prisma.posyandu.findUnique({
+        where: { id: registration.posyanduId },
+        select: { userID: true, name: true },
+      });
+
+      if (posyandu) {
+        await NotificationService.notify({
+          userId: posyandu.userID,
+          type: NotifType.reminder,
+          title: 'Pendaftaran Program Baru',
+          message: `${registration.parent?.fullName} mendaftarkan anak "${registration.child?.fullName}" ke program "${registration.program?.name}". Mohon untuk dikonfirmasi.`,
+        });
+      }
+
+      // Clear cache
+      await this.redis.del([
+        cacheKeys.programregistration.byParent(jwtUser.id),
+        cacheKeys.programregistration.pending(registration.posyanduId),
+      ]);
+
+      return c.json?.(
+        {
+          status: 201,
+          message: 'Anak berhasil didaftarkan ke program',
+          data: registration,
+        },
+        201,
+      );
+    } catch (error) {
+      console.error(error);
+      if (error instanceof Error && error.message.includes('sudah terdaftar')) {
+        return c.json?.(
+          {
+            status: 409,
+            message: error.message,
+          },
+          409,
+        );
+      }
+      return c.json?.(
+        {
+          status: 500,
+          message: 'Server internal error',
+          error: error instanceof Error ? error.message : error,
+        },
+        500,
+      );
+    }
+  }
+
+  public async getProgramRegistrations(c: AppContext) {
+    try {
+      const jwtUser = c.user as JwtPayload;
+      if (!jwtUser) {
+        return c.json?.({ status: 401, message: 'Unauthorized' }, 401);
+      }
+
+      const user = await prisma.user.findFirst({
+        where: { id: jwtUser.id },
+        select: { id: true, role: true },
+      });
+
+      if (!user) {
+        return c.json?.({ status: 404, message: 'User not found' }, 404);
+      }
+
+      const rawStatus = new URL(c.request.url).searchParams.get('status');
+
+      const status = rawStatus === 'pending' || rawStatus === 'accepted' ? rawStatus : undefined;
+      let cacheKey = '';
+      let data: any[] = [];
+
+      if (user.role === 'PARENT') {
+        cacheKey = cacheKeys.programregistration.byParent(user.id);
+
+        const cached = await this.redis.get(cacheKey);
+        if (cached) {
+          return c.json?.({ status: 200, message: 'success', data: JSON.parse(cached) }, 200);
+        }
+
+        data = await programRegistrationService.getProgramRegistrations({
+          role: 'PARENT',
+          parentId: user.id,
+        });
+      } else if (user.role === 'POSYANDU') {
+        const posyandu = await prisma.posyandu.findFirst({
+          where: { userID: user.id },
+          select: { id: true },
+        });
+
+        if (!posyandu) {
+          return c.json?.({ status: 404, message: 'Posyandu tidak ditemukan' }, 404);
+        }
+
+        cacheKey = cacheKeys.programregistration.byPosyandu(posyandu.id, status!);
+
+        const cached = await this.redis.get(cacheKey);
+        if (cached) {
+          return c.json?.({ status: 200, message: 'success', data: JSON.parse(cached) }, 200);
+        }
+
+        data = await programRegistrationService.getProgramRegistrations({
+          role: 'POSYANDU',
+          posyanduId: posyandu.id,
+          status,
+        });
+      } else {
+        return c.json?.({ status: 403, message: 'Role tidak diizinkan' }, 403);
+      }
+
+      await this.redis.set(cacheKey, JSON.stringify(data), { EX: 60 });
+
+      return c.json?.(
+        {
+          status: 200,
+          message: 'Berhasil mendapatkan registrasi program',
+          data,
+        },
+        200,
+      );
+    } catch (error) {
+      console.error(error);
+      return c.json?.(
+        {
+          status: 500,
+          message: 'Server internal error',
+          error: error instanceof Error ? error.message : error,
+        },
+        500,
+      );
+    }
+  }
+
+  public async acceptProgramRegistration(c: AppContext) {
+    try {
+      const jwtUser = c.user as JwtPayload;
+      const body = c.body as { id: string };
+
+      if (!jwtUser) {
+        return c.json?.(
+          {
+            status: 401,
+            message: 'Unauthorized',
+          },
+          401,
+        );
+      }
+
+      const user = await prisma.user.findFirst({
+        where: {
+          id: jwtUser.id,
+        },
+      });
+
+      if (!user || user.role !== 'POSYANDU') {
+        return c.json?.(
+          {
+            status: 403,
+            message: 'Hanya posyandu yang dapat mengakses',
+          },
+          403,
+        );
+      }
+
+      const posyandu = await prisma.posyandu.findFirst({
+        where: {
+          userID: jwtUser.id,
+        },
+      });
+
+      if (!posyandu) {
+        return c.json?.(
+          {
+            status: 404,
+            message: 'Posyandu tidak ditemukan',
+          },
+          404,
+        );
+      }
+
+      if (!body.id) {
+        return c.json?.(
+          {
+            status: 400,
+            message: 'id is required',
+          },
+          400,
+        );
+      }
+
+      const registration = await programRegistrationService.acceptRegistration(
+        body.id,
+        posyandu.id,
+      );
+
+      // Notify parent
+      await NotificationService.notify({
+        userId: registration.parent?.id || '',
+        type: NotifType.reminder,
+        title: 'Program Diterima',
+        message: `Program "${registration.program?.name}" untuk anak "${registration.child?.fullName}" telah diterima oleh ${posyandu.name}. Mohon konfirmasi terima program.`,
+      });
+
+      // Invalidate related caches
+      await this.redis.del([
+        cacheKeys.programregistration.pending(posyandu.id),
+        cacheKeys.programregistration.accepted(posyandu.id),
+        cacheKeys.programregistration.byParent(registration.parentId),
+      ]);
+
+      return c.json?.(
+        {
+          status: 200,
+          message: 'Registrasi program berhasil diterima',
+          data: registration,
+        },
+        200,
+      );
+    } catch (error) {
+      console.error(error);
+      if (error instanceof Error && error.message.includes('tidak ditemukan')) {
+        return c.json?.(
+          {
+            status: 404,
+            message: error.message,
+          },
+          404,
+        );
+      }
+      return c.json?.(
+        {
+          status: 500,
+          message: 'Server internal error',
+          error: error instanceof Error ? error.message : error,
+        },
+        500,
+      );
+    }
+  }
+
+  public async rejectProgramRegistration(c: AppContext) {
+    try {
+      const jwtUser = c.user as JwtPayload;
+      const body = c.body as { id: string };
+
+      if (!jwtUser) {
+        return c.json?.(
+          {
+            status: 401,
+            message: 'Unauthorized',
+          },
+          401,
+        );
+      }
+
+      const user = await prisma.user.findFirst({
+        where: {
+          id: jwtUser.id,
+        },
+      });
+
+      if (!user || user.role !== 'POSYANDU') {
+        return c.json?.(
+          {
+            status: 403,
+            message: 'Hanya posyandu yang dapat mengakses',
+          },
+          403,
+        );
+      }
+
+      const posyandu = await prisma.posyandu.findFirst({
+        where: {
+          userID: jwtUser.id,
+        },
+      });
+
+      if (!posyandu) {
+        return c.json?.(
+          {
+            status: 404,
+            message: 'Posyandu tidak ditemukan',
+          },
+          404,
+        );
+      }
+
+      if (!body.id) {
+        return c.json?.(
+          {
+            status: 400,
+            message: 'id is required',
+          },
+          400,
+        );
+      }
+
+      const registration = await programRegistrationService.rejectRegistration(
+        body.id,
+        posyandu.id,
+      );
+
+      // Notify parent
+      await NotificationService.notify({
+        userId: registration.parent?.id || '',
+        type: NotifType.reminder,
+        title: 'Program Ditolak',
+        message: `Program "${registration.program?.name}" untuk anak "${registration.child?.fullName}" telah ditolak oleh ${posyandu.name}. Silakan hubungi posyandu untuk informasi lebih lanjut.`,
+      });
+
+      // Invalidate related caches
+      await this.redis.del([
+        cacheKeys.programregistration.pending(posyandu.id),
+        cacheKeys.programregistration.accepted(posyandu.id),
+        cacheKeys.programregistration.byParent(registration.parentId),
+      ]);
+
+      return c.json?.(
+        {
+          status: 200,
+          message: 'Registrasi program berhasil ditolak',
+          data: registration,
+        },
+        200,
+      );
+    } catch (error) {
+      console.error(error);
+      if (error instanceof Error && error.message.includes('tidak ditemukan')) {
+        return c.json?.(
+          {
+            status: 404,
+            message: error.message,
+          },
+          404,
+        );
+      }
+      return c.json?.(
+        {
+          status: 500,
+          message: 'Server internal error',
           error: error instanceof Error ? error.message : error,
         },
         500,

@@ -1,4 +1,4 @@
-import { useGetNotification } from "./state/query";
+import { useGetNotification, useGetNotificationByID } from "./state/query";
 
 export function useNotification() {
   return {
@@ -7,6 +7,7 @@ export function useNotification() {
     },
     query: {
       getNotification: useGetNotification,
+      getNotificationByID: useGetNotificationByID,
     },
   };
 }

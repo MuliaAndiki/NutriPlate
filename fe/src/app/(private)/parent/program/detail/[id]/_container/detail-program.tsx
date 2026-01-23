@@ -1,5 +1,6 @@
 "use client";
 import DetailProgramHeroSection from "@/components/section/private/parent/program/detail/detail-program";
+import { cacheKey } from "@/configs/cache.config";
 import { SidebarLayout } from "@/core/layouts/sidebar.layout";
 import useService from "@/hooks/mutation/prop.service";
 import { useAppNameSpace } from "@/hooks/useAppNameSpace";
@@ -11,12 +12,36 @@ const DetailProgramContainer = () => {
   const namespace = useAppNameSpace();
   const service = useService();
   const { id } = useParams<{ id: string }>();
+  // program
   const programQuery = service.program.query.getProgramById(id);
   const programData = programQuery.data?.data ?? null;
+  // child
   const childQuery = service.user.query.childAll();
   const childData = childQuery.data?.data ?? [];
   const [PopUp, setPopUP] = useState<PopUpNavigate>(null);
   const [idChild, setIdChild] = useState<string | null>(null);
+
+  const registerChildMutation =
+    service.programRegistraion.mutation.registerChild();
+
+  const handleRegisterChildInProgram = () => {
+    if (!idChild || !id) return null;
+    registerChildMutation.mutate(
+      {
+        childId: idChild,
+        programId: id,
+      },
+      {
+        onSuccess: () => {
+          namespace.router.back();
+          //key
+          namespace.queryClient.invalidateQueries({
+            queryKey: cacheKey.child.byID(id),
+          });
+        },
+      },
+    );
+  };
 
   return (
     <SidebarLayout>
@@ -27,6 +52,10 @@ const DetailProgramContainer = () => {
               program: programData ?? null,
               isLoading: programQuery.isLoading || childQuery.isLoading,
               children: childData ?? [],
+            },
+            mutation: {
+              isPending: registerChildMutation.isPending,
+              onRegisterChild: handleRegisterChildInProgram,
             },
           }}
           namespace={{

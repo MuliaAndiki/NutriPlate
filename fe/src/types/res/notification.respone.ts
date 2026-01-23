@@ -8,7 +8,7 @@ export interface NotificationDetailResponse {
   message: string;
   isRead: boolean;
   isBroadcast: boolean;
-  createdAt: Date;
+  createdAt: string;
 }
 
 export interface CreateNotificationResponse {

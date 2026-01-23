@@ -3,8 +3,14 @@ import { JwtPayload } from '@/types/auth.types';
 import { PickCreateKaderRegistration } from '@/types/kaderRegistration.types';
 import kaderRegistrationService from '@/service/kaderRegistration.service';
 import prisma from 'prisma/client';
+import { getRedis } from '@/utils/redis';
+import { cacheKeys } from '@/cache/cacheKey';
 
 class KaderController {
+  private get redis() {
+    return getRedis();
+  }
+
   public async registerToposyandu(c: AppContext) {
     try {
       const jwtUser = c.user as JwtPayload;
@@ -67,6 +73,12 @@ class KaderController {
         posyanduId: body.posyanduId,
       });
 
+      // Clear cache for kader registrations
+      await this.redis.del([
+        cacheKeys.kaderregistration.byKader(jwtUser.id),
+        cacheKeys.kaderregistration.pending(body.posyanduId),
+      ]);
+
       return c.json?.(
         {
           status: 201,
@@ -127,7 +139,22 @@ class KaderController {
         );
       }
 
+      const cacheKey = cacheKeys.kaderregistration.byKader(jwtUser.id);
+      const cached = await this.redis.get(cacheKey);
+      if (cached) {
+        return c.json?.(
+          {
+            status: 200,
+            message: 'Berhasil mendapatkan registrasi',
+            data: JSON.parse(cached),
+          },
+          200,
+        );
+      }
+
       const registrations = await kaderRegistrationService.getKaderRegistrations(jwtUser.id);
+
+      await this.redis.set(cacheKey, JSON.stringify(registrations), { EX: 60 });
 
       return c.json?.(
         {
@@ -196,7 +223,22 @@ class KaderController {
         );
       }
 
+      const cacheKey = cacheKeys.kaderregistration.pending(posyandu.id);
+      const cached = await this.redis.get(cacheKey);
+      if (cached) {
+        return c.json?.(
+          {
+            status: 200,
+            message: 'Berhasil mendapatkan registrasi pending',
+            data: JSON.parse(cached),
+          },
+          200,
+        );
+      }
+
       const registrations = await kaderRegistrationService.getPendingRegistrations(posyandu.id);
+
+      await this.redis.set(cacheKey, JSON.stringify(registrations), { EX: 60 });
 
       return c.json?.(
         {
@@ -265,7 +307,22 @@ class KaderController {
         );
       }
 
+      const cacheKey = cacheKeys.kaderregistration.accepted(posyandu.id);
+      const cached = await this.redis.get(cacheKey);
+      if (cached) {
+        return c.json?.(
+          {
+            status: 200,
+            message: 'Berhasil mendapatkan registrasi accepted',
+            data: JSON.parse(cached),
+          },
+          200,
+        );
+      }
+
       const registrations = await kaderRegistrationService.getAcceptedRegistrations(posyandu.id);
+
+      await this.redis.set(cacheKey, JSON.stringify(registrations), { EX: 60 });
 
       return c.json?.(
         {
@@ -346,6 +403,18 @@ class KaderController {
       }
 
       const registration = await kaderRegistrationService.acceptRegistration(body.id, posyandu.id);
+
+      // Invalidate related caches
+      const reg = await prisma.kaderRegistration.findFirst({
+        where: { id: body.id },
+      });
+      if (reg) {
+        await this.redis.del([
+          cacheKeys.kaderregistration.pending(posyandu.id),
+          cacheKeys.kaderregistration.accepted(posyandu.id),
+          cacheKeys.kaderregistration.byKader(reg.kaderId),
+        ]);
+      }
 
       return c.json?.(
         {
@@ -435,6 +504,18 @@ class KaderController {
       }
 
       const registration = await kaderRegistrationService.rejectRegistration(body.id, posyandu.id);
+
+      // Invalidate related caches
+      const reg = await prisma.kaderRegistration.findFirst({
+        where: { id: body.id },
+      });
+      if (reg) {
+        await this.redis.del([
+          cacheKeys.kaderregistration.pending(posyandu.id),
+          cacheKeys.kaderregistration.accepted(posyandu.id),
+          cacheKeys.kaderregistration.byKader(reg.kaderId),
+        ]);
+      }
 
       return c.json?.(
         {

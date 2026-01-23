@@ -13,6 +13,7 @@ import TaskApi from "./module/task/task.service";
 import IotApi from "./module/iot/iot.service";
 import ModelsApi from "./module/models/models.service";
 import KaderRegistrationApi from "./module/kaderRegistration/kaderRegistration.service";
+import ProgramRegistrationApi from "./module/programRegistration/programRegistration.service";
 import ProxyApi from "./module/proxy/proxy.service";
 
 class Api {
@@ -30,6 +31,7 @@ class Api {
   static Iot = new IotApi();
   static Models = new ModelsApi();
   static KaderRegistration = new KaderRegistrationApi();
+  static ProgramRegistration = new ProgramRegistrationApi();
   static Proxy = new ProxyApi();
 }
 

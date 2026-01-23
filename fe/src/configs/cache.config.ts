@@ -27,5 +27,9 @@ export const cacheKey = {
   },
   notification: {
     byUser: () => [`notifikasi:user`],
+    byId: (id: string) => [`notifikasi:id:${id}`],
+  },
+  regisProgram: {
+    list: () => [`regis:program:list`],
   },
 };

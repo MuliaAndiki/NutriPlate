@@ -1,6 +1,7 @@
 import { HistoryFoodType, ProfileChildType } from "@/types/card";
 import { RouteDetailChildType } from "@/types/components";
 import { notifikasiIconMap } from "@/types/icons";
+import { RegistrationStatus } from "@/types/partial";
 export const HistoryFoodData: HistoryFoodType[] = [
   {
     id: "1",
@@ -121,3 +122,21 @@ export const NotifikasiIcons: notifikasiIconMap[] = [
     color: "text-success border-success",
   },
 ];
+
+export const StatusConfig: Record<
+  RegistrationStatus,
+  { label: string; color: string }
+> = {
+  pending: {
+    label: "Pending",
+    color: "bg-yellow-100 text-yellow-700 border-yellow-300",
+  },
+  accepted: {
+    label: "Diterima",
+    color: "bg-green-100 text-green-700 border-green-300",
+  },
+  rejected: {
+    label: "Ditolak",
+    color: "bg-red-100 text-red-700 border-red-300",
+  },
+};

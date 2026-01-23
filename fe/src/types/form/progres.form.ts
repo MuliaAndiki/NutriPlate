@@ -1,7 +1,12 @@
 import { IProgress } from "../schema/progres.schema";
-export type FormAssingPrograms = Pick<
+
+export type FormAssignProgram = Pick<IProgress, "childId" | "programId">;
+
+export type FormUpdateProgres = Pick<
   IProgress,
-  "childId" | "programId" | "dayNumber"
+  "id" | "isCompleted" | "isAccep"
 >;
-export type ParamsProgramProgresID = Pick<IProgress, "id">;
-export type FormCancelPrograms = Pick<IProgress, "childId">;
+
+export type FormCancelProgram = Pick<IProgress, "id"> & {
+  childId: string;
+};

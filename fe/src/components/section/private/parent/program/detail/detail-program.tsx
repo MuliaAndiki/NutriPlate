@@ -19,6 +19,10 @@ interface DetailProgramSectionProps {
       isLoading: boolean;
       children: ChildRespone[];
     };
+    mutation: {
+      onRegisterChild: () => void;
+      isPending: boolean;
+    };
   };
   namespace: {
     router: AppRouterInstance;
@@ -41,7 +45,7 @@ const DetailProgramHeroSection: React.FC<DetailProgramSectionProps> = ({
     return <div>loading....</div>;
   }
   return (
-    <section className="w-full flex justify-start items-center flex-col min-h-screen overflow-x-hidden space-y-4">
+    <section className="w-full flex justify-start items-center flex-col min-h-screen overflow-x-hidden p-2 space-y-4">
       <div className="w-full h-auto flex items-center">
         <ChevronLeft
           onClick={() => namespace.router.back()}
@@ -56,9 +60,11 @@ const DetailProgramHeroSection: React.FC<DetailProgramSectionProps> = ({
       <div className="p-4 w-full rounded-lg border border-primary">
         <h1 className="">
           Batas Pendaftaran:
-          {formatDateTime(service.query.program.durationRegister, {
-            style: "day-date-slash",
-          })}
+          {service.query.program.durationRegister
+            ? formatDateTime(service.query.program.durationRegister, {
+                style: "day-date-slash",
+              })
+            : "-"}
         </h1>
       </div>
       <AktifitasPropgramCard res={service.query.program} />
@@ -81,6 +87,8 @@ const DetailProgramHeroSection: React.FC<DetailProgramSectionProps> = ({
           setIdChild={state.setIdChild}
           children={service.query.children}
           pathname={namespace.pathname}
+          isPending={service.mutation.isPending}
+          onRegisterChild={service.mutation.onRegisterChild}
         />
       </PopUp>
     </section>
