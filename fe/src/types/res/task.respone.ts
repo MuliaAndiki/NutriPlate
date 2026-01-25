@@ -1,12 +1,22 @@
 export interface TaskProgramResponse {
   id: string;
-  progresId: string;
   title: string;
   description: string;
   isComplated: boolean;
   isBroadcast: boolean;
-  createdAt: Date;
-  updatedAt: Date;
+  mealType?: string;
+  targetEnergyKcal?: number;
+  targetProteinGram?: number;
+  targetFatGram?: number;
+  targetCarbGram?: number;
+  targetFiberGram?: number;
+  createdAt: string;
+  updatedAt: string;
+  progres: {
+    child: {
+      fullName: string;
+    };
+  };
 }
 
 export interface CreateTaskResponse {

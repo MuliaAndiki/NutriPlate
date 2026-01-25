@@ -16,8 +16,8 @@ class TaskApi {
     return res.data;
   }
 
-  public async getTaskForChild(): Promise<TResponse<any>> {
-    const res = await AxiosClient.get("/api/task");
+  public async getTaskForChild(id: string): Promise<TResponse<any>> {
+    const res = await AxiosClient.get(`/api/task/${id}`);
     return res.data;
   }
 
@@ -44,8 +44,8 @@ class TaskApi {
     return res.data;
   }
 
-  public async doneTask(id: string, payload?: any): Promise<TResponse<any>> {
-    const res = await AxiosClient.post(`/api/task/task/${id}`, payload || {});
+  public async doneTask(id: string): Promise<TResponse<any>> {
+    const res = await AxiosClient.post(`/api/task/task/${id}`);
     return res.data;
   }
 }

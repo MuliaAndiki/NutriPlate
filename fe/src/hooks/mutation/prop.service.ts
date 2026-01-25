@@ -8,6 +8,7 @@ import { usePosyandu } from "./posyandu/usePosyandu";
 import { useProgramRegistrasion } from "./programregistration/useProgramRegistration";
 import { useProgres } from "./progres/useProgres";
 import { useServices } from "./services/useService";
+import { useTask } from "./task/useTask";
 import { useUsers } from "./users/useUsers";
 
 export const useService = () => ({
@@ -22,6 +23,7 @@ export const useService = () => ({
   progres: useProgres(),
   foodSummary: useFoodSummary(),
   programRegistraion: useProgramRegistrasion(),
+  task: useTask(),
 });
 
 export default useService;

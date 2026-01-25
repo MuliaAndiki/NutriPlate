@@ -249,10 +249,8 @@ class FoodIntakeSummaryController {
         orderBy: [{ mealType: 'asc' }, { createdAt: 'asc' }],
       });
 
-      // Get actual nutrition by meal type
       const mealNutrition = await this.getMealNutritionBreakdown(params.childId, dayStart, dayEnd);
 
-      // Transform tasks with nutrition comparison
       const mealsWithData = mealTasks.map((task) => {
         const actualNutrition = mealNutrition.get(task.mealType || 'OTHER') || {
           energyKcal: 0,

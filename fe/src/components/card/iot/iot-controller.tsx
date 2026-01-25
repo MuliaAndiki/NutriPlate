@@ -1,11 +1,12 @@
 import { Card } from "@/components/ui/card";
 import { ButtonWrapper } from "@/components/wrapper/ButtonWrapper";
+import { Icon } from "@iconify/react/dist/iconify.js";
 
 const IotControllerCard = () => {
   return (
     <Card className="w-full p-4">
       <div className="w-full flex items-center justify-center border-b p-4">
-        <h1 className="text-foreground/80 font-bold">
+        <h1 className="text-foreground/80 ">
           Hasil Timbangan Akan Muncul Disini
         </h1>
       </div>
@@ -25,10 +26,24 @@ const IotControllerCard = () => {
         </div>
       </div>
       <div className="w-full space-y-2 pb-4 border-b">
-        <ButtonWrapper className="w-full" variant={"destructive"}>
+        <ButtonWrapper
+          className="w-full text-destructive  bg-destructive/30 border border-destructive"
+          variant={"destructive"}
+          leftIcon={<Icon icon="picon:reload" width="16" height="16" />}
+        >
           Reset Timbangan
         </ButtonWrapper>
-        <ButtonWrapper className="w-full">
+        <ButtonWrapper
+          leftIcon={
+            <Icon
+              icon="streamline:star-2-remix"
+              width="14"
+              height="14"
+              className="text-info"
+            />
+          }
+          className="w-full bg-info/30 border border-info text-info"
+        >
           Ulangi Proses Timbangan
         </ButtonWrapper>
       </div>

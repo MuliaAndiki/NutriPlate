@@ -29,8 +29,7 @@ const ProfileParentHeroSection: React.FC<ProfileProps> = ({ service }) => {
     },
   ];
   return (
-    <div className="w-full min-h-full flex justify-start items-start flex-col">
-      <h1 className="text-2xl font-extrabold">Akun</h1>
+    <div className="w-full min-h-full flex justify-start items-start flex-col p-2">
       <div className="w-full flex justify-center items-center flex-col space-y-5">
         <Image
           alt="profile"

@@ -127,7 +127,7 @@ class FoodIntakeController {
             );
           }
         } catch (error) {
-          console.error('❌ Inference failed:', error);
+          console.error(' Inference failed:', error);
           return c.json?.(
             {
               status: 500,

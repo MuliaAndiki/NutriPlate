@@ -2,6 +2,9 @@ import { ProgresRespone } from "@/types/res";
 import { ProgressBar } from "../linebar/linebar";
 import Link from "next/link";
 
+import { formatDateTime } from "@/utils/time.format";
+import { formatDayProgress } from "@/utils/formatDayProgress";
+
 interface ProgresListCard {
   res: ProgresRespone;
   pathname?: string;
@@ -25,22 +28,24 @@ const ProgresListCard: React.FC<ProgresListCard> = ({ res, pathname }) => {
 
       <div className="w-full flex flex-col gap-1 p-3">
         <p className="text-sm text-muted-foreground">
-          Anak: <span className="font-medium">{res.child?.fullName}</span>
+          Mulai Program:{" "}
+          <span className="font-medium">
+            {formatDateTime(res.program.startPrograms!, {
+              style: "day-date-slash",
+            })}
+          </span>
         </p>
-
-        <p className="text-sm">
-          Status:{" "}
-          <span className="font-semibold">{res.progressSummary.status}</span>
-        </p>
-
         <p className="text-xs text-muted-foreground">
-          Sisa Task: {res.progressSummary.remainingTask}
+          {formatDayProgress(
+            res.program.startPrograms!,
+            res.program.endPrograms!,
+          )}
         </p>
       </div>
 
       <div className="w-full px-3 pb-3">
         <ProgressBar
-          label=""
+          label={`Sisa Task ${res.progressSummary.remainingTask}`}
           value={res.progressSummary.percentage}
           target={100}
           unit="%"
@@ -48,8 +53,28 @@ const ProgresListCard: React.FC<ProgresListCard> = ({ res, pathname }) => {
         />
       </div>
       {isHiddenLink && (
-        <div className="w-full border-t flex justify-center items-center">
-          <h1 className="font-light ">Selengkapnya</h1>
+        <div className="w-full border-t px-3 py-2">
+          <input
+            type="checkbox"
+            id={`toggle-${res.id}`}
+            className="peer hidden"
+          />
+
+          <div className="max-h-0 overflow-hidden transition-all duration-300 peer-checked:max-h-40">
+            <div className="pt-2 text-sm text-muted-foreground space-y-1">
+              <p className="text-sm text-justify text-muted-foreground">
+                {res.program.benefit}
+              </p>
+            </div>
+          </div>
+
+          <label
+            htmlFor={`toggle-${res.id}`}
+            className="mt-1 block text-center text-sm font-light underline cursor-pointer text-primary"
+          >
+            <span className="peer-checked:hidden">Selengkapnya</span>
+            <span className="hidden peer-checked:inline">Tutup</span>
+          </label>
         </div>
       )}
     </div>
