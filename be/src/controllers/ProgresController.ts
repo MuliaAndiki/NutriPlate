@@ -18,7 +18,7 @@ class ProgresController {
   private get redis() {
     return getRedis();
   }
-  // Assign children to program logic (bulk assignment by POSYANDU)
+
   private async assignChildrenToProgramBulk(c: AppContext, jwtUser: JwtPayload) {
     try {
       const progresBody = c.body as PickAssingPrograms;
@@ -257,7 +257,7 @@ class ProgresController {
               name: true,
             },
           },
-          subtask: true,
+          task: true,
         },
         orderBy: {
           createdAt: 'desc',
@@ -271,8 +271,8 @@ class ProgresController {
         });
       } else if (progres && progres.length > 0) {
         const progresWithSummary = progres.map((prog) => {
-          const totalTask = prog.subtask.length;
-          const completeTask = prog.subtask.filter((task) => task.isComplated === true).length;
+          const totalTask = prog.task.length;
+          const completeTask = prog.task.filter((task) => task.isComplated === true).length;
           const percentage = totalTask > 0 ? Math.round((completeTask / totalTask) * 100) : 0;
           const remainingTask = totalTask - completeTask;
           const status =
@@ -367,7 +367,7 @@ class ProgresController {
         include: {
           child: true,
           program: true,
-          subtask: true,
+          task: true,
         },
       });
 
@@ -381,8 +381,8 @@ class ProgresController {
         );
       }
 
-      const totalTask = progres.subtask.length;
-      const completeTask = progres.subtask.filter((task) => task.isComplated === true).length;
+      const totalTask = progres.task.length;
+      const completeTask = progres.task.filter((task) => task.isComplated === true).length;
       const percentage = totalTask > 0 ? Math.round((completeTask / totalTask) * 100) : 0;
       const remainingTask = totalTask - completeTask;
       const status =
@@ -1023,7 +1023,6 @@ class ProgresController {
         posyandu.id,
       );
 
-      // Notify parent
       await NotificationService.notify({
         userId: registration.parent?.id || '',
         type: NotifType.reminder,
@@ -1031,7 +1030,6 @@ class ProgresController {
         message: `Program "${registration.program?.name}" untuk anak "${registration.child?.fullName}" telah ditolak oleh ${posyandu.name}. Silakan hubungi posyandu untuk informasi lebih lanjut.`,
       });
 
-      // Invalidate related caches
       await this.redis.del([
         cacheKeys.programregistration.pending(posyandu.id),
         cacheKeys.programregistration.accepted(posyandu.id),

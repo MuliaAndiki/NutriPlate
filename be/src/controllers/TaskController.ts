@@ -114,6 +114,7 @@ class SubtaskController {
         },
       });
 
+      await this.redis.del(cacheKeys.task.byProgresId(progres.id));
       if (!task) {
         return c.json?.(
           {
@@ -147,85 +148,80 @@ class SubtaskController {
   public async getTaskForChild(c: AppContext) {
     try {
       const jwtUser = c.user as JwtPayload;
+      const params = c.params as PickTaskProgresID;
+
       if (!jwtUser) {
-        return c.json?.(
-          {
-            status: 401,
-            message: 'Unauthorized',
-          },
-          401,
-        );
-      }
-      const user = jwtUser;
-
-      if (!user || user.role !== 'PARENT') {
-        return c.json?.(
-          {
-            status: 400,
-            message: 'user cant not accest',
-          },
-          400,
-        );
+        return c.json?.({ status: 401, message: 'Unauthorized' }, 401);
       }
 
-      const program = await prisma.nutriplateProgram.findFirst({
-        where: {
-          userId: user.id,
-        },
-        select: {
-          id: true,
-        },
-      });
-
-      if (!program) {
-        return c.json?.({
-          status: 404,
-          message: 'program not found',
-        });
+      if (jwtUser.role !== 'PARENT') {
+        return c.json?.({ status: 403, message: 'Forbidden access' }, 403);
       }
 
-      const progres = await prisma.nutritionProgramProgress.findFirst({
-        where: {
-          programId: program.id,
-          isAccep: true,
-        },
-        select: {
-          id: true,
-        },
-      });
-
-      if (!progres) {
-        return c.json?.({
-          status: 404,
-          message: 'program not found',
-        });
+      if (!params?.progressId) {
+        return c.json?.({ status: 400, message: 'progressId is required' }, 400);
       }
 
-      const cacheKey = cacheKeys.task.byRole(user.role);
+      const cacheKey = cacheKeys.task.byProgresId(params.progressId);
 
       try {
         const cacheTask = await this.redis.get(cacheKey);
-
         if (cacheTask) {
           return c.json?.(
             {
               status: 200,
-              message: 'succesfully get task child',
+              message: 'successfully get task (cache)',
               data: JSON.parse(cacheTask),
             },
             200,
           );
         }
-      } catch (error) {}
+      } catch (_) {
+        // cache failure should NEVER break API
+      }
+
+      const progress = await prisma.nutritionProgramProgress.findUnique({
+        where: { id: params.progressId },
+        select: {
+          id: true,
+          childId: true,
+        },
+      });
+
+      if (!progress || !progress.childId) {
+        return c.json?.({ status: 404, message: 'Progress not found' }, 404);
+      }
+
+      const child = await prisma.child.findFirst({
+        where: {
+          id: progress.childId,
+          parentId: jwtUser.id,
+        },
+        select: { id: true },
+      });
+
+      if (!child) {
+        return c.json?.(
+          {
+            status: 403,
+            message: 'You are not allowed to access this progress',
+          },
+          403,
+        );
+      }
 
       const task = await prisma.taskProgram.findMany({
         where: {
-          progresId: progres.id,
+          progresId: progress.id,
           isBroadcast: true,
+        },
+        orderBy: {
+          createdAt: 'asc',
         },
         include: {
           progres: {
-            include: {
+            select: {
+              id: true,
               child: {
                 select: {
                   id: true,
@@ -235,45 +231,33 @@ class SubtaskController {
             },
           },
         },
-        orderBy: {
-          createdAt: 'asc',
-        },
       });
 
-      if (!task) {
-        return c.json?.(
-          {
-            status: 400,
-            message: 'server internal error',
-          },
-          400,
-        );
-      }
-
-      if (task && task.length > 0) {
+      if (task.length > 0) {
         await this.redis.set(cacheKey, JSON.stringify(task), { EX: 60 });
       }
 
       return c.json?.(
         {
           status: 200,
-          message: 'succesfully get task',
+          message: 'successfully get task',
           data: task,
         },
         200,
       );
     } catch (error) {
-      console.error(error);
+      console.error('[getTaskForChild]', error);
       return c.json?.(
         {
           status: 500,
-          message: 'server internal error',
+          message: 'Internal server error',
           error: error instanceof Error ? error.message : error,
         },
         500,
       );
     }
   }
+
   public async updateTask(c: AppContext) {
     try {
       const jwtUser = c.user as JwtPayload;
@@ -648,6 +632,18 @@ class SubtaskController {
           id: true,
           isComplated: true,
           progresId: true,
+          mealType: true,
+          targetEnergyKcal: true,
+          targetProteinGram: true,
+          targetFatGram: true,
+          targetCarbGram: true,
+          targetFiberGram: true,
+          createdAt: true,
+          progres: {
+            select: {
+              childId: true,
+            },
+          },
         },
       });
 
@@ -657,6 +653,58 @@ class SubtaskController {
 
       if (task.isComplated) {
         return c.json?.({ status: 400, message: 'task already completed' }, 400);
+      }
+
+      if (!task.progres.childId) {
+        return c.json?.({ status: 400, message: 'child id not found' }, 400);
+      }
+
+      if (task.mealType && task.targetEnergyKcal) {
+        const actualNutrition = await this.calculateMealNutrition(
+          task.progres.childId,
+          task.mealType,
+          task.createdAt,
+        );
+
+        const tolerance = 0.9;
+        const energyGap = task.targetEnergyKcal - actualNutrition.energyKcal;
+        const proteinGap = (task.targetProteinGram || 0) - actualNutrition.proteinGram;
+
+        if (
+          actualNutrition.energyKcal < task.targetEnergyKcal * tolerance ||
+          actualNutrition.proteinGram < (task.targetProteinGram || 0) * tolerance
+        ) {
+          return c.json?.(
+            {
+              status: 422,
+              message: 'Nutrition target not met',
+              data: {
+                taskId: task.id,
+                mealType: task.mealType,
+                target: {
+                  energyKcal: task.targetEnergyKcal,
+                  proteinGram: task.targetProteinGram || 0,
+                  fatGram: task.targetFatGram || 0,
+                  carbGram: task.targetCarbGram || 0,
+                  fiberGram: task.targetFiberGram || 0,
+                },
+                actual: {
+                  energyKcal: Math.round(actualNutrition.energyKcal * 100) / 100,
+                  proteinGram: Math.round(actualNutrition.proteinGram * 100) / 100,
+                  fatGram: Math.round(actualNutrition.fatGram * 100) / 100,
+                  carbGram: Math.round(actualNutrition.carbGram * 100) / 100,
+                  fiberGram: Math.round(actualNutrition.fiberGram * 100) / 100,
+                },
+                gap: {
+                  energyKcal: Math.round(energyGap * 100) / 100,
+                  proteinGram: Math.round(proteinGap * 100) / 100,
+                  tolerancePercent: (tolerance * 100).toFixed(0),
+                },
+              },
+            },
+            422,
+          );
+        }
       }
 
       const doneTask = await prisma.taskProgram.update({
@@ -680,7 +728,7 @@ class SubtaskController {
         200,
       );
     } catch (error) {
-      console.error(error);
+      console.error('[doneTask]', error);
       return c.json?.(
         {
           status: 500,
@@ -692,8 +740,62 @@ class SubtaskController {
     }
   }
 
-  // Done Task (Parent)
-  //
+  private async calculateMealNutrition(
+    childId: string,
+    mealType: string,
+    taskCreatedAt: Date,
+  ): Promise<{
+    energyKcal: number;
+    proteinGram: number;
+    fatGram: number;
+    carbGram: number;
+    fiberGram: number;
+  }> {
+    const dayStart = new Date(taskCreatedAt);
+    dayStart.setHours(0, 0, 0, 0);
+    const dayEnd = new Date(taskCreatedAt);
+    dayEnd.setHours(23, 59, 59, 999);
+
+    const foodIntakes = await prisma.food.findMany({
+      where: {
+        childId,
+        createdAt: { gte: dayStart, lte: dayEnd },
+      },
+      include: { items: true },
+    });
+
+    const result = {
+      energyKcal: 0,
+      proteinGram: 0,
+      fatGram: 0,
+      carbGram: 0,
+      fiberGram: 0,
+    };
+
+    foodIntakes.forEach((intake) => {
+      const determinedMealType = this.determineMealType(intake.createdAt);
+      if (determinedMealType === mealType) {
+        intake.items.forEach((item) => {
+          result.energyKcal += Number(item.energyKcal ?? 0);
+          result.proteinGram += Number(item.proteinGram ?? 0);
+          result.fatGram += Number(item.fatGram ?? 0);
+          result.carbGram += Number(item.carbGram ?? 0);
+          result.fiberGram += Number(item.fiberGram ?? 0);
+        });
+      }
+    });
+
+    return result;
+  }
+
+  // ✅ Helper: Determine meal type from time of day
+  private determineMealType(time: Date): string {
+    const hour = time.getHours();
+    if (hour >= 5 && hour < 10) return 'BREAKFAST';
+    if (hour >= 10 && hour < 14) return 'LUNCH';
+    if (hour >= 14 && hour < 18) return 'SNACK';
+    return 'DINNER';
+  }
 }
 
 export default new SubtaskController();

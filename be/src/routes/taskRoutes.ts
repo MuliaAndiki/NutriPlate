@@ -26,7 +26,7 @@ class TaskRoutes {
     this.taskRoutes.post('/:id', (c: AppContext) => TaskController.createTask(c), {
       beforeHandle: [verifyToken().beforeHandle, requireRole(['POSYANDU', 'KADER']).beforeHandle],
     });
-    this.taskRoutes.get('/', (c: AppContext) => TaskController.getTaskForChild(c), {
+    this.taskRoutes.get('/:progressId', (c: AppContext) => TaskController.getTaskForChild(c), {
       beforeHandle: [verifyToken().beforeHandle],
     });
     this.taskRoutes.put('/:id', (c: AppContext) => TaskController.updateTask(c), {

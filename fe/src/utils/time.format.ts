@@ -2,7 +2,7 @@ import { FormatDateOptions } from "@/types/utils";
 
 export function formatDateTime(
   isoString: string,
-  options: FormatDateOptions = {}
+  options: FormatDateOptions = {},
 ): string {
   if (!isoString) return "-";
 

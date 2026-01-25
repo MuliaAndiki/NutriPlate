@@ -33,4 +33,7 @@ export const cacheKey = {
   regisProgram: {
     list: () => [`regis:program:list`],
   },
+  task: {
+    byProgresId: (id: string) => [`task:progres:${id}`],
+  },
 };

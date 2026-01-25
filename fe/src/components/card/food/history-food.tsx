@@ -1,8 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-
 import { HistoryFootProps } from "@/types/props.type";
-
 import { Card } from "@/components/ui/card";
 
 const HistoryFood: React.FC<HistoryFootProps> = ({ data }) => {

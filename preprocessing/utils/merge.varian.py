@@ -6,16 +6,18 @@ ROOT = Path(__file__).resolve().parents[1]
 DATA_DIR = ROOT / "data"
 OUT_DIR = ROOT / "data_merged"
 
-ORIGINAL_DATASET_NAME = "Dietary App Segment.v1i.yolov8"
+ORIGINAL_DATASET_NAME = "lasted"
 
 BASE_CLASS_INDEX = {
-    "tempe": 23,
-    "udang": 25,
+    "ayam goreng": 1,
+    "bakwan": 3,
+    "telur" :22
 }
 
 VARIANT_DATASETS = {
-    "Tempe.v3i.yolov8": "tempe",
-    "udang.v1-roboflow-instant-1--eval-.yolov8": "udang",
+    "ayamgoreng": "ayam goreng",
+    "bakwan": "bakwan",
+    "telur" : "telur"
 }
 
 
@@ -27,17 +29,17 @@ def reset_out_dir():
         (OUT_DIR / "images" / split).mkdir(parents=True, exist_ok=True)
         (OUT_DIR / "labels" / split).mkdir(parents=True, exist_ok=True)
 
-
 def merge_original_dataset():
     dataset_dir = DATA_DIR / ORIGINAL_DATASET_NAME
     if not dataset_dir.exists():
-        raise RuntimeError(f" Original dataset not found: {dataset_dir}")
+        raise RuntimeError(f"Original dataset not found: {dataset_dir}")
 
     print(f"🔗 Adding ORIGINAL dataset: {ORIGINAL_DATASET_NAME}")
 
     for split in ["train", "valid", "test"]:
-        img_dir = dataset_dir / split / "images"
-        lbl_dir = dataset_dir / split / "labels"
+        img_dir = dataset_dir / "images" / split
+        lbl_dir = dataset_dir / "labels" / split
+
         if not img_dir.exists():
             continue
 

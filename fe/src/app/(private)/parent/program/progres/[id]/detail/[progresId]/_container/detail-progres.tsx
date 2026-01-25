@@ -5,7 +5,9 @@ import { cacheKey } from "@/configs/cache.config";
 import { SidebarLayout } from "@/core/layouts/sidebar.layout";
 import useService from "@/hooks/mutation/prop.service";
 import { useAppNameSpace } from "@/hooks/useAppNameSpace";
+import { useDebugLog } from "@/utils/useDebug";
 import { useParams } from "next/navigation";
+import { useState } from "react";
 const ProgresDetailContainer = () => {
   const namespace = useAppNameSpace();
   const service = useService();
@@ -14,6 +16,14 @@ const ProgresDetailContainer = () => {
   const progresInChildDataByIdQuery =
     service.progres.query.progresInChildByID(id);
   const progresInChildDataById = progresInChildDataByIdQuery.data?.data ?? null;
+
+  //task
+  const taskQuery = service.task.query.getTask(progresId);
+  const taskData = taskQuery.data?.data ?? [];
+
+  useDebugLog(taskData, [taskQuery], {
+    label: "here",
+  });
 
   const cancelProgramMutation = service.progres.mutation.cancelProgram();
 
@@ -38,13 +48,17 @@ const ProgresDetailContainer = () => {
       },
     );
   };
+
+  //state
+  const [taskId, setTaskId] = useState<string | null>(null);
   return (
     <SidebarLayout>
       <main className="w-full">
         <ProgresDetailSection
           namespace={{
             router: namespace.router,
-            pathname:namespace.pathname
+            pathname: namespace.pathname,
+            alert: namespace.alert,
           }}
           service={{
             mutation: {
@@ -53,8 +67,14 @@ const ProgresDetailContainer = () => {
             },
             query: {
               progres: progresInChildDataById ?? null,
-              isLoading: progresInChildDataByIdQuery.isLoading,
+              isLoading:
+                progresInChildDataByIdQuery.isLoading || taskQuery.isLoading,
+              task: taskData ?? [],
             },
+          }}
+          state={{
+            setTaskId: setTaskId,
+            taskId: taskId,
           }}
         />
       </main>
