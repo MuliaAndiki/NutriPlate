@@ -14,8 +14,8 @@ class ProgresApi {
     return res.data;
   }
 
-  public async getChildInProgram(): Promise<TResponse<any>> {
-    const res = await AxiosClient.get("/api/progres");
+  public async getChildInProgram(id: string): Promise<TResponse<any>> {
+    const res = await AxiosClient.get(`/api/progres/program/${id}`);
     return res.data;
   }
 

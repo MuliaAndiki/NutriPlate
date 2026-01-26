@@ -20,11 +20,14 @@ const RegisterProgram: React.FC<RegisterProgramProps> = ({
   isPending,
   onRegisterChild,
 }) => {
+  const childFilter = children.filter(
+    (item) => !item.programProgress?.some((progresId) => progresId.programId),
+  );
   return (
     <section className="w-full h-full flex items-center justify-center flex-col space-y-3">
       <h1 className="text-lg font-bold">Pilih anak yang akan ikut program</h1>
       <div className="w-full">
-        {children.map((items) => (
+        {childFilter.map((items) => (
           <ChildProgramCard
             idChild={idChild}
             setIdChild={setIdChild}

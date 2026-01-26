@@ -11,10 +11,11 @@ export function useGetChildInProgramsById(id: string) {
   });
 }
 
-export function useGetChildInProgram() {
+export function useGetChildInProgram(id: string) {
   return useQuery({
-    queryKey: cacheKey.progres.list(),
-    queryFn: () => Api.Progres.getChildInProgram(),
+    queryKey: cacheKey.progres.byChildList(id),
+    queryFn: () => Api.Progres.getChildInProgram(id),
+    enabled: !!id,
     staleTime: 1000 * 60 * 5,
   });
 }

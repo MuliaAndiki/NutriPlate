@@ -1,41 +1,7 @@
-import { HistoryFoodType, ProfileChildType } from "@/types/card";
+import { ProfileChildType } from "@/types/card";
 import { RouteDetailChildType } from "@/types/components";
 import { notifikasiIconMap } from "@/types/icons";
 import { RegistrationStatus } from "@/types/partial";
-export const HistoryFoodData: HistoryFoodType[] = [
-  {
-    id: "1",
-    date: "12/08/2025 - 14:01 WIB",
-    title: "Nasi + Sayur + Ayam",
-    gizi: 90,
-    weight: 120,
-    image: "/images/dummyFood.png",
-  },
-  {
-    id: "2",
-    date: "12/08/2025 - 14:01 WIB",
-    title: "Nasi + Sayur + Ayam",
-    gizi: 90,
-    weight: 120,
-    image: "/images/dummyFood.png",
-  },
-  {
-    id: "3",
-    date: "12/08/2025 - 14:01 WIB",
-    title: "Nasi + Sayur + Ayam",
-    gizi: 90,
-    weight: 120,
-    image: "/images/dummyFood.png",
-  },
-  {
-    id: "4",
-    date: "12/08/2025 - 14:01 WIB",
-    title: "Nasi + Sayur + Ayam",
-    gizi: 90,
-    weight: 120,
-    image: "/images/dummyFood.png",
-  },
-];
 
 export const profileChildCardsConfig: ProfileChildType[] = [
   {

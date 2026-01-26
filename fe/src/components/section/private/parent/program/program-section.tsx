@@ -47,8 +47,14 @@ const ProgramHeroSection: React.FC<ProgramSectionProps> = ({
       <p className="text-lg font-bold text-foreground/80">
         Ikuti program pendampingan gizi untuk mendukung tumbuh kembang anak
       </p>
-      <div className="w-full">
-        {service.query.childType.slice(0, 3).map((items) => (
+      {/* link router */}
+      {service.query.childType.length > 2 && (
+        <div className="w-full ">
+          <h1 className="text-primary text-end">Selengkapnya </h1>
+        </div>
+      )}
+      <div className="w-full space-y-1 ">
+        {service.query.childType.slice(0, 2).map((items) => (
           <ChildProgramCard
             key={items.id}
             childType={items}

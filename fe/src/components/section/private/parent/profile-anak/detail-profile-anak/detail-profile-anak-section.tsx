@@ -75,7 +75,7 @@ const DetailProfileAnakHeroSection: React.FC<DetailProfileAnakProps> = ({
             onClick={() => namespace.router.back()}
             className="scale-120"
           />
-          <h1 className="text-3xl font-bold">Profil Anak</h1>
+          <h1 className="text-2xl font-bold">Profil Anak</h1>
         </div>
 
         <div className="w-full flex">

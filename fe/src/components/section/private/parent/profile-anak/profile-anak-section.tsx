@@ -19,9 +19,9 @@ const ProfileAnakHeroSection: React.FC<ProfileAnakSectionProps> = ({
   return (
     <div className="w-full min-h-screen flex justify-start items-center flex-col p-2 space-y-2">
       <div className="w-full">
-        <h1 className="text-3xl font-extrabold">Profile Anak</h1>
+        <h1 className="text-2xl font-extrabold">Profile Anak</h1>
       </div>
-      <p className="font-extrabold text-lg">
+      <p className=" text-lg">
         Pantau tumbuh kembang dan asupan gizi anak Anda
       </p>
       <div className="w-full h-full ">
@@ -44,7 +44,7 @@ const ProfileAnakHeroSection: React.FC<ProfileAnakSectionProps> = ({
       </div>
 
       <div className="w-full flex items-center ">
-        <Icon icon="ph:baby" width="45" height="45" className="text-primary" />
+        <Icon icon="ph:baby" width="36" height="36" className="text-primary" />
         <h1 className="text-2xl font-extrabold">Daftar Anak</h1>
       </div>
 

@@ -28,7 +28,7 @@ const DailySummarySection: React.FC<DailySummarySectionProps> = ({
   }
 
   return (
-    <section className="w-full flex items-center justify-start min-h-screen flex-col space-y-5">
+    <section className="w-full flex items-center justify-start min-h-screen flex-col space-y-5 p-2">
       <div className="w-full flex items-center">
         <ChevronLeft
           onClick={() => namespace.router.back()}

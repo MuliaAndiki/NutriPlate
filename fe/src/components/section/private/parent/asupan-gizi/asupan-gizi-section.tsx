@@ -3,16 +3,25 @@ import Link from "next/link";
 import HistoryFood from "@/components/card/food/history-food";
 import IotStatus from "@/components/card/iot/iot-status";
 import { Button } from "@/components/ui/button";
-import { HistoryFoodType } from "@/types/card";
+
 import { ButtonWrapper } from "@/components/wrapper/ButtonWrapper";
 import IotControllerCard from "@/components/card/iot/iot-controller";
+import { FoodIntakeResponse } from "@/types/res";
 
 interface AsupanGiziSectionProps {
-  HistoryFoodData: HistoryFoodType[];
+  service: {
+    query: {
+      historyFood: FoodIntakeResponse[];
+      isLoading: boolean;
+    };
+  };
 }
 const AsupanGiziHeroSection: React.FC<AsupanGiziSectionProps> = ({
-  HistoryFoodData,
+  service,
 }) => {
+  if (service.query.isLoading) {
+    return <div>loading..</div>;
+  }
   return (
     <div className="w-full min-h-screen flex justify-start items-center p-2 flex-col space-y-4">
       <div className="w-full">
@@ -62,15 +71,18 @@ const AsupanGiziHeroSection: React.FC<AsupanGiziSectionProps> = ({
           />
           <h1 className="text-2xl font-bold">Riwayat Asupan Gizi</h1>
         </div>
-        <Link href={"/parent/asupan-gizi/riwayat-asupan-gizi"}>
-          <Button variant={"btn"} className="font-light">
-            Lihat Semua
-          </Button>
-        </Link>
+        {service.query.historyFood.length > 5 && (
+          <Link href={"/parent/asupan-gizi/riwayat-asupan-gizi"}>
+            <Button variant={"btn"} className="font-light">
+              Lihat Semua
+            </Button>
+          </Link>
+        )}
       </div>
+      {/* not yet slice  */}
       <div className="w-full space-y-3 ">
-        {HistoryFoodData.map((items) => (
-          <HistoryFood data={items} key={items.id} />
+        {service.query.historyFood.slice(0, 4).map((items) => (
+          <HistoryFood res={items} key={items.id} />
         ))}
       </div>
     </div>

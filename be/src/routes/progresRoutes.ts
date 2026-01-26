@@ -59,12 +59,17 @@ class ProgresRoutes {
       },
     );
 
-    this.progresRoutes.get('/', (c: AppContext) => ProgresController.getChildInProgram(c), {
-      beforeHandle: [verifyToken().beforeHandle],
-    });
+    this.progresRoutes.get(
+      '/program/:childId',
+      (c: AppContext) => ProgresController.getChildInProgram(c),
+      {
+        beforeHandle: [verifyToken().beforeHandle],
+      },
+    );
     this.progresRoutes.patch('/:id', (c: AppContext) => ProgresController.cancelChildProgram(c), {
       beforeHandle: [verifyToken().beforeHandle, requireRole(['POSYANDU', 'PARENT']).beforeHandle],
     });
+    // not fix
     this.progresRoutes.get(
       '/:childId',
       (c: AppContext) => ProgresController.getChildInProgramByID(c),

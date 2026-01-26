@@ -28,15 +28,19 @@ class MeasurementRoutes {
     );
 
     this.measurementRoutes.get(
-      '/evaluation/:id',
+      '/evaluation/:childID',
       (c: AppContext) => MeasurementController.getGrowthChart(c),
       {
         beforeHandle: [verifyToken().beforeHandle],
       },
     );
-    this.measurementRoutes.get('/:id', (c: AppContext) => MeasurementController.getMeasurement(c), {
-      beforeHandle: [verifyToken().beforeHandle],
-    });
+    this.measurementRoutes.get(
+      '/:childID',
+      (c: AppContext) => MeasurementController.getMeasurement(c),
+      {
+        beforeHandle: [verifyToken().beforeHandle],
+      },
+    );
     this.measurementRoutes.put(
       '/:id',
       (c: AppContext) => MeasurementController.updateMeasurement(c),
