@@ -1,9 +1,10 @@
 import { useGetHistoryFoodIntake } from "./state/query";
+import { useCreateFoodIntake } from "./state/mutation";
 
 export function useFoodIntake() {
   return {
     mutation: {
-      // logic mutatiom
+      createFoodIntake: useCreateFoodIntake,
     },
     query: {
       getHistoryFoodIntake: useGetHistoryFoodIntake,

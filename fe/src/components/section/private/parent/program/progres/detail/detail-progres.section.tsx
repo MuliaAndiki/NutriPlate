@@ -29,11 +29,15 @@ interface ProgresDetailSectionProps {
     taskId: string | null;
     setTaskId: React.Dispatch<React.SetStateAction<string | null>>;
   };
+  actions: {
+    onOpenCameraForTask: (taskId: string) => void;
+  };
 }
 const ProgresDetailSection: React.FC<ProgresDetailSectionProps> = ({
   namespace,
   service,
   state,
+  actions,
 }) => {
   const LIMIT = 9;
   const tasks = service.query.task;
@@ -106,12 +110,21 @@ const ProgresDetailSection: React.FC<ProgresDetailSectionProps> = ({
         </div>
         <div className="w-full space-y-2">
           {slicedTasks.map((items) => (
-            <ListTask
-              key={items.id}
-              res={items}
-              setTaskId={state.setTaskId}
-              taskId={state.taskId}
-            />
+            <div key={items.id} className="w-full space-y-2">
+              <ListTask
+                res={items}
+                setTaskId={state.setTaskId}
+                taskId={state.taskId}
+              />
+
+              <button
+                onClick={() => actions.onOpenCameraForTask(items.id)}
+                className="w-full px-4 py-2 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg font-medium text-sm flex items-center justify-center space-x-2 transition"
+              >
+                <Icon icon="tabler:line-scan" width="20" height="20" />
+                <span> Scan untuk Selesaikan Task Ini</span>
+              </button>
+            </div>
           ))}
 
           {remainingCount > 0 && (
