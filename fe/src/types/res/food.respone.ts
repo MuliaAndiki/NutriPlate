@@ -26,9 +26,9 @@ export interface FoodIntakeResponse {
   inferenceHash?: string;
   mlModelVersion?: string;
   totalWeightGram: number;
-  createdAt: Date;
+  createdAt: string;
   updatedAt: Date;
-  items: FoodIntakeItem[];
+  items: FoodIntakeItem;
 }
 
 export interface CreateFoodIntakeResponse {

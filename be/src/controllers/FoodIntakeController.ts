@@ -285,7 +285,9 @@ class FoodIntakeController {
             parentId: jwtUser.id,
           },
         },
-        take: 10,
+        include: {
+          items: true,
+        },
       });
       if (!history) {
         return c.json?.(

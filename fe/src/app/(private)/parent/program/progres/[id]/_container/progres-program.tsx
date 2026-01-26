@@ -17,7 +17,7 @@ const ProgresProgramContainer = () => {
   const childQueryById = service.user.query.childById(id ?? "");
   const childDataById = childQueryById.data?.data ?? null;
 
-  const progresInChildQuery = service.progres.query.progresInChild();
+  const progresInChildQuery = service.progres.query.progresInChild(id ?? "");
   const progresInChildData = progresInChildQuery.data?.data ?? [];
 
   return (
@@ -35,6 +35,9 @@ const ProgresProgramContainer = () => {
                 childQueryById.isLoading || progresInChildQuery.isLoading,
               progres: progresInChildData ?? [],
             },
+          }}
+          state={{
+            childId: id ?? "",
           }}
         />
       </main>

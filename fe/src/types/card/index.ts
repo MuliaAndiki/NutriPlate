@@ -1,12 +1,4 @@
 import { NutritionStatus } from "../partial";
-export interface HistoryFoodType {
-  id: string;
-  image: string;
-  date: string;
-  title: string;
-  weight: number;
-  gizi: number;
-}
 
 export interface ProfileChildType {
   key: string;

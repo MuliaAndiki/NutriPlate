@@ -18,10 +18,13 @@ export const cacheKey = {
   },
   progres: {
     byID: (id: string) => [`progres:id:${id}`],
-    list: () => [`progres:list:`],
+    byChildList: (id: string) => [`progres:list:child:${id}`],
   },
   foodSummaryDaily: {
     byChild: (child: string) => [`food:summary:child:${child}`],
+  },
+  foodIntake: {
+    list: () => [`food:list`],
   },
   posyandu: {
     list: () => [`posyandu:list`],

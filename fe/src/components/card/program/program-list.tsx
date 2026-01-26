@@ -8,9 +8,14 @@ import { formatDayProgress } from "@/utils/formatDayProgress";
 interface ProgresListCard {
   res: ProgresRespone;
   pathname?: string;
+  childId: string;
 }
 
-const ProgresListCard: React.FC<ProgresListCard> = ({ res, pathname }) => {
+const ProgresListCard: React.FC<ProgresListCard> = ({
+  res,
+  pathname,
+  childId,
+}) => {
   const isDone = res.isCompleted ?? (res as any).isComplated;
   const headerBg = isDone ? "bg-info" : "bg-primary";
   const hiddenRoutes = [
@@ -83,7 +88,7 @@ const ProgresListCard: React.FC<ProgresListCard> = ({ res, pathname }) => {
     <div className="w-full h-full cursor-default">{CardContent}</div>
   ) : (
     <Link
-      href={`/parent/program/progres/${res.childId}/detail/${res.id}`}
+      href={`/parent/program/progres/${childId}/detail/${res.id}`}
       className="w-full h-full"
     >
       {CardContent}

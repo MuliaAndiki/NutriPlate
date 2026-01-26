@@ -153,18 +153,18 @@ class MeasurementController {
   public async getGrowthChart(c: AppContext) {
     try {
       const jwtUser = c.user as JwtPayload;
-      const { childId } = c.params as { childId?: string };
+      const params = c.params as PickMeasurementsChildID;
 
       if (!jwtUser) {
         return c.json?.({ status: 401, message: 'Unauthorized' }, 401);
       }
 
-      if (!childId) {
+      if (!params.childID) {
         return c.json?.({ status: 400, message: 'childId required' }, 400);
       }
 
       const child = await prisma.child.findUnique({
-        where: { id: childId },
+        where: { id: params.childID },
         select: {
           id: true,
           gender: true,
@@ -185,7 +185,7 @@ class MeasurementController {
       }
 
       const measurements = await prisma.measurement.findMany({
-        where: { childId },
+        where: { childId: params.childID },
         orderBy: { measurementDate: 'asc' },
       });
 
@@ -292,7 +292,7 @@ class MeasurementController {
   public async getMeasurement(c: AppContext) {
     try {
       const jwtUser = c.user as JwtPayload;
-      const { childId } = c.params as { childId?: string };
+      const params = c.params as PickMeasurementsChildID;
 
       if (!jwtUser) {
         return c.json?.(
@@ -304,7 +304,7 @@ class MeasurementController {
         );
       }
 
-      if (!childId) {
+      if (!params.childID) {
         return c.json?.(
           {
             status: 400,
@@ -313,7 +313,7 @@ class MeasurementController {
           400,
         );
       }
-      const cacheKey = cacheKeys.measurement.byChild(childId);
+      const cacheKey = cacheKeys.measurement.byChild(params.childID);
 
       try {
         const cacheMeasurementChild = await this.redis.get(cacheKey);
@@ -331,7 +331,7 @@ class MeasurementController {
         console.warn(`redis error, fallback DM ${error}`);
       }
       const measurement = await prisma.measurement.findMany({
-        where: { childId },
+        where: { childId: params.childID },
         orderBy: { createdAt: 'asc' },
         take: 20,
       });

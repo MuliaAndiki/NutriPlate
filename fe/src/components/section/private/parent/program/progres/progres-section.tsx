@@ -18,10 +18,14 @@ interface ProgresProgramSectionProps {
       progres: ProgresRespone[];
     };
   };
+  state: {
+    childId: string;
+  };
 }
 const ProgresProgramSection: React.FC<ProgresProgramSectionProps> = ({
   namespace,
   service,
+  state,
 }) => {
   // Falback Skeleton
   if (service.query.isLoading) {
@@ -63,6 +67,7 @@ const ProgresProgramSection: React.FC<ProgresProgramSectionProps> = ({
             key={items.id}
             res={items}
             pathname={namespace.pathname}
+            childId={state.childId}
           />
         ))}
         {runningPrograms.length > 2 && (
@@ -71,29 +76,34 @@ const ProgresProgramSection: React.FC<ProgresProgramSectionProps> = ({
           </Link>
         )}
       </div>
-      <div className="w-full flex items-center">
-        <Icon
-          icon="si:ai-note-duotone"
-          width="30"
-          height="30"
-          className="text-primary"
-        />
-        <h1 className="text-2xl font-bold">Program Selesai</h1>
-      </div>
-      <div className="w-full">
-        {completedPrograms.slice(0, 1).map((items) => (
-          <ProgresListCard
-            key={items.id}
-            res={items}
-            pathname={namespace.pathname}
-          />
-        ))}
-        {completedPrograms.length > 1 && (
-          <Link href={"#"}>
-            <h1 className="font-light underline text-end">Selengkapnya</h1>
-          </Link>
-        )}
-      </div>
+      {completedPrograms.length > 0 && (
+        <>
+          <div className="w-full flex items-center">
+            <Icon
+              icon="si:ai-note-duotone"
+              width="30"
+              height="30"
+              className="text-primary"
+            />
+            <h1 className="text-2xl font-bold">Program Selesai</h1>
+          </div>
+          <div className="w-full">
+            {completedPrograms.slice(0, 1).map((items) => (
+              <ProgresListCard
+                key={items.id}
+                res={items}
+                pathname={namespace.pathname}
+                childId={state.childId}
+              />
+            ))}
+            {completedPrograms.length > 1 && (
+              <Link href={"#"}>
+                <h1 className="font-light underline text-end">Selengkapnya</h1>
+              </Link>
+            )}
+          </div>
+        </>
+      )}
     </section>
   );
 };

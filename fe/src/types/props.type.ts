@@ -1,8 +1,4 @@
-import { GrowthStatusType, HistoryFoodType } from "./card";
-
-export interface HistoryFootProps {
-  data: HistoryFoodType;
-}
+import { GrowthStatusType } from "./card";
 
 export interface GrowthStatusProps {
   data: GrowthStatusType;

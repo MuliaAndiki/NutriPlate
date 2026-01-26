@@ -30,7 +30,7 @@ const ChildProgramCard: React.FC<ChildProgramCard> = ({
   const content = (
     <Card
       className={`w-full p-3 ${
-        idChild && mode === "DETAIL" ? "border-primary" : "border-transparent"
+        idChild && mode === "DETAIL" ? "border-primary" : "border-transparent "
       }`}
       onClick={() => {
         if (mode === "DETAIL") {
@@ -69,7 +69,10 @@ const ChildProgramCard: React.FC<ChildProgramCard> = ({
   );
 
   return mode === "LIST" ? (
-    <Link className="w-full" href={`/parent/program/progres/${childType.id}`}>
+    <Link
+      className="w-full block"
+      href={`/parent/program/progres/${childType.id}`}
+    >
       {content}
     </Link>
   ) : (

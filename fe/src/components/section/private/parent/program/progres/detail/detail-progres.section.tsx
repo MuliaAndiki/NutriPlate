@@ -76,6 +76,7 @@ const ProgresDetailSection: React.FC<ProgresDetailSectionProps> = ({
           key={service.query.progres.id}
           res={service.query.progres}
           pathname={namespace.pathname}
+          childId={service.query.progres.childId}
         />
       </div>
       <div className="w-full flex items-center flex-col space-y-1 justify-start">

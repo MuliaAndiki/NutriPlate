@@ -140,107 +140,81 @@ class ProgresController {
   public async getChildInProgram(c: AppContext) {
     try {
       const jwtUser = c.user as JwtPayload;
+      const params = c.params as PickPorgramChildId;
+
+      if (!params.childId) {
+        return c.json?.({ status: 400, message: 'childId is required' }, 400);
+      }
 
       if (!jwtUser) {
-        return c.json?.(
-          {
-            status: 401,
-            message: 'Unauthorized',
-          },
-          401,
-        );
+        return c.json?.({ status: 401, message: 'Unauthorized' }, 401);
       }
+
       const user = await prisma.user.findFirst({
-        where: {
-          id: jwtUser.id,
-        },
-        select: {
-          id: true,
-          role: true,
-        },
+        where: { id: jwtUser.id },
+        select: { id: true, role: true },
       });
 
       if (!user) {
-        return c.json?.(
-          {
-            status: 400,
-            message: 'user not found',
-          },
-          400,
-        );
+        return c.json?.({ status: 404, message: 'user not found' }, 404);
       }
 
-      let childrenIds: string[] = [];
-
       if (user.role === 'PARENT') {
-        const children = await prisma.child.findMany({
+        const child = await prisma.child.findFirst({
           where: {
+            id: params.childId,
             parentId: user.id,
-          },
-          select: {
-            id: true,
           },
         });
 
-        childrenIds = children.map((c) => c.id);
+        if (!child) {
+          return c.json?.({ status: 403, message: 'access denied for this child' }, 403);
+        }
       }
 
       if (user.role === 'POSYANDU') {
         const posyandu = await prisma.posyandu.findFirst({
-          where: {
-            userID: user.id,
-          },
-          select: {
-            id: true,
-          },
+          where: { userID: user.id },
+          select: { id: true },
         });
 
         if (!posyandu) {
           return c.json?.({ status: 404, message: 'posyandu not found' }, 404);
         }
 
-        const children = await prisma.child.findMany({
+        const child = await prisma.child.findFirst({
           where: {
+            id: params.childId,
             posyanduId: posyandu.id,
           },
-          select: {
-            id: true,
-          },
         });
 
-        childrenIds = children.map((c) => c.id);
+        if (!child) {
+          return c.json?.({ status: 403, message: 'access denied for this child' }, 403);
+        }
       }
-      let cacheKey = '';
-      if (user.role === 'PARENT') {
-        cacheKey = cacheKeys.progress.byRole('PARENT:' + user.id);
-      } else if (user.role === 'POSYANDU') {
-        const posyandu = await prisma.posyandu.findFirst({
-          where: { userID: user.id },
-          select: { id: true },
-        });
-        cacheKey = cacheKeys.progress.byRole('POSYANDU:' + (posyandu?.id || ''));
-      }
+
+      const cacheKey = cacheKeys.progress.byChild(params.childId);
 
       try {
-        const cacheProgres = await this.redis.get(cacheKey);
-        if (cacheProgres) {
+        const cache = await this.redis.get(cacheKey);
+        if (cache) {
           return c.json?.(
             {
               status: 200,
-              message: 'succesfully get by child',
-              data: JSON.parse(cacheProgres),
+              message: 'successfully get progress by child (cache)',
+              data: JSON.parse(cache),
             },
             200,
           );
         }
       } catch (error) {
-        console.warn(`redis error, fallback db: ${error}`);
+        console.warn('redis error, fallback db', error);
       }
+
       const progres = await prisma.nutritionProgramProgress.findMany({
         where: {
-          childId: {
-            in: childrenIds,
-          },
+          childId: params.childId,
           isCompleted: false,
           isAccep: true,
         },
@@ -255,56 +229,46 @@ class ProgresController {
             select: {
               id: true,
               name: true,
+              startPrograms: true,
+              endPrograms: true,
             },
           },
           task: true,
         },
-        orderBy: {
-          createdAt: 'desc',
-        },
+        orderBy: { createdAt: 'desc' },
       });
 
-      if (!progres) {
-        return c.json?.({
-          status: 400,
-          message: 'server internal error',
-        });
-      } else if (progres && progres.length > 0) {
-        const progresWithSummary = progres.map((prog) => {
-          const totalTask = prog.task.length;
-          const completeTask = prog.task.filter((task) => task.isComplated === true).length;
-          const percentage = totalTask > 0 ? Math.round((completeTask / totalTask) * 100) : 0;
-          const remainingTask = totalTask - completeTask;
-          const status =
-            percentage === 100 ? 'COMPLETED' : percentage > 0 ? 'ON_PROGRESS' : 'NOT_STARTED';
-          const isComplated = percentage === 100;
+      const progresWithSummary = progres.map((prog) => {
+        const totalTask = prog.task.length;
+        const completeTask = prog.task.filter((t) => t.isComplated).length;
+        const percentage = totalTask ? Math.round((completeTask / totalTask) * 100) : 0;
 
-          return {
-            ...prog,
-            isComplated,
-            progressSummary: {
-              totalTask,
-              completeTask,
-              remainingTask,
-              percentage,
-              status,
-            },
-          };
-        });
-
-        await this.redis
-          .set(cacheKey, JSON.stringify(progresWithSummary), { EX: 60 })
-          .catch(console.error);
-
-        return c.json?.(
-          {
-            status: 200,
-            message: 'succesfully get all child in progress',
-            data: progresWithSummary,
+        return {
+          ...prog,
+          isComplated: percentage === 100,
+          progressSummary: {
+            totalTask,
+            completeTask,
+            remainingTask: totalTask - completeTask,
+            percentage,
+            status:
+              percentage === 100 ? 'COMPLETED' : percentage > 0 ? 'ON_PROGRESS' : 'NOT_STARTED',
           },
-          200,
-        );
-      }
+        };
+      });
+
+      await this.redis
+        .set(cacheKey, JSON.stringify(progresWithSummary), { EX: 60 })
+        .catch(console.error);
+
+      return c.json?.(
+        {
+          status: 200,
+          message: 'successfully get child in progress',
+          data: progresWithSummary,
+        },
+        200,
+      );
     } catch (error) {
       console.error(error);
       return c.json?.(
@@ -321,7 +285,7 @@ class ProgresController {
   public async getChildInProgramByID(c: AppContext) {
     try {
       const jwtUser = c.user as JwtPayload;
-      const params = c.params as PickPorgramChildId;
+      const params = c.params as PickProgramProgresID;
 
       if (!params) {
         return c.json?.(
@@ -343,7 +307,7 @@ class ProgresController {
         );
       }
 
-      const cacheKey = cacheKeys.progress.byChild(params.childId);
+      const cacheKey = cacheKeys.progress.byID(params.id);
       try {
         const cache = await this.redis.get(cacheKey);
         if (cache) {
@@ -362,7 +326,7 @@ class ProgresController {
 
       const progres = await prisma.nutritionProgramProgress.findFirst({
         where: {
-          childId: params.childId,
+          id: params.id,
         },
         include: {
           child: true,

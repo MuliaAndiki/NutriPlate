@@ -13,8 +13,8 @@ const DetailProgramContainer = () => {
   const service = useService();
   const { id } = useParams<{ id: string }>();
   // program
-  const programQuery = service.program.query.getProgramById(id);
-  const programData = programQuery.data?.data ?? null;
+  const programQueryById = service.program.query.getProgramById(id);
+  const programDataById = programQueryById.data?.data ?? null;
   // child
   const childQuery = service.user.query.childAll();
   const childData = childQuery.data?.data ?? [];
@@ -49,8 +49,8 @@ const DetailProgramContainer = () => {
         <DetailProgramHeroSection
           service={{
             query: {
-              program: programData ?? null,
-              isLoading: programQuery.isLoading || childQuery.isLoading,
+              program: programDataById ?? null,
+              isLoading: programQueryById.isLoading || childQuery.isLoading,
               children: childData ?? [],
             },
             mutation: {
