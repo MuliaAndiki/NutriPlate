@@ -1,39 +1,117 @@
 import { Card } from "@/components/ui/card";
 import { ButtonWrapper } from "@/components/wrapper/ButtonWrapper";
+import { GetWeightIorRespone } from "@/types/res";
 import { Icon } from "@iconify/react/dist/iconify.js";
 
-const IotControllerCard = () => {
+interface IotControllerCardProps {
+  onStartScale: () => void;
+  onTareScale: () => void;
+  isPending: boolean;
+  weight: GetWeightIorRespone;
+  holdingWeight: number;
+  isActive: boolean;
+  onCancelStart: () => void;
+  onHoldWeight: () => void;
+  onRejectWeight: () => void;
+  onConfirmWeight: () => void;
+}
+
+const IotControllerCard: React.FC<IotControllerCardProps> = ({
+  onStartScale,
+  onTareScale,
+  isPending,
+  weight,
+  onCancelStart,
+  isActive,
+  holdingWeight,
+  onHoldWeight,
+  onRejectWeight,
+  onConfirmWeight,
+}) => {
+  const displayWeight =
+    weight?.weight && weight.weight > 0
+      ? weight.weight
+      : holdingWeight > 0
+        ? holdingWeight
+        : null;
   return (
     <Card className="w-full p-4">
       <div className="w-full flex items-center justify-center border-b p-4">
-        <h1 className="text-foreground/80 ">
-          Hasil Timbangan Akan Muncul Disini
-        </h1>
+        <div className="w-full flex items-center justify-center  p-4">
+          {displayWeight !== null ? (
+            <h1 className="text-3xl font-bold">
+              {displayWeight} <span className="text-base">gram</span>
+            </h1>
+          ) : (
+            <h1 className="text-foreground/80">
+              Hasil Timbangan Akan Muncul Disini
+            </h1>
+          )}
+        </div>
       </div>
       <div className="w-full  flex items-center justify-between space-x-3 pb-4 border-b">
-        <div className="w-full">
-          <ButtonWrapper
-            variant={"destructive"}
-            className="text-background w-full"
-          >
-            Batalkan
-          </ButtonWrapper>
-        </div>
-        <div className="w-full">
-          <ButtonWrapper className="w-full" variant={"default"}>
-            Gunakan Berat Ini
-          </ButtonWrapper>
-        </div>
+        {isActive === true && (
+          <div className="w-full flex items-center gap-2">
+            <div className="w-full">
+              <ButtonWrapper
+                variant={"destructive"}
+                className="text-background w-full"
+                onClick={() => onCancelStart()}
+              >
+                Hentikan
+              </ButtonWrapper>
+            </div>
+            <div className="w-full">
+              <ButtonWrapper
+                className="w-full"
+                variant={"default"}
+                onClick={() => onHoldWeight()}
+              >
+                Gunakan Berat Ini
+              </ButtonWrapper>
+            </div>
+          </div>
+        )}
+
+        {holdingWeight > 0 && (
+          <div className="w-full flex items-center gap-2 ">
+            <div className="w-full">
+              <ButtonWrapper
+                variant={"destructive"}
+                className="text-background w-full"
+                onClick={() => onRejectWeight()}
+                disabled={isPending}
+              >
+                Tolak Berat Ini
+              </ButtonWrapper>
+            </div>
+
+            <div className="w-full">
+              <ButtonWrapper
+                variant={"btn"}
+                className="text-background w-full"
+                disabled={isPending}
+                onClick={() => onConfirmWeight()}
+              >
+                Scan Makanan
+              </ButtonWrapper>
+            </div>
+          </div>
+        )}
       </div>
       <div className="w-full space-y-2 pb-4 border-b">
         <ButtonWrapper
           className="w-full text-destructive  bg-destructive/30 border border-destructive"
           variant={"destructive"}
+          disabled={isPending}
+          onClick={() => onStartScale()}
           leftIcon={<Icon icon="picon:reload" width="16" height="16" />}
         >
-          Reset Timbangan
+          Start Timbangan
         </ButtonWrapper>
         <ButtonWrapper
+          onClick={() => onTareScale()}
+          disabled={isPending}
           leftIcon={
             <Icon
               icon="streamline:star-2-remix"

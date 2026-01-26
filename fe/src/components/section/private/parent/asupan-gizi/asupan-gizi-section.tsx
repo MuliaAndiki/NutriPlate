@@ -6,23 +6,39 @@ import { Button } from "@/components/ui/button";
 import PopUp from "@/components/ui/pop-up";
 import { ButtonWrapper } from "@/components/wrapper/ButtonWrapper";
 import IotControllerCard from "@/components/card/iot/iot-controller";
-import { FoodIntakeResponse } from "@/types/res";
+import {
+  FoodIntakeResponse,
+  GetStatusIotRespone,
+  GetWeightIorRespone,
+} from "@/types/res";
 
 interface AsupanGiziSectionProps {
   service: {
     query: {
       historyFood: FoodIntakeResponse[];
       isLoading: boolean;
+      iot: GetStatusIotRespone;
+      weightIot: GetWeightIorRespone | null;
+    };
+    mutation: {
+      onStartScale: () => void;
+      onTareScale: () => void;
+      isPending: boolean;
+      onCancelStart: () => void;
+      onHoldWeight: () => void;
+      onRejectWeight: () => void;
+      onConfirmWeight: () => void;
     };
   };
   actions: {
-    onOpenScanPopUp: () => void;
     handleSelectTaskScan: () => void;
     handleSelectManualScan: () => void;
   };
   state: {
     showFlowPopUp: boolean;
     setShowFlowPopUp: React.Dispatch<React.SetStateAction<boolean>>;
+    isActive: boolean;
+    holdingWeight: number;
   };
 }
 const AsupanGiziHeroSection: React.FC<AsupanGiziSectionProps> = ({
@@ -44,7 +60,7 @@ const AsupanGiziHeroSection: React.FC<AsupanGiziSectionProps> = ({
         </h1>
       </div>
       <div className="w-full">
-        <IotStatus />
+        <IotStatus res={service.query.iot} key={service.query.iot.id} />
       </div>
       <div className="w-full flex items-center">
         <Icon
@@ -56,26 +72,19 @@ const AsupanGiziHeroSection: React.FC<AsupanGiziSectionProps> = ({
         <h1 className="text-2xl font-bold">Kontrol Timbangan</h1>
       </div>
       <div className="w-full">
-        <IotControllerCard />
+        <IotControllerCard
+          isPending={service.mutation.isPending}
+          onStartScale={service.mutation.onStartScale}
+          onTareScale={service.mutation.onTareScale}
+          weight={service.query.weightIot!}
+          isActive={state.isActive}
+          onCancelStart={service.mutation.onCancelStart}
+          onHoldWeight={service.mutation.onHoldWeight}
+          holdingWeight={state.holdingWeight}
+          onRejectWeight={service.mutation.onRejectWeight}
+          onConfirmWeight={service.mutation.onConfirmWeight}
+        />
       </div>
-
-      <ButtonWrapper
-        variant={"btn"}
-        className="w-full h-auto text-lg p-4"
-        startIcon={
-          <Icon
-            icon="tabler:line-scan"
-            width="50"
-            height="50"
-            className="scale-150"
-          />
-        }
-        //disable iot conecction
-
-        onClick={actions.onOpenScanPopUp}
-      >
-        Scan Makanan
-      </ButtonWrapper>
 
       <div className="w-full flex items-center justify-between">
         <div className="w-full flex space-x-2 items-center">

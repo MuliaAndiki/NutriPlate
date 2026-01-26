@@ -40,4 +40,9 @@ export const cacheKey = {
   task: {
     byProgresId: (id: string) => [`task:progres:${id}`],
   },
+  // not fix
+  iot: {
+    byItem: () => [`iot:item`],
+    weight: () => [`iot:weight`],
+  },
 };

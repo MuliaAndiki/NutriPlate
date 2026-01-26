@@ -12,13 +12,122 @@ type CameraFlowType = null | "normal" | "task";
 const AsupanGiziContainer = () => {
   const namespace = useAppNameSpace();
   const service = useService();
+  // food history
   const footHistoryQuery = service.foodIntake.query.getHistoryFoodIntake();
   const footHistoryData = footHistoryQuery.data?.data ?? [];
 
   const [showFlowPopUp, setShowFlowPopUp] = useState(false);
   const [cameraFlow, setCameraFlow] = useState<CameraFlowType>(null);
-
   const createFoodMutation = service.foodIntake.mutation.createFoodIntake();
+
+  //state
+  const [isScaling, setIsScaling] = useState<boolean>(false);
+  const [holdingWeight, setHoldingWeight] = useState<number>(0);
+
+  //iot status
+  const iotStatusQuery = service.iot.query.getStatusIot();
+  const iotStatusData = iotStatusQuery.data?.data ?? null;
+
+  // weight
+  const weightQuery = service.iot.query.getWeight({
+    enabled: isScaling,
+    refetchInterval: isScaling ? 500 : false,
+    staleTime: 0,
+  });
+  const weightData = isScaling ? (weightQuery.data ?? null) : null;
+
+  // mutation
+  const startScaleMutation = service.iot.mutation.startScale();
+  const tareModeMutation = service.iot.mutation.tareMode();
+  const cancelStartMutation = service.iot.mutation.cancelStart();
+  const holdWeightMutation = service.iot.mutation.HoldWeight();
+  const rejectWeightMutation = service.iot.mutation.rejectWeight();
+  const onConfirmWeightMutation = service.iot.mutation.confirmWeight();
+
+  //handler
+  const handleStartScale = () => {
+    if (!iotStatusData.id) return null;
+
+    startScaleMutation.mutate(
+      {},
+      {
+        onSuccess: () => {
+          setHoldingWeight(0);
+          setIsScaling(true);
+        },
+      },
+    );
+  };
+
+  const handleConfirmWeight = () => {
+    if (!iotStatusData.id) return null;
+
+    onConfirmWeightMutation.mutate(
+      {},
+      {
+        //moce logic here
+        onSuccess: (res) => {
+          setIsScaling(false);
+          setHoldingWeight(0);
+          handleOpenScanPopUp();
+        },
+      },
+    );
+  };
+
+  const handleRejectWeight = () => {
+    if (!iotStatusData.id) return null;
+
+    rejectWeightMutation.mutate(
+      {},
+      {
+        onSuccess: () => {
+          setHoldingWeight(0);
+          setIsScaling(false);
+        },
+      },
+    );
+  };
+
+  const handleHoldWeight = () => {
+    if (!iotStatusData.id) return null;
+    holdWeightMutation.mutate(
+      {},
+      {
+        onSuccess: (res) => {
+          setIsScaling(false);
+          setHoldingWeight(res.data.weight);
+        },
+      },
+    );
+  };
+
+  const handleCancleStart = () => {
+    if (!iotStatusData.id) return null;
+
+    cancelStartMutation.mutate(
+      {},
+      {
+        onSuccess: () => {
+          setHoldingWeight(0);
+          setIsScaling(false);
+        },
+      },
+    );
+  };
+  const handleTareMode = () => {
+    if (!iotStatusData.id) return null;
+
+    tareModeMutation.mutate(
+      {},
+      {
+        onSuccess: () => {
+          setHoldingWeight(0);
+          setIsScaling(true);
+        },
+      },
+    );
+  };
 
   const handleOpenScanPopUp = () => {
     setShowFlowPopUp(true);
@@ -102,17 +211,38 @@ const AsupanGiziContainer = () => {
           service={{
             query: {
               historyFood: footHistoryData ?? [],
-              isLoading: footHistoryQuery.isLoading,
+              isLoading:
+                footHistoryQuery.isLoading ||
+                iotStatusQuery.isLoading ||
+                weightQuery.isLoading,
+              iot: iotStatusData ?? null,
+              weightIot: weightData,
+            },
+            mutation: {
+              isPending:
+                startScaleMutation.isPending ||
+                tareModeMutation.isPending ||
+                cancelStartMutation.isPending ||
+                holdWeightMutation.isPending ||
+                rejectWeightMutation.isPending ||
+                onConfirmWeightMutation.isPending,
+              onStartScale: handleStartScale,
+              onTareScale: handleTareMode,
+              onCancelStart: handleCancleStart,
+              onHoldWeight: handleHoldWeight,
+              onRejectWeight: handleRejectWeight,
+              onConfirmWeight: handleConfirmWeight,
             },
           }}
           actions={{
-            onOpenScanPopUp: handleOpenScanPopUp,
             handleSelectManualScan: handleSelectManualScan,
             handleSelectTaskScan: handleSelectTaskScan,
           }}
           state={{
             setShowFlowPopUp: setShowFlowPopUp,
             showFlowPopUp: showFlowPopUp,
+            isActive: isScaling,
+            holdingWeight: holdingWeight,
           }}
         />
       </main>

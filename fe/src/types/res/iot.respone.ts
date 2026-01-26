@@ -21,3 +21,19 @@ export interface RebootIotResponse {
     status: string;
   };
 }
+
+export interface GetStatusIotRespone {
+  id: string;
+  name: string;
+  status: string;
+  weight: number;
+  stable_weight: number;
+  cal_factor: number;
+  state: number;
+  ip: string;
+  state_description: string;
+}
+
+export interface GetWeightIorRespone {
+  weight: number | null;
+}
