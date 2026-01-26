@@ -58,7 +58,6 @@ const NotifikasiKaderSection: React.FC<NotifikasiKaderSectionProp> = ({
     return <div>loading...</div>;
   }
 
-  // ✅ Filter logic tetap di sini karena itu presentational logic
   const filtered = service.query.notifikasi.filter((item) => {
     const itemIsRead = readStatus[item.id] ?? false;
     if (state.filter === "NotRead" && itemIsRead) return false;
@@ -72,7 +71,7 @@ const NotifikasiKaderSection: React.FC<NotifikasiKaderSectionProp> = ({
   });
 
   return (
-    <div className="w-full min-h-screen flex items-center justify-start flex-col overflow-x-hidden relative p-2 space-y-2 ">
+    <section className="w-full min-h-screen flex items-center justify-start flex-col overflow-x-hidden relative p-2 space-y-2 ">
       <div className="w-full flex items-center justify-between  mt-2">
         <div className="flex items-center">
           <ChevronLeft
@@ -166,7 +165,6 @@ const NotifikasiKaderSection: React.FC<NotifikasiKaderSectionProp> = ({
       </div>
       <div className="w-full space-y-2">
         {filtered.map((items) => (
-          // ✅ Pass per-user read status ke card
           <NotifikasiCard
             key={items.id}
             res={items}
@@ -174,7 +172,7 @@ const NotifikasiKaderSection: React.FC<NotifikasiKaderSectionProp> = ({
           />
         ))}
       </div>
-    </div>
+    </section>
   );
 };
 

@@ -20,7 +20,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { NotifTypeInterface } from "@/types/partial";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
 
 interface NotifikasiParentSectionProp {
   namespace: {
@@ -49,7 +48,6 @@ const NotifikasiParentSection: React.FC<NotifikasiParentSectionProp> = ({
   state,
   readStatus,
 }) => {
-  // ✅ Logic moved ke container - ini hanya presentational component
   const toggleType = (type: NotifTypeInterface) => {
     state.setSelectedTypes((prev) =>
       prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type],
@@ -59,7 +57,6 @@ const NotifikasiParentSection: React.FC<NotifikasiParentSectionProp> = ({
     return <div>loading...</div>;
   }
 
-  // ✅ Filter logic tetap di sini karena itu presentational logic
   const filtered = service.query.notifikasi.filter((item) => {
     const itemIsRead = readStatus[item.id] ?? false;
     if (state.filter === "NotRead" && itemIsRead) return false;

@@ -11,6 +11,7 @@ import PopUp from "@/components/ui/pop-up";
 
 import { Icon } from "@iconify/react/dist/iconify.js";
 import RegisterKaderForm from "./_registerKader/registerKader";
+import Link from "next/link";
 
 interface HomeKaderHeroSectionProps {
   service: {
@@ -40,7 +41,20 @@ const HomeKaderHeroSection: React.FC<HomeKaderHeroSectionProps> = ({
   if (service.query.isLoading) {
     return <div>loading..</div>;
   }
-
+  const buttonRouting = [
+    {
+      title: "Daftar Orang Tua",
+      rightIcon: "fluent:arrow-right-24-filled",
+      leftIcon: "raphael:parent",
+      href: "/kader/daftar-orang-tua",
+    },
+    {
+      title: "Program Posyandu",
+      rightIcon: "fluent:arrow-right-24-filled",
+      leftIcon: "raphael:parent",
+      href: "#",
+    },
+  ];
   const lengthChild = service.query.childInPosyandu.length;
   return (
     <div className="w-full overflow-hidden">
@@ -88,6 +102,42 @@ const HomeKaderHeroSection: React.FC<HomeKaderHeroSectionProps> = ({
               </ButtonWrapper>
             </div>
           )}
+        </div>
+        <div className="w-full">
+          <div className="w-full flex items-center">
+            <Icon
+              icon="bx:data"
+              width="38"
+              height="38"
+              className="text-primary"
+            />
+            <h1 className="font-bold text-2xl">Akses Data & Program</h1>
+          </div>
+          {buttonRouting.map((items, idx) => (
+            <Link key={idx} href={items.href} className="w-full h-auto">
+              <ButtonWrapper
+                className="w-full text-start my-1"
+                rightIcon={
+                  <Icon
+                    icon={items.rightIcon}
+                    width="38"
+                    height="38"
+                    className="text-background"
+                  />
+                }
+                leftIcon={
+                  <Icon
+                    icon={items.leftIcon}
+                    width="38"
+                    height="38"
+                    className="text-background"
+                  />
+                }
+              >
+                {items.title}
+              </ButtonWrapper>
+            </Link>
+          ))}
         </div>
         <PopUp
           isOpen={state.popup === "fRegisterKader"}

@@ -44,12 +44,12 @@ export const NavigationKader: NagivationType[] = [
   {
     name: "Daftar Balita",
     icon: <Icon icon="healthicons:child-program" />,
-    href: `${routing.kader}/`,
+    href: `${routing.kader}/daftar-balita`,
   },
   {
     name: "Laporan",
     icon: <Icon icon="proicons:note" />,
-    href: `${routing.kader}/`,
+    href: `${routing.kader}/laporan`,
   },
   {
     name: "Akun",
