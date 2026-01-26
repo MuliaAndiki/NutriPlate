@@ -12,9 +12,3 @@ export interface HealthCheckResponse {
     timestamp: Date;
   };
 }
-
-export interface IotStatusResponse {
-  status: number;
-  message: string;
-  data?: any;
-}
