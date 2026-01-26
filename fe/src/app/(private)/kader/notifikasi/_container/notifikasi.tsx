@@ -1,14 +1,15 @@
 "use client";
-import NotifikasiParentSection from "@/components/section/private/parent/notifikasi/notifikasi-section";
+import NotifikasiKaderSection from "@/components/section/private/kader/notifikasi/notifikasi-section";
+import { APP_SESSION_COOKIE_KEY } from "@/configs/cookies.config";
+
 import { SidebarLayout } from "@/core/layouts/sidebar.layout";
 import useService from "@/hooks/mutation/prop.service";
 import { useAppNameSpace } from "@/hooks/useAppNameSpace";
 import { NotifTypeInterface } from "@/types/partial";
-import { useState, useEffect } from "react";
 import { getCookie } from "cookies-next";
-import { APP_SESSION_COOKIE_KEY } from "@/configs/cookies.config";
+import { useState, useEffect } from "react";
 
-const NotafikasiParentContainer = () => {
+const NotafikasiKaderContainer = () => {
   const namespace = useAppNameSpace();
   const service = useService();
   const token = getCookie(APP_SESSION_COOKIE_KEY) as string | undefined;
@@ -50,7 +51,7 @@ const NotafikasiParentContainer = () => {
   return (
     <SidebarLayout>
       <main className="w-full overflow-x-hidden min-h-screen">
-        <NotifikasiParentSection
+        <NotifikasiKaderSection
           namespace={{
             router: namespace.router,
           }}
@@ -73,4 +74,4 @@ const NotafikasiParentContainer = () => {
   );
 };
 
-export default NotafikasiParentContainer;
+export default NotafikasiKaderContainer;

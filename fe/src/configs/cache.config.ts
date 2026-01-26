@@ -28,9 +28,10 @@ export const cacheKey = {
   },
   posyandu: {
     list: () => [`posyandu:list`],
+    children: (posyanduId: string) => [`posyandu:children;${posyanduId}`],
   },
   notification: {
-    byUser: () => [`notifikasi:user`],
+    byUser: (token: string) => [`notifikasi:user:${token}`],
     byId: (id: string) => [`notifikasi:id:${id}`],
   },
   regisProgram: {

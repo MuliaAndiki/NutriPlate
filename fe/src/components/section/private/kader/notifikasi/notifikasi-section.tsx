@@ -1,5 +1,5 @@
 import NotifikasiCard from "@/components/card/notifikasi/notif-card";
-import { ButtonWrapper } from "@/components/wrapper/ButtonWrapper";
+
 import { INotification } from "@/types/schema/notafication.schema";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import {
@@ -20,8 +20,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { NotifTypeInterface } from "@/types/partial";
 import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import useService from "@/hooks/mutation/prop.service";
 
-interface NotifikasiParentSectionProp {
+interface NotifikasiKaderSectionProp {
   namespace: {
     router: AppRouterInstance;
   };
@@ -41,8 +43,7 @@ interface NotifikasiParentSectionProp {
   };
   readStatus: Record<string, boolean>;
 }
-
-const NotifikasiParentSection: React.FC<NotifikasiParentSectionProp> = ({
+const NotifikasiKaderSection: React.FC<NotifikasiKaderSectionProp> = ({
   namespace,
   service,
   state,
@@ -70,7 +71,7 @@ const NotifikasiParentSection: React.FC<NotifikasiParentSectionProp> = ({
   });
 
   return (
-    <div className="w-full min-h-screen flex items-center justify-start flex-col overflow-x-hidden relative p-2 space-y-2 ">
+    <section className="w-full min-h-screen flex items-center justify-start flex-col overflow-x-hidden relative p-2 space-y-2 ">
       <div className="w-full flex items-center justify-between  mt-2">
         <div className="flex items-center">
           <ChevronLeft
@@ -171,8 +172,8 @@ const NotifikasiParentSection: React.FC<NotifikasiParentSectionProp> = ({
           />
         ))}
       </div>
-    </div>
+    </section>
   );
 };
 
-export default NotifikasiParentSection;
+export default NotifikasiKaderSection;

@@ -542,6 +542,282 @@ class PosyanduController {
       );
     }
   }
+  public async getKaderListByPosyandu(c: AppContext) {
+    try {
+      const jwtUser = c.user as JwtPayload;
+
+      if (!jwtUser) {
+        return c.json?.(
+          {
+            status: 401,
+            message: 'Unauthorized',
+          },
+          401,
+        );
+      }
+
+      if (jwtUser.role !== 'POSYANDU') {
+        return c.json?.(
+          {
+            status: 403,
+            message: 'Hanya posyandu yang dapat mengakses',
+          },
+          403,
+        );
+      }
+
+      const posyandu = await prisma.posyandu.findFirst({
+        where: {
+          userID: jwtUser.id,
+        },
+        select: {
+          id: true,
+          name: true,
+        },
+      });
+
+      if (!posyandu) {
+        return c.json?.(
+          {
+            status: 404,
+            message: 'Posyandu tidak ditemukan',
+          },
+          404,
+        );
+      }
+
+      const cacheKey = cacheKeys.kaderregistration.byPosyandu(posyandu.id);
+      const cached = await this.redis.get(cacheKey);
+      if (cached) {
+        return c.json?.(
+          {
+            status: 200,
+            message: 'Berhasil mendapatkan daftar kader',
+            data: JSON.parse(cached),
+          },
+          200,
+        );
+      }
+
+      const kaderList = await prisma.kaderRegistration.findMany({
+        where: {
+          posyanduId: posyandu.id,
+          status: 'accepted',
+        },
+        select: {
+          id: true,
+          kaderId: true,
+          kader: {
+            select: {
+              id: true,
+              fullName: true,
+              email: true,
+              role: true,
+            },
+          },
+          createdAt: true,
+          updatedAt: true,
+        },
+        orderBy: {
+          updatedAt: 'desc',
+        },
+      });
+
+      const formattedData = {
+        posyandu: {
+          id: posyandu.id,
+          name: posyandu.name,
+        },
+        totalKader: kaderList.length,
+        kaders: kaderList.map((reg) => ({
+          registrationId: reg.id,
+          id: reg.kader.id,
+          fullName: reg.kader.fullName,
+          email: reg.kader.email,
+          role: reg.kader.role,
+          registeredAt: reg.createdAt,
+          acceptedAt: reg.updatedAt,
+        })),
+      };
+
+      await this.redis.set(cacheKey, JSON.stringify(formattedData), { EX: 300 });
+
+      return c.json?.(
+        {
+          status: 200,
+          message: 'Berhasil mendapatkan daftar kader',
+          data: formattedData,
+        },
+        200,
+      );
+    } catch (error) {
+      console.error('[getKaderListByPosyandu]', error);
+      return c.json?.(
+        {
+          status: 500,
+          message: 'Server internal error',
+          error: error instanceof Error ? error.message : error,
+        },
+        500,
+      );
+    }
+  }
+
+  public async getChildListByPosyandu(c: AppContext) {
+    try {
+      const jwtUser = c.user as JwtPayload;
+      const params = c.params as PickPosyanduID;
+
+      if (!jwtUser) {
+        return c.json?.(
+          {
+            status: 401,
+            message: 'Unauthorized',
+          },
+          401,
+        );
+      }
+
+      if (!params?.id) {
+        return c.json?.(
+          {
+            status: 400,
+            message: 'Posyandu ID is required',
+          },
+          400,
+        );
+      }
+
+      let isAuthorized = false;
+
+      if (jwtUser.role === 'POSYANDU') {
+        const posyanduOwner = await prisma.posyandu.findFirst({
+          where: {
+            id: params.id,
+            userID: jwtUser.id,
+          },
+          select: { id: true },
+        });
+        isAuthorized = !!posyanduOwner;
+      } else if (jwtUser.role === 'KADER') {
+        const kaderRegistration = await prisma.kaderRegistration.findFirst({
+          where: {
+            posyanduId: params.id,
+            kaderId: jwtUser.id,
+            status: 'accepted',
+          },
+          select: { id: true },
+        });
+        isAuthorized = !!kaderRegistration;
+      }
+
+      if (!isAuthorized) {
+        return c.json?.(
+          {
+            status: 403,
+            message: 'Anda tidak memiliki akses ke posyandu ini',
+          },
+          403,
+        );
+      }
+
+      const posyandu = await prisma.posyandu.findUnique({
+        where: { id: params.id },
+        select: {
+          id: true,
+          name: true,
+        },
+      });
+
+      if (!posyandu) {
+        return c.json?.(
+          {
+            status: 404,
+            message: 'Posyandu tidak ditemukan',
+          },
+          404,
+        );
+      }
+
+      const cacheKey = cacheKeys.child.byPosyandu(params.id);
+      const cached = await this.redis.get(cacheKey);
+      if (cached) {
+        return c.json?.(
+          {
+            status: 200,
+            message: 'Berhasil mendapatkan daftar anak',
+            data: JSON.parse(cached),
+          },
+          200,
+        );
+      }
+
+      const children = await prisma.child.findMany({
+        where: {
+          posyanduId: params.id,
+        },
+        select: {
+          id: true,
+          fullName: true,
+          dateOfBirth: true,
+          gender: true,
+          parentId: true,
+          parent: {
+            select: {
+              id: true,
+              fullName: true,
+              email: true,
+            },
+          },
+          createdAt: true,
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+      });
+
+      const formattedData = {
+        posyandu: {
+          id: posyandu.id,
+          name: posyandu.name,
+        },
+        totalChildren: children.length,
+        children: children.map((child) => ({
+          id: child.id,
+          fullName: child.fullName,
+          dateOfBirth: child.dateOfBirth,
+          gender: child.gender,
+          parent: {
+            id: child.parent.id,
+            fullName: child.parent.fullName,
+            email: child.parent.email,
+          },
+          registeredAt: child.createdAt,
+        })),
+      };
+
+      await this.redis.set(cacheKey, JSON.stringify(formattedData), { EX: 300 });
+
+      return c.json?.(
+        {
+          status: 200,
+          message: 'Berhasil mendapatkan daftar anak',
+          data: formattedData,
+        },
+        200,
+      );
+    } catch (error) {
+      console.error('[getChildListByPosyandu]', error);
+      return c.json?.(
+        {
+          status: 500,
+          message: 'Server internal error',
+          error: error instanceof Error ? error.message : error,
+        },
+        500,
+      );
+    }
+  }
 }
 
 export default new PosyanduController();

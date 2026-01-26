@@ -1,17 +1,10 @@
 import { TResponse } from "@/pkg/react-query/mutation-wrapper.type";
+import { FormAcceptKaderRegistration, FormRegisterAsKader } from "@/types/form";
 import AxiosClient from "@/utils/axios.client";
-
-interface FormRegisterToposyandu {
-  posyanduId: string;
-}
-
-interface FormAcceptRegistration {
-  id: string;
-}
 
 class KaderRegistrationApi {
   public async registerToposyandu(
-    payload: FormRegisterToposyandu,
+    payload: FormRegisterAsKader,
   ): Promise<TResponse<any>> {
     const res = await AxiosClient.post("/api/kader/register", payload);
     return res.data;
@@ -33,7 +26,7 @@ class KaderRegistrationApi {
   }
 
   public async acceptRegistration(
-    payload: FormAcceptRegistration,
+    payload: FormAcceptKaderRegistration,
   ): Promise<TResponse<any>> {
     const res = await AxiosClient.put(
       "/api/kader/accept-registration",
@@ -43,7 +36,7 @@ class KaderRegistrationApi {
   }
 
   public async rejectRegistration(
-    payload: FormAcceptRegistration,
+    payload: FormAcceptKaderRegistration,
   ): Promise<TResponse<any>> {
     const res = await AxiosClient.put(
       "/api/kader/reject-registration",

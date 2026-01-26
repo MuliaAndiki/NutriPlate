@@ -1,5 +1,3 @@
-import { IPosyandu } from "../schema/posyandu.schema";
-
 export interface PosyanduRespone {
   id: string;
   name: string;
@@ -10,6 +8,34 @@ export interface PosyanduRespone {
   avaUrl: string;
   phone: string;
   email: string;
+}
+
+export interface ChildItemResponse {
+  id: string;
+  fullName: string;
+  dateOfBirth: string;
+  gender: "MALE" | "FEMALE";
+  registeredAt: string;
+  parent: {
+    id: string;
+    fullName: string;
+    email: string;
+  };
+}
+
+export interface ChildListByPosyanduData {
+  posyandu: {
+    id: string;
+    name: string;
+  };
+  totalChildren: number;
+  children: ChildItemResponse[];
+}
+
+export interface GetChildListByPosyanduResponse {
+  status: number;
+  message: string;
+  data: ChildListByPosyanduData;
 }
 
 export interface PosyanduDetailResponse extends PosyanduRespone {
