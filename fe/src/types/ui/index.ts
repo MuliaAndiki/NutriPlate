@@ -35,4 +35,4 @@ export interface PopUpProps {
   className?: string;
 }
 
-export type PopUpNavigate = "fProgram" | null;
+export type PopUpNavigate = "fProgram" | "fRegisterKader" | null;

@@ -9,7 +9,6 @@ import { cacheKeys } from '@/cache/cacheKey';
 import { error } from 'console';
 import { generateOtp } from '@/utils/generate-otp';
 import { sendOTPEmail } from '@/utils/mailer';
-import { invalidateCache, getRelatedCacheKeys } from '@/utils/cacheHelper';
 
 class UserController {
   private get redis() {
@@ -20,19 +19,13 @@ class UserController {
       const jwtUser = c.user as JwtPayload;
 
       if (!jwtUser) {
-        return c.json?.(
-          {
-            status: 401,
-            message: 'Unauthorized',
-          },
-          401,
-        );
+        return c.json?.({ status: 401, message: 'Unauthorized' }, 401);
       }
 
       const cacheKey = cacheKeys.user.byID(jwtUser.id);
+
       try {
         const cacheProfile = await this.redis.get(cacheKey);
-
         if (cacheProfile) {
           return c.json?.(
             {
@@ -47,25 +40,53 @@ class UserController {
         console.warn(`redis error, fallback db ${error}`);
       }
 
-      const auth = await prisma.user.findFirst({
-        where: {
-          id: jwtUser.id,
+      const user = await prisma.user.findUnique({
+        where: { id: jwtUser.id },
+        select: {
+          id: true,
+          email: true,
+          phone: true,
+          fullName: true,
+          role: true,
+          avaUrl: true,
+          isVerify: true,
+          createdAt: true,
         },
       });
-      if (!auth) {
-        return c.json?.({
-          status: 404,
-          message: 'server internal error',
-        });
-      } else {
-        await this.redis.set(cacheKey, JSON.stringify(auth), { EX: 60 }).catch(error);
+
+      if (!user) {
+        return c.json?.({ status: 404, message: 'user not found' }, 404);
       }
+
+      let profileData: any = { ...user };
+
+      if (user.role === 'KADER') {
+        const kaderRegistration = await prisma.kaderRegistration.findFirst({
+          where: {
+            kaderId: user.id,
+            status: 'accepted',
+          },
+          select: {
+            posyanduId: true,
+            posyandu: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        });
+
+        profileData.posyanduId = kaderRegistration?.posyanduId || null;
+        profileData.posyanduName = kaderRegistration?.posyandu?.name || null;
+      }
+
+      await this.redis.set(cacheKey, JSON.stringify(profileData), { EX: 60 }).catch(console.error);
 
       return c.json?.(
         {
           status: 200,
-          message: 'succes get user',
-          data: auth,
+          message: 'successfully get user profile',
+          data: profileData,
         },
         200,
       );
@@ -81,6 +102,7 @@ class UserController {
       );
     }
   }
+
   public async editProfile(c: AppContext) {
     try {
       const user = c.body as PickUpdateProfile;

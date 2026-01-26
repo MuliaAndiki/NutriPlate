@@ -60,6 +60,22 @@ class NotificationRouter {
         beforeHandle: [verifyToken().beforeHandle, requireRole(['ADMIN', 'POSYANDU']).beforeHandle],
       },
     );
+
+    this.notificationRoutes.patch(
+      '/:id/read',
+      (c: AppContext) => NotificationController.markNotificationAsRead(c),
+      {
+        beforeHandle: [verifyToken().beforeHandle],
+      },
+    );
+
+    this.notificationRoutes.get(
+      '/:id/read-status',
+      (c: AppContext) => NotificationController.isNotificationRead(c),
+      {
+        beforeHandle: [verifyToken().beforeHandle],
+      },
+    );
   }
 }
 

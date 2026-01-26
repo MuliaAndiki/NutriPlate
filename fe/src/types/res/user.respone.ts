@@ -12,6 +12,8 @@ export interface UserResponse {
   isVerify: boolean;
   createdAt: Date;
   updatedAt: Date;
+  posyanduId?: string | null;
+  posyanduName?: string | null;
 }
 
 export interface KaderListResponse {

@@ -3,13 +3,13 @@ import CardKontenHomeParent from "@/components/card/general/home-parent/card-con
 import CardKontenHomeParent2 from "@/components/card/general/home-parent/card-content2";
 import CardKontenHomeParent3 from "@/components/card/general/home-parent/card-content3";
 import CardKontenHomeParent4 from "@/components/card/general/home-parent/card-content4";
-import { IAuth } from "@/types/schema/auth.schema";
+import { UserResponse } from "@/types/res";
 import { Icon } from "@iconify/react/dist/iconify.js";
 
 interface HomeParentSectionProps {
   service: {
     query: {
-      profile: IAuth;
+      profile: UserResponse;
       isLoading: boolean;
     };
   };

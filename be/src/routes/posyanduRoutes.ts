@@ -23,9 +23,8 @@ class PosyanduRoutes {
     this.posyanduRoutes.get('/', (c: AppContext) => PosyanduController.getPosyandu(c), {
       beforeHandle: [verifyToken().beforeHandle],
     });
-    // Static routes before dynamic routes
     this.posyanduRoutes.post('/active', (c) => PosyanduController.activeAccount(c));
-    // Dynamic routes
+
     this.posyanduRoutes.get('/:id', (c: AppContext) => PosyanduController.getPosyanduByID(c), {
       beforeHandle: [verifyToken().beforeHandle],
     });
@@ -35,6 +34,20 @@ class PosyanduRoutes {
     this.posyanduRoutes.delete('/:id', (c: AppContext) => PosyanduController.deletePosyandu(c), {
       beforeHandle: [verifyToken().beforeHandle, requireRole(['ADMIN', 'POSYANDU']).beforeHandle],
     });
+    this.posyanduRoutes.get(
+      '/list',
+      (c: AppContext) => PosyanduController.getKaderListByPosyandu(c),
+      {
+        beforeHandle: [verifyToken().beforeHandle],
+      },
+    );
+    this.posyanduRoutes.get(
+      '/:id/children',
+      (c: AppContext) => PosyanduController.getChildListByPosyandu(c),
+      {
+        beforeHandle: [verifyToken().beforeHandle],
+      },
+    );
   }
 }
 

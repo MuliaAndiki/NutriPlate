@@ -6,15 +6,20 @@ import Link from "next/link";
 
 interface NotifikasiCardProps {
   res: INotification;
+  // ✅ Per-user read status from Redis
+  isRead?: boolean;
 }
 
-const NotifikasiCard: React.FC<NotifikasiCardProps> = ({ res }) => {
+const NotifikasiCard: React.FC<NotifikasiCardProps> = ({
+  res,
+  isRead = false,
+}) => {
   const { icon, className } = NotifiIcon[res.type] ?? DefaultNotifIcon;
 
   return (
     <Link href={`/parent/notifikasi/detail/${res.id}`}>
       <div
-        className={`w-full flex items-center justify-between p-2 ${!res.isRead ? "bg-background/70 " : null}`}
+        className={`w-full flex items-center justify-between p-2 ${!isRead ? "bg-background/70 " : null}`}
       >
         <div className="flex space-x-3">
           <div
@@ -37,9 +42,8 @@ const NotifikasiCard: React.FC<NotifikasiCardProps> = ({ res }) => {
             </p>
           </div>
         </div>
-        {!res.isRead ? (
-          <div className="w-3 h-3 bg-primary rounded-full" />
-        ) : null}
+        {/* ✅ Show unread indicator based on per-user tracking */}
+        {!isRead ? <div className="w-3 h-3 bg-primary rounded-full" /> : null}
       </div>
     </Link>
   );

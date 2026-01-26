@@ -2,12 +2,12 @@ import HeaderHomeSvg from "@/components/svg/header-home";
 import IconPlate from "@/components/svg/icon-plate";
 import IconRuler from "@/components/svg/icon-ruler";
 import IconScale from "@/components/svg/icon.scale";
-import { IAuth } from "@/types/schema/auth.schema";
+import { UserResponse } from "@/types/res";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import Link from "next/link";
 
 interface HeaderHomeProps {
-  res: IAuth;
+  res: UserResponse;
   role: string;
 }
 const HeaderHomeCard: React.FC<HeaderHomeProps> = ({ res, role }) => {

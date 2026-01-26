@@ -318,14 +318,6 @@ class NotificationController {
         );
       }
 
-      await prisma.notifications.update({
-        where: {
-          id: notification.id,
-        },
-        data: {
-          isRead: true,
-        },
-      });
       await this.redis.set(cacheKey, JSON.stringify(notification), { EX: 60 }).catch(error);
       return c.json?.(
         {
@@ -533,6 +525,133 @@ class NotificationController {
         {
           status: 500,
           message: 'server internal error',
+          error: error instanceof Error ? error.message : error,
+        },
+        500,
+      );
+    }
+  }
+
+  // ✅ Mark notification as read per user (separate from global isRead)
+  public async markNotificationAsRead(c: AppContext) {
+    try {
+      const jwtUser = c.user as JwtPayload;
+      const notParams = c.params as PickNotifID;
+
+      if (!jwtUser) {
+        return c.json?.(
+          {
+            status: 401,
+            message: 'Unauthorized',
+          },
+          401,
+        );
+      }
+
+      if (!notParams?.id) {
+        return c.json?.(
+          {
+            status: 400,
+            message: 'Notification ID is required',
+          },
+          400,
+        );
+      }
+
+      const notification = await prisma.notifications.findUnique({
+        where: { id: notParams.id },
+        select: { id: true },
+      });
+
+      if (!notification) {
+        return c.json?.(
+          {
+            status: 404,
+            message: 'Notification not found',
+          },
+          404,
+        );
+      }
+
+      // ✅ Simpan per-user read status di Redis dengan key: notification:user:{userId}:{notifId}
+      const readKey = `notification:read:${jwtUser.id}:${notParams.id}`;
+      await this.redis.set(readKey, 'true', { EX: 86400 * 30 }); // 30 hari
+
+      // Invalidate user's notification list cache
+      await this.redis.del(cacheKeys.notification.byUser(jwtUser.id)).catch(() => {});
+
+      return c.json?.(
+        {
+          status: 200,
+          message: 'Notification marked as read',
+          data: {
+            notificationId: notParams.id,
+            userId: jwtUser.id,
+            readAt: new Date(),
+          },
+        },
+        200,
+      );
+    } catch (error) {
+      console.error('[markNotificationAsRead]', error);
+      return c.json?.(
+        {
+          status: 500,
+          message: 'Server internal error',
+          error: error instanceof Error ? error.message : error,
+        },
+        500,
+      );
+    }
+  }
+
+  // ✅ Check if notification is read by current user
+  public async isNotificationRead(c: AppContext) {
+    try {
+      const jwtUser = c.user as JwtPayload;
+      const notParams = c.params as PickNotifID;
+
+      if (!jwtUser) {
+        return c.json?.(
+          {
+            status: 401,
+            message: 'Unauthorized',
+          },
+          401,
+        );
+      }
+
+      if (!notParams?.id) {
+        return c.json?.(
+          {
+            status: 400,
+            message: 'Notification ID is required',
+          },
+          400,
+        );
+      }
+
+      const readKey = `notification:read:${jwtUser.id}:${notParams.id}`;
+      const isRead = await this.redis.get(readKey);
+
+      return c.json?.(
+        {
+          status: 200,
+          message: 'Successfully get notification read status',
+          data: {
+            notificationId: notParams.id,
+            userId: jwtUser.id,
+            isRead: isRead === 'true',
+          },
+        },
+        200,
+      );
+    } catch (error) {
+      console.error('[isNotificationRead]', error);
+      return c.json?.(
+        {
+          status: 500,
+          message: 'Server internal error',
           error: error instanceof Error ? error.message : error,
         },
         500,

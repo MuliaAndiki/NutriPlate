@@ -3,6 +3,7 @@ import { useAuth } from "./auths/useAuth";
 import { useChild } from "./childs/useChild";
 import { useFoodIntake } from "./foodintake/useFoodIntake";
 import { useFoodSummary } from "./foodsummary/useFoodSummary";
+import { useKaderRegistration } from "./kaderregistration/useKaderRegistration";
 import { useMeasuremnet } from "./measurement/useMeasuremnet";
 import { useNotification } from "./notafications/useNotifications";
 import { usePosyandu } from "./posyandu/usePosyandu";
@@ -26,6 +27,7 @@ export const useService = () => ({
   programRegistraion: useProgramRegistrasion(),
   task: useTask(),
   foodIntake: useFoodIntake(),
+  registerKader: useKaderRegistration(),
 });
 
 export default useService;

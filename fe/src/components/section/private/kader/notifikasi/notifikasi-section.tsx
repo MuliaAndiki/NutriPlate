@@ -1,5 +1,5 @@
 import NotifikasiCard from "@/components/card/notifikasi/notif-card";
-import { ButtonWrapper } from "@/components/wrapper/ButtonWrapper";
+
 import { INotification } from "@/types/schema/notafication.schema";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import {
@@ -21,8 +21,9 @@ import {
 import { NotifTypeInterface } from "@/types/partial";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import useService from "@/hooks/mutation/prop.service";
 
-interface NotifikasiParentSectionProp {
+interface NotifikasiKaderSectionProp {
   namespace: {
     router: AppRouterInstance;
   };
@@ -42,14 +43,12 @@ interface NotifikasiParentSectionProp {
   };
   readStatus: Record<string, boolean>;
 }
-
-const NotifikasiParentSection: React.FC<NotifikasiParentSectionProp> = ({
+const NotifikasiKaderSection: React.FC<NotifikasiKaderSectionProp> = ({
   namespace,
   service,
   state,
   readStatus,
 }) => {
-  // ✅ Logic moved ke container - ini hanya presentational component
   const toggleType = (type: NotifTypeInterface) => {
     state.setSelectedTypes((prev) =>
       prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type],
@@ -167,6 +166,7 @@ const NotifikasiParentSection: React.FC<NotifikasiParentSectionProp> = ({
       </div>
       <div className="w-full space-y-2">
         {filtered.map((items) => (
+          // ✅ Pass per-user read status ke card
           <NotifikasiCard
             key={items.id}
             res={items}
@@ -178,4 +178,4 @@ const NotifikasiParentSection: React.FC<NotifikasiParentSectionProp> = ({
   );
 };
 
-export default NotifikasiParentSection;
+export default NotifikasiKaderSection;

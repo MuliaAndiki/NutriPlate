@@ -31,5 +31,13 @@ class NotificationApi {
     const res = await AxiosClient.patch(`/api/notifications/broadcast/${id}`);
     return res.data;
   }
+  public async isNotificationRead(id: string): Promise<TResponse<any>> {
+    const res = await AxiosClient.get(`/api/notifications/${id}/read-status`);
+    return res.data;
+  }
+  public async markNotificationAsRead(id: string): Promise<TResponse<any>> {
+    const res = await AxiosClient.patch(`/api/notifications/${id}/read`);
+    return res.data;
+  }
 }
 export default NotificationApi;

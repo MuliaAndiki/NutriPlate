@@ -19,7 +19,6 @@ class KaderRoutes {
   }
 
   private routes() {
-    // Kader registration routes
     this.kaderRoutes.post('/register', (c: AppContext) => KaderController.registerToposyandu(c), {
       beforeHandle: [verifyToken().beforeHandle],
     });
@@ -32,7 +31,6 @@ class KaderRoutes {
       },
     );
 
-    // Posyandu routes for accepting/rejecting registrations
     this.kaderRoutes.get(
       '/pending-registrations',
       (c: AppContext) => KaderController.getPendingRegistrations(c),
