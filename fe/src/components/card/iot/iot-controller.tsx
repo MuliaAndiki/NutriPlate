@@ -7,13 +7,15 @@ interface IotControllerCardProps {
   onStartScale: () => void;
   onTareScale: () => void;
   isPending: boolean;
-  weight: GetWeightIorRespone;
+  weight: GetWeightIorRespone | null;
   holdingWeight: number;
   isActive: boolean;
   onCancelStart: () => void;
   onHoldWeight: () => void;
   onRejectWeight: () => void;
   onConfirmWeight: () => void;
+  iotId: string | null;
+  onConnectIot: () => void;
 }
 
 const IotControllerCard: React.FC<IotControllerCardProps> = ({
@@ -27,6 +29,8 @@ const IotControllerCard: React.FC<IotControllerCardProps> = ({
   onHoldWeight,
   onRejectWeight,
   onConfirmWeight,
+  iotId,
+  onConnectIot,
 }) => {
   const displayWeight =
     weight?.weight && weight.weight > 0
@@ -99,32 +103,39 @@ const IotControllerCard: React.FC<IotControllerCardProps> = ({
           </div>
         )}
       </div>
-      <div className="w-full space-y-2 pb-4 border-b">
-        <ButtonWrapper
-          className="w-full text-destructive  bg-destructive/30 border border-destructive"
-          variant={"destructive"}
-          disabled={isPending}
-          onClick={() => onStartScale()}
-          leftIcon={<Icon icon="picon:reload" width="16" height="16" />}
-        >
-          Start Timbangan
+      {iotId === null ? (
+        <ButtonWrapper onClick={() => onConnectIot()} className="w-full">
+          Connect Iot
         </ButtonWrapper>
-        <ButtonWrapper
-          onClick={() => onTareScale()}
-          disabled={isPending}
-          leftIcon={
-            <Icon
-              icon="streamline:star-2-remix"
-              width="14"
-              height="14"
-              className="text-info"
-            />
-          }
-          className="w-full bg-info/30 border border-info text-info"
-        >
-          Ulangi Proses Timbangan
-        </ButtonWrapper>
-      </div>
+      ) : (
+        <div className="w-full space-y-2 pb-4 border-b">
+          <ButtonWrapper
+            className="w-full text-destructive  bg-destructive/30 border border-destructive"
+            variant={"destructive"}
+            disabled={isPending}
+            onClick={() => onStartScale()}
+            leftIcon={<Icon icon="picon:reload" width="16" height="16" />}
+          >
+            Start Timbangan
+          </ButtonWrapper>
+          <ButtonWrapper
+            onClick={() => onTareScale()}
+            disabled={isPending}
+            leftIcon={
+              <Icon
+                icon="streamline:star-2-remix"
+                width="14"
+                height="14"
+                className="text-info"
+              />
+            }
+            className="w-full bg-info/30 border border-info text-info"
+          >
+            Ulangi Proses Timbangan
+          </ButtonWrapper>
+        </div>
+      )}
+
       <div className="w-full pt-3">
         <label className="text-lg font-bold block mb-2">
           Panduan Penggunaan

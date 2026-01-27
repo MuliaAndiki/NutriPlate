@@ -17,7 +17,7 @@ interface AsupanGiziSectionProps {
     query: {
       historyFood: FoodIntakeResponse[];
       isLoading: boolean;
-      iot: GetStatusIotRespone;
+      iot: GetStatusIotRespone | null;
       weightIot: GetWeightIorRespone | null;
     };
     mutation: {
@@ -33,6 +33,7 @@ interface AsupanGiziSectionProps {
   actions: {
     handleSelectTaskScan: () => void;
     handleSelectManualScan: () => void;
+    onConnectIot: () => void;
   };
   state: {
     showFlowPopUp: boolean;
@@ -60,7 +61,7 @@ const AsupanGiziHeroSection: React.FC<AsupanGiziSectionProps> = ({
         </h1>
       </div>
       <div className="w-full">
-        <IotStatus res={service.query.iot} key={service.query.iot.id} />
+        <IotStatus res={service.query.iot} key={service.query.iot?.id} />
       </div>
       <div className="w-full flex items-center">
         <Icon
@@ -83,6 +84,8 @@ const AsupanGiziHeroSection: React.FC<AsupanGiziSectionProps> = ({
           holdingWeight={state.holdingWeight}
           onRejectWeight={service.mutation.onRejectWeight}
           onConfirmWeight={service.mutation.onConfirmWeight}
+          iotId={service.query.iot?.id ?? null}
+          onConnectIot={actions.onConnectIot}
         />
       </div>
 

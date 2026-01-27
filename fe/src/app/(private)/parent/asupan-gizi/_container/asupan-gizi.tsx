@@ -44,9 +44,21 @@ const AsupanGiziContainer = () => {
   const rejectWeightMutation = service.iot.mutation.rejectWeight();
   const onConfirmWeightMutation = service.iot.mutation.confirmWeight();
 
+  //error handling
+  const ensureIotReady = () => {
+    if (!iotStatusData?.id) {
+      namespace.alert.toast({
+        title: "Timbangan belum terhubung",
+        message: "Silakan hubungkan timbangan terlebih dahulu",
+        icon: "error",
+      });
+      return false;
+    }
+    return true;
+  };
   //handler
   const handleStartScale = () => {
-    if (!iotStatusData.id) return null;
+    if (!ensureIotReady()) return null;
 
     startScaleMutation.mutate(
       {},
@@ -55,12 +67,29 @@ const AsupanGiziContainer = () => {
           setHoldingWeight(0);
           setIsScaling(true);
         },
+        onError: () => {
+          iotStatusQuery.refetch();
+        },
       },
     );
   };
 
+  const handleConnectIot = async () => {
+    try {
+      const res = await iotStatusQuery.refetch();
+
+      const freshIotData = res.data?.data ?? null;
+
+      if (!freshIotData) {
+        window.open("http://192.168.4.1", "_blank");
+      }
+    } catch (err) {
+      window.open("http://192.168.4.1", "_blank");
+    }
+  };
+
   const handleConfirmWeight = () => {
-    if (!iotStatusData.id) return null;
+    if (!ensureIotReady()) return null;
 
     onConfirmWeightMutation.mutate(
       {},
@@ -71,12 +100,15 @@ const AsupanGiziContainer = () => {
           setHoldingWeight(0);
           handleOpenScanPopUp();
         },
+        onError: () => {
+          iotStatusQuery.refetch();
+        },
       },
     );
   };
 
   const handleRejectWeight = () => {
-    if (!iotStatusData.id) return null;
+    if (!ensureIotReady()) return null;
 
     rejectWeightMutation.mutate(
       {},
@@ -85,12 +117,15 @@ const AsupanGiziContainer = () => {
           setHoldingWeight(0);
           setIsScaling(false);
         },
+        onError: () => {
+          iotStatusQuery.refetch();
+        },
       },
     );
   };
 
   const handleHoldWeight = () => {
-    if (!iotStatusData.id) return null;
+    if (!ensureIotReady()) return null;
     holdWeightMutation.mutate(
       {},
       {
@@ -98,12 +133,15 @@ const AsupanGiziContainer = () => {
           setIsScaling(false);
           setHoldingWeight(res.data.weight);
         },
+        onError: () => {
+          iotStatusQuery.refetch();
+        },
       },
     );
   };
 
   const handleCancleStart = () => {
-    if (!iotStatusData.id) return null;
+    if (!ensureIotReady()) return null;
 
     cancelStartMutation.mutate(
       {},
@@ -112,11 +150,14 @@ const AsupanGiziContainer = () => {
           setHoldingWeight(0);
           setIsScaling(false);
         },
+        onError: () => {
+          iotStatusQuery.refetch();
+        },
       },
     );
   };
   const handleTareMode = () => {
-    if (!iotStatusData.id) return null;
+    if (!ensureIotReady()) return null;
 
     tareModeMutation.mutate(
       {},
@@ -124,6 +165,9 @@ const AsupanGiziContainer = () => {
         onSuccess: () => {
           setHoldingWeight(0);
           setIsScaling(true);
+        },
+        onError: () => {
+          iotStatusQuery.refetch();
         },
       },
     );
@@ -142,8 +186,11 @@ const AsupanGiziContainer = () => {
     setShowFlowPopUp(false);
     namespace.alert.toast({
       title: "Info",
-      message: "Scan untuk task dilakukan di halaman detail program",
+      message: "Kamu Akan Di Arahkan Kehalaman Program",
       icon: "info",
+      onVoid: () => {
+        namespace.router.push("/parent/program");
+      },
     });
   };
 
@@ -237,6 +284,7 @@ const AsupanGiziContainer = () => {
           actions={{
             handleSelectManualScan: handleSelectManualScan,
             handleSelectTaskScan: handleSelectTaskScan,
+            onConnectIot: handleConnectIot,
           }}
           state={{
             setShowFlowPopUp: setShowFlowPopUp,
