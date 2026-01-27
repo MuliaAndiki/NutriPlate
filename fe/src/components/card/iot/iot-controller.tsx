@@ -1,7 +1,16 @@
 import { Card } from "@/components/ui/card";
 import { ButtonWrapper } from "@/components/wrapper/ButtonWrapper";
-import { GetWeightIorRespone } from "@/types/res";
+import { ChildRespone, GetWeightIorRespone } from "@/types/res";
 import { Icon } from "@iconify/react/dist/iconify.js";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface IotControllerCardProps {
   onStartScale: () => void;
@@ -15,7 +24,10 @@ interface IotControllerCardProps {
   onRejectWeight: () => void;
   onConfirmWeight: () => void;
   iotId: string | null;
+  child: ChildRespone[];
   onConnectIot: () => void;
+  setSelectChildId: React.Dispatch<React.SetStateAction<string>>;
+  selectedChildId: string;
 }
 
 const IotControllerCard: React.FC<IotControllerCardProps> = ({
@@ -31,6 +43,9 @@ const IotControllerCard: React.FC<IotControllerCardProps> = ({
   onConfirmWeight,
   iotId,
   onConnectIot,
+  child,
+  setSelectChildId,
+  selectedChildId,
 }) => {
   const displayWeight =
     weight?.weight && weight.weight > 0
@@ -109,10 +124,42 @@ const IotControllerCard: React.FC<IotControllerCardProps> = ({
         </ButtonWrapper>
       ) : (
         <div className="w-full space-y-2 pb-4 border-b">
+          <div className="w-full space-y-2 pb-4 border-b">
+            <label className="text-sm font-semibold">Pilih Anak</label>
+
+            <Select
+              value={selectedChildId}
+              onValueChange={(value) => setSelectChildId(value)}
+            >
+              <SelectTrigger className="w-full h-auto min-h-[56px]">
+                <SelectValue placeholder="Pilih Anak" />
+              </SelectTrigger>
+
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>Anak</SelectLabel>
+                  {child.map((item) => (
+                    <SelectItem
+                      key={item.id}
+                      value={item.id}
+                      className="w-full h-auto"
+                    >
+                      <div className="flex flex-col">
+                        <span className="font-semibold">{item.fullName}</span>
+                        <span className="text-xs text-muted-foreground">
+                          {item.gender} • {item.dateOfBirth}
+                        </span>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
           <ButtonWrapper
             className="w-full text-destructive  bg-destructive/30 border border-destructive"
             variant={"destructive"}
-            disabled={isPending}
+            disabled={isPending || !selectedChildId}
             onClick={() => onStartScale()}
             leftIcon={<Icon icon="picon:reload" width="16" height="16" />}
           >
@@ -120,7 +167,7 @@ const IotControllerCard: React.FC<IotControllerCardProps> = ({
           </ButtonWrapper>
           <ButtonWrapper
             onClick={() => onTareScale()}
-            disabled={isPending}
+            disabled={isPending || !selectedChildId}
             leftIcon={
               <Icon
                 icon="streamline:star-2-remix"

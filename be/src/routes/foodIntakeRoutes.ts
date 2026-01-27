@@ -37,7 +37,7 @@ class FoodIntakeRoutes {
     );
     this.foodIntakeRoutes.get(
       '/history/:id',
-      (c: AppContext) => FoodIntakeController.getHisoryFoodByID(c),
+      (c: AppContext) => FoodIntakeController.getHistoryFoodByID(c),
       {
         beforeHandle: [verifyToken().beforeHandle],
       },

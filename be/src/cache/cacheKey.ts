@@ -88,6 +88,24 @@ export const cacheKeys = {
   food: {
     byUser: (id: string) => `food:user:${id}`,
     byID: (id: string) => `food:id:${id}`,
+    history: (
+      userId: string,
+      childId: string,
+      page?: number,
+      limit?: number,
+      startDate?: string,
+      endDate?: string,
+      search?: string,
+    ) =>
+      `food:history:${userId}:${childId}${page ? `:${page}` : ''}${limit ? `:${limit}` : ''}${startDate ? `:${startDate}` : ''}${endDate ? `:${endDate}` : ''}${search ? `:${search}` : ''}`,
+    historyByChild: (
+      childId: string,
+      page?: number,
+      limit?: number,
+      startDate?: string,
+      endDate?: string,
+    ) =>
+      `food:history:child:${childId}${page ? `:${page}` : ''}${limit ? `:${limit}` : ''}${startDate ? `:${startDate}` : ''}${endDate ? `:${endDate}` : ''}`,
   },
   kaderregistration: {
     byID: (id: string) => `kaderregistration:id:${id}`,

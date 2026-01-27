@@ -1,9 +1,5 @@
 import { GenderType } from '@prisma/client';
 
-/**
- * WHO Growth Standard Input
- * Contains child anthropometric measurements
- */
 export interface WhoGrowthInput {
   gender: GenderType;
   ageMonths: number;
@@ -30,14 +26,11 @@ export interface ZScoreCalculation {
   closestSD: string;
 }
 
-/**
- * Stunting classification levels
- */
 export enum StuntingStatus {
-  SEVERELY_STUNTED = 'SEVERELY_STUNTED', // z-score < -3 SD
-  STUNTED = 'STUNTED', // -3 <= z-score < -2 SD
-  NORMAL = 'NORMAL', // -2 <= z-score <= +2 SD
-  TALL = 'TALL', // z-score > +2 SD
+  SEVERELY_STUNTED = 'SEVERELY_STUNTED',
+  STUNTED = 'STUNTED',
+  NORMAL = 'NORMAL',
+  TALL = 'TALL',
 }
 
 export enum StuntingSeverity {

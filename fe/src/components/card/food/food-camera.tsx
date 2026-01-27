@@ -1,43 +1,56 @@
 "use client";
+
 import { useRef, useState } from "react";
 import Webcam from "react-webcam";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ChevronLeft, Loader2, Trash2 } from "lucide-react";
+import { ChevronLeft, Trash2 } from "lucide-react";
 import { Spinner } from "@/components/ui/spinner";
+import useService from "@/hooks/mutation/prop.service";
+import { FoodIntakeResponse } from "@/types/res";
+import FoodScanResult from "./food-result";
 
 interface FoodCameraProps {
-  onCapture: (photoBlob: Blob, weight: number) => void;
+  childId: string;
+  iotId?: string;
+  onSuccess: () => void;
   onCancel: () => void;
-  isLoading?: boolean;
   flowType: "normal" | "task";
   taskName?: string;
+  iotWeight?: number;
 }
 
 const FoodCamera: React.FC<FoodCameraProps> = ({
-  onCapture,
+  childId,
+  iotId,
+  onSuccess,
   onCancel,
-  isLoading = false,
   flowType,
   taskName,
+  iotWeight = 0,
 }) => {
   const webcamRef = useRef<Webcam>(null);
   const [photo, setPhoto] = useState<string | null>(null);
   const [weight, setWeight] = useState<string>("");
   const [error, setError] = useState<string>("");
 
-  const handleCapture = async () => {
-    if (webcamRef.current) {
-      try {
-        const imageSrc = webcamRef.current.getScreenshot();
-        if (imageSrc) {
-          setPhoto(imageSrc);
-          setError("");
-        }
-      } catch (err) {
-        setError("Gagal mengambil foto");
-      }
+  const service = useService();
+  const createFoodIntake = service.foodIntake.mutation.createFoodIntake();
+  const [mode, setMode] = useState<"camera" | "preview" | "result">("camera");
+
+  const [responseFoodIntake, setResponseFoodIntake] = useState<
+    FoodIntakeResponse | any
+  >();
+
+  const handleCapture = () => {
+    const imageSrc = webcamRef.current?.getScreenshot();
+    console.log("imageSrc", imageSrc);
+    if (!imageSrc) {
+      setError("Gagal mengambil foto");
+      return;
     }
+    setPhoto(imageSrc);
+    setError("");
   };
 
   const handleReset = () => {
@@ -47,48 +60,89 @@ const FoodCamera: React.FC<FoodCameraProps> = ({
   };
 
   const handleSubmit = async () => {
-    if (!photo || !weight) {
-      setError("Berat makanan harus diisi");
+    if (!photo) {
+      setError("Foto belum diambil");
       return;
     }
 
-    const weightNum = Number(weight);
-    if (isNaN(weightNum) || weightNum <= 0) {
-      setError("Berat harus angka positif (gram)");
+    const finalWeight = iotWeight || Number(weight);
+    if (!finalWeight || finalWeight <= 0) {
+      setError("Berat makanan tidak valid");
       return;
     }
 
-    const response = await fetch(photo);
-    const blob = await response.blob();
+    try {
+      const res = await fetch(photo);
+      const blob = await res.blob();
 
-    onCapture(blob, weightNum);
+      createFoodIntake.mutate(
+        {
+          childId,
+          iotId,
+          photoBlob: blob,
+          totalWeightGram: finalWeight,
+        },
+        {
+          onSuccess: (res) => {
+            onSuccess();
+            setResponseFoodIntake(res.data);
+            setMode("result");
+          },
+          onError: (err: any) => {
+            setError(err?.message || "Gagal menyimpan data makanan");
+          },
+        },
+      );
+    } catch {
+      setError("Gagal memproses foto");
+    }
   };
+
+  if (mode === "result" && responseFoodIntake) {
+    return (
+      <FoodScanResult
+        data={responseFoodIntake}
+        onBack={() => {
+          setMode("camera");
+          setPhoto(null);
+          setWeight("");
+          setResponseFoodIntake(undefined);
+        }}
+      />
+    );
+  }
 
   if (photo) {
     return (
-      <div className="w-full min-h-screen flex flex-col items-center justify-start p-4 space-y-4 bg-background">
-        <div className="w-full flex items-center justify-between">
+      <div className="w-screen h-screen fixed inset-0 flex flex-col p-4 bg-background">
+        <div className="flex items-center justify-between mb-4">
           <ChevronLeft
             onClick={handleReset}
-            className="cursor-pointer hover:bg-secondary rounded-lg p-1"
+            className="cursor-pointer p-1 rounded-lg hover:bg-secondary"
             width={36}
             height={36}
           />
-          <h1 className="text-xl font-bold">Preview Foto</h1>
+          <h1 className="text-lg font-bold">Konfirmasi Makanan</h1>
           <div className="w-9" />
         </div>
 
-        <div className="w-full relative">
-          <img
-            src={photo}
-            alt="Preview"
-            className="w-full h-80 object-cover rounded-lg"
-          />
-        </div>
+        <img
+          src={photo}
+          alt="Preview"
+          className="w-full h-1/2 object-contain rounded-lg mb-4"
+        />
 
-        <div className="w-full space-y-2">
-          <label className="text-sm font-semibold">Berat Makanan (gram)</label>
-          <div className="flex items-center space-x-2">
+        {iotWeight > 0 ? (
+          <div className="bg-primary/10 p-4 rounded-lg border mb-4">
+            <p className="font-semibold text-primary">
+              ⚖️ Berat dari Timbangan: {iotWeight} g
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-2 mb-4">
+            <label className="text-sm font-semibold">
+              Berat Makanan (gram)
+            </label>
             <Input
               type="number"
               placeholder="Contoh: 300"
@@ -97,15 +151,12 @@ const FoodCamera: React.FC<FoodCameraProps> = ({
                 setWeight(e.target.value);
                 setError("");
               }}
-              disabled={isLoading}
-              className="flex-1"
             />
-            <span className="text-sm font-medium">g</span>
           </div>
-        </div>
+        )}
 
         {flowType === "task" && taskName && (
-          <div className="w-full bg-primary/10 rounded-lg p-3 border border-primary">
+          <div className="bg-primary/10 p-3 rounded-lg border mb-4">
             <p className="text-sm font-medium text-primary">
               📋 Task: {taskName}
             </p>
@@ -113,17 +164,17 @@ const FoodCamera: React.FC<FoodCameraProps> = ({
         )}
 
         {error && (
-          <div className="w-full bg-destructive/10 rounded-lg p-3 border border-destructive">
+          <div className="bg-destructive/10 border border-destructive p-3 rounded-lg mb-4">
             <p className="text-sm text-destructive">{error}</p>
           </div>
         )}
 
-        <div className="w-full flex items-center space-x-2 mt-4">
+        <div className="flex gap-2">
           <Button
             variant="outline"
             className="flex-1"
             onClick={handleReset}
-            disabled={isLoading}
+            disabled={createFoodIntake.isPending}
           >
             <Trash2 className="mr-2 h-4 w-4" />
             Ulang
@@ -131,15 +182,15 @@ const FoodCamera: React.FC<FoodCameraProps> = ({
           <Button
             className="flex-1"
             onClick={handleSubmit}
-            disabled={isLoading || !weight}
+            disabled={createFoodIntake.isPending}
           >
-            {isLoading ? (
+            {createFoodIntake.isPending ? (
               <>
                 <Spinner className="mr-2 h-4 w-4" />
-                Uploading...
+                Menyimpan...
               </>
             ) : (
-              "Upload"
+              "Simpan"
             )}
           </Button>
         </div>
@@ -148,29 +199,21 @@ const FoodCamera: React.FC<FoodCameraProps> = ({
   }
 
   return (
-    <div className="w-full min-h-screen flex flex-col items-center justify-start p-4 space-y-4 bg-background">
-      <div className="w-full flex items-center justify-between">
+    <div className="w-screen h-screen fixed inset-0 flex flex-col p-4 bg-background">
+      <div className="flex items-center justify-between mb-4">
         <ChevronLeft
           onClick={onCancel}
-          className="cursor-pointer hover:bg-secondary rounded-lg p-1"
+          className="cursor-pointer p-1 rounded-lg hover:bg-secondary"
           width={36}
           height={36}
         />
-        <h1 className="text-xl font-bold">
+        <h1 className="text-lg font-bold">
           {flowType === "task" ? "Scan untuk Task" : "Scan Makanan"}
         </h1>
         <div className="w-9" />
       </div>
 
-      {flowType === "task" && taskName && (
-        <div className="w-full bg-primary/10 rounded-lg p-3 border border-primary">
-          <p className="text-sm font-medium text-primary">
-            📋 Task: {taskName}
-          </p>
-        </div>
-      )}
-
-      <div className="w-full relative rounded-lg overflow-hidden bg-black">
+      <div className="flex-1 relative rounded-lg overflow-hidden bg-black mb-4">
         <Webcam
           ref={webcamRef}
           screenshotFormat="image/jpeg"
@@ -179,51 +222,26 @@ const FoodCamera: React.FC<FoodCameraProps> = ({
             height: { ideal: 720 },
             facingMode: "environment",
           }}
-          className="w-full h-80"
+          className="w-full h-full object-cover"
         />
-
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
           <div className="w-48 h-48 border-2 border-primary rounded-lg opacity-50" />
         </div>
       </div>
 
-      <div className="w-full bg-secondary/50 rounded-lg p-3 space-y-1">
-        <p className="text-sm font-medium">📸 Petunjuk:</p>
-        <ul className="text-xs space-y-1 text-muted-foreground">
-          <li>✓ Posisikan makanan di tengah area persegi</li>
-          <li>✓ Pastikan pencahayaan cukup</li>
-          <li>✓ Ambil foto dari atas untuk hasil terbaik</li>
-        </ul>
-      </div>
-
-      {error && (
-        <div className="w-full bg-destructive/10 rounded-lg p-3 border border-destructive">
-          <p className="text-sm text-destructive">{error}</p>
+      {iotWeight > 0 && (
+        <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-3 mb-4">
+          <p className="font-semibold text-emerald-800">
+            ⚖️ Berat Timbangan: {iotWeight} g
+          </p>
         </div>
       )}
 
-      <Button
-        size="lg"
-        className="w-full h-14 text-lg"
-        onClick={handleCapture}
-        disabled={isLoading}
-      >
-        {isLoading ? (
-          <>
-            <Spinner className="mr-2 h-5 w-5" />
-            Processing...
-          </>
-        ) : (
-          " Ambil Foto"
-        )}
+      <Button size="lg" className="h-14" onClick={handleCapture}>
+        Ambil Foto
       </Button>
 
-      <Button
-        variant="outline"
-        className="w-full"
-        onClick={onCancel}
-        disabled={isLoading}
-      >
+      <Button variant="outline" className="mt-2" onClick={onCancel}>
         Batal
       </Button>
     </div>

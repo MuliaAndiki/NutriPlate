@@ -3,11 +3,7 @@ import AxiosClient from "@/utils/axios.client";
 
 class FoodIntakeApi {
   public async createFoodIntake(payload: FormData): Promise<TResponse<any>> {
-    const res = await AxiosClient.post("/api/food/intake", payload, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
+    const res = await AxiosClient.post("/api/food/intake", payload);
     return res.data;
   }
 

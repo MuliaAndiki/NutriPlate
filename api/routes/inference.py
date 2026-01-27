@@ -11,7 +11,13 @@ from config.config import config
 
 @app.post("/detect")
 async def detect_food(image: UploadFile = File(...)):
-    config.load_model()
+    # Model is already loaded on startup in app.py
+    # Just check if it's loaded
+    if not config.is_loaded():
+        raise HTTPException(
+            status_code=503, 
+            detail="Model not loaded. Please try again later."
+        )
     
     try:
         contents = await image.read()

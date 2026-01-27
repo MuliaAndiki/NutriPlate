@@ -1,22 +1,24 @@
 import { FormatDateOptions } from "@/types/utils";
 
 export function formatDateTime(
-  isoString: string,
+  isoString: string | Date,
   options: FormatDateOptions = {},
 ): string {
   if (!isoString) return "-";
 
-  const date = new Date(isoString);
+  const dateString =
+    typeof isoString === "string" ? isoString : isoString.toISOString();
+  const date = new Date(dateString);
   if (isNaN(date.getTime())) return "-";
 
   const { locale = "id-ID", timeZone = "Asia/Jakarta" } = options as any;
 
   switch (options.style) {
     case "input":
-      return isoString.split("T")[0];
+      return dateString.split("T")[0];
 
     case "time":
-      return isoString.split("T")[1]?.slice(0, 5) ?? "-";
+      return dateString.split("T")[1]?.slice(0, 5) ?? "-";
 
     case "day-date-slash": {
       const dayName = new Intl.DateTimeFormat(locale, {

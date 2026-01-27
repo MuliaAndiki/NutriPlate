@@ -7,6 +7,7 @@ import PopUp from "@/components/ui/pop-up";
 import { ButtonWrapper } from "@/components/wrapper/ButtonWrapper";
 import IotControllerCard from "@/components/card/iot/iot-controller";
 import {
+  ChildRespone,
   FoodIntakeResponse,
   GetStatusIotRespone,
   GetWeightIorRespone,
@@ -19,6 +20,7 @@ interface AsupanGiziSectionProps {
       isLoading: boolean;
       iot: GetStatusIotRespone | null;
       weightIot: GetWeightIorRespone | null;
+      child: ChildRespone[];
     };
     mutation: {
       onStartScale: () => void;
@@ -40,6 +42,8 @@ interface AsupanGiziSectionProps {
     setShowFlowPopUp: React.Dispatch<React.SetStateAction<boolean>>;
     isActive: boolean;
     holdingWeight: number;
+    setSelectChildId: React.Dispatch<React.SetStateAction<string>>;
+    selectChildId: string;
   };
 }
 const AsupanGiziHeroSection: React.FC<AsupanGiziSectionProps> = ({
@@ -86,6 +90,9 @@ const AsupanGiziHeroSection: React.FC<AsupanGiziSectionProps> = ({
           onConfirmWeight={service.mutation.onConfirmWeight}
           iotId={service.query.iot?.id ?? null}
           onConnectIot={actions.onConnectIot}
+          child={service.query.child}
+          setSelectChildId={state.setSelectChildId}
+          selectedChildId={state.selectChildId}
         />
       </div>
 

@@ -23,7 +23,6 @@ export function useCreateFoodIntake() {
       return Api.FoodIntake.createFoodIntake(formData);
     },
     onSuccess: (data) => {
-      // Invalidate history food cache
       queryClient.invalidateQueries({
         queryKey: cacheKey.foodIntake.list(),
       });

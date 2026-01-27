@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "bun --bun next dev",
     "build": "bun --bun next build",
+    "dev:https": "bun run server.ts",
     "start": "bun --bun next start",
     "lint": "eslint src --ext .ts,.tsx",
     "lint:fix": "eslint src --ext .ts,.tsx --fix",
