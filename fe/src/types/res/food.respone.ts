@@ -18,6 +18,47 @@ export interface FoodIntakeItem {
   createdAt: Date;
 }
 
+export interface Nutrition {
+  energyKcal: number;
+  proteinGram: number;
+  fatGram: number;
+  carbGram: number;
+  fiberGram: number;
+  calciumMg: number;
+  ironMg: number;
+  vitaminA: number;
+  vitaminC: number;
+}
+
+export interface FoodDetection {
+  foodClassName: string;
+  confidence: number;
+  areaRatio: number;
+  boundingBox: {
+    x1: number;
+    y1: number;
+    x2: number;
+    y2: number;
+  };
+  nutrition: Nutrition;
+}
+
+export interface AnalyzeImageResponse {
+  status: number;
+  message: string;
+  data: {
+    success: boolean;
+    detections: FoodDetection[];
+    metadata: {
+      modelVersion: string;
+      threshold: number;
+      detectionCount: number;
+      processingTime: string;
+      inferenceHash: string;
+    };
+  };
+}
+
 export interface FoodIntakeResponse {
   id: string;
   childId: string;

@@ -4,7 +4,7 @@ import { APP_SESSION_COOKIE_KEY } from "@/configs/cookies.config";
 import { env } from "../configs/env.config";
 
 const AxiosClient = axios.create({
-  baseURL: env.NEXT_PUBLIC_BACKEND_URL,
+  baseURL: "/api",
 });
 
 AxiosClient.interceptors.request.use((config) => {
@@ -25,7 +25,7 @@ AxiosClient.interceptors.response.use(
     }
 
     return Promise.reject(error);
-  }
+  },
 );
 
 export default AxiosClient;

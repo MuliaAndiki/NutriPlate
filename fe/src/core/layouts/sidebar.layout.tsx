@@ -38,7 +38,7 @@ export function SidebarLayout({ children }: AppLayoutProps) {
               </div>
             </div>
 
-            <div className="fixed bottom-0 left-0 w-full z-20">
+            <div className="fixed bottom-0 left-0 w-full  z-20">
               <FooterApp
                 isActive={isActive}
                 setIsActive={setIsActive}

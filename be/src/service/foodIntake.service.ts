@@ -6,7 +6,7 @@ import { FoodDetection } from '@/types/foodIntake.types';
 import { Prisma } from '@prisma/client';
 import { cacheKeys } from '@/cache/cacheKey';
 import foodIntakeSummaryService from './foodIntakeSummary.service';
-
+import FormData from 'form-data';
 /**
  * FoodIntakeService
  *
@@ -43,52 +43,34 @@ class FoodIntakeService {
    */
   public async inferenceYolo(imageBuffer: Buffer): Promise<FoodDetection[]> {
     try {
-      const startTime = Date.now();
-
       const imageHash = crypto.createHash('sha256').update(imageBuffer).digest('hex');
       const cacheKey = cacheKeys.models.detect(imageHash);
 
       try {
         const cached = await this.redis.get(cacheKey);
-        if (cached) {
-          console.log(`Cache HIT: ${cacheKey} (inference)`);
-          const detections = JSON.parse(cached);
-          return detections;
-        }
-      } catch (redisError) {
-        console.warn(
-          `  Redis get error: ${redisError instanceof Error ? redisError.message : redisError}`,
-        );
-      }
+        if (cached) return JSON.parse(cached);
+      } catch {}
+
       const formData = new FormData();
-      const blob = new Blob([imageBuffer], { type: 'image/jpeg' });
-      formData.append('image', blob, 'food.jpg');
+      formData.append('image', imageBuffer, {
+        filename: 'food.jpg',
+        contentType: 'image/jpeg',
+      });
 
       const response = await this.MlGate.post('/detect', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
+        headers: formData.getHeaders(),
       });
 
       if (!response.data?.success || !response.data?.detections) {
-        throw new Error('Invalid ML response format');
+        throw new Error('Invalid ML response');
       }
 
       const detections: FoodDetection[] = response.data.detections;
 
-      try {
-        await this.redis.setEx(cacheKey, 86400, JSON.stringify(detections));
-        console.log(`Cache SET: ${cacheKey} (24h TTL)`);
-      } catch (redisError) {
-        console.warn(
-          ` Redis set error: ${redisError instanceof Error ? redisError.message : redisError}`,
-        );
-      }
-
+      await this.redis.setEx(cacheKey, 86400, JSON.stringify(detections));
       return detections;
-    } catch (error) {
-      console.error(' Inference error:', error);
-      throw new Error(`Inference failed: ${error instanceof Error ? error.message : error}`);
+    } catch (err) {
+      throw new Error(`Inference failed: ${err}`);
     }
   }
 
@@ -102,14 +84,28 @@ class FoodIntakeService {
    * 4. Return nutrient per 100g
    */
   private async getNutrientPer100g(foodClassName: string) {
-    try {
-      const foodClass = await prisma.foodClasses.findUnique({
-        where: { name: foodClassName },
-      });
+    const cacheKey = `nutrient:${foodClassName}`;
 
-      if (!foodClass) {
-        console.warn(` FoodClass not found: ${foodClassName}, using defaults`);
-        return {
+    const cached = await this.redis.get(cacheKey);
+    if (cached) return JSON.parse(cached);
+
+    const foodClass = await prisma.foodClasses.findUnique({
+      where: { name: foodClassName },
+    });
+
+    const nutrient = foodClass
+      ? {
+          energyKcal: Number(foodClass.energyKcal ?? 0),
+          proteinGram: Number(foodClass.proteinGram ?? 0),
+          fatGram: Number(foodClass.fatGram ?? 0),
+          carbGram: Number(foodClass.carbGram ?? 0),
+          fiberGram: 0,
+          calciumMg: 0,
+          ironMg: 0,
+          vitaminA: 0,
+          vitaminC: 0,
+        }
+      : {
           energyKcal: 0,
           proteinGram: 0,
           fatGram: 0,
@@ -120,25 +116,9 @@ class FoodIntakeService {
           vitaminA: 0,
           vitaminC: 0,
         };
-      }
 
-      const nutrient = {
-        energyKcal: foodClass.energyKcal ? Number(foodClass.energyKcal) : 0,
-        proteinGram: foodClass.proteinGram ? Number(foodClass.proteinGram) : 0,
-        fatGram: foodClass.fatGram ? Number(foodClass.fatGram) : 0,
-        carbGram: foodClass.carbGram ? Number(foodClass.carbGram) : 0,
-        fiberGram: 0,
-        calciumMg: 0,
-        ironMg: 0,
-        vitaminA: 0,
-        vitaminC: 0,
-      };
-
-      return nutrient;
-    } catch (error) {
-      console.error(` getNutrientPer100g error:`, error);
-      throw error;
-    }
+    await this.redis.setEx(cacheKey, 60 * 60 * 24 * 7, JSON.stringify(nutrient));
+    return nutrient;
   }
 
   /**

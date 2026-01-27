@@ -193,7 +193,6 @@ class FoodIntakeController {
       }
 
       const processingTime = Date.now() - startTime;
-      // create for dataset here
       await prisma.foodRawImage.create({
         data: {
           uploader_id: jwtUser.id,
@@ -248,6 +247,7 @@ class FoodIntakeController {
       );
     }
   }
+
   public async getHistoryFood(c: AppContext) {
     try {
       const jwtUser = c.user as JwtPayload;

@@ -284,6 +284,7 @@ model FoodClasses {
   proteinGram Decimal?
   fatGram     Decimal?
   carbGram    Decimal?
+  fiberGram   Decimal?
   edibleRatio Decimal?
   calciumMg     Decimal?
   ironMg        Decimal?

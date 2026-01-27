@@ -34,8 +34,8 @@ const FooterApp: React.FC<FooterAppProps> = ({ router, baseRole }) => {
   const mapping = navigationRole();
 
   return (
-    <main className="w-full h-full ">
-      <div className={`flex justify-between items-center bg-background  p-2  `}>
+    <main className="w-full h-full  ">
+      <div className="flex items-center justify-around bg-background h-14">
         {mapping.map((items) => {
           const active = pathname === items.href;
 
@@ -43,21 +43,19 @@ const FooterApp: React.FC<FooterAppProps> = ({ router, baseRole }) => {
             <Button
               key={items.name}
               variant="ghost"
-              className="p-3"
+              className="flex-1 h-full p-0"
               onClick={() => router.push(items.href)}
               disabled={active}
             >
               <div
-                className={`flex flex-col items-center p-1 ${
+                className={`flex flex-col items-center justify-center w-full h-full ${
                   active
                     ? "text-primary border-t-2 border-primary"
                     : "text-muted-foreground"
                 }`}
               >
                 {items.icon}
-                <p className={`text-xs ${active ? "font-bold" : "font-light"}`}>
-                  {items.name}
-                </p>
+                <p className="text-[10px] leading-none mt-0.5">{items.name}</p>
               </div>
             </Button>
           );

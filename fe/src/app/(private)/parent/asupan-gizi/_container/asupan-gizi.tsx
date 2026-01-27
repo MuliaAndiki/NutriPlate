@@ -15,18 +15,26 @@ const AsupanGiziContainer = () => {
   // food history
   const footHistoryQuery = service.foodIntake.query.getHistoryFoodIntake();
   const footHistoryData = footHistoryQuery.data?.data ?? [];
-
+  //state
   const [showFlowPopUp, setShowFlowPopUp] = useState(false);
   const [cameraFlow, setCameraFlow] = useState<CameraFlowType>(null);
-  const createFoodMutation = service.foodIntake.mutation.createFoodIntake();
+  const [iotWeight, setIotWeight] = useState<number>(0);
+  const [selectedTask, setSelectedTask] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
 
-  //state
   const [isScaling, setIsScaling] = useState<boolean>(false);
   const [holdingWeight, setHoldingWeight] = useState<number>(0);
+  const [selectChildId, setSelectChildId] = useState<string>("");
 
   //iot status
   const iotStatusQuery = service.iot.query.getStatusIot();
   const iotStatusData = iotStatusQuery.data?.data ?? null;
+
+  // child
+  const childQuery = service.user.query.childAll();
+  const childData = childQuery.data?.data ?? [];
 
   // weight
   const weightQuery = service.iot.query.getWeight({
@@ -94,8 +102,9 @@ const AsupanGiziContainer = () => {
     onConfirmWeightMutation.mutate(
       {},
       {
-        //moce logic here
         onSuccess: (res) => {
+          const confirmedWeight = res.data?.weight || holdingWeight;
+          setIotWeight(confirmedWeight);
           setIsScaling(false);
           setHoldingWeight(0);
           handleOpenScanPopUp();
@@ -164,7 +173,8 @@ const AsupanGiziContainer = () => {
       {
         onSuccess: () => {
           setHoldingWeight(0);
-          setIsScaling(true);
+          weightQuery.refetch();
+          setIsScaling(false);
         },
         onError: () => {
           iotStatusQuery.refetch();
@@ -196,56 +206,30 @@ const AsupanGiziContainer = () => {
 
   const handleCancelCamera = () => {
     setCameraFlow(null);
-  };
-
-  const handlePhotoCapture = async (photoBlob: Blob, weight: number) => {
-    const childId = "";
-
-    if (!childId) {
-      namespace.alert.toast({
-        title: "Error",
-        message: "Child ID tidak ditemukan",
-        icon: "error",
-      });
-      return;
-    }
-
-    try {
-      await createFoodMutation.mutateAsync({
-        photoBlob,
-        childId,
-        totalWeightGram: weight,
-      });
-
-      namespace.alert.toast({
-        title: "Success",
-        message: "Makanan berhasil ditambahkan",
-        icon: "success",
-      });
-
-      handleCancelCamera();
-
-      namespace.queryClient.invalidateQueries({
-        queryKey: cacheKey.foodIntake.list(),
-      });
-    } catch (error) {
-      namespace.alert.toast({
-        title: "Error",
-        message: error instanceof Error ? error.message : "Upload gagal",
-        icon: "error",
-      });
-    }
+    setSelectedTask(null);
+    setIotWeight(0);
   };
 
   if (cameraFlow) {
     return (
       <SidebarLayout>
         <FoodCamera
+          childId={selectChildId}
+          iotId={iotStatusData?.id}
           flowType={cameraFlow}
+          iotWeight={iotWeight}
           onCancel={handleCancelCamera}
-          onCapture={handlePhotoCapture}
-          isLoading={createFoodMutation.isPending}
-          taskName={undefined}
+          onSuccess={() => {
+            handleCancelCamera();
+            namespace.queryClient.invalidateQueries({
+              queryKey: cacheKey.foodIntake.list(),
+            });
+            namespace.alert.toast({
+              title: "Berhasil",
+              message: "Asupan makanan berhasil disimpan",
+              icon: "success",
+            });
+          }}
         />
       </SidebarLayout>
     );
@@ -261,9 +245,11 @@ const AsupanGiziContainer = () => {
               isLoading:
                 footHistoryQuery.isLoading ||
                 iotStatusQuery.isLoading ||
-                weightQuery.isLoading,
+                weightQuery.isLoading ||
+                childQuery.isLoading,
               iot: iotStatusData ?? null,
               weightIot: weightData,
+              child: childData ?? [],
             },
             mutation: {
               isPending:
@@ -291,6 +277,8 @@ const AsupanGiziContainer = () => {
             showFlowPopUp: showFlowPopUp,
             isActive: isScaling,
             holdingWeight: holdingWeight,
+            selectChildId: selectChildId,
+            setSelectChildId: setSelectChildId,
           }}
         />
       </main>

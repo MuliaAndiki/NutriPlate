@@ -11,3 +11,6 @@ node_modules/
 /preprocessing/raw
 /preprocessing/yolov_env
 /preprocessing/runs
+/fe/192.168.100.52-key.pem
+/fe/192.168.100.52.pem
+/fe/server.ts
