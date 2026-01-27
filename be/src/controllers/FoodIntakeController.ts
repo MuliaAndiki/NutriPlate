@@ -480,116 +480,70 @@ class FoodIntakeController {
     try {
       const jwtUser = c.user as JwtPayload;
       if (!jwtUser) {
-        return c.json?.({ status: 401, message: 'Unauthorized' }, 401);
+        return c.json?.(
+          {
+            status: 401,
+            message: 'Unauthorized',
+          },
+          401,
+        );
       }
 
-      const query = c.query as FoodHistoryQuery;
-      const page = Math.max(1, parseInt(query.page || '1'));
-      const limit = Math.min(100, Math.max(1, parseInt(query.limit || '20')));
-      const skip = (page - 1) * limit;
-
-      const whereClause: any = {
-        child: {
-          parentId: jwtUser.id,
-        },
-      };
-
-      if (query.childId) {
-        whereClause.childId = query.childId;
-      }
-
-      if (query.startDate || query.endDate) {
-        whereClause.createdAt = {};
-        if (query.startDate) {
-          whereClause.createdAt.gte = new Date(query.startDate);
-        }
-        if (query.endDate) {
-          whereClause.createdAt.lte = new Date(query.endDate);
-        }
-      }
-
-      if (query.search) {
-        whereClause.title = {
-          contains: query.search,
-          mode: 'insensitive' as any,
-        };
-      }
-
-      // Build cache key
-      const cacheKey = cacheKeys.food.history(
-        jwtUser.id,
-        query.childId || 'all',
-        page,
-        limit,
-        query.startDate || '',
-        query.endDate || '',
-        query.search || '',
-      );
+      const cacheKey = cacheKeys.food.byUser(jwtUser.id);
 
       try {
         const cache = await this.redis.get(cacheKey);
         if (cache) {
-          return c.json?.(JSON.parse(cache), 200);
+          return c.json?.(
+            {
+              status: 200,
+              message: 'succesfully get history Food',
+              data: JSON.parse(cache),
+            },
+            200,
+          );
         }
       } catch (error) {
-        console.warn(`Redis cache error: ${error}`);
+        console.warn(`redis error, fallback db ${error}`);
       }
 
-      const [history, total] = await Promise.all([
-        prisma.food.findMany({
-          where: whereClause,
-          include: {
-            items: {
-              select: {
-                id: true,
-                foodClassName: true,
-                mlConfidence: true,
-                weightGram: true,
-                bboxData: true,
-                createdAt: true,
-              },
-            },
-            child: {
-              select: {
-                id: true,
-                fullName: true,
-                avaChild: true,
-              },
-            },
-          },
-          orderBy: { createdAt: 'desc' },
-          skip,
-          take: limit,
-        }),
-        prisma.food.count({ where: whereClause }),
-      ]);
-
-      const response = {
-        status: 200,
-        message: 'Successfully retrieved food history',
-        data: {
-          items: history.map((food) => this.formatFoodResponse(food)),
-          pagination: {
-            page,
-            limit,
-            total,
-            totalPages: Math.ceil(total / limit),
-            hasNext: page * limit < total,
-            hasPrev: page > 1,
+      const history = await prisma.food.findMany({
+        where: {
+          child: {
+            parentId: jwtUser.id,
           },
         },
-      };
-
-      // Cache the response
-      await this.redis.setEx(cacheKey, 60, JSON.stringify(response));
-
-      return c.json?.(response, 200);
+        include: {
+          items: true,
+        },
+      });
+      if (!history) {
+        return c.json?.(
+          {
+            status: 400,
+            message: 'failed get history',
+          },
+          400,
+        );
+      } else {
+        await this.redis.set(cacheKey, JSON.stringify(history), {
+          EX: 60,
+        });
+      }
+      return c.json?.(
+        {
+          status: 200,
+          message: 'succesfully get history',
+          data: history,
+        },
+        200,
+      );
     } catch (error) {
-      console.error('getHistoryFood error:', error);
+      console.error(error);
       return c.json?.(
         {
           status: 500,
-          message: 'Server internal error',
+          message: 'server internal error',
           error: error instanceof Error ? error.message : error,
         },
         500,

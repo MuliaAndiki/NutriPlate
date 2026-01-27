@@ -136,7 +136,6 @@ class FoodIntakeService {
       const bboxWidth = bbox.x2 - bbox.x1;
       const bboxHeight = bbox.y2 - bbox.y1;
 
-      // Buat bounding box data object
       const bboxData: BoundingBoxData = {
         normalized: {
           x: bbox.x1 / imgWidth,
@@ -210,6 +209,7 @@ class FoodIntakeService {
   ): {
     valid: boolean;
     errors: string[];
+    normalizedDetections?: FoodDetection[];
   } {
     const errors: string[] = [];
 
@@ -240,9 +240,28 @@ class FoodIntakeService {
       errors.push('Invalid detection: empty area ratio');
     }
 
+    let normalizedDetections = [...detections];
+
+    if (detections.length === 1) {
+      console.log(`Single food detected (${detections[0].class}), normalizing area_ratio to 1.0`);
+      normalizedDetections = [
+        {
+          ...detections[0],
+          area_ratio: 1.0,
+        },
+      ];
+    } else if (sumRatio < 0.7 || sumRatio > 1.3) {
+      console.log(`Total area_ratio ${sumRatio} is unrealistic, normalizing to 1.0`);
+      normalizedDetections = detections.map((d) => ({
+        ...d,
+        area_ratio: d.area_ratio / sumRatio,
+      }));
+    }
+
     return {
       valid: errors.length === 0,
       errors,
+      normalizedDetections,
     };
   }
 
@@ -302,19 +321,27 @@ class FoodIntakeService {
       if (!totalWeightGram || totalWeightGram <= 0) {
         throw new Error('totalWeightGram must be > 0');
       }
+
       const validation = this.validateDetections(detections);
       if (!validation.valid) {
         throw new Error(`Detection validation failed: ${validation.errors.join('; ')}`);
       }
+
       await this.handleModelVersionChange(mlModelVersion);
 
-      const transformedDetections = this.transformDetections(detections, imageSize);
+      const finalDetections = validation.normalizedDetections || detections;
+
+      const sumRatio = finalDetections.reduce((sum, d) => sum + d.area_ratio, 0);
+      console.log(`Total area_ratio sum: ${sumRatio}`);
+
+      const transformedDetections = this.transformDetections(finalDetections, imageSize);
       const processedItems: ProcessedItem[] = [];
 
       for (const detection of transformedDetections) {
         const itemWeightGram = Number((totalWeightGram * detection.area_ratio).toFixed(2));
 
         const nutrientPer100g = await this.getNutrientPer100g(detection.class);
+        console.log(`  Nutrient per 100g:`, nutrientPer100g);
 
         const weightFactor = itemWeightGram / 100;
         const energyKcal =
@@ -353,7 +380,6 @@ class FoodIntakeService {
           ironMg: 0,
           vitaminA: 0,
           vitaminC: 0,
-
           bboxData: detection.bboxData,
           metadata: {
             boundingBox: detection.bounding_box,
@@ -363,7 +389,10 @@ class FoodIntakeService {
             inferenceThreshold: 0.5,
             validationPassed: true,
             areaRatioValidated: detection.area_ratio > 0 && detection.area_ratio <= 1,
+            areaRatioOriginal: detections.find((d) => d.class === detection.class)?.area_ratio,
+            areaRatioSum: sumRatio,
             hasBoundingBox: !!detection.bboxData,
+            weightCalculation: `${totalWeightGram}g × ${detection.area_ratio} = ${itemWeightGram}g`,
           },
         });
       }

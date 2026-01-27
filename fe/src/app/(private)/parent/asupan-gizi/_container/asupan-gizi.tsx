@@ -220,7 +220,7 @@ const AsupanGiziContainer = () => {
           iotWeight={iotWeight}
           onCancel={handleCancelCamera}
           onSuccess={() => {
-            handleCancelCamera();
+            // handleCancelCamera();
             namespace.queryClient.invalidateQueries({
               queryKey: cacheKey.foodIntake.list(),
             });

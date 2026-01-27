@@ -7,6 +7,8 @@ import { Input } from "@/components/ui/input";
 import { ChevronLeft, Trash2 } from "lucide-react";
 import { Spinner } from "@/components/ui/spinner";
 import useService from "@/hooks/mutation/prop.service";
+import { FoodIntakeResponse } from "@/types/res";
+import FoodScanResult from "./food-result";
 
 interface FoodCameraProps {
   childId: string;
@@ -34,6 +36,11 @@ const FoodCamera: React.FC<FoodCameraProps> = ({
 
   const service = useService();
   const createFoodIntake = service.foodIntake.mutation.createFoodIntake();
+  const [mode, setMode] = useState<"camera" | "preview" | "result">("camera");
+
+  const [responseFoodIntake, setResponseFoodIntake] = useState<
+    FoodIntakeResponse | any
+  >();
 
   const handleCapture = () => {
     const imageSrc = webcamRef.current?.getScreenshot();
@@ -76,8 +83,10 @@ const FoodCamera: React.FC<FoodCameraProps> = ({
           totalWeightGram: finalWeight,
         },
         {
-          onSuccess: () => {
+          onSuccess: (res) => {
             onSuccess();
+            setResponseFoodIntake(res.data);
+            setMode("result");
           },
           onError: (err: any) => {
             setError(err?.message || "Gagal menyimpan data makanan");
@@ -88,6 +97,20 @@ const FoodCamera: React.FC<FoodCameraProps> = ({
       setError("Gagal memproses foto");
     }
   };
+
+  if (mode === "result" && responseFoodIntake) {
+    return (
+      <FoodScanResult
+        data={responseFoodIntake}
+        onBack={() => {
+          setMode("camera");
+          setPhoto(null);
+          setWeight("");
+          setResponseFoodIntake(undefined);
+        }}
+      />
+    );
+  }
 
   if (photo) {
     return (
