@@ -25,11 +25,11 @@ const HistoryFood: React.FC<HistoryFoodProps> = ({ res }) => {
               <span className="font-extralight">
                 {formatDateTime(res.createdAt, { style: "day-date-slash" })}
               </span>
-              <h1 className="text-lg font-bold">{res.items.foodClassName}</h1>
+              <h1 className="text-lg font-bold">{res.title}</h1>
             </div>
             <div className="w-full ">
-              <span className="">Berat : {res.items.weightGram} gram</span>
-              <h1 className=" ">Kadar Energy : {res.items.energyKcal}</h1>
+              <span className="">Berat : {res.totalWeightGram} gram</span>
+              {/* <h1 className=" ">Kadar Energy : {res.}</h1> */}
             </div>
           </div>
         </div>

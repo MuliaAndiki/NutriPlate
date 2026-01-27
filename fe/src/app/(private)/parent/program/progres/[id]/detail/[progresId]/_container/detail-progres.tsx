@@ -70,37 +70,24 @@ const ProgresDetailContainer = () => {
     setSelectedTask(null);
   };
 
-  const handlePhotoCapture = async (photoBlob: Blob, weight: number) => {
-    if (!id || !selectedTask) return;
+  const handleSuccess = () => {
+    namespace.alert.toast({
+      title: "Sukses!",
+      message: "Task selesai dan makanan ditambahkan",
+      icon: "success",
+    });
 
-    try {
-      await createFoodMutation.mutateAsync({
-        photoBlob,
-        childId: id,
-        totalWeightGram: weight,
-      });
+    handleClosCamera();
+    namespace.queryClient.invalidateQueries({
+      queryKey: cacheKey.task.byProgresId(progresId),
+    });
+    namespace.queryClient.invalidateQueries({
+      queryKey: cacheKey.foodIntake.list(),
+    });
 
-      await markTaskDoneMutation.mutateAsync(selectedTask.id);
-
-      namespace.alert.toast({
-        title: "Sukses!",
-        message: "Task selesai dan makanan ditambahkan",
-        icon: "success",
-      });
-
-      handleClosCamera();
-      namespace.queryClient.invalidateQueries({
-        queryKey: cacheKey.task.byProgresId(progresId),
-      });
-      namespace.queryClient.invalidateQueries({
-        queryKey: cacheKey.foodIntake.list(),
-      });
-    } catch (error) {
-      namespace.alert.toast({
-        title: "Error",
-        message: error instanceof Error ? error.message : "Gagal",
-        icon: "error",
-      });
+    // Mark task as done
+    if (selectedTask) {
+      markTaskDoneMutation.mutate(selectedTask.id);
     }
   };
 
@@ -108,13 +95,11 @@ const ProgresDetailContainer = () => {
     return (
       <SidebarLayout>
         <FoodCamera
+          childId={id}
           flowType="task"
           taskName={selectedTask.title}
           onCancel={handleClosCamera}
-          onCapture={handlePhotoCapture}
-          isLoading={
-            createFoodMutation.isPending || markTaskDoneMutation.isPending
-          }
+          onSuccess={handleSuccess}
         />
       </SidebarLayout>
     );

@@ -7,6 +7,7 @@ import { Prisma } from '@prisma/client';
 import { cacheKeys } from '@/cache/cacheKey';
 import foodIntakeSummaryService from './foodIntakeSummary.service';
 import FormData from 'form-data';
+import { normalizeFoodClassKey } from '@/utils/normalizer';
 /**
  * FoodIntakeService
  *
@@ -45,7 +46,7 @@ class FoodIntakeService {
     try {
       const imageHash = crypto.createHash('sha256').update(imageBuffer).digest('hex');
       const cacheKey = cacheKeys.models.detect(imageHash);
-
+      console.log('ML BASE URL:', this.MlGate.defaults.baseURL);
       try {
         const cached = await this.redis.get(cacheKey);
         if (cached) return JSON.parse(cached);
@@ -84,13 +85,14 @@ class FoodIntakeService {
    * 4. Return nutrient per 100g
    */
   private async getNutrientPer100g(foodClassName: string) {
-    const cacheKey = `nutrient:${foodClassName}`;
+    const normalizedName = normalizeFoodClassKey(foodClassName);
+    const cacheKey = `nutrient:${normalizedName}`;
 
     const cached = await this.redis.get(cacheKey);
     if (cached) return JSON.parse(cached);
 
     const foodClass = await prisma.foodClasses.findUnique({
-      where: { name: foodClassName },
+      where: { name: normalizedName },
     });
 
     const nutrient = foodClass
@@ -162,16 +164,10 @@ class FoodIntakeService {
       }
     }
 
-    // Check sum of area ratios (tolerance: ±0.15 for background/overlap)
     const sumRatio = detections.reduce((sum, d) => sum + d.area_ratio, 0);
-    const tolerance = 0.15;
-    const minSum = 1.0 - tolerance;
-    const maxSum = 1.0 + tolerance;
 
-    if (sumRatio < minSum || sumRatio > maxSum) {
-      errors.push(
-        `Area ratio sum ${sumRatio.toFixed(2)} outside tolerance [${minSum.toFixed(2)}, ${maxSum.toFixed(2)}]`,
-      );
+    if (sumRatio <= 0) {
+      errors.push('Invalid detection: empty area ratio');
     }
 
     return {
@@ -260,10 +256,8 @@ class FoodIntakeService {
       for (const detection of detections) {
         const itemWeightGram = Number((totalWeightGram * detection.area_ratio).toFixed(2));
 
-        // Lookup nutrition per 100g
         const nutrientPer100g = await this.getNutrientPer100g(detection.class);
 
-        // Calculate actual nutrition
         const weightFactor = itemWeightGram / 100;
         const energyKcal =
           nutrientPer100g.energyKcal > 0
@@ -336,6 +330,10 @@ class FoodIntakeService {
     inferenceHash: string | undefined,
   ) {
     try {
+      const foodClassNames = processedItems.map((item) => item.foodClassName);
+      const uniqueClassNames = [...new Set(foodClassNames)];
+      const title = uniqueClassNames.join(' + ');
+      const finalTitle = title || 'Food Intake';
       const result = await prisma.$transaction(async (tx) => {
         const foodIntake = await tx.food.create({
           data: {
@@ -345,6 +343,7 @@ class FoodIntakeService {
             totalWeightGram: new Prisma.Decimal(totalWeightGram),
             mlModelVersion,
             inferenceHash,
+            title: finalTitle,
           },
         });
 
@@ -352,6 +351,7 @@ class FoodIntakeService {
           processedItems.map((item) =>
             tx.foodIntakeItem.create({
               data: {
+                id: item.id,
                 foodIntakeId: foodIntake.id,
                 foodClassName: item.foodClassName,
                 mlConfidence: new Prisma.Decimal(item.mlConfidence),

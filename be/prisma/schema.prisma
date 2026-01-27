@@ -8,53 +8,53 @@ datasource db {
 }
 
 model User {
-  id            String              @id @default(uuid())
-  email         String?             @unique
-  phone         String?             @unique
-  fullName      String
-  password      String?
-  role          RoleType
-  isVerify      Boolean             @default(false)
-  otp           String?
-  expOtp        DateTime?
-  token         String?
-  activateExp   DateTime?
-  activateToken String?
-  createdAt     DateTime            @default(now())
-  updatedAt     DateTime            @updatedAt
-  avaUrl        String?
-  children      Child[]
-  footImage     FoodRawImage[]
-  iotDevices    IotDevice[]
-  notifications Notifications[]
-  program       NutriplateProgram[]
-  posyandu      Posyandu[]
-  session       UserSession[]
-  kaderRegistrations KaderRegistration[] @relation("KaderRegistrations")
+  id                   String                @id @default(uuid())
+  email                String?               @unique
+  phone                String?               @unique
+  fullName             String
+  password             String?
+  role                 RoleType
+  isVerify             Boolean               @default(false)
+  otp                  String?
+  expOtp               DateTime?
+  token                String?
+  activateExp          DateTime?
+  activateToken        String?
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
+  avaUrl               String?
+  children             Child[]
+  footImage            FoodRawImage[]
+  iotDevices           IotDevice[]
+  kaderRegistrations   KaderRegistration[]   @relation("KaderRegistrations")
+  notifications        Notifications[]
+  program              NutriplateProgram[]
+  posyandu             Posyandu[]
   programRegistrations ProgramRegistration[] @relation("ProgramRegistrations")
+  session              UserSession[]
 
   @@map("users")
 }
 
 model Child {
-  id              String                     @id @default(uuid())
-  parentId        String
-  posyanduId      String?
-  fullName        String
-  dateOfBirth     DateTime
-  gender          GenderType
-  createdAt       DateTime                   @default(now())
-  updatedAt       DateTime                   @updatedAt
-  profileChild    Json
-  avaChild        String?
-  placeOfBirth    String                     @default("Tidak Diketahui")
-  parent          User                       @relation(fields: [parentId], references: [id])
-  posyandu        Posyandu?                  @relation(fields: [posyanduId], references: [id])
-  foodIntake      Food[]
-  measurements    Measurement[]
-  programProgress NutritionProgramProgress[]
-  whoEvaluation   WhoEvaluation[]
-  programRegistrations ProgramRegistration[] @relation("ProgramRegistrations")
+  id                   String                     @id @default(uuid())
+  parentId             String
+  posyanduId           String?
+  fullName             String
+  dateOfBirth          DateTime
+  gender               GenderType
+  createdAt            DateTime                   @default(now())
+  updatedAt            DateTime                   @updatedAt
+  profileChild         Json
+  avaChild             String?
+  placeOfBirth         String                     @default("Tidak Diketahui")
+  parent               User                       @relation(fields: [parentId], references: [id])
+  posyandu             Posyandu?                  @relation(fields: [posyanduId], references: [id])
+  foodIntake           Food[]
+  measurements         Measurement[]
+  programProgress      NutritionProgramProgress[]
+  programRegistrations ProgramRegistration[]      @relation("ProgramRegistrations")
+  whoEvaluation        WhoEvaluation[]
 
   @@index([parentId])
   @@index([posyanduId])
@@ -62,22 +62,22 @@ model Child {
 }
 
 model Posyandu {
-  id          String              @id @default(uuid())
-  userID      String
-  name        String
-  village     String
-  subDistrict String
-  district    String
-  scheduleDay Int
-  createdAt   DateTime            @default(now())
-  avaUrl      String
-  email       String
-  phone       String
-  children    Child[]
-  iotDevices  IotDevice[]
-  programs    NutriplateProgram[]
-  user        User                @relation(fields: [userID], references: [id])
-  kaderRegistrations KaderRegistration[]
+  id                   String                @id @default(uuid())
+  userID               String
+  name                 String
+  village              String
+  subDistrict          String
+  district             String
+  scheduleDay          Int
+  createdAt            DateTime              @default(now())
+  avaUrl               String
+  email                String
+  phone                String
+  children             Child[]
+  iotDevices           IotDevice[]
+  kaderRegistrations   KaderRegistration[]
+  programs             NutriplateProgram[]
+  user                 User                  @relation(fields: [userID], references: [id])
   programRegistrations ProgramRegistration[] @relation("ProgramRegistrations")
 
   @@map("posyandu")
@@ -96,7 +96,6 @@ model IotDevice {
   status           IotStatus
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
-  foodIntake       Food[]
   parent           User?     @relation(fields: [parentId], references: [id])
   posyandu         Posyandu? @relation(fields: [posyanduId], references: [id])
 
@@ -132,9 +131,9 @@ model Food {
   mlModelVersion  String?
   totalWeightGram Decimal
   updatedAt       DateTime         @updatedAt
+  title           String
   items           FoodIntakeItem[]
   child           Child            @relation(fields: [childId], references: [id])
-  iot             IotDevice?       @relation(fields: [iotId], references: [id])
   food            FoodRawImage[]
 
   @@index([childId])
@@ -158,6 +157,10 @@ model FoodIntakeItem {
   ironMg        Decimal?
   vitaminA      Decimal?
   vitaminC      Decimal?
+   bboxX          Decimal?  
+  bboxY          Decimal?  
+  bboxWidth      Decimal?  
+  bboxHeight     Decimal?  
   metadata      Json?
   createdAt     DateTime @default(now())
   foodIntake    Food     @relation(fields: [foodIntakeId], references: [id], onDelete: Cascade)
@@ -224,7 +227,7 @@ model NutritionProgramProgress {
   isAccep     Boolean           @default(false)
   child       Child?            @relation(fields: [childId], references: [id])
   program     NutriplateProgram @relation(fields: [programId], references: [id])
-  task     TaskProgram[]
+  task        TaskProgram[]
 
   @@unique([childId, programId])
   @@index([childId])
@@ -233,32 +236,24 @@ model NutritionProgramProgress {
 }
 
 model TaskProgram {
-  id                  String                   @id @default(uuid())
-  progresId           String
-  title               String
-  description         String
-  isComplated         Boolean                  @default(false)
-  createdAt           DateTime                 @default(now())
-  updatedAt           DateTime                 @updatedAt
-  isBroadcast         Boolean                  @default(false)
-  mealType            MealType?
-  targetEnergyKcal    Float?                  
-  targetProteinGram   Float?                   
-  targetFatGram       Float?                   
-  targetCarbGram      Float?                   
-  targetFiberGram     Float?                   
-  
-  progres             NutritionProgramProgress @relation(fields: [progresId], references: [id], onDelete: Cascade)
+  id                String                   @id @default(uuid())
+  progresId         String
+  title             String
+  description       String
+  isComplated       Boolean                  @default(false)
+  createdAt         DateTime                 @default(now())
+  updatedAt         DateTime                 @updatedAt
+  isBroadcast       Boolean                  @default(false)
+  mealType          MealType?
+  targetCarbGram    Float?
+  targetEnergyKcal  Float?
+  targetFatGram     Float?
+  targetFiberGram   Float?
+  targetProteinGram Float?
+  progres           NutritionProgramProgress @relation(fields: [progresId], references: [id], onDelete: Cascade)
 
   @@index([progresId])
   @@map("subtask_program")
-}
-
-enum MealType {
-  BREAKFAST
-  LUNCH
-  SNACK
-  DINNER
 }
 
 model FoodRawImage {
@@ -284,14 +279,14 @@ model FoodClasses {
   proteinGram Decimal?
   fatGram     Decimal?
   carbGram    Decimal?
-  fiberGram   Decimal?
   edibleRatio Decimal?
-  calciumMg     Decimal?
-  ironMg        Decimal?
-  vitaminA      Decimal?
-  vitaminC      Decimal?
-  metadata      Json?
   createdAt   DateTime         @default(now())
+  calciumMg   Decimal?
+  ironMg      Decimal?
+  metadata    Json?
+  vitaminA    Decimal?
+  vitaminC    Decimal?
+  fiberGram   Decimal?
   annotations FoodAnnotation[]
 
   @@map("food_classes")
@@ -361,14 +356,14 @@ model WhoEvaluation {
 }
 
 model KaderRegistration {
-  id          String               @id @default(uuid())
-  kaderId     String
-  posyanduId  String
-  status      RegistrationStatus   @default(pending)
-  createdAt   DateTime             @default(now())
-  updatedAt   DateTime             @updatedAt
-  kader       User                 @relation("KaderRegistrations", fields: [kaderId], references: [id], onDelete: Cascade)
-  posyandu    Posyandu             @relation(fields: [posyanduId], references: [id], onDelete: Cascade)
+  id         String             @id @default(uuid())
+  kaderId    String
+  posyanduId String
+  status     RegistrationStatus @default(pending)
+  createdAt  DateTime           @default(now())
+  updatedAt  DateTime           @updatedAt
+  kader      User               @relation("KaderRegistrations", fields: [kaderId], references: [id], onDelete: Cascade)
+  posyandu   Posyandu           @relation(fields: [posyanduId], references: [id], onDelete: Cascade)
 
   @@unique([kaderId, posyanduId])
   @@index([kaderId])
@@ -377,18 +372,18 @@ model KaderRegistration {
 }
 
 model ProgramRegistration {
-  id          String               @id @default(uuid())
-  parentId    String
-  childId     String
-  programId   String
-  posyanduId  String
-  status      RegistrationStatus   @default(pending)
-  createdAt   DateTime             @default(now())
-  updatedAt   DateTime             @updatedAt
-  parent      User                 @relation("ProgramRegistrations", fields: [parentId], references: [id], onDelete: Cascade)
-  child       Child                @relation("ProgramRegistrations", fields: [childId], references: [id], onDelete: Cascade)
-  program     NutriplateProgram    @relation(fields: [programId], references: [id], onDelete: Cascade)
-  posyandu    Posyandu             @relation("ProgramRegistrations", fields: [posyanduId], references: [id], onDelete: Cascade)
+  id         String             @id @default(uuid())
+  parentId   String
+  childId    String
+  programId  String
+  posyanduId String
+  status     RegistrationStatus @default(pending)
+  createdAt  DateTime           @default(now())
+  updatedAt  DateTime           @updatedAt
+  child      Child              @relation("ProgramRegistrations", fields: [childId], references: [id], onDelete: Cascade)
+  parent     User               @relation("ProgramRegistrations", fields: [parentId], references: [id], onDelete: Cascade)
+  posyandu   Posyandu           @relation("ProgramRegistrations", fields: [posyanduId], references: [id], onDelete: Cascade)
+  program    NutriplateProgram  @relation(fields: [programId], references: [id], onDelete: Cascade)
 
   @@unique([parentId, childId, programId])
   @@index([parentId])
@@ -396,6 +391,13 @@ model ProgramRegistration {
   @@index([programId])
   @@index([posyanduId])
   @@map("program_registrations")
+}
+
+enum MealType {
+  BREAKFAST
+  LUNCH
+  SNACK
+  DINNER
 }
 
 enum RoleType {

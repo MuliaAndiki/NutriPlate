@@ -7,6 +7,7 @@ import { cacheKeys } from '@/cache/cacheKey';
 import { getRedis } from '@/utils/redis';
 import { error } from 'console';
 import { PickFoodID } from '@/types/food.types';
+import { uploadCloudinary } from '@/utils/clodinary';
 
 class FoodIntakeController {
   private get redis() {
@@ -38,10 +39,95 @@ class FoodIntakeController {
         );
       }
 
-      const body = c.body as any;
-      const { childId, iotId, photoUrl, totalWeightGram } = body;
+      let childId: string | undefined;
+      let iotId: string | undefined;
+      let photoUrl: string | undefined;
+      let totalWeightGram: string | undefined;
+      let imageBuffer: Buffer | undefined;
+
+      const bodyData = c.body as any;
+      childId = bodyData?.childId;
+      iotId = bodyData?.iotId;
+      totalWeightGram = bodyData?.totalWeightGram;
+
+      if (bodyData?.image && bodyData.image instanceof File) {
+        try {
+          imageBuffer = Buffer.from(await bodyData.image.arrayBuffer());
+          console.log(' Image file received from bodyData.image, buffer size:', imageBuffer.length);
+
+          const result = await uploadCloudinary(imageBuffer, 'food_intake', bodyData.image.name);
+          photoUrl = result.secure_url;
+          console.log(' Image uploaded to Cloudinary:', photoUrl);
+        } catch (err) {
+          console.error(' Failed to process image file:', err);
+          return c.json?.(
+            {
+              status: 400,
+              message: 'Failed to process image file',
+              error: err instanceof Error ? err.message : String(err),
+            },
+            400,
+          );
+        }
+      } else if (c.files?.image?.[0]) {
+        try {
+          const file = c.files.image[0];
+          imageBuffer = file.buffer as Buffer;
+          console.log(' Image file received from c.files, buffer size:', imageBuffer.length);
+
+          const result = await uploadCloudinary(imageBuffer, 'food_intake', file.originalname);
+          photoUrl = result.secure_url;
+          console.log(' Image uploaded to Cloudinary:', photoUrl);
+        } catch (err) {
+          console.error(' Failed to process image file from c.files:', err);
+          return c.json?.(
+            {
+              status: 400,
+              message: 'Failed to process image file',
+              error: err instanceof Error ? err.message : String(err),
+            },
+            400,
+          );
+        }
+      } else if (bodyData?.photoUrl && typeof bodyData.photoUrl === 'string') {
+        const tempPhotoUrl = bodyData.photoUrl;
+        console.log(' photoUrl received directly:', tempPhotoUrl);
+
+        if (tempPhotoUrl.startsWith('data:image')) {
+          try {
+            const base64 = tempPhotoUrl;
+            const buffer = Buffer.from(base64.split(',')[1], 'base64');
+            const result = await uploadCloudinary(buffer, 'food_intake', 'food_image.png');
+            photoUrl = result.secure_url;
+            imageBuffer = buffer;
+            console.log(' Base64 image uploaded to Cloudinary:', photoUrl);
+          } catch (err) {
+            console.error(' Failed to upload base64 image to Cloudinary:', err);
+            return c.json?.(
+              {
+                status: 400,
+                message: 'Failed to upload image',
+                error: err instanceof Error ? err.message : String(err),
+              },
+              400,
+            );
+          }
+        } else {
+          photoUrl = tempPhotoUrl;
+        }
+      } else {
+        console.log(' No image file found - bodyData:', bodyData, 'c.files:', c.files);
+      }
 
       if (!childId || !totalWeightGram) {
+        console.error(
+          ' Missing required fields - childId:',
+          childId,
+          'totalWeightGram:',
+          totalWeightGram,
+          'bodyData:',
+          bodyData,
+        );
         return c.json?.(
           {
             status: 400,
@@ -87,13 +173,9 @@ class FoodIntakeController {
         );
       }
 
-      let imageBuffer: Buffer | undefined;
       let inferenceHash: string | undefined;
-
-      if (c.files?.image?.[0]) {
+      if (imageBuffer) {
         try {
-          const file = c.files.image[0];
-          imageBuffer = file.buffer;
           inferenceHash = crypto.createHash('sha256').update(imageBuffer).digest('hex');
         } catch (error) {
           return c.json?.(
@@ -105,8 +187,6 @@ class FoodIntakeController {
             400,
           );
         }
-      } else {
-        console.log('  No image file provided, proceeding without inference');
       }
 
       let detections: any[] = [];
@@ -193,14 +273,19 @@ class FoodIntakeController {
       }
 
       const processingTime = Date.now() - startTime;
-      await prisma.foodRawImage.create({
-        data: {
-          uploader_id: jwtUser.id,
-          source_food_id: savedData.foodIntake.id,
-          image_url: photoUrl,
-          status: 'pending_label',
-        },
-      });
+
+      if (photoUrl) {
+        await prisma.foodRawImage.create({
+          data: {
+            uploader_id: jwtUser.id,
+            source_food_id: savedData.foodIntake.id,
+            image_url: photoUrl,
+            status: 'pending_label',
+          },
+        });
+        console.log(' FoodRawImage created with Cloudinary URL');
+      }
+
       return c.json?.(
         {
           status: 201,
@@ -209,8 +294,11 @@ class FoodIntakeController {
             success: true,
             foodIntakeId: savedData.foodIntake.id,
             childId,
+            title: savedData.foodIntake.title,
             totalWeightGram: Number(savedData.foodIntake.totalWeightGram),
+            photoUrl: photoUrl,
             items: savedData.items.map((item: any) => ({
+              id: item.id,
               foodClassName: item.foodClassName,
               weightGram: Number(item.weightGram),
               mlConfidence: Number(item.mlConfidence),
@@ -230,6 +318,7 @@ class FoodIntakeController {
               inferenceHash: inferenceHash?.slice(0, 8) + '...',
               inferenceSource: 'YOLOv8s',
               validationStatus: 'PASSED',
+              imageSource: photoUrl ? 'Cloudinary' : 'No image',
             },
           },
         },
