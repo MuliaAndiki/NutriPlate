@@ -28,18 +28,18 @@ class IotService {
   }
   public async getStatusIot() {
     try {
-      const res = await this.IotGate.get('/status');
+      const res = await this.IotGate.get('/status', {
+        timeout: 3000,
+      });
+
       let result = res.data;
       if (typeof result === 'string') {
         result = JSON.parse(result);
       }
-      const cleanRespone = cleanNaNValues(result);
-      return cleanRespone;
+
+      return cleanNaNValues(result);
     } catch (error) {
-      if (this.isAxiosError(error)) {
-        throw new Error(error.code || error.message || 'Iot Not Working');
-      }
-      throw error;
+      return null;
     }
   }
   public async StartScale() {

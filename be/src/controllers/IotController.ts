@@ -58,22 +58,14 @@ class IotController {
           401,
         );
       }
-      const respone = await iotService.getStatusIot();
-      if (!respone) {
-        return c.json?.(
-          {
-            status: 400,
-            message: 'server internal error',
-          },
-          400,
-        );
-      }
+
+      const response = await iotService.getStatusIot();
 
       return c.json?.(
         {
           status: 200,
-          message: 'succesfuly rebot scale',
-          data: respone,
+          message: 'ok',
+          data: response ?? null,
         },
         200,
       );
@@ -82,7 +74,6 @@ class IotController {
         {
           status: 500,
           message: 'server internal error',
-          error: error instanceof Error ? error.message : error,
         },
         500,
       );
