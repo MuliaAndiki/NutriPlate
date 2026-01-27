@@ -10,4 +10,12 @@ export interface IFood {
   updatedAt: string;
 }
 
+export interface FoodHistoryQuery {
+  page?: string;
+  limit?: string;
+  childId?: string;
+  startDate?: string;
+  endDate?: string;
+  search?: string;
+}
 export type PickFoodID = Pick<IFood, 'id'>;

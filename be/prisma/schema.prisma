@@ -132,12 +132,14 @@ model Food {
   totalWeightGram Decimal
   updatedAt       DateTime         @updatedAt
   title           String
+  totals          Json?
   items           FoodIntakeItem[]
   child           Child            @relation(fields: [childId], references: [id])
   food            FoodRawImage[]
 
   @@index([childId])
   @@index([iotId])
+  @@index([createdAt])
   @@map("food_intakes")
 }
 
@@ -157,15 +159,13 @@ model FoodIntakeItem {
   ironMg        Decimal?
   vitaminA      Decimal?
   vitaminC      Decimal?
-   bboxX          Decimal?  
-  bboxY          Decimal?  
-  bboxWidth      Decimal?  
-  bboxHeight     Decimal?  
   metadata      Json?
   createdAt     DateTime @default(now())
+  bboxData      Json?
   foodIntake    Food     @relation(fields: [foodIntakeId], references: [id], onDelete: Cascade)
 
   @@index([foodIntakeId])
+  @@index([foodClassName])
   @@map("food_intake_items")
 }
 
