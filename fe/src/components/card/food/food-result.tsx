@@ -1,5 +1,3 @@
-"use client";
-
 import { useState } from "react";
 import { FoodIntakeResponse } from "@/types/res";
 import { ChevronLeft } from "lucide-react";
@@ -56,6 +54,7 @@ const FoodScanResult = ({
         <h1 className="font-semibold text-lg">Hasil Scan</h1>
       </div>
 
+      {/* jadiin component */}
       <div className="p-4">
         <div className="relative w-full aspect-[4/3] rounded-xl overflow-hidden">
           <Image
@@ -76,7 +75,7 @@ const FoodScanResult = ({
                 <div
                   key={item.id}
                   onClick={() => openPopup(item)}
-                  className="absolute border-2 border-emerald-400 rounded-md cursor-pointer hover:border-emerald-600 transition"
+                  className="absolute border-2 border-primary rounded-md cursor-pointer hover:border-emerald-600 transition"
                   style={{
                     left: `${(box.x1 / imageSize.width) * 100}%`,
                     top: `${(box.y1 / imageSize.height) * 100}%`,
@@ -84,7 +83,7 @@ const FoodScanResult = ({
                     height: `${(box.height / imageSize.height) * 100}%`,
                   }}
                 >
-                  <div className="absolute -top-5 left-0 bg-emerald-500 text-white text-[10px] px-1 rounded">
+                  <div className="absolute -top-5 left-0 bg-primary text-white text-[10px] px-1 rounded">
                     {item.foodClassName}
                   </div>
                 </div>
@@ -93,6 +92,7 @@ const FoodScanResult = ({
         </div>
       </div>
 
+      {/* jadiin komponent */}
       <div className="flex-1 px-4 space-y-4 overflow-auto">
         <div className="bg-primary text-primary-foreground rounded-xl p-4">
           <h2 className="font-semibold mb-1">
