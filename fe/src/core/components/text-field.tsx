@@ -13,7 +13,7 @@ type InputBaseProps = {
   inputClassName?: string;
   labelClassName?: string;
   onChange?: (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => void;
   disabled?: boolean;
   label?: string;
@@ -50,7 +50,7 @@ const TextField = forwardRef<HTMLInputElement, InputBaseProps>(
       forgotPassword,
       ...props
     },
-    ref
+    ref,
   ) => {
     const [file, setFile] = useState<File | null>(null);
     const [showPassword, setShowPassword] = useState(false);
@@ -67,7 +67,7 @@ const TextField = forwardRef<HTMLInputElement, InputBaseProps>(
                   ? "border-red-500"
                   : "border-gray-100 focus:border-purple-500",
                 inputClassName,
-                file ? "text-gray-950" : "text-gray-400"
+                file ? "text-gray-950" : "text-gray-400",
               )}
               disabled={disabled}
               onClick={() => document.getElementById(id || "file")?.click()}
@@ -105,7 +105,7 @@ const TextField = forwardRef<HTMLInputElement, InputBaseProps>(
                 ? "border-red-500"
                 : "border-gray-100 focus:border-purple-500",
               inputClassName,
-              "max-h-none"
+              "max-h-none",
             )}
             placeholder={placeholder}
             onChange={onChange}
@@ -132,7 +132,7 @@ const TextField = forwardRef<HTMLInputElement, InputBaseProps>(
             error
               ? "border-red-500"
               : "border-gray-100 focus:border-purple-500",
-            inputClassName
+            inputClassName,
           )}
           placeholder={placeholder}
           onChange={onChange}
@@ -154,7 +154,7 @@ const TextField = forwardRef<HTMLInputElement, InputBaseProps>(
             <label
               className={cn(
                 "text-zinc-800 text-sm font-medium",
-                labelClassName
+                labelClassName,
               )}
               htmlFor={id}
             >
@@ -198,7 +198,7 @@ const TextField = forwardRef<HTMLInputElement, InputBaseProps>(
         {error && <p className="text-red-500 text-sm">{error}</p>}
       </div>
     );
-  }
+  },
 );
 
 TextField.displayName = "TextField";

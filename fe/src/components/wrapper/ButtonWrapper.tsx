@@ -24,7 +24,7 @@ function ButtonWrapper({
         useNewLayout
           ? "flex items-center gap-2"
           : cn(leftIcon && "pl-3", rightIcon && "pr-3"),
-        className
+        className,
       )}
       {...props}
     >

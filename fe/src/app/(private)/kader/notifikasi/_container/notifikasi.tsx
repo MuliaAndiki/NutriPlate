@@ -1,13 +1,11 @@
 "use client";
 import NotifikasiKaderSection from "@/components/section/private/kader/notifikasi/notifikasi-section";
-import { APP_SESSION_COOKIE_KEY } from "@/configs/cookies.config";
 
 import { SidebarLayout } from "@/core/layouts/sidebar.layout";
 import useService from "@/hooks/mutation/prop.service";
 import { useAppNameSpace } from "@/hooks/useAppNameSpace";
 import { useAuthentic } from "@/hooks/useAuthentic";
 import { NotifTypeInterface } from "@/types/partial";
-import { getCookie } from "cookies-next";
 import { useState, useEffect } from "react";
 
 const NotafikasiKaderContainer = () => {

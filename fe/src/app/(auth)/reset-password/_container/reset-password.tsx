@@ -14,7 +14,7 @@ const ResetPasswordContainer = () => {
     {
       identifier: "",
       password: "",
-    }
+    },
   );
 
   const [confirmPassword, setConfirmPassword] = useState<string>("");
@@ -47,7 +47,7 @@ const ResetPasswordContainer = () => {
       password: formResetPassword.password,
     };
     const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
-      formResetPassword.identifier
+      formResetPassword.identifier,
     );
     if (isEmail) {
       payload.email = formResetPassword.identifier;
