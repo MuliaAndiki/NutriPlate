@@ -1,4 +1,5 @@
 import { useRegisterKader } from "./state/mutation";
+import { useGetMyRegister } from "./state/query";
 
 export function useKaderRegistration() {
   return {
@@ -6,7 +7,7 @@ export function useKaderRegistration() {
       registerKader: useRegisterKader,
     },
     query: {
-      //
+      getMyRegister: useGetMyRegister,
     },
   };
 }

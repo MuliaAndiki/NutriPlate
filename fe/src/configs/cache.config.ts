@@ -36,6 +36,7 @@ export const cacheKey = {
   posyandu: {
     list: () => [`posyandu:list`],
     children: (posyanduId: string) => [`posyandu:children;${posyanduId}`],
+    byId: (id: string) => [`posyandu:byid:${id}`],
   },
   notification: {
     byUser: (token: string) => [`notifikasi:user:${token}`],
@@ -46,6 +47,9 @@ export const cacheKey = {
   },
   task: {
     byProgresId: (id: string) => [`task:progres:${id}`],
+  },
+  registrion: {
+    list: () => [`registrion:list`],
   },
   // not fix
   iot: {
