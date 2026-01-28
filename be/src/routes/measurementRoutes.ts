@@ -48,6 +48,13 @@ class MeasurementRoutes {
         beforeHandle: [verifyToken().beforeHandle],
       },
     );
+    this.measurementRoutes.get(
+      '/all/:posyanduId',
+      (c: AppContext) => MeasurementController.getAllMeasurementByPosyandu(c),
+      {
+        beforeHandle: [verifyToken().beforeHandle],
+      },
+    );
   }
 }
 

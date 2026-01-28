@@ -9,12 +9,3 @@ export function useGetPosyandu() {
     staleTime: 1000 * 60 * 5,
   });
 }
-
-export function useGetChildrenInPosyandu(id: string | null) {
-  return useQuery({
-    queryKey: cacheKey.posyandu.children(id ?? "none"),
-    queryFn: () => Api.Posyandu.getChildren(id as string),
-    enabled: !!id,
-    staleTime: 1000 * 60 * 5,
-  });
-}

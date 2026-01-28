@@ -5,7 +5,7 @@ import AxiosClient from "@/utils/axios.client";
 class UserApi {
   //min intergrate
   public async editProfile(
-    payload: FormUpdateProfile
+    payload: FormUpdateProfile,
   ): Promise<TResponse<any>> {
     const res = await AxiosClient.put("/api/users/profile", payload);
     return res.data;
@@ -19,13 +19,13 @@ class UserApi {
     return res.data;
   }
   public async updateProfile(
-    payload: Partial<FormUpdateProfile>
+    payload: Partial<FormUpdateProfile>,
   ): Promise<TResponse<any>> {
     const res = await AxiosClient.put("/api/users/profile", payload);
     return res.data;
   }
   public async updatePassword(
-    payload: FormUpdatePassword
+    payload: FormUpdatePassword,
   ): Promise<TResponse<any>> {
     const res = await AxiosClient.put("/api/users/password", payload);
     return res.data;
@@ -50,8 +50,10 @@ class UserApi {
     const res = await AxiosClient.get(`/api/users/kader/${id}`);
     return res.data;
   }
-  public async getChild(): Promise<TResponse<any>> {
-    const res = await AxiosClient.get("/api/users/child");
+  public async getChild(posyanduId?: string): Promise<TResponse<any>> {
+    const res = await AxiosClient.get("/api/users/child", {
+      params: posyanduId ? { posyanduId } : undefined,
+    });
     return res.data;
   }
   public async getChildByID(id: string): Promise<TResponse<any>> {

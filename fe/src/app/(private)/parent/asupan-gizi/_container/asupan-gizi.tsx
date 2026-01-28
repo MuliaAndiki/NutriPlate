@@ -4,11 +4,13 @@ import { SidebarLayout } from "@/core/layouts/sidebar.layout";
 import useService from "@/hooks/mutation/prop.service";
 import { useState } from "react";
 import { useAppNameSpace } from "@/hooks/useAppNameSpace";
-import { cacheKey } from "@/configs/cache.config";
+
+import { useAuthentic } from "@/hooks/useAuthentic";
 
 const AsupanGiziContainer = () => {
   const namespace = useAppNameSpace();
   const service = useService();
+  const { role } = useAuthentic();
   // food history
   const footHistoryQuery = service.foodIntake.query.getHistoryFoodIntake();
   const footHistoryData = footHistoryQuery.data?.data ?? [];
@@ -24,7 +26,9 @@ const AsupanGiziContainer = () => {
   const iotStatusData = iotStatusQuery.data?.data ?? null;
 
   // child
-  const childQuery = service.user.query.childAll();
+  const childQuery = service.user.query.childAll({
+    role: role,
+  });
   const childData = childQuery.data?.data ?? [];
 
   //daily Summary not fix

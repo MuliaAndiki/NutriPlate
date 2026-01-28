@@ -2,18 +2,33 @@
 import HomeKaderHeroSection from "@/components/section/private/kader/home/home-kader-section";
 import { SidebarLayout } from "@/core/layouts/sidebar.layout";
 import useService from "@/hooks/mutation/prop.service";
+import { useAppNameSpace } from "@/hooks/useAppNameSpace";
+import { useAuthentic } from "@/hooks/useAuthentic";
 import { PopUpNavigate } from "@/types/ui";
+import { useDebugLog } from "@/utils/useDebug";
 import { useState } from "react";
 
 const HomeKaderContainer = () => {
   const service = useService();
+  const namespace = useAppNameSpace();
+  const { role, token } = useAuthentic();
+
   // profile
   const profileQuery = service.user.query.profile();
   const profileData = profileQuery.data?.data ?? null;
   const posyanduId = profileData?.posyanduId;
   const kaderId = profileData?.id;
-  // children in posyandu
-  const childInPosyanduQuery = service.posyandu.query.getChildren(posyanduId);
+
+  // measurement
+  const MeasurementAllQuery =
+    service.measuremnt.query.allMeasurement(posyanduId);
+  const MeasurementAllData = MeasurementAllQuery.data?.data ?? [];
+
+  // children
+  const childInPosyanduQuery = service.user.query.childAll({
+    posyanduId: posyanduId,
+    role: role,
+  });
   const childInPosyanduData = childInPosyanduQuery.data?.data ?? [];
 
   // posyandu
@@ -50,8 +65,10 @@ const HomeKaderContainer = () => {
               isLoading:
                 profileQuery.isLoading ||
                 childInPosyanduQuery.isLoading ||
-                posyanduQuery.isLoading,
+                posyanduQuery.isLoading ||
+                MeasurementAllQuery.isLoading,
               profile: profileData ?? null,
+              measurement: MeasurementAllData ?? [],
               childInPosyandu: childInPosyanduData ?? [],
               posyandu: posyanduData ?? [],
             },

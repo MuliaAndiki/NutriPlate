@@ -14,8 +14,17 @@ export function useGetGrowthChart(id: string) {
 export function useGetMeasurement(id: string) {
   return useQuery({
     queryKey: cacheKey.measurement.byChild(id),
-    queryFn: async () => Api.Measurement.getMeasurement(id),
+    queryFn: () => Api.Measurement.getMeasurement(id),
     staleTime: 1000 * 60 * 5,
     enabled: !!id,
+  });
+}
+
+export function useGetAllMeasurement(posyanduId: string) {
+  return useQuery({
+    queryKey: cacheKey.measurement.byPosyandu(posyanduId!),
+    queryFn: () => Api.Measurement.getAllMeasuremnt(posyanduId),
+    staleTime: 1000 * 60 * 5,
+    enabled: !!posyanduId,
   });
 }

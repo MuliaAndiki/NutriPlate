@@ -44,7 +44,7 @@ class UserRoutes {
     this.userRoutes.get('/kader', (c: AppContext) => UserController.getKader(c), {
       beforeHandle: [verifyToken().beforeHandle],
     });
-    this.userRoutes.get('/child', (c: AppContext) => UserController.getChild(c), {
+    this.userRoutes.get('/child', (c: AppContext) => UserController.getChildren(c), {
       beforeHandle: [verifyToken().beforeHandle],
     });
     this.userRoutes.get('/child/:id', (c: AppContext) => UserController.getChildByID(c), {

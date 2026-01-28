@@ -3,6 +3,7 @@ import HeaderHomeCard from "@/components/card/general/header/home";
 import { ButtonWrapper } from "@/components/wrapper/ButtonWrapper";
 import {
   ChildListByPosyanduData,
+  MeasurementRespone,
   PosyanduRespone,
   UserResponse,
 } from "@/types/res";
@@ -12,6 +13,8 @@ import PopUp from "@/components/ui/pop-up";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import RegisterKaderForm from "./_registerKader/registerKader";
 import Link from "next/link";
+import BalitaRiskList from "@/components/card/kader/balita-risk";
+import BalitaWarningList from "@/components/card/kader/balita-warning";
 
 interface HomeKaderHeroSectionProps {
   service: {
@@ -20,6 +23,7 @@ interface HomeKaderHeroSectionProps {
       isLoading: boolean;
       childInPosyandu: ChildListByPosyanduData[];
       posyandu: PosyanduRespone[];
+      measurement: MeasurementRespone[];
     };
     mutation: {
       onRegisterKader: () => void;
@@ -56,6 +60,12 @@ const HomeKaderHeroSection: React.FC<HomeKaderHeroSectionProps> = ({
     },
   ];
   const lengthChild = service.query.childInPosyandu.length;
+  const nutritionStatusLenghtWarning = service.query.measurement.filter(
+    (item) => item.nutritionStatus === "severely_underweight",
+  ).length;
+  const nutritionStatusLenghtError = service.query.measurement.filter(
+    (item) => item.nutritionStatus === "underweight",
+  ).length;
   return (
     <div className="w-full overflow-hidden">
       <HeaderHomeCard
@@ -63,8 +73,10 @@ const HomeKaderHeroSection: React.FC<HomeKaderHeroSectionProps> = ({
         role={service.query.profile.role}
       />
       <section className="relative z-10 bg-background px-4  rounded-t-3xl  space-y-1">
-        <div className="w-full p-2 grid grid-cols-2 grid-rows-2">
+        <div className="w-full p-2 grid grid-cols-2 grid-rows-2 gap-2">
           <ChildrenList lengthChild={lengthChild} />
+          <BalitaRiskList lengthChild={nutritionStatusLenghtWarning} />
+          <BalitaWarningList lengthChild={nutritionStatusLenghtError} />
         </div>
         <div className="w-full flex items-center  space-x-1">
           <Icon
@@ -138,6 +150,9 @@ const HomeKaderHeroSection: React.FC<HomeKaderHeroSectionProps> = ({
               </ButtonWrapper>
             </Link>
           ))}
+        </div>
+        <div className="w-full">
+          <h1 className="text-2xl font-bold">Balita Perlu Perhatian</h1>
         </div>
         <PopUp
           isOpen={state.popup === "fRegisterKader"}
