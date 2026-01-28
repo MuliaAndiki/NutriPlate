@@ -1,13 +1,10 @@
 "use client";
 import AsupanGiziHeroSection from "@/components/section/private/parent/asupan-gizi/asupan-gizi-section";
-import FoodCamera from "@/components/card/food/food-camera";
 import { SidebarLayout } from "@/core/layouts/sidebar.layout";
 import useService from "@/hooks/mutation/prop.service";
 import { useState } from "react";
 import { useAppNameSpace } from "@/hooks/useAppNameSpace";
 import { cacheKey } from "@/configs/cache.config";
-
-type CameraFlowType = null | "normal" | "task";
 
 const AsupanGiziContainer = () => {
   const namespace = useAppNameSpace();
@@ -17,12 +14,6 @@ const AsupanGiziContainer = () => {
   const footHistoryData = footHistoryQuery.data?.data ?? [];
   //state
   const [showFlowPopUp, setShowFlowPopUp] = useState(false);
-  const [cameraFlow, setCameraFlow] = useState<CameraFlowType>(null);
-  const [iotWeight, setIotWeight] = useState<number>(0);
-  const [selectedTask, setSelectedTask] = useState<{
-    id: string;
-    name: string;
-  } | null>(null);
 
   const [isScaling, setIsScaling] = useState<boolean>(false);
   const [holdingWeight, setHoldingWeight] = useState<number>(0);
@@ -36,6 +27,10 @@ const AsupanGiziContainer = () => {
   const childQuery = service.user.query.childAll();
   const childData = childQuery.data?.data ?? [];
 
+  //daily Summary not fix
+  const dailySummaryQuery =
+    service.foodSummary.query.foodSummaryDaily(selectChildId);
+  const dailySummaryData = dailySummaryQuery.data?.data ?? null;
   // weight
   const weightQuery = service.iot.query.getWeight({
     enabled: isScaling,
@@ -104,9 +99,8 @@ const AsupanGiziContainer = () => {
       {
         onSuccess: (res) => {
           const confirmedWeight = res.data?.weight || holdingWeight;
-          setIotWeight(confirmedWeight);
+          setHoldingWeight(confirmedWeight);
           setIsScaling(false);
-          setHoldingWeight(0);
           handleOpenScanPopUp();
         },
         onError: () => {
@@ -188,8 +182,10 @@ const AsupanGiziContainer = () => {
   };
 
   const handleSelectManualScan = () => {
-    setCameraFlow("normal");
     setShowFlowPopUp(false);
+    namespace.router.push(
+      `/foodCamera?childId=${selectChildId}&iotId=${iotStatusData?.id || ""}&flowType=normal&iotWeight=${holdingWeight}`,
+    );
   };
 
   const handleSelectTaskScan = () => {
@@ -203,37 +199,6 @@ const AsupanGiziContainer = () => {
       },
     });
   };
-
-  const handleCancelCamera = () => {
-    setCameraFlow(null);
-    setSelectedTask(null);
-    setIotWeight(0);
-  };
-
-  if (cameraFlow) {
-    return (
-      <SidebarLayout>
-        <FoodCamera
-          childId={selectChildId}
-          iotId={iotStatusData?.id}
-          flowType={cameraFlow}
-          iotWeight={iotWeight}
-          onCancel={handleCancelCamera}
-          onSuccess={() => {
-            // handleCancelCamera();
-            namespace.queryClient.invalidateQueries({
-              queryKey: cacheKey.foodIntake.list(),
-            });
-            namespace.alert.toast({
-              title: "Berhasil",
-              message: "Asupan makanan berhasil disimpan",
-              icon: "success",
-            });
-          }}
-        />
-      </SidebarLayout>
-    );
-  }
 
   return (
     <SidebarLayout>

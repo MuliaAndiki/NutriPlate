@@ -11,7 +11,7 @@ const CapaianKebutuhan: React.FC<CapaianKebutuhanProps> = ({ data }) => {
   return (
     <div className="w-full rounded-xl border p-4 space-y-4 bg-background">
       <p className="text-xs text-muted-foreground">
-        Perbandingan asupan hari ini dengan kebutuhan gizi anak
+        Dihitung berdasarkan kebutuhan gizi harian anak
       </p>
 
       <ProgressBar

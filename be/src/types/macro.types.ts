@@ -9,7 +9,6 @@ export interface MacroTargetByAge {
 }
 
 export const MACRO_TARGET_BY_AGE_DATA: MacroTargetByAge[] = [
-  //fix nanti ambil benar benar data resmi dari AKG
   {
     ageMonths: 6,
     proteinGram: 15,

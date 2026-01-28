@@ -6,41 +6,53 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ChevronLeft, Trash2 } from "lucide-react";
 import { Spinner } from "@/components/ui/spinner";
-import useService from "@/hooks/mutation/prop.service";
-import { FoodIntakeResponse } from "@/types/res";
-import FoodScanResult from "./food-result";
+import { DailySummaryResponse, FoodIntakeResponse } from "@/types/res";
+import FoodScanResult from "@/components/card/food/food-result";
 
-interface FoodCameraProps {
-  childId: string;
-  iotId?: string;
-  onSuccess: () => void;
-  onCancel: () => void;
-  flowType: "normal" | "task";
-  taskName?: string;
-  iotWeight?: number;
+interface FoodCameraSectionProps {
+  service: {
+    foodIntake: {
+      createFoodIntake: any;
+    };
+  };
+  state: {
+    childId: string;
+    iotId?: string;
+    flowType: "normal" | "task";
+    taskName?: string;
+    iotWeight?: number;
+    dailySummary: DailySummaryResponse | null;
+    isLoading: boolean;
+  };
+  actions: {
+    onSuccess: () => void;
+    onCancel: () => void;
+  };
 }
 
-const FoodCamera: React.FC<FoodCameraProps> = ({
-  childId,
-  iotId,
-  onSuccess,
-  onCancel,
-  flowType,
-  taskName,
-  iotWeight = 0,
-}) => {
+const FoodCameraSection = ({
+  service,
+  state: {
+    childId,
+    iotId,
+    flowType,
+    taskName,
+    iotWeight = 0,
+    dailySummary,
+    isLoading,
+  },
+  actions,
+}: FoodCameraSectionProps) => {
   const webcamRef = useRef<Webcam>(null);
   const [photo, setPhoto] = useState<string | null>(null);
   const [weight, setWeight] = useState<string>("");
   const [error, setError] = useState<string>("");
-
-  const service = useService();
-  const createFoodIntake = service.foodIntake.mutation.createFoodIntake();
   const [mode, setMode] = useState<"camera" | "preview" | "result">("camera");
-
   const [responseFoodIntake, setResponseFoodIntake] = useState<
     FoodIntakeResponse | any
   >();
+
+  const createFoodIntake = service.foodIntake.createFoodIntake;
 
   const handleCapture = () => {
     const imageSrc = webcamRef.current?.getScreenshot();
@@ -83,8 +95,7 @@ const FoodCamera: React.FC<FoodCameraProps> = ({
           totalWeightGram: finalWeight,
         },
         {
-          onSuccess: (res) => {
-            onSuccess();
+          onSuccess: (res: any) => {
             setResponseFoodIntake(res.data);
             setMode("result");
           },
@@ -98,23 +109,28 @@ const FoodCamera: React.FC<FoodCameraProps> = ({
     }
   };
 
-  if (mode === "result" && responseFoodIntake) {
+  if (mode === "result" && responseFoodIntake && dailySummary) {
     return (
-      <FoodScanResult
-        data={responseFoodIntake}
-        onBack={() => {
-          setMode("camera");
-          setPhoto(null);
-          setWeight("");
-          setResponseFoodIntake(undefined);
-        }}
-      />
+      <section className="w-full min-h-screen flex items-center justify-start flex-col overflow-x-hidden relative p-2 space-y-2">
+        <FoodScanResult
+          data={responseFoodIntake}
+          dailySummary={dailySummary}
+          isLoading={isLoading}
+          onSuccess={actions.onSuccess}
+          onBack={() => {
+            setMode("camera");
+            setPhoto(null);
+            setWeight("");
+            setResponseFoodIntake(undefined);
+          }}
+        />
+      </section>
     );
   }
 
   if (photo) {
     return (
-      <div className="w-screen h-screen fixed inset-0 flex flex-col p-4 bg-background">
+      <section className="w-full min-h-screen fixed inset-0 flex flex-col p-4 bg-background">
         <div className="flex items-center justify-between mb-4">
           <ChevronLeft
             onClick={handleReset}
@@ -157,9 +173,7 @@ const FoodCamera: React.FC<FoodCameraProps> = ({
 
         {flowType === "task" && taskName && (
           <div className="bg-primary/10 p-3 rounded-lg border mb-4">
-            <p className="text-sm font-medium text-primary">
-              📋 Task: {taskName}
-            </p>
+            <p className="text-sm font-medium text-primary">Task: {taskName}</p>
           </div>
         )}
 
@@ -194,15 +208,15 @@ const FoodCamera: React.FC<FoodCameraProps> = ({
             )}
           </Button>
         </div>
-      </div>
+      </section>
     );
   }
 
   return (
-    <div className="w-screen h-screen fixed inset-0 flex flex-col p-4 bg-background">
+    <section className="w-full min-h-screen fixed inset-0 flex flex-col p-4 bg-background">
       <div className="flex items-center justify-between mb-4">
         <ChevronLeft
-          onClick={onCancel}
+          onClick={actions.onCancel}
           className="cursor-pointer p-1 rounded-lg hover:bg-secondary"
           width={36}
           height={36}
@@ -241,11 +255,11 @@ const FoodCamera: React.FC<FoodCameraProps> = ({
         Ambil Foto
       </Button>
 
-      <Button variant="outline" className="mt-2" onClick={onCancel}>
+      <Button variant="outline" className="mt-2" onClick={actions.onCancel}>
         Batal
       </Button>
-    </div>
+    </section>
   );
 };
 
-export default FoodCamera;
+export default FoodCameraSection;

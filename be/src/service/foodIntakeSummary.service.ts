@@ -157,13 +157,12 @@ class FoodIntakeSummaryService {
     try {
       const dateObj = typeof date === 'string' ? new Date(date) : date;
       const dateStr = dateObj.toISOString().split('T')[0];
-      const cacheKey = `summary:daily:${childId}:${dateStr}`;
+      const cacheKey = `daily-summary:${childId}:${dateStr}`;
 
       await this.redis.del(cacheKey);
       console.log(`✓ Invalidated cache: ${cacheKey}`);
     } catch (error) {
       console.warn(`⚠️ Failed to invalidate cache:`, error);
-      // Non-blocking
     }
   }
 

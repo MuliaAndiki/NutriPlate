@@ -9,27 +9,42 @@ import { useParams } from "next/navigation";
 const DailySummaryContainer = () => {
   const namespace = useAppNameSpace();
   const { id } = useParams<{ id: string }>();
-  //service
   const service = useService();
-  //child
+
+  // child
   const childQueryByID = service.user.query.childById(id);
   const childDataByID = childQueryByID.data?.data ?? null;
-  //food summary
+
   const foodSummaryDailyQuery = service.foodSummary.query.foodSummaryDaily(id);
   const foodSummaryDailyData = foodSummaryDailyQuery.data?.data ?? null;
+
+  const today = new Date();
+  const endDate = today.toISOString().split("T")[0];
+
+  const startDate = new Date(today);
+  startDate.setDate(startDate.getDate() - 6);
+  const startDateStr = startDate.toISOString().split("T")[0];
+
+  const foodSummaryRangeQuery = service.foodSummary.query.foodSummaryRange(id, {
+    startDate: startDateStr,
+    endDate: endDate,
+  });
+  const foodSummaryRangeData = foodSummaryRangeQuery.data?.data ?? null;
+
   return (
     <SidebarLayout>
       <main className="w-full min-h-screen overflow-x-hidden">
         <DailySummarySection
-          namespace={{
-            router: namespace.router,
-          }}
+          namespace={{ router: namespace.router }}
           service={{
             query: {
               ChildCard: childDataByID,
               foodSummaryDaily: foodSummaryDailyData,
               isLoading:
-                childQueryByID.isLoading || foodSummaryDailyQuery.isLoading,
+                childQueryByID.isLoading ||
+                foodSummaryDailyQuery.isLoading ||
+                foodSummaryRangeQuery.isLoading,
+              foodSummaryRange: foodSummaryRangeData ?? null,
             },
           }}
         />

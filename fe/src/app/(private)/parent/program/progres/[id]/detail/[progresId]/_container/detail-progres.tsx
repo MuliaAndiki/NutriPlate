@@ -1,7 +1,6 @@
 "use client";
 
 import ProgresDetailSection from "@/components/section/private/parent/program/progres/detail/detail-progres.section";
-import FoodCamera from "@/components/card/food/food-camera";
 import { cacheKey } from "@/configs/cache.config";
 import { SidebarLayout } from "@/core/layouts/sidebar.layout";
 import useService from "@/hooks/mutation/prop.service";
@@ -15,7 +14,6 @@ const ProgresDetailContainer = () => {
   const service = useService();
   const { id, progresId } = useParams<{ id: string; progresId: string }>();
 
-  const [cameraOpen, setCameraOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<any>(null);
 
   //progres
@@ -32,8 +30,9 @@ const ProgresDetailContainer = () => {
   });
 
   const cancelProgramMutation = service.progres.mutation.cancelProgram();
-  const createFoodMutation = service.foodIntake.mutation.createFoodIntake();
-  const markTaskDoneMutation = service.task.mutation.doneTask();
+
+  // daily Summary
+  const dailySummaryQuery = service.foodSummary.query.foodSummaryDaily(id);
 
   const handleCancelProgram = () => {
     if (!id || !progresInChildDataById?.id) return;
@@ -61,49 +60,13 @@ const ProgresDetailContainer = () => {
     const task = taskData.find((t: any) => t.id === taskId);
     if (task) {
       setSelectedTask(task);
-      setCameraOpen(true);
+      const params = new URLSearchParams();
+      params.set("childId", id);
+      params.set("flowType", "task");
+      params.set("taskName", task.title);
+      namespace.router.push(`/foodCamera?${params.toString()}`);
     }
   };
-
-  const handleClosCamera = () => {
-    setCameraOpen(false);
-    setSelectedTask(null);
-  };
-
-  const handleSuccess = () => {
-    namespace.alert.toast({
-      title: "Sukses!",
-      message: "Task selesai dan makanan ditambahkan",
-      icon: "success",
-    });
-
-    handleClosCamera();
-    namespace.queryClient.invalidateQueries({
-      queryKey: cacheKey.task.byProgresId(progresId),
-    });
-    namespace.queryClient.invalidateQueries({
-      queryKey: cacheKey.foodIntake.list(),
-    });
-
-    // Mark task as done
-    if (selectedTask) {
-      markTaskDoneMutation.mutate(selectedTask.id);
-    }
-  };
-
-  if (cameraOpen && selectedTask) {
-    return (
-      <SidebarLayout>
-        <FoodCamera
-          childId={id}
-          flowType="task"
-          taskName={selectedTask.title}
-          onCancel={handleClosCamera}
-          onSuccess={handleSuccess}
-        />
-      </SidebarLayout>
-    );
-  }
 
   //state
   const [taskId, setTaskId] = useState<string | null>(null);
