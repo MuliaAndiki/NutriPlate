@@ -203,11 +203,12 @@ class ProgramController {
   public async getPrograms(c: AppContext) {
     try {
       const jwtUser = c.user as JwtPayload;
+
       if (!jwtUser) {
         return c.json?.({ status: 401, message: 'Unauthorized' }, 401);
       }
 
-      const user = await prisma.user.findFirst({
+      const user = await prisma.user.findUnique({
         where: { id: jwtUser.id },
         select: { id: true, role: true },
       });
@@ -215,8 +216,8 @@ class ProgramController {
       if (!user) {
         return c.json?.({ status: 404, message: 'user not found' }, 404);
       }
-      let whereConditional: any = {};
-      let cacheKey = '';
+
+      let posyanduId: string | undefined;
 
       if (user.role === 'PARENT') {
         const child = await prisma.child.findFirst({
@@ -224,13 +225,14 @@ class ProgramController {
           select: { posyanduId: true },
         });
 
-        if (!child || !child.posyanduId) {
+        if (!child?.posyanduId) {
           return c.json?.({ status: 404, message: 'child or posyandu not found' }, 404);
         }
 
-        whereConditional.posyanduId = child.posyanduId;
-        cacheKey = cacheKeys.program.byPosyandu(child.posyanduId);
-      } else if (user.role === 'POSYANDU' || user.role === 'KADER') {
+        posyanduId = child.posyanduId;
+      }
+
+      if (user.role === 'POSYANDU') {
         const posyandu = await prisma.posyandu.findFirst({
           where: { userID: user.id },
           select: { id: true },
@@ -240,20 +242,47 @@ class ProgramController {
           return c.json?.({ status: 404, message: 'posyandu not found' }, 404);
         }
 
-        whereConditional.posyanduId = posyandu.id;
-        cacheKey = cacheKeys.program.byPosyandu(posyandu.id);
-      } else {
-        return c.json?.({ status: 403, message: 'forbidden role' }, 403);
+        posyanduId = posyandu.id;
       }
 
+      if (user.role === 'KADER') {
+        const kader = await prisma.kaderRegistration.findFirst({
+          where: {
+            kaderId: user.id,
+            status: 'accepted',
+          },
+          select: { posyanduId: true },
+        });
+
+        if (!kader?.posyanduId) {
+          return c.json?.({ status: 403, message: 'kader not accepted in any posyandu' }, 403);
+        }
+
+        posyanduId = kader.posyanduId;
+      }
+
+      const whereCondition: any = {};
+
+      if (user.role !== 'ADMIN') {
+        if (!posyanduId) {
+          return c.json?.({ status: 403, message: 'forbidden role' }, 403);
+        }
+        whereCondition.posyanduId = posyanduId;
+      }
+
+      const cacheKey =
+        user.role === 'ADMIN'
+          ? cacheKeys.program.list()
+          : cacheKeys.program.byPosyandu(posyanduId!);
+
       try {
-        const cachePrograms = await this.redis.get(cacheKey);
-        if (cachePrograms) {
+        const cached = await this.redis.get(cacheKey);
+        if (cached) {
           return c.json?.(
             {
               status: 200,
               message: 'successfully get programs (cache)',
-              data: JSON.parse(cachePrograms),
+              data: JSON.parse(cached),
             },
             200,
           );
@@ -263,7 +292,7 @@ class ProgramController {
       }
 
       const programs = await prisma.nutriplateProgram.findMany({
-        where: whereConditional,
+        where: whereCondition,
         orderBy: { createdAt: 'asc' },
         select: {
           id: true,
@@ -272,7 +301,6 @@ class ProgramController {
           activity: true,
           benefit: true,
           durationRegister: true,
-
           progress: {
             select: {
               child: {
@@ -286,10 +314,6 @@ class ProgramController {
         },
       });
 
-      if (!programs || programs.length === 0) {
-        return c.json?.({ status: 404, message: 'programs not found' }, 404);
-      }
-
       await this.redis.set(cacheKey, JSON.stringify(programs), { EX: 60 }).catch(console.error);
 
       return c.json?.(
@@ -301,7 +325,7 @@ class ProgramController {
         200,
       );
     } catch (error) {
-      console.error(error);
+      console.error('[getPrograms]', error);
       return c.json?.(
         {
           status: 500,
@@ -312,6 +336,7 @@ class ProgramController {
       );
     }
   }
+
   public async getProgrambyID(c: AppContext) {
     try {
       const jwtUser = c.user as JwtPayload;

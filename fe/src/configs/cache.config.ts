@@ -5,11 +5,13 @@ export const cacheKey = {
     // bakal miss nanti audit
     list: () => [`child:`],
   },
+
   evaluate: {
     byChild: (id: string) => [`evaluate:child:${id}`],
   },
   profile: {
     user: () => ["user:profile"],
+    parent: () => ["user:parent"],
   },
   measurement: {
     byChild: (id: string) => [`measurement:child:${id}`],

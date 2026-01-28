@@ -57,7 +57,7 @@ const HomeKaderHeroSection: React.FC<HomeKaderHeroSectionProps> = ({
       title: "Program Posyandu",
       rightIcon: "fluent:arrow-right-24-filled",
       leftIcon: "raphael:parent",
-      href: "#",
+      href: "/kader/daftar-program",
     },
   ];
   const lengthChild = service.query.childInPosyandu.length;

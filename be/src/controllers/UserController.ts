@@ -291,7 +291,6 @@ class UserController {
           400,
         );
       } else {
-        // Invalidate user cache after password update
         await this.redis.del(cacheKeys.user.byID(jwtUser.id)).catch(error);
 
         return c.json?.(
@@ -320,53 +319,96 @@ class UserController {
       const jwtUser = c.user as JwtPayload;
 
       if (!jwtUser) {
-        return c.json?.(
-          {
-            status: 401,
-            message: 'Unauthorized',
-          },
-          401,
-        );
+        return c.json?.({ status: 401, message: 'Unauthorized' }, 401);
       }
 
-      const cacheKey = cacheKeys.parent.list();
-      try {
-        const cacheUser = await this.redis.get(cacheKey);
+      let posyanduId: string | null = null;
 
-        if (cacheUser) {
+      if (jwtUser.role === 'POSYANDU') {
+        const posyandu = await prisma.posyandu.findFirst({
+          where: { userID: jwtUser.id },
+          select: { id: true },
+        });
+        posyanduId = posyandu?.id ?? null;
+      }
+
+      if (jwtUser.role === 'KADER') {
+        const kader = await prisma.kaderRegistration.findFirst({
+          where: {
+            kaderId: jwtUser.id,
+            status: 'accepted',
+          },
+          select: { posyanduId: true },
+        });
+        posyanduId = kader?.posyanduId ?? null;
+      }
+
+      if (jwtUser.role === 'ADMIN') {
+        posyanduId = null;
+      }
+
+      if (!posyanduId && jwtUser.role !== 'ADMIN') {
+        return c.json?.({ status: 403, message: 'Tidak memiliki akses posyandu' }, 403);
+      }
+
+      const cacheKey =
+        jwtUser.role === 'ADMIN'
+          ? cacheKeys.parent.list()
+          : cacheKeys.parent.byPosyandu(posyanduId!);
+
+      try {
+        const cached = await this.redis.get(cacheKey);
+        if (cached) {
           return c.json?.(
             {
               status: 200,
-              message: 'successfully data from cache',
-              data: JSON.parse(cacheUser),
+              message: 'successfully get parents',
+              data: JSON.parse(cached),
             },
             200,
           );
         }
-      } catch (error) {
-        console.warn(`redis error, fallback db ${error}`);
+      } catch (err) {
+        console.warn('[redis] fallback db:', err);
       }
 
-      const user = await prisma.user.findMany({
-        where: { role: 'PARENT' },
+      const parents = await prisma.user.findMany({
+        where:
+          jwtUser.role === 'ADMIN'
+            ? { role: 'PARENT' }
+            : {
+                role: 'PARENT',
+                children: {
+                  some: {
+                    posyanduId,
+                  },
+                },
+              },
+        select: {
+          id: true,
+          fullName: true,
+          email: true,
+          createdAt: true,
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
       });
 
-      if (!user) {
-        return c.json?.({ status: 400, message: 'server internal error' }, 400);
-      } else if (user && user.length > 0) {
-        await this.redis.set(cacheKey, JSON.stringify(user), { EX: 60 }).catch(error);
-      }
+      await this.redis.set(cacheKey, JSON.stringify(parents), {
+        EX: 60,
+      });
 
       return c.json?.(
         {
           status: 200,
-          message: 'successfully get user',
-          data: user,
+          message: 'successfully get parents',
+          data: parents,
         },
         200,
       );
     } catch (error) {
-      console.error(error);
+      console.error('[getParent]', error);
       return c.json?.(
         {
           status: 500,

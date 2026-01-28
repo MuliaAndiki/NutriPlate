@@ -1,5 +1,10 @@
 import { useUpdatePassword, useUpdateProfile } from "./state/mutation";
-import { useGetChild, useGetChildById, useGetProfile } from "./state/query";
+import {
+  useGetChild,
+  useGetChildById,
+  useGetParent,
+  useGetProfile,
+} from "./state/query";
 
 export function useUsers() {
   return {
@@ -11,6 +16,7 @@ export function useUsers() {
       childAll: useGetChild,
       childById: useGetChildById,
       profile: useGetProfile,
+      parent: useGetParent,
     },
   };
 }

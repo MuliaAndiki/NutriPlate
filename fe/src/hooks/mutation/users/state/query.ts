@@ -14,7 +14,7 @@ export function useGetChild({
     role === "PARENT" ||
     role === "ADMIN" ||
     ((role === "POSYANDU" || role === "KADER") && !!posyanduId);
-  // helper
+  // helper terbaiki
   console.log({ role, posyanduId, canFetch });
   return useQuery({
     queryKey: cacheKey.child.list(),
@@ -36,6 +36,14 @@ export function useGetProfile() {
   return useQuery({
     queryKey: cacheKey.profile.user(),
     queryFn: () => Api.User.getProfile(),
+    staleTime: 1000 * 60 * 5,
+  });
+}
+
+export function useGetParent() {
+  return useQuery({
+    queryKey: cacheKey.profile.parent(),
+    queryFn: () => Api.User.getParent(),
     staleTime: 1000 * 60 * 5,
   });
 }
