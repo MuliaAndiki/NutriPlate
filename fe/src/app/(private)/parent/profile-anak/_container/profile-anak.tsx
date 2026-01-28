@@ -3,10 +3,14 @@
 import ProfileAnakHeroSection from "@/components/section/private/parent/profile-anak/profile-anak-section";
 import { SidebarLayout } from "@/core/layouts/sidebar.layout";
 import useService from "@/hooks/mutation/prop.service";
+import { useAuthentic } from "@/hooks/useAuthentic";
 
 const ProfileAnakContainer = () => {
   const service = useService();
-  const childQuery = service.user.query.childAll();
+  const { role } = useAuthentic();
+  const childQuery = service.user.query.childAll({
+    role: role,
+  });
   const childData = childQuery.data?.data ?? [];
 
   return (
