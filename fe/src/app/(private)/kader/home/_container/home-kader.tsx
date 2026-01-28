@@ -11,7 +11,7 @@ import { useState } from "react";
 const HomeKaderContainer = () => {
   const service = useService();
   const namespace = useAppNameSpace();
-  const { role, token } = useAuthentic();
+  const { role } = useAuthentic();
 
   // profile
   const profileQuery = service.user.query.profile();

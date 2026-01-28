@@ -15,6 +15,7 @@ import RegisterKaderForm from "./_registerKader/registerKader";
 import Link from "next/link";
 import BalitaRiskList from "@/components/card/kader/balita-risk";
 import BalitaWarningList from "@/components/card/kader/balita-warning";
+import PosyanduList from "@/components/card/kader/list-posyandu";
 
 interface HomeKaderHeroSectionProps {
   service: {
@@ -66,6 +67,7 @@ const HomeKaderHeroSection: React.FC<HomeKaderHeroSectionProps> = ({
   const nutritionStatusLenghtError = service.query.measurement.filter(
     (item) => item.nutritionStatus === "underweight",
   ).length;
+  const posyanduLenght = service.query.posyandu.length;
   return (
     <div className="w-full overflow-hidden">
       <HeaderHomeCard
@@ -77,6 +79,7 @@ const HomeKaderHeroSection: React.FC<HomeKaderHeroSectionProps> = ({
           <ChildrenList lengthChild={lengthChild} />
           <BalitaRiskList lengthChild={nutritionStatusLenghtWarning} />
           <BalitaWarningList lengthChild={nutritionStatusLenghtError} />
+          <PosyanduList length={posyanduLenght} />
         </div>
         <div className="w-full flex items-center  space-x-1">
           <Icon

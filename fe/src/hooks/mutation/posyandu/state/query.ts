@@ -9,3 +9,12 @@ export function useGetPosyandu() {
     staleTime: 1000 * 60 * 5,
   });
 }
+
+export function useGetPosyanduById(id: string) {
+  return useQuery({
+    queryKey: cacheKey.posyandu.byId(id),
+    queryFn: () => Api.Posyandu.getPosyanduByID(id),
+    staleTime: 1000 * 60 * 5,
+    enabled: !!id,
+  });
+}
