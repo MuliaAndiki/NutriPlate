@@ -1,6 +1,6 @@
 export const cacheKey = {
   child: {
-    list: () => ["child"] as const,
+    byToken: (token: string) => [`child:token:${token}`],
     byID: (id: string) => [`child:${id}`],
   },
   evaluate: {
@@ -11,6 +11,7 @@ export const cacheKey = {
   },
   measurement: {
     byChild: (id: string) => [`measurement:child:${id}`],
+    byPosyandu: (id: string) => [`measurement:child:posyandu:${id}`],
   },
   program: {
     list: () => [`programs:list`],

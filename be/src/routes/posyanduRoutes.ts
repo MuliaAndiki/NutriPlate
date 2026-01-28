@@ -41,13 +41,6 @@ class PosyanduRoutes {
         beforeHandle: [verifyToken().beforeHandle],
       },
     );
-    this.posyanduRoutes.get(
-      '/:id/children',
-      (c: AppContext) => PosyanduController.getChildListByPosyandu(c),
-      {
-        beforeHandle: [verifyToken().beforeHandle],
-      },
-    );
   }
 }
 

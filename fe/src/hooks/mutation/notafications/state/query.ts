@@ -21,12 +21,11 @@ export function useGetNotificationByID(id: string) {
   });
 }
 
-// ✅ Check if notification is read by current user
 export function useIsNotificationRead(notificationId: string) {
   return useQuery({
     queryKey: [cacheKey.notification.byId(notificationId), "read-status"],
     queryFn: () => Api.Notification.isNotificationRead(notificationId),
     enabled: !!notificationId,
-    staleTime: 1000 * 60 * 1, // 1 minute
+    staleTime: 1000 * 60 * 1,
   });
 }

@@ -76,6 +76,7 @@ export const cacheKeys = {
     list: () => `measurement:list`,
     byID: (id: string) => `measurement:id:${id}`,
     byChild: (id: string) => `measurement:child:${id}`,
+    byPosyandu: (id: string) => `measurement:child:posyandu:${id}`,
   },
   evaluation: {
     list: () => `evaluation:list`,

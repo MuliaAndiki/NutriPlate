@@ -27,6 +27,8 @@ export function useLogin() {
         maxAge: APP_REFRESH_TOKEN_COOKIE_EXPIRES_IN,
         path: "/",
       });
+      nameSpace.queryClient.setQueryData(["auth", "token"], token);
+      nameSpace.queryClient.setQueryData(["auth", "role"], role);
       setCookie("user_role", role, {
         maxAge: 60 * 60 * 24 * 7,
         path: "/",
@@ -91,6 +93,7 @@ export function useLogout() {
         icon: "success",
       });
       nameSpace.queryClient.clear();
+      nameSpace.queryClient.removeQueries({ queryKey: ["auth"] });
       deleteCookie(APP_SESSION_COOKIE_KEY);
       deleteCookie("user_role");
       nameSpace.router.replace("/login");
@@ -105,6 +108,7 @@ export function useLogout() {
       });
       nameSpace.queryClient.clear();
       deleteCookie("user_role");
+      nameSpace.queryClient.removeQueries({ queryKey: ["auth"] });
       deleteCookie(APP_SESSION_COOKIE_KEY);
       nameSpace.router.replace("/login");
       disconnectSocket();

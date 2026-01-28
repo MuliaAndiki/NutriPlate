@@ -7,6 +7,9 @@ export enum GenderType {
 
 export type RoleType = "PARENT" | "KADER" | "ADMIN" | "POSYANDU";
 
+export const ROLES = ["PARENT", "POSYANDU", "KADER", "ADMIN"] as const;
+export type Role = (typeof ROLES)[number];
+
 export enum NotifType {
   result,
   reminder,

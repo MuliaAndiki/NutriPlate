@@ -1,4 +1,4 @@
-import { useGetChildrenInPosyandu, useGetPosyandu } from "./state/query";
+import { useGetPosyandu } from "./state/query";
 
 export function usePosyandu() {
   return {
@@ -7,7 +7,6 @@ export function usePosyandu() {
     },
     query: {
       getPosyandu: useGetPosyandu,
-      getChildren: useGetChildrenInPosyandu,
     },
   };
 }

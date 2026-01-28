@@ -5,13 +5,12 @@ import useService from "@/hooks/mutation/prop.service";
 import { useAppNameSpace } from "@/hooks/useAppNameSpace";
 import { NotifTypeInterface } from "@/types/partial";
 import { useState, useEffect } from "react";
-import { getCookie } from "cookies-next";
-import { APP_SESSION_COOKIE_KEY } from "@/configs/cookies.config";
+import { useAuthentic } from "@/hooks/useAuthentic";
 
 const NotafikasiParentContainer = () => {
   const namespace = useAppNameSpace();
   const service = useService();
-  const token = getCookie(APP_SESSION_COOKIE_KEY) as string | undefined;
+  const { token } = useAuthentic();
   const notifikasiQuery = service.notafication.query.getNotification(token);
   const notifikasiData = notifikasiQuery.data?.data ?? [];
 

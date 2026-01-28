@@ -35,10 +35,6 @@ class PosyanduApi {
     const res = await AxiosClient.delete(`/api/posyandu/${id}`);
     return res.data;
   }
-  public async getChildren(id: string): Promise<TResponse<any>> {
-    const res = await AxiosClient.get(`/api/posyandu/${id}/children`);
-    return res.data;
-  }
 }
 
 export default PosyanduApi;

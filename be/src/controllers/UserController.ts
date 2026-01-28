@@ -721,113 +721,94 @@ class UserController {
     }
   }
 
-  public async getChild(c: AppContext) {
+  public async getChildren(c: AppContext) {
     try {
       const jwtUser = c.user as JwtPayload;
       if (!jwtUser) {
-        return c.json?.(
-          {
-            status: 401,
-            message: 'Unauthorized',
-          },
-          401,
-        );
+        return c.json?.({ status: 401, message: 'Unauthorized' }, 401);
       }
-      const user = await prisma.user.findFirst({
-        where: {
-          id: jwtUser.id,
-        },
-        select: {
-          id: true,
-          role: true,
-        },
-      });
-      if (!user) {
-        return c.json?.(
-          {
-            status: 404,
-            message: 'user not found',
-          },
-          400,
-        );
-      }
-      let whereCondicional: any = {};
+
+      const { posyanduId } = c.query as {
+        posyanduId?: string;
+      };
+      let where: any = {};
       let cacheKey = '';
-      if (user.role === 'PARENT') {
-        cacheKey = cacheKeys.child.byParent(user.id);
-        whereCondicional.parentId = user.id;
-      } else if (user.role === 'POSYANDU') {
-        const posyandu = await prisma.posyandu.findFirst({
-          where: {
-            userID: user.id,
-          },
-          select: {
-            id: true,
-          },
-        });
-        if (!posyandu) {
-          return c.json?.(
-            {
-              status: 404,
-              message: 'posyandu not found',
-            },
-            404,
-          );
-        }
-        whereCondicional.posyanduId = posyandu.id;
-        cacheKey = cacheKeys.child.byPosyandu(posyandu.id);
+
+      if (jwtUser.role === 'PARENT') {
+        where.parentId = jwtUser.id;
+        cacheKey = cacheKeys.child.byParent(jwtUser.id);
       }
 
-      try {
-        const cacheChild = await this.redis.get(cacheKey);
-        if (cacheChild) {
-          return c.json?.(
-            {
-              status: 200,
-              message: 'succesfully get by child',
-              data: JSON.parse(cacheChild),
-            },
-            200,
-          );
+      if (jwtUser.role === 'POSYANDU' || jwtUser.role === 'KADER') {
+        if (!posyanduId) {
+          return c.json?.({ status: 400, message: 'posyanduId is required' }, 400);
         }
-      } catch (error) {
-        console.warn(`redis error, fallback db: ${error}`);
+
+        let authorized = false;
+
+        if (jwtUser.role === 'POSYANDU') {
+          const owner = await prisma.posyandu.findFirst({
+            where: { id: posyanduId, userID: jwtUser.id },
+            select: { id: true },
+          });
+          authorized = !!owner;
+        }
+
+        if (jwtUser.role === 'KADER') {
+          const kader = await prisma.kaderRegistration.findFirst({
+            where: {
+              posyanduId,
+              kaderId: jwtUser.id,
+              status: 'accepted',
+            },
+            select: { id: true },
+          });
+          authorized = !!kader;
+        }
+
+        if (!authorized) {
+          return c.json?.({ status: 403, message: 'Tidak memiliki akses ke posyandu ini' }, 403);
+        }
+
+        where.posyanduId = posyanduId;
+        cacheKey = cacheKeys.child.byPosyandu(posyanduId);
       }
 
-      const child = await prisma.child.findMany({
-        where: whereCondicional,
-        orderBy: {
-          createdAt: 'desc',
-        },
+      const cached = await this.redis.get(cacheKey);
+      if (cached) {
+        return c.json?.({ status: 200, message: 'success', data: JSON.parse(cached) }, 200);
+      }
 
+      const children = await prisma.child.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
         include: {
+          parent: {
+            select: {
+              id: true,
+              fullName: true,
+              email: true,
+            },
+          },
+          posyandu: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
           programProgress: true,
-          posyandu: true,
         },
       });
 
-      if (!child || child.length === 0) {
-        return c.json?.(
-          {
-            status: 404,
-            message: 'children not found',
-          },
-          404,
-        );
+      if (!children.length) {
+        return c.json?.({ status: 404, message: 'children not found' }, 404);
       }
-      if (child && child.length > 0) {
-        await this.redis.set(cacheKey, JSON.stringify(child), { EX: 60 }).catch(error);
-      }
-      return c.json?.(
-        {
-          status: 200,
-          message: 'succesfully get child',
-          data: child,
-        },
-        200,
-      );
+
+      await this.redis.set(cacheKey, JSON.stringify(children), { EX: 120 });
+
+      return c.json?.({ status: 200, message: 'success', data: children }, 200);
     } catch (error) {
-      console.error(error);
+      console.error('[getChildren]', error);
       return c.json?.(
         {
           status: 500,

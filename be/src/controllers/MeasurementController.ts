@@ -513,6 +513,119 @@ class MeasurementController {
       );
     }
   }
+  public async getAllMeasurementByPosyandu(c: AppContext) {
+    try {
+      const jwtUser = c.user as JwtPayload;
+      const { posyanduId } = c.params as { posyanduId?: string };
+
+      if (!jwtUser) {
+        return c.json?.({ status: 401, message: 'Unauthorized' }, 401);
+      }
+
+      if (!posyanduId) {
+        return c.json?.({ status: 400, message: 'posyanduId param is required' }, 400);
+      }
+
+      /* =====================
+       AUTHORIZATION
+    ====================== */
+      let authorized = false;
+
+      if (jwtUser.role === 'ADMIN') {
+        authorized = true;
+      }
+
+      if (jwtUser.role === 'POSYANDU') {
+        const posyandu = await prisma.posyandu.findFirst({
+          where: {
+            id: posyanduId,
+            userID: jwtUser.id,
+          },
+          select: { id: true },
+        });
+        authorized = !!posyandu;
+      }
+
+      if (jwtUser.role === 'KADER') {
+        const kader = await prisma.kaderRegistration.findFirst({
+          where: {
+            kaderId: jwtUser.id,
+            posyanduId,
+            status: 'accepted',
+          },
+          select: { id: true },
+        });
+        authorized = !!kader;
+      }
+
+      if (!authorized) {
+        return c.json?.({ status: 403, message: 'Tidak memiliki akses ke posyandu ini' }, 403);
+      }
+
+      const cacheKey = cacheKeys.measurement.byPosyandu(posyanduId);
+
+      try {
+        const cached = await this.redis.get(cacheKey);
+        if (cached) {
+          return c.json?.(
+            {
+              status: 200,
+              message: 'successfully get measurements',
+              data: JSON.parse(cached),
+            },
+            200,
+          );
+        }
+      } catch (err) {
+        console.warn('[redis] fallback db:', err);
+      }
+
+      const measurements = await prisma.measurement.findMany({
+        where: {
+          child: {
+            posyanduId,
+          },
+        },
+        orderBy: {
+          measurementDate: 'desc',
+        },
+        include: {
+          child: {
+            select: {
+              id: true,
+              fullName: true,
+              gender: true,
+              dateOfBirth: true,
+            },
+          },
+        },
+        take: 100,
+      });
+
+      await this.redis.set(cacheKey, JSON.stringify(measurements), {
+        EX: 120,
+      });
+
+      return c.json?.(
+        {
+          status: 200,
+          message: 'successfully get measurements',
+          data: measurements,
+        },
+        200,
+      );
+    } catch (error) {
+      console.error('[getAllMeasurementByPosyandu]', error);
+      return c.json?.(
+        {
+          status: 500,
+          message: 'Server internal error',
+          error: error instanceof Error ? error.message : error,
+        },
+        500,
+      );
+    }
+  }
 }
 
 export default new MeasurementController();
