@@ -22,9 +22,13 @@ export const cacheKey = {
   },
   foodSummaryDaily: {
     byChild: (child: string) => [`food:summary:child:${child}`],
+    byRange: (child: string, params: any) => [
+      `food:summary:child:range:${child}/${params}`,
+    ],
   },
   foodIntake: {
     list: () => [`food:list`],
+    byId: (id: string) => [`food:byid:${id}`],
   },
   posyandu: {
     list: () => [`posyandu:list`],

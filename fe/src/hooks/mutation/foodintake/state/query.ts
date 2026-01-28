@@ -9,3 +9,12 @@ export function useGetHistoryFoodIntake() {
     staleTime: 1000 * 60 * 5,
   });
 }
+
+export function useGetHistoryFoodIntakeById(id: string) {
+  return useQuery({
+    queryKey: cacheKey.foodIntake.byId(id),
+    queryFn: () => Api.FoodIntake.getHistoryFoodByID(id),
+    staleTime: 1000 * 60 * 5,
+    enabled: !!id,
+  });
+}

@@ -1,4 +1,7 @@
-import { useGetFoodSummaryDaily } from "./state/query";
+import {
+  useGetFoodSummaryByRange,
+  useGetFoodSummaryDaily,
+} from "./state/query";
 
 export function useFoodSummary() {
   return {
@@ -7,6 +10,7 @@ export function useFoodSummary() {
     },
     query: {
       foodSummaryDaily: useGetFoodSummaryDaily,
+      foodSummaryRange: useGetFoodSummaryByRange,
     },
   };
 }

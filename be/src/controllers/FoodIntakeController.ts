@@ -419,7 +419,6 @@ class FoodIntakeController {
         );
       }
 
-      // Save raw image reference
       if (photoUrl) {
         await prisma.foodRawImage.create({
           data: {
@@ -512,9 +511,6 @@ class FoodIntakeController {
           child: {
             parentId: jwtUser.id,
           },
-        },
-        include: {
-          items: true,
         },
       });
       if (!history) {

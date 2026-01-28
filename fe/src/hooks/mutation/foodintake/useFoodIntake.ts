@@ -1,4 +1,7 @@
-import { useGetHistoryFoodIntake } from "./state/query";
+import {
+  useGetHistoryFoodIntake,
+  useGetHistoryFoodIntakeById,
+} from "./state/query";
 import { useCreateFoodIntake } from "./state/mutation";
 
 export function useFoodIntake() {
@@ -8,6 +11,7 @@ export function useFoodIntake() {
     },
     query: {
       getHistoryFoodIntake: useGetHistoryFoodIntake,
+      getHistoryFoodIntakeById: useGetHistoryFoodIntakeById,
     },
   };
 }
