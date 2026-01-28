@@ -2,6 +2,8 @@ export const cacheKey = {
   child: {
     byToken: (token: string) => [`child:token:${token}`],
     byID: (id: string) => [`child:${id}`],
+    // bakal miss nanti audit
+    list: () => [`child:`],
   },
   evaluate: {
     byChild: (id: string) => [`evaluate:child:${id}`],

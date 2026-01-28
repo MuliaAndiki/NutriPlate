@@ -3,11 +3,15 @@ import ProgramHeroSection from "@/components/section/private/parent/program/prog
 import { SidebarLayout } from "@/core/layouts/sidebar.layout";
 import useService from "@/hooks/mutation/prop.service";
 import { useAppNameSpace } from "@/hooks/useAppNameSpace";
+import { useAuthentic } from "@/hooks/useAuthentic";
 import { useState } from "react";
 const ProgramParentContainer = () => {
   const nameSpace = useAppNameSpace();
   const service = useService();
-  const childQuery = service.user.query.childAll();
+  const { role } = useAuthentic();
+  const childQuery = service.user.query.childAll({
+    role: role,
+  });
   const childData = childQuery.data?.data ?? [];
   const programsQuery = service.program.query.getPrograms();
   const programData = programsQuery.data?.data ?? [];
