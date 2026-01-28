@@ -65,19 +65,19 @@ export const NavigationPosyandu: NagivationType[] = [
     href: `${routing.posyandu}/home`,
   },
   {
-    name: "Kelola Anak",
+    name: "Kelola Data",
     icon: <Icon icon="healthicons:child-program" />,
-    href: `${routing.posyandu}/`,
+    href: `${routing.posyandu}/kelola-data`,
   },
   {
     name: "Pengukuran",
     icon: <Icon icon="ion:scale-sharp" />,
-    href: `${routing.posyandu}/`,
+    href: `${routing.posyandu}/pengukuran`,
   },
   {
     name: "Program",
     icon: <Icon icon="proicons:note" />,
-    href: `${routing.posyandu}/`,
+    href: `${routing.posyandu}/program`,
   },
   {
     name: "Akun",
