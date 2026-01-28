@@ -53,7 +53,7 @@ const ProfileKesehatanAnakHeroSection: React.FC<
         className="w-full h-auto"
       >
         <div className="w-full  rounded-lg border flex flex-col  ">
-          <div className="w-full p-2 bg-[#2979FF]  rounded-lg flex   items-center justify-start">
+          <div className="w-full p-2 bg-info  rounded-lg flex   items-center justify-start">
             <Icon
               icon="streamline-flex:health-care-2-remix"
               width="24"

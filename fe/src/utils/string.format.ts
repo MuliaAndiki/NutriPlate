@@ -36,7 +36,7 @@ export function normalizeToLowercase<T extends Record<string, any>>(obj: T): T {
         ];
       }
       return [key, value];
-    })
+    }),
   ) as T;
 }
 

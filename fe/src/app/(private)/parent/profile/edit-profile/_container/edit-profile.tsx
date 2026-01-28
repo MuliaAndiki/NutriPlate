@@ -22,7 +22,7 @@ const EditProfileContainer = () => {
       fullName: "",
       identifier: "",
       avaUrl: "",
-    }
+    },
   );
 
   const handleChangeAvatar = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -54,7 +54,7 @@ const EditProfileContainer = () => {
         avaUrl: formUpdateProfile.avaUrl,
       };
       const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
-        formUpdateProfile.identifier
+        formUpdateProfile.identifier,
       );
       if (isEmail) {
         payload.email = formUpdateProfile.identifier;
@@ -68,7 +68,7 @@ const EditProfileContainer = () => {
 
       if (res.data.isUpdateEmail) {
         nameSpace.router.push(
-          `/verify?identifier=${email}&target=/parent/profile`
+          `/verify?identifier=${email}&target=/parent/profile`,
         );
       } else {
         nameSpace.router.push("/parent/profile");

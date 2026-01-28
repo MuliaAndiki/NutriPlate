@@ -16,7 +16,7 @@ export const connectSocket = () => {
       JSON.stringify({
         type: "auth",
         token,
-      })
+      }),
     );
   };
 

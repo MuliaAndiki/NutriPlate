@@ -120,7 +120,7 @@ const DataAnakHeroSection: React.FC<DataAnakHeroSectionProps> = ({
               type="text"
               onChange={(e) =>
                 state.setFormUpdateChild((prev) =>
-                  prev ? { ...prev, fullName: e.target.value } : prev
+                  prev ? { ...prev, fullName: e.target.value } : prev,
                 )
               }
             />
@@ -132,7 +132,7 @@ const DataAnakHeroSection: React.FC<DataAnakHeroSectionProps> = ({
                 type="text"
                 onChange={(e) =>
                   state.setFormUpdateChild((prev) =>
-                    prev ? { ...prev, placeOfBirth: e.target.value } : prev
+                    prev ? { ...prev, placeOfBirth: e.target.value } : prev,
                   )
                 }
               />
@@ -142,7 +142,7 @@ const DataAnakHeroSection: React.FC<DataAnakHeroSectionProps> = ({
                 type="date"
                 onChange={(e) =>
                   state.setFormUpdateChild((prev) =>
-                    prev ? { ...prev, dateOfBirth: e.target.value } : prev
+                    prev ? { ...prev, dateOfBirth: e.target.value } : prev,
                   )
                 }
               />
@@ -155,7 +155,7 @@ const DataAnakHeroSection: React.FC<DataAnakHeroSectionProps> = ({
                 disabled={!state.isEdit}
                 onValueChange={(value) => {
                   state.setFormUpdateChild!((prev) =>
-                    prev ? { ...prev, gender: value } : prev
+                    prev ? { ...prev, gender: value } : prev,
                   );
                 }}
               >

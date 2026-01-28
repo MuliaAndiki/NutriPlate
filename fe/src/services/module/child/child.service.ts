@@ -14,7 +14,7 @@ class ChildApi {
   }
   public async updateChild(
     payload: FormCreateChild,
-    id: string
+    id: string,
   ): Promise<TResponse<any>> {
     const res = await AxiosClient.put(`/api/child/${id}`, payload);
     return res.data;
@@ -25,14 +25,14 @@ class ChildApi {
   }
   public async registerChild(
     payload: FormRegisteredChild,
-    id: string
+    id: string,
   ): Promise<TResponse<any>> {
     const res = await AxiosClient.patch(`/api/child/${id}`, payload);
     return res.data;
   }
   public async cancelChild(
     payload: PickChilID,
-    id: string
+    id: string,
   ): Promise<TResponse<any>> {
     const res = await AxiosClient.patch(`/api/child/cancel/${id}`, payload);
     return res.data;

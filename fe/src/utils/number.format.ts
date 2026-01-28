@@ -9,7 +9,7 @@ interface FormatNumberOptions {
 
 export function formatNumber(
   num: number,
-  options?: FormatNumberOptions
+  options?: FormatNumberOptions,
 ): string {
   if (!Number.isFinite(num)) return "-";
 

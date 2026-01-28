@@ -45,7 +45,7 @@ const VerifyContainer = () => {
         onSuccess: () => {
           setColldown(300);
         },
-      }
+      },
     );
   };
 
