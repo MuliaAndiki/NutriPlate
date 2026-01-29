@@ -1,5 +1,5 @@
 import { Icon } from "@iconify/react/dist/iconify.js";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, Divide } from "lucide-react";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import Link from "next/link";
 import ChildCard from "@/components/card/child/child-card";
@@ -63,10 +63,7 @@ const DetailProfileAnakHeroSection: React.FC<DetailProfileAnakProps> = ({
     return <div>loading</div>;
   }
   const lastMeasurement = service.query.Measuremnt?.[0] ?? null;
-  const isPosyanduLocked = Boolean(
-    service.query.ChildCard.id || service.query.Posyandu,
-  );
-
+  const idPosyanduChildren = service.query.ChildCard.posyanduID;
   return (
     <div className="w-full min-h-screen flex justify-start items-center flex-col p-2">
       <div className="w-full flex  flex-col space-y-4">
@@ -163,7 +160,7 @@ const DetailProfileAnakHeroSection: React.FC<DetailProfileAnakProps> = ({
               <div className="w-full p-2">
                 <Select
                   value={state.formRegisterdChild.posyanduID}
-                  disabled={isPosyanduLocked}
+                  disabled={idPosyanduChildren !== null}
                   onValueChange={(value) =>
                     state.setFormRegisterdChild((prev) => ({
                       ...prev,
@@ -191,18 +188,16 @@ const DetailProfileAnakHeroSection: React.FC<DetailProfileAnakProps> = ({
                   </SelectContent>
                 </Select>
               </div>
-              {state.formRegisterdChild.posyanduID && !isPosyanduLocked ? (
+
+              {idPosyanduChildren === null && (
                 <ButtonWrapper
                   className="w-full"
-                  disabled={
-                    !state.formRegisterdChild.posyanduID ||
-                    service.mutation.isPending
-                  }
-                  onClick={() => service.mutation.onRegisterd()}
+                  disabled={service.mutation.isPending}
+                  onClick={service.mutation.onRegisterd}
                 >
                   {service.mutation.isPending ? <Spinner /> : "Daftarkan"}
                 </ButtonWrapper>
-              ) : null}
+              )}
             </div>
           </div>
           <div className="w-full">

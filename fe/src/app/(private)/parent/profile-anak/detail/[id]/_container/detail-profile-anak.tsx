@@ -13,10 +13,10 @@ const DetailProfileAnakContainer = () => {
   const { id } = useParams<{ id: string }>();
   //child
   const childQueryByID = service.user.query.childById(id);
-  const chilDataByID = childQueryByID.data?.data ?? [];
+  const chilDataByID = childQueryByID.data?.data ?? null;
   //measurement
   const measurementQuery = service.measuremnt.query.measurement(id);
-  const measurementData = measurementQuery.data?.data ?? null;
+  const measurementData = measurementQuery.data?.data ?? [];
   // food Summary Daily
   const foodSummaryDailyQuery = service.foodSummary.query.foodSummaryDaily(id);
   const foodSummaryDailyData = foodSummaryDailyQuery.data?.data ?? null;
@@ -24,6 +24,11 @@ const DetailProfileAnakContainer = () => {
   //posyandu
   const posyanduQuery = service.posyandu.query.getPosyandu();
   const posyanduData = posyanduQuery.data?.data ?? [];
+
+  const childPosyanduId =
+    typeof chilDataByID?.posyanduId === "string"
+      ? chilDataByID.posyanduId
+      : null;
 
   const registerdChildMutation = service.child.mutation.registerd();
   //state
@@ -42,30 +47,24 @@ const DetailProfileAnakContainer = () => {
       },
       {
         onSuccess: () => {
-          setFormRegisterdChild((prev) => ({
-            ...prev,
-            posyanduID: "",
-          }));
+          childQueryByID.refetch();
         },
       },
     );
   };
 
   useEffect(() => {
-    const childPosyanduId =
-      chilDataByID?.posyandu?.id ?? chilDataByID?.posyanduId;
+    if (!childPosyanduId) return;
 
-    if (childPosyanduId) {
-      setFormRegisterdChild((prev) => {
-        if (prev.posyanduID === childPosyanduId) return prev;
+    setFormRegisterdChild((prev) => {
+      if (prev.posyanduID === childPosyanduId) return prev;
 
-        return {
-          ...prev,
-          posyanduID: childPosyanduId,
-        };
-      });
-    }
-  }, [chilDataByID]);
+      return {
+        ...prev,
+        posyanduID: childPosyanduId,
+      };
+    });
+  }, [childPosyanduId]);
 
   return (
     <SidebarLayout>
@@ -86,7 +85,7 @@ const DetailProfileAnakContainer = () => {
                 measurementQuery.isLoading ||
                 foodSummaryDailyQuery.isLoading ||
                 posyanduQuery.isLoading,
-              Measuremnt: measurementData ?? null,
+              Measuremnt: measurementData ?? [],
               foodSummaryDaily: foodSummaryDailyData ?? null,
               Posyandu: posyanduData ?? [],
             },

@@ -165,8 +165,22 @@ class ChildController {
         const result = await uploadCloudinary(buffer, 'avaChild', 'image.png');
         documentUrl.avaChild = result.secure_url;
       }
+
+      if (childBody.dateOfBirth) {
+        const parsed = new Date(childBody.dateOfBirth);
+        if (isNaN(parsed.getTime())) {
+          return c.json?.(
+            {
+              status: 400,
+              message: 'Invalid dateOfBirth format',
+            },
+            400,
+          );
+        }
+      }
       const update = ParseUpdateData(childBody, {
         profileChild: (value) => value as Prisma.InputJsonObject,
+        dateOfBirth: (value) => new Date(value),
       });
 
       const child = await prisma.child.update({
