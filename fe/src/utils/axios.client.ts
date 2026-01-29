@@ -2,23 +2,15 @@ import axios from "axios";
 import { getCookie, deleteCookie } from "cookies-next";
 import { APP_SESSION_COOKIE_KEY } from "@/configs/cookies.config";
 
-const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL || "/api";
-
 const AxiosClient = axios.create({
-  baseURL,
+  baseURL: process.env.NEXT_PUBLIC_BACKEND_URL,
 });
 
 AxiosClient.interceptors.request.use((config) => {
   const token = getCookie(APP_SESSION_COOKIE_KEY);
-
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
-
-  if (baseURL.includes("ngrok")) {
-    config.headers["ngrok-skip-browser-warning"] = "true";
-  }
-
   return config;
 });
 
