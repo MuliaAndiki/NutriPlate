@@ -31,7 +31,9 @@ const DataAnakContainer = () => {
     setFormUpdateChild((prev) => {
       if (prev?.id === chilDataByID.id) return prev;
       return {
-        dateOfBirth: chilDataByID.dateOfBirth,
+        dateOfBirth: chilDataByID.dateOfBirth
+          ? chilDataByID.dateOfBirth.split("T")[0]
+          : "",
         fullName: chilDataByID.fullName,
         placeOfBirth: chilDataByID.placeOfBirth,
         gender: chilDataByID.gender,
