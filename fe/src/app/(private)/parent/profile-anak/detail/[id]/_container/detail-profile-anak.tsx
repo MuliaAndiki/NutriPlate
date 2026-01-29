@@ -14,6 +14,7 @@ const DetailProfileAnakContainer = () => {
   //child
   const childQueryByID = service.user.query.childById(id);
   const chilDataByID = childQueryByID.data?.data ?? null;
+  const chilDataPosyanduId = chilDataByID?.posyanduId ?? "";
   //measurement
   const measurementQuery = service.measuremnt.query.measurement(id);
   const measurementData = measurementQuery.data?.data ?? [];
@@ -25,21 +26,19 @@ const DetailProfileAnakContainer = () => {
   const posyanduQuery = service.posyandu.query.getPosyandu();
   const posyanduData = posyanduQuery.data?.data ?? [];
 
-  const childPosyanduId =
-    typeof chilDataByID?.posyanduId === "string"
-      ? chilDataByID.posyanduId
-      : null;
-
+  const posyanduByIdQuery =
+    service.posyandu.query.getPosyanduById(chilDataPosyanduId);
+  const posyanduByIdData = posyanduByIdQuery.data?.data ?? null;
   const registerdChildMutation = service.child.mutation.registerd();
   //state
   const [formRegisteredChild, setFormRegisterdChild] =
     useState<FormRegisteredChild>({
-      posyanduID: "",
+      posyanduID: undefined,
     });
 
   // handler
   const handleRegiterdChild = () => {
-    if (!formRegisteredChild.posyanduID || !id) return null;
+    if (!formRegisteredChild?.posyanduID || !id) return null;
     registerdChildMutation.mutate(
       {
         payload: formRegisteredChild,
@@ -47,24 +46,13 @@ const DetailProfileAnakContainer = () => {
       },
       {
         onSuccess: () => {
-          childQueryByID.refetch();
+          setFormRegisterdChild({
+            posyanduID: undefined,
+          });
         },
       },
     );
   };
-
-  useEffect(() => {
-    if (!childPosyanduId) return;
-
-    setFormRegisterdChild((prev) => {
-      if (prev.posyanduID === childPosyanduId) return prev;
-
-      return {
-        ...prev,
-        posyanduID: childPosyanduId,
-      };
-    });
-  }, [childPosyanduId]);
 
   return (
     <SidebarLayout>
@@ -84,10 +72,12 @@ const DetailProfileAnakContainer = () => {
                 childQueryByID.isLoading ||
                 measurementQuery.isLoading ||
                 foodSummaryDailyQuery.isLoading ||
-                posyanduQuery.isLoading,
+                posyanduQuery.isLoading ||
+                posyanduByIdQuery.isLoading,
               Measuremnt: measurementData ?? [],
               foodSummaryDaily: foodSummaryDailyData ?? null,
               Posyandu: posyanduData ?? [],
+              posyanduById: posyanduByIdData ?? null,
             },
           }}
           state={{

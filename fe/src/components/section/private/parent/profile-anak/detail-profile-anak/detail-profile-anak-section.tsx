@@ -28,6 +28,8 @@ import { PosyanduRespone } from "@/types/res/posyandu.respone";
 import { FormRegisteredChild } from "@/types/form/child.form";
 import { ButtonWrapper } from "@/components/wrapper/ButtonWrapper";
 import { Spinner } from "@/components/ui/spinner";
+import PosyanduHomeCard from "@/components/card/posyandu/posyandu-home-card";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface DetailProfileAnakProps {
   namespace: {
@@ -44,6 +46,7 @@ interface DetailProfileAnakProps {
       Measuremnt: MeasurementRespone[];
       foodSummaryDaily: DailySummaryResponse;
       Posyandu: PosyanduRespone[];
+      posyanduById: PosyanduRespone;
     };
   };
   state: {
@@ -63,7 +66,11 @@ const DetailProfileAnakHeroSection: React.FC<DetailProfileAnakProps> = ({
     return <div>loading</div>;
   }
   const lastMeasurement = service.query.Measuremnt?.[0] ?? null;
-  const idPosyanduChildren = service.query.ChildCard.posyanduID;
+
+  const isPosyanduLoading =
+    service.query.isLoading || service.query.posyanduById === undefined;
+
+  const hasPosyandu = !!service.query.posyanduById?.id;
   return (
     <div className="w-full min-h-screen flex justify-start items-center flex-col p-2">
       <div className="w-full flex  flex-col space-y-4">
@@ -158,37 +165,42 @@ const DetailProfileAnakHeroSection: React.FC<DetailProfileAnakProps> = ({
                 </h1>
               </div>
               <div className="w-full p-2">
-                <Select
-                  value={state.formRegisterdChild.posyanduID}
-                  onValueChange={(value) =>
-                    state.setFormRegisterdChild((prev) => ({
-                      ...prev,
-                      posyanduID: value,
-                    }))
-                  }
-                >
-                  <SelectTrigger className="w-full h-auto min-h-[64px]">
-                    <SelectValue placeholder="Pilih Posyandu" />
-                  </SelectTrigger>
+                {isPosyanduLoading ? (
+                  <Skeleton className="w-full h-[64px]" />
+                ) : hasPosyandu ? (
+                  <PosyanduHomeCard
+                    res={service.query.posyanduById}
+                    key={service.query.posyanduById.id}
+                  />
+                ) : (
+                  <Select
+                    value={state.formRegisterdChild?.posyanduID}
+                    onValueChange={(value) =>
+                      state.setFormRegisterdChild((prev) => ({
+                        ...prev,
+                        posyanduID: value,
+                      }))
+                    }
+                  >
+                    <SelectTrigger className="w-full min-h-[64px]">
+                      <SelectValue placeholder="Pilih Posyandu" />
+                    </SelectTrigger>
 
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectLabel>Posyandu</SelectLabel>
-                      {service.query.Posyandu.map((items) => (
-                        <SelectItem
-                          key={items.id}
-                          value={items.id}
-                          className="w-full h-auto"
-                        >
-                          <PosyanduSelectionCard res={items} />
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectLabel>Posyandu</SelectLabel>
+                        {service.query.Posyandu.map((items) => (
+                          <SelectItem key={items.id} value={items.id}>
+                            <PosyanduSelectionCard res={items} />
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                )}
               </div>
 
-              {idPosyanduChildren === null && (
+              {!service.query.posyanduById?.id ? (
                 <ButtonWrapper
                   className="w-full"
                   disabled={service.mutation.isPending}
@@ -196,7 +208,7 @@ const DetailProfileAnakHeroSection: React.FC<DetailProfileAnakProps> = ({
                 >
                   {service.mutation.isPending ? <Spinner /> : "Daftarkan"}
                 </ButtonWrapper>
-              )}
+              ) : null}
             </div>
           </div>
           <div className="w-full">
