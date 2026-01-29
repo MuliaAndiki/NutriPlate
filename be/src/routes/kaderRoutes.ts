@@ -62,6 +62,13 @@ class KaderRoutes {
         beforeHandle: [verifyToken().beforeHandle],
       },
     );
+    this.kaderRoutes.get(
+      '/reject-registrations',
+      (c: AppContext) => KaderController.getRejectRegistrations(c),
+      {
+        beforeHandle: [verifyToken().beforeHandle],
+      },
+    );
   }
 }
 

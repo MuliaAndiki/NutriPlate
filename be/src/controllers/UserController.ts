@@ -74,10 +74,28 @@ class UserController {
               },
             },
           },
+          take: 1,
         });
 
         profileData.posyanduId = kaderRegistration?.posyanduId || null;
         profileData.posyanduName = kaderRegistration?.posyandu?.name || null;
+      }
+
+      if (user.role === 'POSYANDU') {
+        const posyandu = await prisma.user.findFirst({
+          where: {
+            id: user.id,
+          },
+          select: {
+            posyandu: {
+              select: {
+                id: true,
+              },
+            },
+          },
+        });
+
+        profileData.posyandu = posyandu?.posyandu?.[0] || null;
       }
 
       await this.redis.set(cacheKey, JSON.stringify(profileData), { EX: 60 }).catch(console.error);

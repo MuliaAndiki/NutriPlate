@@ -18,3 +18,11 @@ export function useGetPosyanduById(id: string) {
     enabled: !!id,
   });
 }
+
+export function useGetKaderByPosyandu() {
+  return useQuery({
+    queryKey: cacheKey.posyandu.kaderList(),
+    queryFn: () => Api.Posyandu.getKaderListByPosyandu(),
+    staleTime: 1000 * 60 * 5,
+  });
+}

@@ -263,6 +263,90 @@ class KaderController {
     }
   }
 
+  public async getRejectRegistrations(c: AppContext) {
+    try {
+      const jwtUser = c.user as JwtPayload;
+
+      if (!jwtUser) {
+        return c.json?.(
+          {
+            status: 401,
+            message: 'Unauthorized',
+          },
+          401,
+        );
+      }
+
+      const user = await prisma.user.findFirst({
+        where: {
+          id: jwtUser.id,
+        },
+      });
+
+      if (!user || user.role !== 'POSYANDU') {
+        return c.json?.(
+          {
+            status: 403,
+            message: 'Hanya posyandu yang dapat mengakses',
+          },
+          403,
+        );
+      }
+
+      const posyandu = await prisma.posyandu.findFirst({
+        where: {
+          userID: jwtUser.id,
+        },
+      });
+
+      if (!posyandu) {
+        return c.json?.(
+          {
+            status: 404,
+            message: 'Posyandu tidak ditemukan',
+          },
+          404,
+        );
+      }
+
+      const cacheKey = cacheKeys.kaderregistration.reject(posyandu.id);
+      const cached = await this.redis.get(cacheKey);
+      if (cached) {
+        return c.json?.(
+          {
+            status: 200,
+            message: 'Berhasil mendapatkan registrasi reject',
+            data: JSON.parse(cached),
+          },
+          200,
+        );
+      }
+
+      const registrations = await kaderRegistrationService.getRejectRegistrations(posyandu.id);
+
+      await this.redis.set(cacheKey, JSON.stringify(registrations), { EX: 60 });
+
+      return c.json?.(
+        {
+          status: 200,
+          message: 'Berhasil mendapatkan registrasi reject',
+          data: registrations,
+        },
+        200,
+      );
+    } catch (error) {
+      console.error(error);
+      return c.json?.(
+        {
+          status: 500,
+          message: 'Server internal error',
+          error: error instanceof Error ? error.message : error,
+        },
+        500,
+      );
+    }
+  }
+
   public async getAcceptedRegistrations(c: AppContext) {
     try {
       const jwtUser = c.user as JwtPayload;

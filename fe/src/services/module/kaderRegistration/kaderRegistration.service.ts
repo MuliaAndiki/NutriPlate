@@ -24,6 +24,10 @@ class KaderRegistrationApi {
     const res = await AxiosClient.get("/api/kader/accepted-registrations");
     return res.data;
   }
+  public async getRejectedRegistion(): Promise<TResponse<any>> {
+    const res = await AxiosClient.get("/api/kader/reject-registrations");
+    return res.data;
+  }
 
   public async acceptRegistration(
     payload: FormAcceptKaderRegistration,

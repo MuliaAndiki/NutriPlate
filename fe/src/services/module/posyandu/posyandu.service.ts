@@ -35,6 +35,10 @@ class PosyanduApi {
     const res = await AxiosClient.delete(`/api/posyandu/${id}`);
     return res.data;
   }
+  public async getKaderListByPosyandu(): Promise<TResponse<any>> {
+    const res = await AxiosClient.get("/api/posyandu/list");
+    return res.data;
+  }
 }
 
 export default PosyanduApi;

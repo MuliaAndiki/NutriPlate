@@ -1,4 +1,5 @@
 import { SidebarIconsKey } from "../icons";
+import { KaderRegistrationDetailResponse } from "../res";
 
 export enum GenderType {
   MALE,
@@ -69,3 +70,23 @@ export interface ChildPartial {
     fullName: string;
   };
 }
+
+export const statusKaderRegisterMap: Record<StatusRegisterionsKader, string> = {
+  all: "Semua",
+  pending: "Menunggu",
+  accepted: "Diterima",
+  rejected: "Ditolak",
+};
+
+export const statusKaderRegisterStyle = (
+  status: KaderRegistrationDetailResponse["status"],
+) => {
+  switch (status) {
+    case "accepted":
+      return "bg-green-100 text-green-700";
+    case "rejected":
+      return "bg-red-100 text-red-700";
+    default:
+      return "bg-yellow-100 text-yellow-700";
+  }
+};

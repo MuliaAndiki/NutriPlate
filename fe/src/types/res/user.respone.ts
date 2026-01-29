@@ -14,6 +14,9 @@ export interface UserResponse {
   updatedAt: Date;
   posyanduId?: string | null;
   posyanduName?: string | null;
+  posyandu: {
+    id: string;
+  };
 }
 
 export interface KaderListResponse {

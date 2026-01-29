@@ -39,6 +39,7 @@ export const cacheKey = {
     list: () => [`posyandu:list`],
     children: (posyanduId: string) => [`posyandu:children;${posyanduId}`],
     byId: (id: string) => [`posyandu:byid:${id}`],
+    kaderList: () => ["posyandu:kader:list"],
   },
   notification: {
     byUser: (token: string) => [`notifikasi:user:${token}`],
@@ -51,7 +52,10 @@ export const cacheKey = {
     byProgresId: (id: string) => [`task:progres:${id}`],
   },
   registrion: {
-    list: () => [`registrion:list`],
+    myRegister: () => [`registrion:myRegister`],
+    pending: () => [`registrion:pending`],
+    accepted: () => [`registrion:accepted`],
+    reject: () => [`registrion:reject`],
   },
   // not fix
   iot: {

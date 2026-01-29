@@ -116,6 +116,7 @@ export const cacheKeys = {
     byPosyandu: (id: string) => `kaderregistration:posyandu:${id}`,
     pending: (posyanduId: string) => `kaderregistration:pending:${posyanduId}`,
     accepted: (posyanduId: string) => `kaderregistration:accepted:${posyanduId}`,
+    reject: (posyanduId: string) => `kaderregistration:reject:${posyanduId}`,
   },
   programregistration: {
     byID: (id: string) => `programregistration:id:${id}`,

@@ -106,6 +106,41 @@ class KaderRegistrationService {
     }
   }
 
+  public async getRejectRegistrations(posyanduId: string) {
+    try {
+      const registrations = await prisma.kaderRegistration.findMany({
+        where: {
+          posyanduId,
+          status: 'rejected',
+        },
+        include: {
+          kader: {
+            select: {
+              id: true,
+              email: true,
+              fullName: true,
+              phone: true,
+              avaUrl: true,
+            },
+          },
+          posyandu: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+      });
+
+      return registrations;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   public async acceptRegistration(registrationId: string, posyanduId: string) {
     try {
       const registration = await prisma.kaderRegistration.findFirst({

@@ -623,30 +623,13 @@ class PosyanduController {
         },
       });
 
-      const formattedData = {
-        posyandu: {
-          id: posyandu.id,
-          name: posyandu.name,
-        },
-        totalKader: kaderList.length,
-        kaders: kaderList.map((reg) => ({
-          registrationId: reg.id,
-          id: reg.kader.id,
-          fullName: reg.kader.fullName,
-          email: reg.kader.email,
-          role: reg.kader.role,
-          registeredAt: reg.createdAt,
-          acceptedAt: reg.updatedAt,
-        })),
-      };
-
-      await this.redis.set(cacheKey, JSON.stringify(formattedData), { EX: 300 });
+      await this.redis.set(cacheKey, JSON.stringify(kaderList), { EX: 300 });
 
       return c.json?.(
         {
           status: 200,
           message: 'Berhasil mendapatkan daftar kader',
-          data: formattedData,
+          data: kaderList,
         },
         200,
       );

@@ -1,4 +1,8 @@
-import { useGetPosyandu, useGetPosyanduById } from "./state/query";
+import {
+  useGetKaderByPosyandu,
+  useGetPosyandu,
+  useGetPosyanduById,
+} from "./state/query";
 
 export function usePosyandu() {
   return {
@@ -8,6 +12,7 @@ export function usePosyandu() {
     query: {
       getPosyandu: useGetPosyandu,
       getPosyanduById: useGetPosyanduById,
+      getKaderList: useGetKaderByPosyandu,
     },
   };
 }

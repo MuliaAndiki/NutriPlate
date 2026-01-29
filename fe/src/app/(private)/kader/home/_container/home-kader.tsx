@@ -3,21 +3,19 @@ import HomeKaderHeroSection from "@/components/section/private/kader/home/home-k
 import { SidebarLayout } from "@/core/layouts/sidebar.layout";
 import useService from "@/hooks/mutation/prop.service";
 import { useAppNameSpace } from "@/hooks/useAppNameSpace";
-import { useAuthentic } from "@/hooks/useAuthentic";
 import { PopUpNavigate } from "@/types/ui";
-import { useDebugLog } from "@/utils/useDebug";
 import { useState } from "react";
 
 const HomeKaderContainer = () => {
   const service = useService();
   const namespace = useAppNameSpace();
-  const { role } = useAuthentic();
 
   // profile
   const profileQuery = service.user.query.profile();
   const profileData = profileQuery.data?.data ?? null;
   const posyanduId = profileData?.posyanduId;
-  const kaderId = profileData?.id;
+  const kaderId = profileData?.id ?? "";
+  const role = profileData?.role ?? "";
 
   // measurement
   const MeasurementAllQuery =
