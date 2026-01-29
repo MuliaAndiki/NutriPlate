@@ -605,14 +605,14 @@ class PosyanduController {
           status: 'accepted',
         },
         select: {
-          id: true,
-          kaderId: true,
           kader: {
             select: {
               id: true,
               fullName: true,
               email: true,
               role: true,
+              avaUrl: true,
+              phone: true,
             },
           },
           createdAt: true,
@@ -623,7 +623,7 @@ class PosyanduController {
         },
       });
 
-      await this.redis.set(cacheKey, JSON.stringify(kaderList), { EX: 300 });
+      await this.redis.set(cacheKey, JSON.stringify(kaderList), { EX: 60 });
 
       return c.json?.(
         {

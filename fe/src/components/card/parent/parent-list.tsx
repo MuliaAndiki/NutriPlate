@@ -16,7 +16,7 @@ const ParentCard: React.FC<ParentCardProps> = ({ index, data }) => {
         </div>
 
         <Image
-          src={data.avaUrl || "/images/avatarDummy.png"}
+          src={data.avaUrl || "/avatars/1.png"}
           alt={data.fullName}
           width={40}
           height={40}

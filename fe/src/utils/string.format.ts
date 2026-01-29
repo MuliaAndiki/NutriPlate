@@ -45,3 +45,9 @@ export function calculateDuration(startTime: string, estimasiJam: number) {
   const selesai = new Date(startDate.getTime() + estimasiJam * 60 * 60 * 1000);
   return selesai.toLocaleString();
 }
+export const identifier = (
+  email?: string | null,
+  phone?: string | null,
+): string => {
+  return email ?? phone ?? "-";
+};

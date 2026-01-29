@@ -4,6 +4,7 @@ import { SidebarLayout } from "@/core/layouts/sidebar.layout";
 import useService from "@/hooks/mutation/prop.service";
 import { useAppNameSpace } from "@/hooks/useAppNameSpace";
 import { PopUpNavigate } from "@/types/ui";
+import { useDebugLog } from "@/utils/useDebug";
 import { useState } from "react";
 
 const HomeKaderContainer = () => {
@@ -32,6 +33,10 @@ const HomeKaderContainer = () => {
   // posyandu
   const posyanduQuery = service.posyandu.query.getPosyandu();
   const posyanduData = posyanduQuery.data?.data ?? [];
+
+  //posyanduById
+  const posyanduByIdQuery = service.posyandu.query.getPosyanduById(posyanduId);
+  const posyanduByIdData = posyanduByIdQuery.data?.data ?? null;
 
   const [posyanduSelectId, setPosyanduSelectId] = useState<string>("");
   const registerKaderMutation = service.registerKader.mutation.registerKader();
@@ -64,11 +69,13 @@ const HomeKaderContainer = () => {
                 profileQuery.isLoading ||
                 childInPosyanduQuery.isLoading ||
                 posyanduQuery.isLoading ||
-                MeasurementAllQuery.isLoading,
+                MeasurementAllQuery.isLoading ||
+                posyanduByIdQuery.isLoading,
               profile: profileData ?? null,
               measurement: MeasurementAllData ?? [],
               childInPosyandu: childInPosyanduData ?? [],
               posyandu: posyanduData ?? [],
+              posyanduById: posyanduByIdData ?? null,
             },
             mutation: {
               onRegisterKader: handleRegisterKader,

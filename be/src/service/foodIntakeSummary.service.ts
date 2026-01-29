@@ -25,13 +25,19 @@ class FoodIntakeSummaryService {
     this.redis = getRedis();
   }
 
-  public async getDailySummary(childId: string, date: Date) {
+  public async getDailySummary(childId: string, date: Date, skipCache = false) {
     const redis = getRedis();
     const dateStr = date.toISOString().split('T')[0];
     const cacheKey = `daily-summary:${childId}:${dateStr}`;
 
-    const cached = await redis.get(cacheKey);
-    if (cached) return JSON.parse(cached);
+    if (!skipCache) {
+      const cached = await redis.get(cacheKey);
+      if (cached) {
+        return JSON.parse(cached);
+      }
+    } else {
+      console.warn(`⚠️ Cache bypassed for ${cacheKey} (debug mode)`);
+    }
 
     const child = await prisma.child.findUnique({
       where: { id: childId },
@@ -45,14 +51,24 @@ class FoodIntakeSummaryService {
 
     const ageMonths = getAgeInMonths(child.dateOfBirth, date);
 
+    if (ageMonths === 0) {
+      console.warn(`⚠️ Age calculated as 0 for child ${childId} with DOB: ${child.dateOfBirth}`);
+    }
+
     const lastEvaluation = await prisma.whoEvaluation.findFirst({
       where: { childId },
       orderBy: { createdAt: 'desc' },
     });
 
     const classification = parsePrismaJson<GrowthClassification>(lastEvaluation?.classification);
-
     const recommendation = parsePrismaJson<GrowthRecommendation>(lastEvaluation?.recommendation);
+
+    if (lastEvaluation && (!classification || !recommendation)) {
+      console.warn(`⚠️ WHO data found but failed to parse for child ${childId}`, {
+        classificationRaw: lastEvaluation.classification,
+        recommendationRaw: lastEvaluation.recommendation,
+      });
+    }
 
     const lastMeasurement = await prisma.measurement.findFirst({
       where: { childId },
@@ -167,6 +183,29 @@ class FoodIntakeSummaryService {
   }
 
   /**
+   * DANGEROUS: Clear ALL cache for a specific child
+   * Use this if stale cache is causing issues
+   */
+  public async flushAllChildCache(childId: string): Promise<number> {
+    try {
+      const pattern = `daily-summary:${childId}:*`;
+      const keys = await this.redis.keys(pattern);
+
+      if (keys.length === 0) {
+        console.log(`ℹ️ No cache keys found for child ${childId}`);
+        return 0;
+      }
+
+      const deleted = await (this.redis.del as any)(keys);
+      console.log(`🗑️ Flushed ${deleted} cache entries for child ${childId}`);
+      return deleted;
+    } catch (error) {
+      console.warn(`⚠️ Failed to flush cache for child ${childId}:`, error);
+      return 0;
+    }
+  }
+
+  /**
    * Get summary for multiple days (useful for trends)
    *
    * @param childId - UUID of child
@@ -178,6 +217,7 @@ class FoodIntakeSummaryService {
     childId: string,
     startDate: string | Date,
     endDate: string | Date,
+    skipCache = false,
   ): Promise<FoodIntakeDailySummary[]> {
     try {
       const start = typeof startDate === 'string' ? new Date(startDate) : startDate;
@@ -187,7 +227,7 @@ class FoodIntakeSummaryService {
 
       const current = new Date(start);
       while (current <= end) {
-        const summary = await this.getDailySummary(childId, new Date(current));
+        const summary = await this.getDailySummary(childId, new Date(current), skipCache);
         summaries.push(summary);
 
         current.setDate(current.getDate() + 1);

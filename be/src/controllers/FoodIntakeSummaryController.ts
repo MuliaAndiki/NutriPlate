@@ -16,7 +16,7 @@ class FoodIntakeSummaryController {
     try {
       const jwtUser = c.user as JwtPayload;
       const params = c.params as { childId: string };
-      const query = c.query as { date?: string };
+      const query = c.query as { date?: string; skipCache?: string };
 
       if (!jwtUser) {
         return c.json?.({ status: 401, message: 'Unauthorized' }, 401);
@@ -55,7 +55,12 @@ class FoodIntakeSummaryController {
         targetDate = parsedDate;
       }
 
-      const summary = await foodIntakeSummaryService.getDailySummary(params.childId, targetDate);
+      const skipCacheFlag = query?.skipCache === 'true';
+      const summary = await foodIntakeSummaryService.getDailySummary(
+        params.childId,
+        targetDate,
+        skipCacheFlag,
+      );
 
       return c.json?.(
         {
@@ -90,7 +95,7 @@ class FoodIntakeSummaryController {
     try {
       const jwtUser = c.user as JwtPayload;
       const params = c.params as { childId: string };
-      const query = c.query as { startDate?: string; endDate?: string };
+      const query = c.query as { startDate?: string; endDate?: string; skipCache?: string };
 
       if (!jwtUser) {
         return c.json?.({ status: 401, message: 'Unauthorized' }, 401);
@@ -146,10 +151,12 @@ class FoodIntakeSummaryController {
         return c.json?.({ status: 400, message: 'Date range cannot exceed 90 days' }, 400);
       }
 
+      const skipCacheFlag = query?.skipCache === 'true';
       const summaries = await foodIntakeSummaryService.getDateRangeSummary(
         params.childId,
         startDate,
         endDate,
+        skipCacheFlag,
       );
 
       return c.json?.(

@@ -2,9 +2,9 @@ import { Input } from "@/components/ui/input";
 import { PosyanduRespone } from "@/types/res";
 import { ChevronLeft, Search } from "lucide-react";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
-import PosyanduCard from "@/components/card/posyandu/posyanduCard";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import Link from "next/link";
+import PosyanduHomeCard from "@/components/card/posyandu/posyandu-home-card";
 interface DaftarPosyanduKaderSectionProps {
   namespace: {
     router: AppRouterInstance;
@@ -66,7 +66,7 @@ const DaftarPosyanduKaderSection: React.FC<DaftarPosyanduKaderSectionProps> = ({
           </p>
         ) : (
           service.query.posyandu.map((item) => (
-            <PosyanduCard key={item.id} data={item} />
+            <PosyanduHomeCard key={item.id} res={item} />
           ))
         )}
       </div>

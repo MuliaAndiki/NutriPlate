@@ -16,6 +16,7 @@ import Link from "next/link";
 import BalitaRiskList from "@/components/card/kader/balita-risk";
 import BalitaWarningList from "@/components/card/kader/balita-warning";
 import PosyanduList from "@/components/card/kader/list-posyandu";
+import PosyanduHomeCard from "@/components/card/posyandu/posyandu-home-card";
 
 interface HomeKaderHeroSectionProps {
   service: {
@@ -25,6 +26,7 @@ interface HomeKaderHeroSectionProps {
       childInPosyandu: ChildListByPosyanduData[];
       posyandu: PosyanduRespone[];
       measurement: MeasurementRespone[];
+      posyanduById: PosyanduRespone;
     };
     mutation: {
       onRegisterKader: () => void;
@@ -91,7 +93,7 @@ const HomeKaderHeroSection: React.FC<HomeKaderHeroSectionProps> = ({
           <h1 className="text-2xl font-bold">Jadwal Posyandu</h1>
         </div>
         <div className="w-full">
-          {service.query.profile.posyanduId === null && (
+          {service.query.profile.posyanduId === null ? (
             <div className="w-full border border-dashed rounded-xl p-4 flex flex-col items-center justify-center text-center space-y-3 bg-muted/30">
               <Icon
                 icon="mdi:home-plus-outline"
@@ -116,6 +118,11 @@ const HomeKaderHeroSection: React.FC<HomeKaderHeroSectionProps> = ({
                 Daftar Posyandu
               </ButtonWrapper>
             </div>
+          ) : (
+            <PosyanduHomeCard
+              res={service.query.posyanduById}
+              key={service.query.posyanduById.id}
+            />
           )}
         </div>
         <div className="w-full">
@@ -154,9 +161,7 @@ const HomeKaderHeroSection: React.FC<HomeKaderHeroSectionProps> = ({
             </Link>
           ))}
         </div>
-        <div className="w-full">
-          <h1 className="text-2xl font-bold">Balita Perlu Perhatian</h1>
-        </div>
+
         <PopUp
           isOpen={state.popup === "fRegisterKader"}
           onClose={() => state.setPopup(null)}

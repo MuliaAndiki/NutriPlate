@@ -1,3 +1,5 @@
+import { KaderDetailResponse } from "./kaderRegistration.respone";
+
 export interface PosyanduRespone {
   id: string;
   name: string;
@@ -80,4 +82,10 @@ export interface ActiveAccountResponse {
     fullName: string;
     role: string;
   };
+}
+
+export interface GetListKader {
+  kader: KaderDetailResponse;
+  createdAt: string;
+  updatedAt: string;
 }

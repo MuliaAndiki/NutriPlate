@@ -526,9 +526,6 @@ class MeasurementController {
         return c.json?.({ status: 400, message: 'posyanduId param is required' }, 400);
       }
 
-      /* =====================
-       AUTHORIZATION
-    ====================== */
       let authorized = false;
 
       if (jwtUser.role === 'ADMIN') {
@@ -602,9 +599,9 @@ class MeasurementController {
         take: 100,
       });
 
-      await this.redis.set(cacheKey, JSON.stringify(measurements), {
-        EX: 120,
-      });
+      if (measurements.length > 0) {
+        await this.redis.set(cacheKey, JSON.stringify(measurements), { EX: 120 });
+      }
 
       return c.json?.(
         {
