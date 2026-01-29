@@ -160,7 +160,6 @@ const DetailProfileAnakHeroSection: React.FC<DetailProfileAnakProps> = ({
               <div className="w-full p-2">
                 <Select
                   value={state.formRegisterdChild.posyanduID}
-                  disabled={idPosyanduChildren !== null}
                   onValueChange={(value) =>
                     state.setFormRegisterdChild((prev) => ({
                       ...prev,
