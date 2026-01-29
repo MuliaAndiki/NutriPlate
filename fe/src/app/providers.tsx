@@ -9,6 +9,7 @@ import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 
 import { SidebarProvider } from "@/components/ui/sidebar";
+import { PWAUpdatePrompt } from "@/components/pwa/PWAUpdatePrompt";
 import { env } from "@/configs/env.config";
 import { AuthProvider } from "@/core/providers/auth.provider";
 import { ThemeProvider } from "@/core/providers/theme.provider";
@@ -51,6 +52,11 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
   return (
     <Providers>
       {children}
+
+      {/* PWA Update Prompt */}
+      <PWAUpdatePrompt />
+
+      {/* Development Tools */}
       <ReactQueryDevtools initialIsOpen={false} />
       <Toaster position="top-center" toastOptions={{ duration: 900 }} />
     </Providers>

@@ -14,7 +14,11 @@ async function connected() {
     await connectWithRetry();
     await connectRedis();
     await initSocket();
-    app.listen(port);
+
+    app.listen({
+      port,
+      hostname: '0.0.0.0',
+    });
   } catch (error) {
     console.error('❌ Could not connect to database after retries:', error);
     process.exit(1);

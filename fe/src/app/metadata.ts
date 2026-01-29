@@ -2,17 +2,22 @@ import type { Metadata } from "next";
 
 export const siteConfig = {
   name: "NutriPlate",
-  description: "Aplikasi berbasis Next.js dengan UI yang modern",
-  url: "https://your-domain.com",
+  description:
+    "Sistem Integratif Berbasis IoT & PWA untuk Pemantauan Gizi Anak di Dusun Lambateung",
+  url: process.env.NEXT_PUBLIC_APP_URL || "https://nutriplate.vercel.app",
   locale: "id-ID",
   keywords: [
-    "next.js",
-    "react",
-    "aplikasi web",
+    "nutrisi",
+    "gizi",
+    "anak",
+    "stunting",
+    "pemantauan",
+    "pwa",
+    "aplikasi",
     "indonesia",
-    "modern ui",
-    "shadcn",
   ],
+  themeColor: "#10B981",
+  backgroundColor: "#ffffff",
 };
 
 export const metadata: Metadata = {
@@ -24,19 +29,27 @@ export const metadata: Metadata = {
   keywords: siteConfig.keywords,
   icons: {
     icon: [
+      { url: "/favicon/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon/favicon-16x16.png", sizes: "16x16", type: "image/png" },
       { url: "/images/logo.svg", type: "image/svg" },
-      { url: "/favicon/favicon.ico" },
     ],
-    shortcut: "/images/logo.svg",
+    shortcut: "/favicon/favicon.ico",
     apple: [
-      { url: "/images/logo.svg", type: "image/svg" },
-      { url: "/images/logo.svg", sizes: "180x180", type: "image/svg" },
+      {
+        url: "/favicon/apple-touch-icon.png",
+        sizes: "180x180",
+        type: "image/png",
+      },
     ],
     other: [
       {
         rel: "mask-icon",
         url: "/images/logo.svg",
-        color: "#000000",
+        color: siteConfig.themeColor,
+      },
+      {
+        rel: "manifest",
+        url: "/favicon/site.webmanifest",
       },
     ],
   },
@@ -66,11 +79,15 @@ export const metadata: Metadata = {
     images: ["/images/logo.svg"],
   },
   other: {
-    "google-site-verification": "your-verification-code",
-    "msvalidate.01": "your-verification-code",
-    "msapplication-TileColor": "#000000",
+    "google-site-verification":
+      process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || "",
+    "msvalidate.01": process.env.NEXT_PUBLIC_MS_VALIDATION || "",
+    "msapplication-TileColor": siteConfig.themeColor,
+    "msapplication-config": "/favicon/browserconfig.xml",
+    "theme-color": siteConfig.themeColor,
     "apple-mobile-web-app-capable": "yes",
-    "apple-mobile-web-app-status-bar-style": "black",
+    "apple-mobile-web-app-status-bar-style": "black-translucent",
+    "apple-mobile-web-app-title": siteConfig.name,
   },
   robots: {
     index: true,
@@ -82,8 +99,27 @@ export const metadata: Metadata = {
     },
   },
   appleWebApp: {
-    title: siteConfig.name,
-    statusBarStyle: "black",
     capable: true,
+    statusBarStyle: "black-translucent",
+    title: siteConfig.name,
+    startupImage: [
+      {
+        url: "/favicon/apple-splash-2048-2732.png",
+        media: "(device-width: 1024px) and (device-height: 1366px)",
+      },
+      {
+        url: "/favicon/apple-splash-1668-2224.png",
+        media: "(device-width: 834px) and (device-height: 1194px)",
+      },
+    ],
+  },
+  formatDetection: {
+    telephone: false,
+  },
+  viewport: {
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 5,
+    viewportFit: "cover",
   },
 };

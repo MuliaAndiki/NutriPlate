@@ -1,7 +1,7 @@
 {
   "name": "NutriPlate - Pemantauan Gizi Anak",
   "short_name": "NutriPlate",
-  "description": "Sistem Integratif Berbasis IoT & PWA untuk Pemantauan Gizi Anak",
+  "description": "Sistem Integratif Berbasis IoT & PWA untuk Pemantauan Gizi Anak di Dusun Lambateung",
   "start_url": "/home",
   "scope": "/",
   "display": "standalone",
@@ -9,20 +9,6 @@
   "theme_color": "#10B981",
   "background_color": "#ffffff",
   "categories": ["health", "productivity"],
-  "screenshots": [
-    {
-      "src": "/images/logo.svg",
-      "sizes": "540x720",
-      "type": "image/svg",
-      "form_factor": "narrow"
-    },
-    {
-      "src": "/images/logo.svg",
-      "sizes": "1280x720",
-      "type": "image/svg",
-      "form_factor": "wide"
-    }
-  ],
   "icons": [
     {
       "src": "/favicon/favicon-16x16.png",
@@ -87,18 +73,5 @@
         }
       ]
     }
-  ],
-  "share_target": {
-    "action": "/share",
-    "method": "POST",
-    "enctype": "application/x-www-form-urlencoded",
-    "params": {
-      "files": [
-        {
-          "name": "file",
-          "accept": ["image/*"]
-        }
-      ]
-    }
-  }
+  ]
 }

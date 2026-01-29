@@ -1,16 +1,10 @@
 "use client";
 
-/**
- * Not Supported Page
- *
- * Halaman ini hanya ditampilkan jika:
- * 1. Somehow non-mobile device bypass proxy.ts middleware (edge case)
- * 2. User resize dari mobile ke desktop (rare, tapi handle jadi aman)
- *
- * Proxy.ts sudah handle 95% case, ini hanya fallback security
- */
+import { ButtonWrapper } from "@/components/wrapper/ButtonWrapper";
+import { useRouter } from "next/navigation";
 
 export default function NotSupportedPage() {
+  const router = useRouter();
   return (
     <div className="flex h-screen items-center justify-center flex-col gap-4 w-full px-4">
       <h1 className="text-2xl font-bold text-center">📱 Mobile Only</h1>
@@ -22,6 +16,9 @@ export default function NotSupportedPage() {
         <br />
         ✓ Smartphone / Tablet
         <br />✓ Chrome DevTools mobile mode (F12)
+        <ButtonWrapper onClick={() => router.push("/home")}>
+          Reload
+        </ButtonWrapper>
       </p>
     </div>
   );
