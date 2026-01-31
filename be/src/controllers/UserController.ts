@@ -792,11 +792,9 @@ class UserController {
         posyanduId?: string;
       };
       let where: any = {};
-      let cacheKey = '';
 
       if (jwtUser.role === 'PARENT') {
         where.parentId = jwtUser.id;
-        cacheKey = cacheKeys.child.byParent(jwtUser.id);
       }
 
       if (jwtUser.role === 'POSYANDU' || jwtUser.role === 'KADER') {
@@ -831,12 +829,6 @@ class UserController {
         }
 
         where.posyanduId = posyanduId;
-        cacheKey = cacheKeys.child.byPosyandu(posyanduId);
-      }
-
-      const cached = await this.redis.get(cacheKey);
-      if (cached) {
-        return c.json?.({ status: 200, message: 'success', data: JSON.parse(cached) }, 200);
       }
 
       const children = await prisma.child.findMany({
@@ -863,8 +855,6 @@ class UserController {
       if (!children.length) {
         return c.json?.({ status: 404, message: 'children not found' }, 404);
       }
-
-      await this.redis.set(cacheKey, JSON.stringify(children), { EX: 120 });
 
       return c.json?.({ status: 200, message: 'success', data: children }, 200);
     } catch (error) {

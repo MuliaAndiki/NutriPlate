@@ -8,7 +8,7 @@
     "api"
   ],
   "scripts": {
-    "dev": "turbo run dev --parallel --filter=!nextjs",
+    "dev": "turbo run dev --parallel",
     "build": "turbo run build",
     "format": "turbo run format"
   },
