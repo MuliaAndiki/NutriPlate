@@ -1,11 +1,14 @@
 "use client";
 import ProfilePosyanduSection from "@/components/section/private/posyandu/profile/profile";
-import { ButtonWrapper } from "@/components/wrapper/ButtonWrapper";
 import { SidebarLayout } from "@/core/layouts/sidebar.layout";
 import useService from "@/hooks/mutation/prop.service";
 
 const ProfilePosyanduContainer = () => {
   const service = useService();
+  //profile
+  const profileQuery = service.user.query.profile();
+  const profileData = profileQuery.data?.data ?? null;
+
   const logout = service.auth.mutation.logout();
   const handleLogout = () => {
     logout.mutate({});
@@ -13,8 +16,17 @@ const ProfilePosyanduContainer = () => {
   return (
     <SidebarLayout>
       <main className="w-full min-h-screen overflow-x-hidden">
-        <ButtonWrapper onClick={() => handleLogout()}>keluar</ButtonWrapper>
-        <ProfilePosyanduSection />
+        <ProfilePosyanduSection
+          service={{
+            mutation: {
+              onLogout: handleLogout,
+            },
+            query: {
+              isLoading: profileQuery.isLoading,
+              userProfileType: profileData ?? null,
+            },
+          }}
+        />
       </main>
     </SidebarLayout>
   );

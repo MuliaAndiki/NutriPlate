@@ -14,23 +14,13 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-/**
- * PWA Update Prompt Component
- * Displays update notification when new version is available
- *
- * Usage:
- * <PWAUpdatePrompt />
- */
 export function PWAUpdatePrompt() {
   const { updateAvailable, updateApp, skipUpdate } = usePWAUpdate();
 
-  // Alternative: Show toast notification instead of dialog
   const showToastInstead = false;
 
   useEffect(() => {
     if (updateAvailable && showToastInstead) {
-      // You can integrate with react-hot-toast or sonner here
-      // toast.success("Versi baru tersedia! Tarik ulang untuk update.");
     }
   }, [updateAvailable]);
 
@@ -79,10 +69,6 @@ export function PWAUpdatePrompt() {
   );
 }
 
-/**
- * Alternative: Minimal Toast Version
- * Use this if you prefer a subtle toast notification
- */
 export function PWAUpdateToast() {
   const { updateAvailable, updateApp } = usePWAUpdate();
 

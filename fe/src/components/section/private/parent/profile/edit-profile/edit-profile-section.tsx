@@ -43,7 +43,7 @@ const EditProfileSection: React.FC<EditProfileSectionProps> = ({
     return <div>loading..</div>;
   }
   return (
-    <div className="w-full min-h-screen flex justify-start flex-col items-center  ">
+    <div className="w-full min-h-screen flex justify-start flex-col items-center p-2  ">
       <div className="w-full flex justify-between items-center">
         <div className="w-full flex items-center justify-start">
           <ChevronLeft
@@ -52,6 +52,7 @@ const EditProfileSection: React.FC<EditProfileSectionProps> = ({
           />
           <h1 className="text-2xl font-extrabold">Edit Profile</h1>
         </div>
+
         {state.isEdit ? (
           <div className="w-full flex items-center gap-4">
             <Button
@@ -74,7 +75,7 @@ const EditProfileSection: React.FC<EditProfileSectionProps> = ({
         ) : (
           <ButtonWrapper
             startIcon={<Icon icon="bxs:edit" width="24" height="24" />}
-            onClick={() => state.setIsEdit(false)}
+            onClick={() => state.setIsEdit(true)}
           >
             Edit
           </ButtonWrapper>

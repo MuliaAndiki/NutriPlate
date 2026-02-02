@@ -27,6 +27,18 @@ const ProfileParentHeroSection: React.FC<ProfileProps> = ({ service }) => {
       icon2: "mingcute:arrow-right-fill",
       href: "/parent/profile/ubah-password",
     },
+    {
+      title: "Personalisasi & Bahasa",
+      icon2: "mingcute:arrow-right-fill",
+      icon: "uil:setting",
+      href: "/setting",
+    },
+    {
+      title: "Kebijakan Privasi",
+      icon2: "mingcute:arrow-right-fill",
+      icon: "ic:outline-policy",
+      href: "/policy",
+    },
   ];
   return (
     <div className="w-full min-h-full flex justify-start items-start flex-col p-2">
