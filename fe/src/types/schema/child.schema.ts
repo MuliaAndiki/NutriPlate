@@ -1,4 +1,5 @@
 import { ProfileChild } from "../partial";
+import { IMeasurement } from "./measurement.schema";
 
 export interface IChild {
   id: string;
@@ -12,4 +13,5 @@ export interface IChild {
   createdAt: string;
   updatedAt: string;
   profileChild: ProfileChild;
+  measurements?: IMeasurement[];
 }

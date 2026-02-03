@@ -3,7 +3,7 @@ import { connectWithRetry } from './config/databases';
 import { env } from './config/env.config';
 import { connectRedis } from './utils/redis';
 import { initSocket } from './utils/socket';
-const port = env.PORT ? Number(env.PORT) : 5000;
+const port = Number.isFinite(env.PORT) ? env.PORT : 5000;
 
 app.onStart(() => {
   console.log(`🦊 Elysia running at http://localhost:${port}`);

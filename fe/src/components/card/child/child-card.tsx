@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Link from "next/link";
-
 import { GenderFormat } from "@/utils/string.format";
 import { Card } from "../../ui/card";
 import { ChildRespone } from "@/types/res/child.respone";

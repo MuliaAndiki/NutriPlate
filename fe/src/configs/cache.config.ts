@@ -12,6 +12,7 @@ export const cacheKey = {
   profile: {
     user: () => ["user:profile"],
     parent: () => ["user:parent"],
+    parentById: (id: string) => [`user:parent:${id}`],
   },
   measurement: {
     byChild: (id: string) => [`measurement:child:${id}`],

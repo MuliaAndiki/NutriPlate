@@ -48,33 +48,31 @@ const DetailProgramContainer = () => {
   };
 
   return (
-    <SidebarLayout>
-      <main className="w-full min-h-screen overflow-x-hidden">
-        <DetailProgramHeroSection
-          service={{
-            query: {
-              program: programDataById ?? null,
-              isLoading: programQueryById.isLoading || childQuery.isLoading,
-              children: childData ?? [],
-            },
-            mutation: {
-              isPending: registerChildMutation.isPending,
-              onRegisterChild: handleRegisterChildInProgram,
-            },
-          }}
-          namespace={{
-            router: namespace.router,
-            pathname: namespace.pathname,
-          }}
-          state={{
-            popUp: PopUp,
-            setPopUp: setPopUP,
-            idChild: idChild,
-            setIdChild: setIdChild,
-          }}
-        />
-      </main>
-    </SidebarLayout>
+    <main className="w-full min-h-screen overflow-x-hidden">
+      <DetailProgramHeroSection
+        service={{
+          query: {
+            program: programDataById ?? null,
+            isLoading: programQueryById.isLoading || childQuery.isLoading,
+            children: childData ?? [],
+          },
+          mutation: {
+            isPending: registerChildMutation.isPending,
+            onRegisterChild: handleRegisterChildInProgram,
+          },
+        }}
+        namespace={{
+          router: namespace.router,
+          pathname: namespace.pathname,
+        }}
+        state={{
+          popUp: PopUp,
+          setPopUp: setPopUP,
+          idChild: idChild,
+          setIdChild: setIdChild,
+        }}
+      />
+    </main>
   );
 };
 

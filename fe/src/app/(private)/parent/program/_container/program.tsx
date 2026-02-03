@@ -29,6 +29,7 @@ const ProgramParentContainer = () => {
           }}
           namespace={{
             pathname: nameSpace.pathname,
+            router: nameSpace.router,
           }}
           state={{
             programFilter: programFilter,

@@ -3,6 +3,7 @@ import {
   useGetChild,
   useGetChildById,
   useGetParent,
+  useGetParentById,
   useGetProfile,
 } from "./state/query";
 
@@ -17,6 +18,7 @@ export function useUsers() {
       childById: useGetChildById,
       profile: useGetProfile,
       parent: useGetParent,
+      parentById: useGetParentById,
     },
   };
 }

@@ -62,38 +62,6 @@ class ProxyController {
       );
     }
   }
-  public async getStatusIot(c: AppContext) {
-    try {
-      const respone = await ProxyService.getStatusIot();
-      if (!respone) {
-        return c.json?.(
-          {
-            status: 400,
-            message: 'server error',
-          },
-          400,
-        );
-      }
-      return c.json?.(
-        {
-          status: 200,
-          message: 'success',
-          data: respone,
-        },
-        200,
-      );
-    } catch (error) {
-      console.error(error);
-      return c.json?.(
-        {
-          status: 500,
-          message: 'server internal error',
-          error: error instanceof Error ? error.message : error,
-        },
-        500,
-      );
-    }
-  }
 }
 
 export default new ProxyController();

@@ -17,7 +17,6 @@ class ProxyRoutes {
   private routes() {
     this.proxyRoutes.get('/', (c: AppContext) => ProxyController.getFastApi(c));
     this.proxyRoutes.get('/health', (c: AppContext) => ProxyController.getHealth(c));
-    this.proxyRoutes.get('/status', (c: AppContext) => ProxyController.getStatusIot(c));
   }
 }
 

@@ -480,6 +480,17 @@ class UserController {
         where: {
           id: parentID.id,
         },
+        include: {
+          children: {
+            include: {
+              measurements: {
+                select: {
+                  nutritionStatus: true,
+                },
+              },
+            },
+          },
+        },
       });
       if (!parent) {
         return c.json?.(

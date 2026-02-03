@@ -2,12 +2,17 @@ import { ParentListResponse } from "@/types/res";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 
-interface ParentCardProps {
+interface ParentCardListProps {
   index: number;
   data: ParentListResponse;
+  onClick?: () => void;
 }
 
-const ParentCard: React.FC<ParentCardProps> = ({ index, data }) => {
+const ParentCardList: React.FC<ParentCardListProps> = ({
+  index,
+  data,
+  onClick,
+}) => {
   return (
     <div className="w-full flex items-center justify-between bg-background border rounded-xl p-3">
       <div className="flex items-center space-x-3">
@@ -29,11 +34,15 @@ const ParentCard: React.FC<ParentCardProps> = ({ index, data }) => {
         </div>
       </div>
 
-      <Button size="sm" className="rounded-full text-xs px-3">
+      <Button
+        size="sm"
+        className="rounded-full text-xs px-3"
+        onClick={() => onClick!()}
+      >
         Lihat Detail
       </Button>
     </div>
   );
 };
 
-export default ParentCard;
+export default ParentCardList;

@@ -32,7 +32,13 @@ const DaftarProgramKaderSection: React.FC<DaftarProgramKaderSectionProps> = ({
       </div>
       <div className="w-full">
         {service.query.program.map((items) => (
-          <ProgramCard res={items} key={items.id} />
+          <ProgramCard
+            res={items}
+            key={items.id}
+            onClick={() =>
+              namespace.router.push(`/kader/daftar-program/detail/${items.id}`)
+            }
+          />
         ))}
       </div>
     </section>

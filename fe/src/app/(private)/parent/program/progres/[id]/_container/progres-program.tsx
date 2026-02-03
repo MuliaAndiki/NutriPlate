@@ -21,27 +21,25 @@ const ProgresProgramContainer = () => {
   const progresInChildData = progresInChildQuery.data?.data ?? [];
 
   return (
-    <SidebarLayout>
-      <main className="w-full min-h-screen overflow-x-hidden">
-        <ProgresProgramSection
-          namespace={{
-            router: namespace.router,
-            pathname: namespace.pathname,
-          }}
-          service={{
-            query: {
-              childType: childDataById ?? null,
-              isLoading:
-                childQueryById.isLoading || progresInChildQuery.isLoading,
-              progres: progresInChildData ?? [],
-            },
-          }}
-          state={{
-            childId: id ?? "",
-          }}
-        />
-      </main>
-    </SidebarLayout>
+    <main className="w-full min-h-screen overflow-x-hidden">
+      <ProgresProgramSection
+        namespace={{
+          router: namespace.router,
+          pathname: namespace.pathname,
+        }}
+        service={{
+          query: {
+            childType: childDataById ?? null,
+            isLoading:
+              childQueryById.isLoading || progresInChildQuery.isLoading,
+            progres: progresInChildData ?? [],
+          },
+        }}
+        state={{
+          childId: id ?? "",
+        }}
+      />
+    </main>
   );
 };
 

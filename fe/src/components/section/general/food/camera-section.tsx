@@ -109,7 +109,7 @@ const FoodCameraSection = ({
     }
   };
 
-  if (mode === "result" && responseFoodIntake && dailySummary) {
+  if (mode === "result" && responseFoodIntake) {
     return (
       <section className="w-full min-h-screen flex items-center justify-start flex-col overflow-x-hidden relative p-2 space-y-2">
         <FoodScanResult

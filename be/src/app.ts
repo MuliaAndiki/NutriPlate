@@ -18,6 +18,7 @@ import { env } from './config/env.config';
 import iotRoutes from './routes/iotRoutes';
 import modelsRoutes from './routes/modelsRoutes';
 import kaderRoutes from './routes/kaderRoutes';
+import userSessionRoutes from './routes/userSessionRoutes';
 
 class App {
   public app: Elysia;
@@ -75,7 +76,8 @@ class App {
         .use(measurementRoutes)
         .use(iotRoutes)
         .use(modelsRoutes)
-        .use(kaderRoutes),
+        .use(kaderRoutes)
+        .use(userSessionRoutes),
     );
   }
 }

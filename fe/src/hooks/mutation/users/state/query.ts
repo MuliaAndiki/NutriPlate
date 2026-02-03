@@ -20,6 +20,7 @@ export function useGetChild({
     queryKey: cacheKey.child.list(),
     queryFn: () => Api.User.getChild(posyanduId),
     enabled: canFetch,
+    staleTime: 1000 * 60 * 5,
   });
 }
 
@@ -45,5 +46,14 @@ export function useGetParent() {
     queryKey: cacheKey.profile.parent(),
     queryFn: () => Api.User.getParent(),
     staleTime: 1000 * 60 * 5,
+  });
+}
+
+export function useGetParentById(id: string) {
+  return useQuery({
+    queryKey: cacheKey.profile.parentById(id),
+    queryFn: () => Api.User.getParentByID(id),
+    staleTime: 1000 * 60 * 5,
+    enabled: !!id,
   });
 }

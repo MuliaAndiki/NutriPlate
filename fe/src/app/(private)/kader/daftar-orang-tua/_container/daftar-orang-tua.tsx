@@ -10,12 +10,9 @@ import { ParentListResponse } from "@/types/res";
 const DaftarOrangTuaContainer = () => {
   const namespace = useAppNameSpace();
   const service = useService();
-
   const [search, setSearch] = useState("");
-
   const parentQuery = service.user.query.parent();
   const parentData: ParentListResponse[] = parentQuery.data?.data ?? [];
-
   const filteredParent = useMemo(() => {
     if (!search) return parentData;
 

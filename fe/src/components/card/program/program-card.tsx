@@ -1,11 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { ProgramRespone } from "@/types/res/program-with-progres";
-import Link from "next/link";
 import { formatDateTime } from "@/utils/time.format";
 interface ProgramCardProps {
   res: ProgramRespone;
+  onClick: () => void;
 }
-const ProgramCard: React.FC<ProgramCardProps> = ({ res }) => {
+const ProgramCard: React.FC<ProgramCardProps> = ({ res, onClick }) => {
   return (
     <div className="w-full border rounded-2xl border-primary">
       <div className="w-full bg-primary/70 p-2 rounded-t-2xl ">
@@ -28,9 +28,7 @@ const ProgramCard: React.FC<ProgramCardProps> = ({ res }) => {
               ? res.progress.map((p) => p.child.fullName).join(", ")
               : "-"}
           </h1>
-          <Link href={`/parent/program/detail/${res.id}`}>
-            <Button>Lihat Selengkapnya</Button>
-          </Link>
+          <Button onClick={() => onClick()}>Lihat Selengkapnya</Button>
         </div>
       </div>
     </div>

@@ -1,4 +1,5 @@
 import { IAuth } from "../schema/auth.schema";
+import { ChildPartial } from "./child.respone";
 
 export interface UserProfileResponse extends IAuth {}
 
@@ -11,12 +12,13 @@ export interface UserResponse {
   avaUrl: string;
   isVerify: boolean;
   createdAt: Date;
-  updatedAt: Date;
+  updatedAt: string;
   posyanduId?: string | null;
   posyanduName?: string | null;
   posyandu: {
     id: string;
   };
+  children?: ChildPartial[];
 }
 
 export interface KaderListResponse {

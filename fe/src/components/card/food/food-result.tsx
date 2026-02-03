@@ -15,12 +15,12 @@ const FoodScanResult = ({
   onSuccess,
 }: {
   data: FoodIntakeResponse;
-  dailySummary: DailySummaryResponse;
+  dailySummary: DailySummaryResponse | null;
   onBack: () => void;
   isLoading: boolean;
   onSuccess: () => void;
 }) => {
-  if (isLoading) {
+  if (isLoading || !dailySummary) {
     return <div>loading...</div>;
   }
   const accuracy = Math.round(

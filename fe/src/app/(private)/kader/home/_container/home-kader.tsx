@@ -4,13 +4,11 @@ import { SidebarLayout } from "@/core/layouts/sidebar.layout";
 import useService from "@/hooks/mutation/prop.service";
 import { useAppNameSpace } from "@/hooks/useAppNameSpace";
 import { PopUpNavigate } from "@/types/ui";
-import { useDebugLog } from "@/utils/useDebug";
 import { useState } from "react";
 
 const HomeKaderContainer = () => {
   const service = useService();
   const namespace = useAppNameSpace();
-
   // profile
   const profileQuery = service.user.query.profile();
   const profileData = profileQuery.data?.data ?? null;
@@ -63,6 +61,9 @@ const HomeKaderContainer = () => {
     <SidebarLayout>
       <main className="w-full min-h-screen ">
         <HomeKaderHeroSection
+          namespace={{
+            router: namespace.router,
+          }}
           service={{
             query: {
               isLoading:

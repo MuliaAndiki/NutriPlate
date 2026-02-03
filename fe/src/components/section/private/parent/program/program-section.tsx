@@ -6,6 +6,7 @@ import { ChildRespone } from "@/types/res/child.respone";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { ProgramRespone } from "@/types/res/program-with-progres";
 import Link from "next/link";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
 interface ProgramSectionProps {
   service: {
@@ -16,6 +17,7 @@ interface ProgramSectionProps {
   };
   namespace: {
     pathname: string;
+    router: AppRouterInstance;
   };
   state: {
     programFilter: "ALL" | "FOLLOWED";
@@ -110,7 +112,13 @@ const ProgramHeroSection: React.FC<ProgramSectionProps> = ({
           </p>
         ) : (
           programRender.map((items) => (
-            <ProgramCard res={items} key={items.id} />
+            <ProgramCard
+              res={items}
+              key={items.id}
+              onClick={() =>
+                namespace.router.push(`/parent/program/detail/${items.id}`)
+              }
+            />
           ))
         )}
       </div>

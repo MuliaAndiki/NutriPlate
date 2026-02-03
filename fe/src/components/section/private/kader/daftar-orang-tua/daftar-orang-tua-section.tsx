@@ -63,7 +63,16 @@ const DaftarOrangTuaSection: React.FC<DaftarOrangTuaSectionProps> = ({
           </div>
         ) : (
           service.query.parent.map((item, index) => (
-            <ParentCard key={item.id} index={index} data={item} />
+            <ParentCard
+              key={item.id}
+              index={index}
+              data={item}
+              onClick={() =>
+                namespace.router.push(
+                  `/kader/daftar-orang-tua/detail/${item.id}`,
+                )
+              }
+            />
           ))
         )}
       </div>

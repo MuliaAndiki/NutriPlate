@@ -11,7 +11,7 @@ class IotService {
   }
   public async RebootIot() {
     try {
-      const res = await this.IotGate.post('/reset');
+      const res = await this.IotGate.post('/api/reset');
       let result = res.data;
       if (typeof result === 'string') {
         result = JSON.parse(result);
@@ -28,7 +28,7 @@ class IotService {
   }
   public async getStatusIot() {
     try {
-      const res = await this.IotGate.get('/status', {
+      const res = await this.IotGate.get('/api/status', {
         timeout: 3000,
       });
 
@@ -44,7 +44,7 @@ class IotService {
   }
   public async StartScale() {
     try {
-      const res = await this.IotGate.post('/start-weighing');
+      const res = await this.IotGate.post('/api/start-weighing');
       let result = res.data;
       if (typeof result === 'string') {
         result = JSON.parse(result);
@@ -76,7 +76,7 @@ class IotService {
   }
   public async HoldWeight() {
     try {
-      const res = await this.IotGate.post('/hold-weight');
+      const res = await this.IotGate.post('/api/hold-weight');
       let result = res.data;
       if (typeof result === 'string') {
         result = JSON.parse(result);
@@ -92,7 +92,7 @@ class IotService {
   }
   public async GetWeight() {
     try {
-      const res = await this.IotGate.get('/weight');
+      const res = await this.IotGate.get('/api/weight');
       let result = res.data;
       if (typeof result === 'string') {
         result = JSON.parse(result);
@@ -108,7 +108,7 @@ class IotService {
   }
   public async CancelStart() {
     try {
-      const res = await this.IotGate.post('/cancel-weighing');
+      const res = await this.IotGate.post('/api/cancel-weighing');
       let result = res.data;
       if (typeof result === 'string') {
         result = JSON.parse(result);
@@ -124,7 +124,7 @@ class IotService {
   }
   public async RejectWeight() {
     try {
-      const res = await this.IotGate.post('/reject-weight');
+      const res = await this.IotGate.post('/api/reject-weight');
       let result = res.data;
       if (typeof result === 'string') {
         result = JSON.parse(result);
@@ -140,7 +140,7 @@ class IotService {
   }
   public async ConfirmWeight() {
     try {
-      const res = await this.IotGate.post('/confirm-weight');
+      const res = await this.IotGate.post('/api/confirm-weight');
       let result = res.data;
       if (typeof result === 'string') {
         result = JSON.parse(result);

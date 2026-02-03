@@ -17,8 +17,12 @@ import BalitaRiskList from "@/components/card/kader/balita-risk";
 import BalitaWarningList from "@/components/card/kader/balita-warning";
 import PosyanduList from "@/components/card/kader/list-posyandu";
 import PosyanduHomeCard from "@/components/card/posyandu/posyandu-home-card";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
 interface HomeKaderHeroSectionProps {
+  namespace: {
+    router: AppRouterInstance;
+  };
   service: {
     query: {
       profile: UserResponse;
@@ -44,6 +48,7 @@ interface HomeKaderHeroSectionProps {
 const HomeKaderHeroSection: React.FC<HomeKaderHeroSectionProps> = ({
   service,
   state,
+  namespace,
 }) => {
   if (service.query.isLoading) {
     return <div>loading..</div>;
@@ -122,6 +127,11 @@ const HomeKaderHeroSection: React.FC<HomeKaderHeroSectionProps> = ({
             <PosyanduHomeCard
               res={service.query.posyanduById}
               key={service.query.posyanduById.id}
+              onClick={() =>
+                namespace.router.push(
+                  `/kader/daftar-posyandu/detail/${service.query.posyanduById.id}`,
+                )
+              }
             />
           )}
         </div>

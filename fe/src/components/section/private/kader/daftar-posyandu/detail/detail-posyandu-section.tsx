@@ -1,9 +1,11 @@
 "use client";
 
 import { PosyanduRespone } from "@/types/res";
+import { Icon } from "@iconify/react/dist/iconify.js";
 import { ChevronLeft, MapPin, Calendar, Phone, Mail } from "lucide-react";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import Image from "next/image";
+import React from "react";
 
 interface DetailPosyanduKaderSectionProps {
   namespace: {
@@ -52,6 +54,34 @@ const DetailPosyanduKaderSection: React.FC<DetailPosyanduKaderSectionProps> = ({
     );
   }
 
+  const mappingContent = [
+    {
+      icon: "solar:hospital-bold",
+      name: "Nama Posyandu",
+      res: data.name,
+    },
+    {
+      icon: "solar:phone-bold",
+      name: "Nomor HP",
+      res: data.phone || "-",
+    },
+    {
+      icon: "solar:letter-bold",
+      name: "Email",
+      res: data.email || "-",
+    },
+    {
+      icon: "solar:map-point-bold",
+      name: "Alamat",
+      res: `${data.district}, ${data.subDistrict}, ${data.village}`,
+    },
+    {
+      icon: "solar:calendar-bold",
+      name: "Jadwal Posyandu",
+      res: dayLabel(data.scheduleDay),
+    },
+  ];
+
   return (
     <section className="w-full min-h-screen flex flex-col p-3 space-y-4">
       <div className="flex items-center space-x-2">
@@ -66,53 +96,29 @@ const DetailPosyanduKaderSection: React.FC<DetailPosyanduKaderSectionProps> = ({
         <Image
           src={data.avaUrl || "/images/posyanduDummy.png"}
           alt={data.name}
-          width={80}
-          height={80}
-          className="rounded-full object-cover"
+          width={150}
+          height={150}
+          className="rounded-full aspect-square object-cover"
         />
         <h2 className="text-xl font-bold text-center">{data.name}</h2>
       </div>
 
-      <div className="w-full flex flex-col space-y-3">
-        <div className="w-full border rounded-xl p-3 space-y-1">
-          <div className="flex items-center text-sm font-medium">
-            <MapPin className="w-4 h-4 mr-2 text-muted-foreground" />
-            Lokasi
-          </div>
-          <p className="text-sm text-muted-foreground">
-            {data.district}, {data.village}, {data.subDistrict}
-          </p>
-        </div>
-
-        <div className="w-full border rounded-xl p-3 space-y-1">
-          <div className="flex items-center text-sm font-medium">
-            <Calendar className="w-4 h-4 mr-2 text-muted-foreground" />
-            Jadwal Kegiatan
-          </div>
-          <p className="text-sm text-muted-foreground">
-            Hari {dayLabel(data.scheduleDay)}
-          </p>
-        </div>
-
-        {(data.phone || data.email) && (
-          <div className="w-full border rounded-xl p-3 space-y-2">
-            <p className="text-sm font-medium">Kontak</p>
-
-            {data.phone && (
-              <div className="flex items-center text-sm text-muted-foreground">
-                <Phone className="w-4 h-4 mr-2" />
-                {data.phone}
-              </div>
-            )}
-
-            {data.email && (
-              <div className="flex items-center text-sm text-muted-foreground">
-                <Mail className="w-4 h-4 mr-2" />
-                {data.email}
-              </div>
-            )}
-          </div>
-        )}
+      <div className="w-full border grid grid-cols-2 gap-y-3 p-3 rounded-lg">
+        {mappingContent.map((item, index) => (
+          <React.Fragment key={index}>
+            <div className="flex items-center gap-2">
+              <Icon
+                icon={item.icon}
+                width={22}
+                height={22}
+                className="text-primary"
+              />
+              <span className="text-lg font-semibold">{item.name}</span>
+              <span className="text-end">:</span>
+            </div>
+            <span className="text-sm text-muted-foreground">{item.res}</span>
+          </React.Fragment>
+        ))}
       </div>
     </section>
   );

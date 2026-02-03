@@ -3,7 +3,6 @@ import { z } from 'zod';
 const envSchema = z.object({
   DATABASE_URL: z.string().url(),
   ML_APP: z.string().url(),
-  IOT_APP: z.string().url(),
   NODE_ENV: z.string(),
   REDIS_URL: z.string().url(),
   PORT: z.string(),
@@ -12,6 +11,8 @@ const envSchema = z.object({
   CLOUDINARY_CLOUD_NAME: z.string(),
   CLOUDINARY_API_KEY: z.string(),
   CLOUDINARY_API_SECRET: z.string(),
+  SCALE_BASE_URL: z.string().url(),
+  SCALE_HOSTNAME: z.string(),
   SMTP_HOST: z.string(),
   SMTP_PORT: z.string().transform((val) => Number(val)),
   SMTP_USER: z.string(),
