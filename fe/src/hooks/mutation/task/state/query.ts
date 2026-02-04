@@ -10,3 +10,11 @@ export function useGetTask(id: string) {
     staleTime: 1000 * 60 * 5,
   });
 }
+
+export function useGetTaskNoBroadcast() {
+  return useQuery({
+    queryKey: cacheKey.task.notBroadcast(),
+    queryFn: () => Api.Task.getTaskNotBroadCast(),
+    staleTime: 1000 * 60 * 5,
+  });
+}

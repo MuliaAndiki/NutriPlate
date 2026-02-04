@@ -1,16 +1,16 @@
 "use client";
 import ProgramHeroSection from "@/components/section/private/parent/program/program-section";
 import { SidebarLayout } from "@/core/layouts/sidebar.layout";
+import { useAppSelector } from "@/hooks/dispatch/dispatch";
 import useService from "@/hooks/mutation/prop.service";
 import { useAppNameSpace } from "@/hooks/useAppNameSpace";
-import { useAuthentic } from "@/hooks/useAuthentic";
 import { useState } from "react";
 const ProgramParentContainer = () => {
   const nameSpace = useAppNameSpace();
   const service = useService();
-  const { role } = useAuthentic();
+  const selector = useAppSelector((state) => state.posyandu);
   const childQuery = service.user.query.childAll({
-    role: role,
+    role: selector.role!,
   });
   const childData = childQuery.data?.data ?? [];
   const programsQuery = service.program.query.getPrograms();

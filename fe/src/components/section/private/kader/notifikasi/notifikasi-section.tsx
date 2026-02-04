@@ -20,8 +20,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { NotifTypeInterface } from "@/types/partial";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
-import useService from "@/hooks/mutation/prop.service";
 
 interface NotifikasiKaderSectionProp {
   namespace: {

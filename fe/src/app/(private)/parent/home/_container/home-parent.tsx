@@ -2,11 +2,14 @@
 import HomeParentHeroSection from "@/components/section/private/parent/home/home-parent-section";
 import { SidebarLayout } from "@/core/layouts/sidebar.layout";
 import useService from "@/hooks/mutation/prop.service";
+import { setRole } from "@/stores/posyanduSlice/posyanduSlice";
+import { useEffect } from "react";
 
 const HomeParentContainer = () => {
   const service = useService();
   const profileQuery = service.user.query.profile();
   const profileData = profileQuery.data?.data ?? null;
+
   return (
     <SidebarLayout>
       <main className="w-full min-h-screen overflow-x-hidden">

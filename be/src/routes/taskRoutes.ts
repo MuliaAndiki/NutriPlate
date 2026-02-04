@@ -30,10 +30,10 @@ class TaskRoutes {
       beforeHandle: [verifyToken().beforeHandle],
     });
     this.taskRoutes.put('/:id', (c: AppContext) => TaskController.updateTask(c), {
-      beforeHandle: [verifyToken().beforeHandle, requireRole(['POSYANDU']).beforeHandle],
+      beforeHandle: [verifyToken().beforeHandle, requireRole(['POSYANDU', 'KADER']).beforeHandle],
     });
     this.taskRoutes.delete('/:id', (c: AppContext) => TaskController.deleteTask(c), {
-      beforeHandle: [verifyToken().beforeHandle, requireRole(['POSYANDU']).beforeHandle],
+      beforeHandle: [verifyToken().beforeHandle, requireRole(['POSYANDU', 'KADER']).beforeHandle],
     });
     this.taskRoutes.patch('/broadcast', (c: AppContext) => TaskController.broadcastTasks(c), {
       beforeHandle: [verifyToken().beforeHandle, requireRole(['POSYANDU']).beforeHandle],

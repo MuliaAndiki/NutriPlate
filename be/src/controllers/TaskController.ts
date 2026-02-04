@@ -16,76 +16,86 @@ class SubtaskController {
   public async createTask(c: AppContext) {
     try {
       const jwtUser = c.user as JwtPayload;
-      const TaskBody = c.body as PickCreateTask;
-      const TaskParams = c.params as PickTaskProgresID;
+      const body = c.body as PickCreateTask;
+      const params = c.params as PickTaskProgresID;
 
-      if (!TaskBody.description || !TaskBody.title) {
-        return c.json?.(
-          {
-            status: 400,
-            message: 'body is required',
-          },
-          400,
-        );
-      }
       if (!jwtUser) {
-        return c.json?.(
-          {
-            status: 401,
-            message: 'Unauthorized',
-          },
-          401,
-        );
+        return c.json?.({ status: 401, message: 'Unauthorized' }, 401);
       }
 
-      if (!TaskParams) {
-        return c.json?.(
-          {
-            status: 404,
-            message: 'params is required',
-          },
-          404,
-        );
+      if (!params) {
+        return c.json?.({ status: 400, message: 'params is required' }, 400);
       }
 
-      const progres = await prisma.nutritionProgramProgress.findFirst({
+      if (!body?.title || !body?.description) {
+        return c.json?.({ status: 400, message: 'body is required' }, 400);
+      }
+
+      const user = await prisma.user.findFirst({
+        where: { id: jwtUser.id },
+        select: { id: true, role: true },
+      });
+
+      if (!user) {
+        return c.json?.({ status: 401, message: 'Unauthorized' }, 401);
+      }
+
+      const progresBase = await prisma.nutritionProgramProgress.findFirst({
         where: {
-          programId: TaskParams.progressId,
+          programId: params.progressId,
           isAccep: true,
-          program: {
-            posyandu: {
-              userID: jwtUser.id,
-            },
-          },
         },
         select: {
           id: true,
+          program: {
+            select: {
+              posyanduId: true,
+              posyandu: {
+                select: { userID: true },
+              },
+            },
+          },
         },
       });
 
-      if (!progres) {
-        return c.json?.(
-          {
-            status: 403,
-            message: 'invalid program Progres or not authorized',
+      if (!progresBase) {
+        return c.json?.({ status: 404, message: 'program progres not found' }, 404);
+      }
+
+      if (user.role === 'POSYANDU') {
+        if (progresBase.program.posyandu?.userID !== user.id) {
+          return c.json?.({ status: 403, message: 'Forbidden' }, 403);
+        }
+      } else if (user.role === 'KADER') {
+        const kader = await prisma.kaderRegistration.findFirst({
+          where: {
+            posyanduId: progresBase.program.posyanduId,
+            kaderId: user.id,
+            status: 'accepted',
           },
-          403,
-        );
+          select: { id: true },
+        });
+
+        if (!kader) {
+          return c.json?.({ status: 403, message: 'Forbidden' }, 403);
+        }
+      } else if (user.role !== 'ADMIN') {
+        return c.json?.({ status: 403, message: 'Forbidden' }, 403);
       }
 
       const task = await prisma.taskProgram.create({
         data: {
-          title: TaskBody.title,
-          description: TaskBody.description,
+          title: body.title,
+          description: body.description,
           isComplated: false,
-          isBroadcast: TaskBody.isBroadcast,
-          mealType: TaskBody.mealType,
-          targetEnergyKcal: TaskBody.targetEnergyKcal,
-          targetProteinGram: TaskBody.targetProteinGram,
-          targetFatGram: TaskBody.targetFatGram,
-          targetCarbGram: TaskBody.targetCarbGram,
-          targetFiberGram: TaskBody.targetFiberGram,
-          progresId: progres.id,
+          isBroadcast: body.isBroadcast,
+          mealType: body.mealType,
+          targetEnergyKcal: body.targetEnergyKcal,
+          targetProteinGram: body.targetProteinGram,
+          targetFatGram: body.targetFatGram,
+          targetCarbGram: body.targetCarbGram,
+          targetFiberGram: body.targetFiberGram,
+          progresId: progresBase.id,
         },
         select: {
           id: true,
@@ -114,21 +124,12 @@ class SubtaskController {
         },
       });
 
-      await this.redis.del(cacheKeys.task.byProgresId(progres.id));
-      if (!task) {
-        return c.json?.(
-          {
-            status: 400,
-            message: 'server internal error',
-          },
-          400,
-        );
-      }
+      await this.redis.del(cacheKeys.task.byProgresId(progresBase.id));
 
       return c.json?.(
         {
           status: 200,
-          message: 'succesfully create subtask',
+          message: 'successfully create task',
           data: task,
         },
         200,
@@ -145,6 +146,7 @@ class SubtaskController {
       );
     }
   }
+
   public async getTaskForChild(c: AppContext) {
     try {
       const jwtUser = c.user as JwtPayload;
@@ -262,157 +264,85 @@ class SubtaskController {
     try {
       const jwtUser = c.user as JwtPayload;
       const params = c.params as PickTaskID;
-      const TaskBody = c.body as PickCreateTask;
-      if (!params) {
-        return c.json?.(
-          {
-            status: 404,
-            message: 'params is required',
-          },
-          404,
-        );
-      }
+      const body = c.body as PickCreateTask;
+
       if (!jwtUser) {
-        return c.json?.(
-          {
-            status: 401,
-            message: 'Unauthorized',
-          },
-          401,
-        );
+        return c.json?.({ status: 401, message: 'Unauthorized' }, 401);
       }
-      const posyandu = await prisma.posyandu.findFirst({
-        where: {
-          userID: jwtUser.id,
-        },
-        include: {
-          children: {
+
+      if (!params?.id) {
+        return c.json?.({ status: 400, message: 'params is required' }, 400);
+      }
+
+      const user = await prisma.user.findFirst({
+        where: { id: jwtUser.id },
+        select: { id: true, role: true },
+      });
+
+      if (!user) {
+        return c.json?.({ status: 401, message: 'Unauthorized' }, 401);
+      }
+
+      const taskBase = await prisma.taskProgram.findFirst({
+        where: { id: params.id },
+        select: {
+          id: true,
+          isBroadcast: true,
+          progres: {
             select: {
-              id: true,
-              fullName: true,
+              program: {
+                select: {
+                  posyanduId: true,
+                  posyandu: { select: { userID: true } },
+                },
+              },
             },
           },
         },
       });
 
-      if (!posyandu || jwtUser.role !== 'POSYANDU') {
-        return c.json?.(
-          {
-            status: 403,
-            message: 'posyandu not found & forebaiden',
-          },
-          403,
-        );
+      if (!taskBase) {
+        return c.json?.({ status: 404, message: 'task not found' }, 404);
       }
-      const cacheKey = cacheKeys.task.byID(params.id);
 
-      const buildPayload = ParseUpdateData(TaskBody);
-      const updateTask = await prisma.taskProgram.update({
-        where: {
-          id: params.id,
-          isBroadcast: false,
-        },
-        data: buildPayload,
+      if (taskBase.isBroadcast) {
+        return c.json?.({ status: 400, message: 'task already broadcast' }, 400);
+      }
+
+      if (user.role === 'POSYANDU') {
+        if (taskBase.progres.program.posyandu?.userID !== user.id) {
+          return c.json?.({ status: 403, message: 'Forbidden' }, 403);
+        }
+      } else if (user.role === 'KADER') {
+        const kader = await prisma.kaderRegistration.findFirst({
+          where: {
+            posyanduId: taskBase.progres.program.posyanduId,
+            kaderId: user.id,
+            status: 'accepted',
+          },
+          select: { id: true },
+        });
+
+        if (!kader) {
+          return c.json?.({ status: 403, message: 'Forbidden' }, 403);
+        }
+      } else if (user.role !== 'ADMIN') {
+        return c.json?.({ status: 403, message: 'Forbidden' }, 403);
+      }
+
+      const payload = ParseUpdateData(body);
+      const updatedTask = await prisma.taskProgram.update({
+        where: { id: params.id },
+        data: payload,
       });
 
-      if (!updateTask) {
-        return c.json?.(
-          {
-            status: 400,
-            message: 'server error & task already boardcast',
-          },
-          400,
-        );
-      } else {
-        await this.redis.del(cacheKey).catch(error);
-      }
+      await this.redis.del(cacheKeys.task.byID(params.id)).catch(error);
 
-      return c.json?.(
-        {
-          status: 201,
-          message: 'succesfully update task',
-          data: updateTask,
-        },
-        201,
-      );
-    } catch (error) {
-      console.error(error);
-      return c.json?.(
-        {
-          status: 500,
-          message: 'server internal error',
-          error: error instanceof Error ? error.message : error,
-        },
-        500,
-      );
-    }
-  }
-  public async deleteTask(c: AppContext) {
-    try {
-      const jwtUser = c.user as JwtPayload;
-      const params = c.params as PickTaskID;
-      if (!jwtUser) {
-        return c.json?.(
-          {
-            status: 401,
-            message: 'Unauthorized',
-          },
-          401,
-        );
-      }
-      if (!params) {
-        return c.json?.(
-          {
-            status: 404,
-            message: 'params is required',
-          },
-          404,
-        );
-      }
-
-      const cacheKey = cacheKeys.task.byID(params.id);
-      const posyandu = await prisma.posyandu.findFirst({
-        where: {
-          userID: jwtUser.id,
-        },
-        select: {
-          id: true,
-        },
-      });
-
-      if (!posyandu || jwtUser.role !== 'POSYANDU') {
-        return c.json?.(
-          {
-            status: 403,
-            message: 'posyandu not found & forebaiden',
-          },
-          403,
-        );
-      }
-
-      const deleteTask = await prisma.taskProgram.delete({
-        where: {
-          id: params.id,
-          isBroadcast: false,
-        },
-      });
-
-      if (!deleteTask) {
-        return c.json?.(
-          {
-            status: 403,
-            message: 'server error & task already broadcast',
-          },
-          403,
-        );
-      } else {
-        await this.redis.del(cacheKey).catch(error);
-      }
       return c.json?.(
         {
           status: 200,
-          message: 'succesfully delete task',
-          data: deleteTask,
+          message: 'successfully update task',
+          data: updatedTask,
         },
         200,
       );
@@ -428,6 +358,103 @@ class SubtaskController {
       );
     }
   }
+
+  public async deleteTask(c: AppContext) {
+    try {
+      const jwtUser = c.user as JwtPayload;
+      const params = c.params as PickTaskID;
+
+      if (!jwtUser) {
+        return c.json?.({ status: 401, message: 'Unauthorized' }, 401);
+      }
+
+      if (!params?.id) {
+        return c.json?.({ status: 400, message: 'params is required' }, 400);
+      }
+
+      const user = await prisma.user.findFirst({
+        where: { id: jwtUser.id },
+        select: { id: true, role: true },
+      });
+
+      if (!user) {
+        return c.json?.({ status: 401, message: 'Unauthorized' }, 401);
+      }
+
+      const taskBase = await prisma.taskProgram.findFirst({
+        where: { id: params.id },
+        select: {
+          id: true,
+          isBroadcast: true,
+          progres: {
+            select: {
+              program: {
+                select: {
+                  posyanduId: true,
+                  posyandu: { select: { userID: true } },
+                },
+              },
+            },
+          },
+        },
+      });
+
+      if (!taskBase) {
+        return c.json?.({ status: 404, message: 'task not found' }, 404);
+      }
+
+      if (taskBase.isBroadcast) {
+        return c.json?.({ status: 403, message: 'task already broadcast' }, 403);
+      }
+
+      if (user.role === 'POSYANDU') {
+        if (taskBase.progres.program.posyandu?.userID !== user.id) {
+          return c.json?.({ status: 403, message: 'Forbidden' }, 403);
+        }
+      } else if (user.role === 'KADER') {
+        const kader = await prisma.kaderRegistration.findFirst({
+          where: {
+            posyanduId: taskBase.progres.program.posyanduId,
+            kaderId: user.id,
+            status: 'accepted',
+          },
+          select: { id: true },
+        });
+
+        if (!kader) {
+          return c.json?.({ status: 403, message: 'Forbidden' }, 403);
+        }
+      } else if (user.role !== 'ADMIN') {
+        return c.json?.({ status: 403, message: 'Forbidden' }, 403);
+      }
+
+      const deletedTask = await prisma.taskProgram.delete({
+        where: { id: params.id },
+      });
+
+      await this.redis.del(cacheKeys.task.byID(params.id)).catch(error);
+
+      return c.json?.(
+        {
+          status: 200,
+          message: 'successfully delete task',
+          data: deletedTask,
+        },
+        200,
+      );
+    } catch (error) {
+      console.error(error);
+      return c.json?.(
+        {
+          status: 500,
+          message: 'server internal error',
+          error: error instanceof Error ? error.message : error,
+        },
+        500,
+      );
+    }
+  }
+
   public async getTaskNotBroadCast(c: AppContext) {
     try {
       const jwtUser = c.user as JwtPayload;
@@ -462,7 +489,17 @@ class SubtaskController {
         where: {
           isBroadcast: false,
         },
-        take: 10,
+        include: {
+          progres: {
+            select: {
+              child: {
+                select: {
+                  fullName: true,
+                },
+              },
+            },
+          },
+        },
       });
 
       if (!task) {
@@ -498,7 +535,6 @@ class SubtaskController {
   }
 
   // not fix
-
   public async broadcastTasks(c: AppContext) {
     try {
       const jwtUser = c.user as JwtPayload;

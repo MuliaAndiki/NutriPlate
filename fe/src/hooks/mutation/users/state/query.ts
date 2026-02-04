@@ -3,6 +3,7 @@ import { cacheKey } from "@/configs/cache.config";
 import Api from "@/services/props.module";
 import { Role } from "@/types/partial";
 
+// bug here
 export function useGetChild({
   role,
   posyanduId,
@@ -10,14 +11,20 @@ export function useGetChild({
   role?: Role;
   posyanduId?: string;
 }) {
-  const canFetch =
-    role === "PARENT" ||
-    role === "ADMIN" ||
-    ((role === "POSYANDU" || role === "KADER") && !!posyanduId);
-  // helper terbaiki
+  const canFetch = (() => {
+    if (!role) return false;
+
+    if (role === "PARENT" || role === "ADMIN") return true;
+
+    if ((role === "POSYANDU" || role === "KADER") && !!posyanduId) {
+      return true;
+    }
+
+    return false;
+  })();
   console.log({ role, posyanduId, canFetch });
   return useQuery({
-    queryKey: cacheKey.child.list(),
+    queryKey: cacheKey.child.byAll(role, posyanduId),
     queryFn: () => Api.User.getChild(posyanduId),
     enabled: canFetch,
     staleTime: 1000 * 60 * 5,

@@ -11,9 +11,10 @@ export function useCreateChild() {
   return useMutation<TResponse<any>, Error, FormCreateChild>({
     mutationFn: (payload) => Api.Child.createChild(payload),
     onSuccess: () => {
-      nameSpace.queryClient.invalidateQueries({
-        queryKey: cacheKey.child.list(),
-      });
+      // not fix
+      // nameSpace.queryClient.invalidateQueries({
+      //   queryKey: cacheKey.child.byAll(),
+      // });
       nameSpace.alert.toast({
         title: "succesfully",
         message: "succes create child",
@@ -62,9 +63,9 @@ export function useDeleteChild() {
   return useMutation<TResponse<any>, Error, { id: string }>({
     mutationFn: ({ id }) => Api.Child.deleteChild(id),
     onSuccess: () => {
-      nameSpace.queryClient.invalidateQueries({
-        queryKey: cacheKey.child.list(),
-      });
+      // nameSpace.queryClient.invalidateQueries({
+      //   queryKey: cacheKey.child.list(),
+      // });
       nameSpace.alert.toast({
         title: "succes",
         message: "succesfully delete child",

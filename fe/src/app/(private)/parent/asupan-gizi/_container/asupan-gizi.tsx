@@ -4,13 +4,12 @@ import { SidebarLayout } from "@/core/layouts/sidebar.layout";
 import useService from "@/hooks/mutation/prop.service";
 import { useState } from "react";
 import { useAppNameSpace } from "@/hooks/useAppNameSpace";
-
-import { useAuthentic } from "@/hooks/useAuthentic";
+import { useAppSelector } from "@/hooks/dispatch/dispatch";
 
 const AsupanGiziContainer = () => {
   const namespace = useAppNameSpace();
   const service = useService();
-  const { role } = useAuthentic();
+  const selector = useAppSelector((state) => state.posyandu);
   // food history
   const footHistoryQuery = service.foodIntake.query.getHistoryFoodIntake();
   const footHistoryData = footHistoryQuery.data?.data ?? [];
@@ -27,7 +26,7 @@ const AsupanGiziContainer = () => {
 
   // child
   const childQuery = service.user.query.childAll({
-    role: role,
+    role: selector.role!,
   });
   const childData = childQuery.data?.data ?? [];
 

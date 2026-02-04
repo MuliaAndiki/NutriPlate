@@ -3,8 +3,9 @@ import HomeKaderHeroSection from "@/components/section/private/kader/home/home-k
 import { SidebarLayout } from "@/core/layouts/sidebar.layout";
 import useService from "@/hooks/mutation/prop.service";
 import { useAppNameSpace } from "@/hooks/useAppNameSpace";
+import { setPosyanduId, setRole } from "@/stores/posyanduSlice/posyanduSlice";
 import { PopUpNavigate } from "@/types/ui";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const HomeKaderContainer = () => {
   const service = useService();
@@ -15,6 +16,12 @@ const HomeKaderContainer = () => {
   const posyanduId = profileData?.posyanduId;
   const kaderId = profileData?.id ?? "";
   const role = profileData?.role ?? "";
+
+  useEffect(() => {
+    if (!profileData) return;
+
+    namespace.dispatch(setPosyanduId(posyanduId));
+  }, [profileData, namespace.dispatch]);
 
   // measurement
   const MeasurementAllQuery =

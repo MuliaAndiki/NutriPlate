@@ -34,6 +34,7 @@ const buttonVariants = cva(
           "bg-transparent border rounded-full border-primary text-primary",
         notLinter: "bg-primary rounded-full text-background border",
         splash: "bg-background p-8  rounded-full text-primary",
+        info: "bg-info rounded-lg text-bold text-background",
       },
 
       size: {

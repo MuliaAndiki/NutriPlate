@@ -894,13 +894,121 @@ class UserController {
           401,
         );
       }
-      if (!chilParams) {
+      if (!chilParams.id) {
         return c.json?.(
           {
             status: 400,
             message: 'params is required',
           },
           400,
+        );
+      }
+
+      const childBase = await prisma.child.findFirst({
+        where: { id: chilParams.id },
+        select: {
+          id: true,
+          parentId: true,
+          posyanduId: true,
+        },
+      });
+
+      if (!childBase) {
+        return c.json?.(
+          {
+            status: 404,
+            message: 'child not found',
+          },
+          404,
+        );
+      }
+
+      const user = await prisma.user.findFirst({
+        where: { id: jwtUser.id },
+        select: { role: true, id: true },
+      });
+
+      if (!user) {
+        return c.json?.(
+          {
+            status: 401,
+            message: 'Unauthorized',
+          },
+          401,
+        );
+      }
+
+      if (user.role === 'PARENT') {
+        if (childBase.parentId !== user.id) {
+          return c.json?.(
+            {
+              status: 403,
+              message: 'Forbidden',
+            },
+            403,
+          );
+        }
+      } else if (user.role === 'POSYANDU') {
+        if (!childBase.posyanduId) {
+          return c.json?.(
+            {
+              status: 403,
+              message: 'Forbidden',
+            },
+            403,
+          );
+        }
+
+        const owner = await prisma.posyandu.findFirst({
+          where: { id: childBase.posyanduId, userID: user.id },
+          select: { id: true },
+        });
+
+        if (!owner) {
+          return c.json?.(
+            {
+              status: 403,
+              message: 'Forbidden',
+            },
+            403,
+          );
+        }
+      } else if (user.role === 'KADER') {
+        if (!childBase.posyanduId) {
+          return c.json?.(
+            {
+              status: 403,
+              message: 'Forbidden',
+            },
+            403,
+          );
+        }
+
+        const kader = await prisma.kaderRegistration.findFirst({
+          where: {
+            posyanduId: childBase.posyanduId,
+            kaderId: user.id,
+            status: 'accepted',
+          },
+          select: { id: true },
+        });
+
+        if (!kader) {
+          return c.json?.(
+            {
+              status: 403,
+              message: 'Forbidden',
+            },
+            403,
+          );
+        }
+      } else if (user.role !== 'ADMIN') {
+        return c.json?.(
+          {
+            status: 403,
+            message: 'Forbidden',
+          },
+          403,
         );
       }
 
@@ -922,30 +1030,9 @@ class UserController {
         console.warn(`redis error, fallback db ${error}`);
       }
 
-      const parent = await prisma.user.findFirst({
-        where: {
-          id: jwtUser.id,
-        },
-        select: {
-          role: true,
-          id: true,
-        },
-      });
-
-      if (!parent || parent.role !== 'PARENT') {
-        return c.json?.(
-          {
-            status: 400,
-            message: 'server internal error',
-          },
-          400,
-        );
-      }
       const child = await prisma.child.findFirst({
-        where: {
-          id: chilParams.id,
-          parentId: parent.id,
-        },
+        where:
+          user.role === 'PARENT' ? { id: chilParams.id, parentId: user.id } : { id: chilParams.id },
       });
 
       await this.redis.set(cacheKey, JSON.stringify(child), { EX: 60 }).catch(error);
@@ -953,7 +1040,7 @@ class UserController {
         return c.json?.(
           {
             status: 404,
-            message: 'server internal error',
+            message: 'child not found',
           },
           404,
         );

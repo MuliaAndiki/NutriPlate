@@ -2,17 +2,19 @@
 import NotifikasiKaderSection from "@/components/section/private/kader/notifikasi/notifikasi-section";
 
 import { SidebarLayout } from "@/core/layouts/sidebar.layout";
+import { useAppSelector } from "@/hooks/dispatch/dispatch";
 import useService from "@/hooks/mutation/prop.service";
 import { useAppNameSpace } from "@/hooks/useAppNameSpace";
-import { useAuthentic } from "@/hooks/useAuthentic";
 import { NotifTypeInterface } from "@/types/partial";
 import { useState, useEffect } from "react";
 
 const NotafikasiKaderContainer = () => {
   const namespace = useAppNameSpace();
   const service = useService();
-  const { token } = useAuthentic();
-  const notifikasiQuery = service.notafication.query.getNotification(token);
+  const selector = useAppSelector((state) => state.posyandu);
+  const notifikasiQuery = service.notafication.query.getNotification(
+    selector.token!,
+  );
   const notifikasiData = notifikasiQuery.data?.data ?? [];
 
   const [filtered, setFiltered] = useState<"Read" | "NotRead">("NotRead");

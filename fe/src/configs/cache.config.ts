@@ -2,8 +2,7 @@ export const cacheKey = {
   child: {
     byToken: (token: string) => [`child:token:${token}`],
     byID: (id: string) => [`child:${id}`],
-    // bakal miss nanti audit
-    list: () => [`child:`],
+    byAll: (role: any, posyanduId: any) => ["child", role, posyanduId],
   },
 
   evaluate: {
@@ -51,6 +50,7 @@ export const cacheKey = {
   },
   task: {
     byProgresId: (id: string) => [`task:progres:${id}`],
+    notBroadcast: () => [`task:notBroadcast`],
   },
   registrion: {
     myRegister: () => [`registrion:myRegister`],

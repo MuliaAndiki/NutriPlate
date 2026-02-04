@@ -2,7 +2,14 @@ import { ITaskProgram } from "@/types/schema/taskProgram.schema";
 
 export type FormCreateTask = Pick<
   ITaskProgram,
-  "progresId" | "title" | "description"
+  | "title"
+  | "description"
+  | "mealType"
+  | "targetEnergyKcal"
+  | "targetProteinGram"
+  | "targetFatGram"
+  | "targetCarbGram"
+  | "targetFiberGram"
 >;
 
 export type FormUpdateTask = Pick<

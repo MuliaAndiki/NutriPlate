@@ -3,9 +3,11 @@ import { combineReducers } from "@reduxjs/toolkit";
 import { persistReducer, persistStore } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import dummySlice from "../initialSlice/initialSlice";
+import posyanduSlice from "../posyanduSlice/posyanduSlice";
 
 const rootReduser = combineReducers({
   dummy: dummySlice,
+  posyandu: posyanduSlice,
 });
 
 const persistConfig = {

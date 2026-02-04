@@ -1,10 +1,9 @@
 "use client";
 import DetailProgramHeroSection from "@/components/section/private/parent/program/detail/detail-program";
 import { cacheKey } from "@/configs/cache.config";
-import { SidebarLayout } from "@/core/layouts/sidebar.layout";
+import { useAppSelector } from "@/hooks/dispatch/dispatch";
 import useService from "@/hooks/mutation/prop.service";
 import { useAppNameSpace } from "@/hooks/useAppNameSpace";
-import { useAuthentic } from "@/hooks/useAuthentic";
 import { PopUpNavigate } from "@/types/ui";
 import { useParams } from "next/navigation";
 import { useState } from "react";
@@ -13,14 +12,15 @@ const DetailProgramContainer = () => {
   const namespace = useAppNameSpace();
   const service = useService();
   const { id } = useParams<{ id: string }>();
-  const { role } = useAuthentic();
+  const selector = useAppSelector((state) => state.posyandu);
   // program
   const programQueryById = service.program.query.getProgramById(id);
   const programDataById = programQueryById.data?.data ?? null;
   // child
   const childQuery = service.user.query.childAll({
-    role: role,
+    role: selector.role!,
   });
+
   const childData = childQuery.data?.data ?? [];
   const [PopUp, setPopUP] = useState<PopUpNavigate>(null);
   const [idChild, setIdChild] = useState<string | null>(null);

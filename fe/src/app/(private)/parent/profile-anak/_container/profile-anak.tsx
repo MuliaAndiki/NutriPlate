@@ -2,14 +2,15 @@
 
 import ProfileAnakHeroSection from "@/components/section/private/parent/profile-anak/profile-anak-section";
 import { SidebarLayout } from "@/core/layouts/sidebar.layout";
+import { useAppSelector } from "@/hooks/dispatch/dispatch";
 import useService from "@/hooks/mutation/prop.service";
-import { useAuthentic } from "@/hooks/useAuthentic";
 
 const ProfileAnakContainer = () => {
   const service = useService();
-  const { role } = useAuthentic();
+  const selector = useAppSelector((state) => state.posyandu);
+  console.log(selector.role, "inirole");
   const childQuery = service.user.query.childAll({
-    role: role,
+    role: selector.role!,
   });
   const childData = childQuery.data?.data ?? [];
 

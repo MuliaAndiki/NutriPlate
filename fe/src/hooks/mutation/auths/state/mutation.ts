@@ -15,6 +15,11 @@ import {
   FormVerify,
 } from "@/types/form/auth.form";
 import { disconnectSocket } from "@/lib/socket";
+import {
+  clearPosyanduAuth,
+  setRole,
+  setToken,
+} from "@/stores/posyanduSlice/posyanduSlice";
 
 export function useLogin() {
   const nameSpace = useAppNameSpace();
@@ -27,8 +32,8 @@ export function useLogin() {
         maxAge: APP_REFRESH_TOKEN_COOKIE_EXPIRES_IN,
         path: "/",
       });
-      nameSpace.queryClient.setQueryData(["auth", "token"], token);
-      nameSpace.queryClient.setQueryData(["auth", "role"], role);
+      nameSpace.dispatch(setRole(role));
+      nameSpace.dispatch(setToken(token));
       setCookie("user_role", role, {
         maxAge: 60 * 60 * 24 * 7,
         path: "/",
@@ -65,6 +70,8 @@ export function useLoginGoogle() {
         maxAge: 60 * 60 * 24 * 7,
         path: "/",
       });
+      nameSpace.dispatch(setRole(role));
+      nameSpace.dispatch(setToken(token));
       nameSpace.alert.toast({
         title: "succes",
         message: "welcom to nutriplate",
@@ -96,6 +103,7 @@ export function useLogout() {
       nameSpace.queryClient.removeQueries({ queryKey: ["auth"] });
       deleteCookie(APP_SESSION_COOKIE_KEY);
       deleteCookie("user_role");
+      nameSpace.dispatch(clearPosyanduAuth());
       nameSpace.router.replace("/login");
       disconnectSocket();
     },
@@ -110,6 +118,7 @@ export function useLogout() {
       deleteCookie("user_role");
       nameSpace.queryClient.removeQueries({ queryKey: ["auth"] });
       deleteCookie(APP_SESSION_COOKIE_KEY);
+      nameSpace.dispatch(clearPosyanduAuth());
       nameSpace.router.replace("/login");
       disconnectSocket();
     },
