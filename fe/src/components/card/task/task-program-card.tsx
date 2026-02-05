@@ -1,7 +1,10 @@
 import { ButtonWrapper } from "@/components/wrapper/ButtonWrapper";
 import { TaskProgramResponse } from "@/types/res";
-import { AlertContexType } from "@/types/ui";
+import { AlertContexType, PopUpNavigate } from "@/types/ui";
 import { formatDateTime } from "@/utils/time.format";
+import PopUp from "@/components/ui/pop-up";
+import UpdateTaskForm from "@/components/section/private/kader/daftar-program/detail-program/task/_update-task/update-task";
+import { FormUpdateTask } from "@/types/form";
 
 interface TaskProgramCardProps {
   res: TaskProgramResponse;
@@ -9,6 +12,14 @@ interface TaskProgramCardProps {
   setTaskID: React.Dispatch<React.SetStateAction<string>>;
   alert: AlertContexType;
   onDelete: () => void;
+  popUp: PopUpNavigate;
+  setPopUp: React.Dispatch<React.SetStateAction<PopUpNavigate>>;
+  formUpdateTask: FormUpdateTask | null;
+  setFormUpdateTask: React.Dispatch<
+    React.SetStateAction<FormUpdateTask | null>
+  >;
+  isPending: boolean;
+  onUpdateTask: () => void;
 }
 
 const TaskProgramCard: React.FC<TaskProgramCardProps> = ({
@@ -17,6 +28,13 @@ const TaskProgramCard: React.FC<TaskProgramCardProps> = ({
   taskID,
   alert,
   onDelete,
+  popUp,
+  formUpdateTask,
+  setFormUpdateTask,
+  onUpdateTask,
+  isPending,
+
+  setPopUp,
 }) => {
   const statusLabel = res.isComplated ? "Selesai" : "Belum";
   const statusStyle = res.isComplated
@@ -82,7 +100,11 @@ const TaskProgramCard: React.FC<TaskProgramCardProps> = ({
       </div>
       {taskID === res.id && (
         <div className="w-full grid grid-cols-2 grid-rows-1 gap-2">
-          <ButtonWrapper className="w-full" variant={"info"}>
+          <ButtonWrapper
+            className="w-full"
+            variant={"info"}
+            onClick={() => setPopUp("fuTask")}
+          >
             Edit
           </ButtonWrapper>
           <ButtonWrapper
@@ -103,6 +125,15 @@ const TaskProgramCard: React.FC<TaskProgramCardProps> = ({
           </ButtonWrapper>
         </div>
       )}
+      <PopUp isOpen={popUp === "fuTask"} onClose={() => setPopUp(null)}>
+        <UpdateTaskForm
+          formUpdateTask={formUpdateTask}
+          isPending={isPending}
+          onUpdateTask={onUpdateTask}
+          setFormUpdateTask={setFormUpdateTask}
+          setPopUp={setPopUp}
+        />
+      </PopUp>
     </div>
   );
 };

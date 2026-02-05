@@ -16,10 +16,8 @@ export default function NotSupportedPage() {
         <br />
         ✓ Smartphone / Tablet
         <br />✓ Chrome DevTools mobile mode (F12)
-        <ButtonWrapper onClick={() => router.push("/home")}>
-          Reload
-        </ButtonWrapper>
       </p>
+      <ButtonWrapper onClick={() => router.push("/home")}>Reload</ButtonWrapper>
     </div>
   );
 }

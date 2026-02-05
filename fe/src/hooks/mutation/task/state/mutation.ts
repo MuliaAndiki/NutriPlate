@@ -1,3 +1,4 @@
+import { cacheKey } from "@/configs/cache.config";
 import { useAppNameSpace } from "@/hooks/useAppNameSpace";
 import { TResponse } from "@/pkg/react-query/mutation-wrapper.type";
 import Api from "@/services/props.module";
@@ -42,6 +43,9 @@ export function useCreateTask() {
         message: "kamu membuat task untuk anak ini",
         icon: "success",
       });
+      namespace.queryClient.invalidateQueries({
+        queryKey: cacheKey.task.notBroadcast(),
+      });
     },
     onError: (err) => {
       console.error(err);
@@ -71,6 +75,33 @@ export function useDeleteTask() {
       namespace.alert.toast({
         title: "gagal ",
         message: "kamu gagal delete task untuk anak",
+        icon: "error",
+      });
+    },
+  });
+}
+
+export function useUpdateTask() {
+  const namespace = useAppNameSpace();
+  return useMutation<
+    TResponse<any>,
+    Error,
+    { payload: FormCreateTask; id: string }
+  >({
+    mutationFn: ({ id, payload }) => Api.Task.updateTask(id, payload),
+    onSuccess: () => {
+      // invalid key
+      namespace.alert.toast({
+        title: "berhasil ",
+        message: "kamu update task untuk anak ini",
+        icon: "success",
+      });
+    },
+    onError: (err) => {
+      console.error(err);
+      namespace.alert.toast({
+        title: "gagal ",
+        message: "kamu gagal update task untuk anak",
         icon: "error",
       });
     },

@@ -1,5 +1,5 @@
 import { Icon } from "@iconify/react/dist/iconify.js";
-import { ChevronLeft, Divide } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import Link from "next/link";
 import ChildCard from "@/components/card/child/child-card";

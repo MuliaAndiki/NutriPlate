@@ -7,7 +7,7 @@ import { camelCaseToWords } from "@/utils/string.format";
 import { ChevronLeft } from "lucide-react";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import PopUp from "@/components/ui/pop-up";
-import { FormCreateTask } from "@/types/form";
+import { FormCreateTask, FormUpdateTask } from "@/types/form";
 import CreateTaskForm from "./_create-task/create-task";
 import { Icon } from "@iconify/react/dist/iconify.js";
 
@@ -26,6 +26,7 @@ interface TaskKaderSectionProps {
       isPending: boolean;
       onCreateTask: () => void;
       onDelete: () => void;
+      onUpdateTask: () => void;
     };
   };
   state: {
@@ -35,6 +36,10 @@ interface TaskKaderSectionProps {
     setFormCreateTask: React.Dispatch<React.SetStateAction<FormCreateTask>>;
     taskID: string;
     setTaskID: React.Dispatch<React.SetStateAction<string>>;
+    formUpdateTask: FormUpdateTask | null;
+    setFormUpdateTask: React.Dispatch<
+      React.SetStateAction<FormUpdateTask | null>
+    >;
   };
 }
 const TaskKaderSection: React.FC<TaskKaderSectionProps> = ({
@@ -77,6 +82,12 @@ const TaskKaderSection: React.FC<TaskKaderSectionProps> = ({
                 taskID={state.taskID}
                 alert={namespace.alert}
                 onDelete={service.mutation.onDelete}
+                popUp={state.popUp}
+                setPopUp={state.setPopUp}
+                formUpdateTask={state.formUpdateTask}
+                isPending={service.mutation.isPending}
+                onUpdateTask={service.mutation.onUpdateTask}
+                setFormUpdateTask={state.setFormUpdateTask}
               />
             ))}
           </div>

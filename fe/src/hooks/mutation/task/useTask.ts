@@ -1,5 +1,10 @@
 import { useGetTask, useGetTaskNoBroadcast } from "./state/query";
-import { useCreateTask, useDeleteTask, useDoneTask } from "./state/mutation";
+import {
+  useCreateTask,
+  useDeleteTask,
+  useDoneTask,
+  useUpdateTask,
+} from "./state/mutation";
 
 export function useTask() {
   return {
@@ -7,6 +12,7 @@ export function useTask() {
       doneTask: useDoneTask,
       createTask: useCreateTask,
       deleteTask: useDeleteTask,
+      updateTask: useUpdateTask,
     },
     query: {
       getTask: useGetTask,

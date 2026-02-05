@@ -39,7 +39,7 @@ const ParentCardList: React.FC<ParentCardListProps> = ({
         className="rounded-full text-xs px-3"
         onClick={() => onClick!()}
       >
-        Lihat Detail
+        Detail
       </Button>
     </div>
   );

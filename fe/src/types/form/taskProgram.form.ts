@@ -14,7 +14,15 @@ export type FormCreateTask = Pick<
 
 export type FormUpdateTask = Pick<
   ITaskProgram,
-  "id" | "title" | "description" | "isComplated"
+  | "id"
+  | "title"
+  | "description"
+  | "mealType"
+  | "targetEnergyKcal"
+  | "targetProteinGram"
+  | "targetFatGram"
+  | "targetCarbGram"
+  | "targetFiberGram"
 >;
 
 export type FormCompleteTask = Pick<ITaskProgram, "id">;

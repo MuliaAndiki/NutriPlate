@@ -2,7 +2,9 @@
 import HomePosyanduHeroSection from "@/components/section/private/posyandu/home/home-posyandu-section";
 import { SidebarLayout } from "@/core/layouts/sidebar.layout";
 import useService from "@/hooks/mutation/prop.service";
+import { useEffect } from "react";
 import { useAppNameSpace } from "@/hooks/useAppNameSpace";
+import { setPosyanduId } from "@/stores/posyanduSlice/posyanduSlice";
 
 const HomePosyanduContainer = () => {
   const service = useService();
@@ -13,6 +15,10 @@ const HomePosyanduContainer = () => {
   const posyanduId = profileData?.posyandu?.id ?? "";
   const role = profileData?.role ?? "";
 
+  useEffect(() => {
+    if (!profileData) return;
+    namespace.dispatch(setPosyanduId(posyanduId));
+  }, [profileData, namespace.dispatch]);
   // measurement
   const MeasurementAllQuery =
     service.measuremnt.query.allMeasurement(posyanduId);

@@ -5,7 +5,7 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import { ChevronLeft } from "lucide-react";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
-interface DetailParentSectionProps {
+interface DetailParentPosyanduSectionProps {
   namespace: {
     router: AppRouterInstance;
   };
@@ -16,10 +16,9 @@ interface DetailParentSectionProps {
     };
   };
 }
-const DetailParentSection: React.FC<DetailParentSectionProps> = ({
-  namespace,
-  service,
-}) => {
+const DetailParentPosyanduSection: React.FC<
+  DetailParentPosyanduSectionProps
+> = ({ namespace, service }) => {
   const res = service.query.parentDetail;
 
   if (!res) {
@@ -58,4 +57,4 @@ const DetailParentSection: React.FC<DetailParentSectionProps> = ({
   );
 };
 
-export default DetailParentSection;
+export default DetailParentPosyanduSection;
