@@ -11,12 +11,14 @@ import {
   MeasurementRespone,
   ParentListResponse,
 } from "@/types/res";
+import { AlertContexType } from "@/types/ui";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
 interface KelolaDataSectionProps {
   namespace: {
     router: AppRouterInstance;
+    alert: AlertContexType;
   };
   service: {
     query: {
@@ -24,6 +26,10 @@ interface KelolaDataSectionProps {
       children: MeasurementRespone[];
       kader: GetListKader[];
       parent: ParentListResponse[];
+    };
+    mutation: {
+      isPending: boolean;
+      onDeleteKader: () => void;
     };
   };
   state: {
@@ -35,6 +41,7 @@ interface KelolaDataSectionProps {
     setDetailFilter: React.Dispatch<
       React.SetStateAction<NutritionStatus | "Semua">
     >;
+    setRegisterKaderId: React.Dispatch<React.SetStateAction<string>>;
   };
 }
 const KelolaDataSection: React.FC<KelolaDataSectionProps> = ({
@@ -71,7 +78,16 @@ const KelolaDataSection: React.FC<KelolaDataSectionProps> = ({
         return (
           <div className="w-full grid grid-cols-1 gap-2">
             {filteredChildren.map((items, key) => (
-              <ChildMeasurement res={items} index={key + 1} key={items.id} />
+              <ChildMeasurement
+                res={items}
+                index={key + 1}
+                key={items.id}
+                onDetail={() =>
+                  namespace.router.push(
+                    `/posyandu/kelola-data/detail-anak/${items.childId}`,
+                  )
+                }
+              />
             ))}
           </div>
         );
@@ -109,6 +125,9 @@ const KelolaDataSection: React.FC<KelolaDataSectionProps> = ({
               <KaderCard
                 data={items}
                 index={idx}
+                alert={namespace.alert}
+                onDeleteKader={service.mutation.onDeleteKader}
+                setRegisterKaderId={state.setRegisterKaderId}
                 onDetail={() =>
                   namespace.router.push(
                     `/posyandu/kelola-data/detail-kader/${items.kader.id}`,

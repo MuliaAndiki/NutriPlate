@@ -26,13 +26,28 @@ const KelolaDataContainer = () => {
   const parentQuery = service.user.query.parent();
   const parentData = parentQuery.data?.data ?? [];
 
+  //mutation
+  const deleteKaderMutation = service.registerKader.mutation.deleteKader();
+
   //state
   const [filter, setFilter] = useState<"PARENT" | "KADER" | "CHILDREN">(
-    "PARENT",
+    "CHILDREN",
   );
   const [detailFilter, setDetailFilter] = useState<NutritionStatus | "Semua">(
     "Semua",
   );
+  const [registerKaderID, setRegisterKaderID] = useState<string>("");
+
+  //handler
+  const handleDeleteKader = () => {
+    if (!registerKaderID) return;
+
+    deleteKaderMutation.mutate(registerKaderID, {
+      onSuccess: () => {
+        //
+      },
+    });
+  };
 
   return (
     <SidebarLayout>
@@ -40,6 +55,7 @@ const KelolaDataContainer = () => {
         <KelolaDataSection
           namespace={{
             router: namespace.router,
+            alert: namespace.alert,
           }}
           service={{
             query: {
@@ -51,12 +67,17 @@ const KelolaDataContainer = () => {
                 kaderQuery.isLoading ||
                 parentQuery.isLoading,
             },
+            mutation: {
+              isPending: deleteKaderMutation.isPending,
+              onDeleteKader: handleDeleteKader,
+            },
           }}
           state={{
             filter: filter,
             setFilter: setFilter,
             detailFilter: detailFilter,
             setDetailFilter: setDetailFilter,
+            setRegisterKaderId: setRegisterKaderID,
           }}
         />
       </main>

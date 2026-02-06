@@ -159,11 +159,20 @@ class MeasurementController {
         return c.json?.({ status: 401, message: 'Unauthorized' }, 401);
       }
 
-      if (!params.childID) {
+      if (!params?.childID) {
         return c.json?.({ status: 400, message: 'childId required' }, 400);
       }
 
-      const child = await prisma.child.findUnique({
+      const user = await prisma.user.findFirst({
+        where: { id: jwtUser.id },
+        select: { id: true, role: true },
+      });
+
+      if (!user) {
+        return c.json?.({ status: 401, message: 'Unauthorized' }, 401);
+      }
+
+      const child = await prisma.child.findFirst({
         where: { id: params.childID },
         select: {
           id: true,
@@ -178,14 +187,49 @@ class MeasurementController {
         return c.json?.({ status: 404, message: 'Child not found' }, 404);
       }
 
-      const hasAccess = child.parentId === jwtUser.id || child.posyanduId === jwtUser.id;
+      if (user.role === 'PARENT') {
+        if (child.parentId !== user.id) {
+          return c.json?.({ status: 403, message: 'Forbidden' }, 403);
+        }
+      } else if (user.role === 'POSYANDU') {
+        if (!child.posyanduId) {
+          return c.json?.({ status: 403, message: 'Forbidden' }, 403);
+        }
 
-      if (!hasAccess) {
+        const owner = await prisma.posyandu.findFirst({
+          where: {
+            id: child.posyanduId,
+            userID: user.id,
+          },
+          select: { id: true },
+        });
+
+        if (!owner) {
+          return c.json?.({ status: 403, message: 'Forbidden' }, 403);
+        }
+      } else if (user.role === 'KADER') {
+        if (!child.posyanduId) {
+          return c.json?.({ status: 403, message: 'Forbidden' }, 403);
+        }
+
+        const kader = await prisma.kaderRegistration.findFirst({
+          where: {
+            posyanduId: child.posyanduId,
+            kaderId: user.id,
+            status: 'accepted',
+          },
+          select: { id: true },
+        });
+
+        if (!kader) {
+          return c.json?.({ status: 403, message: 'Forbidden' }, 403);
+        }
+      } else if (user.role !== 'ADMIN') {
         return c.json?.({ status: 403, message: 'Forbidden' }, 403);
       }
 
       const measurements = await prisma.measurement.findMany({
-        where: { childId: params.childID },
+        where: { childId: child.id },
         orderBy: { measurementDate: 'asc' },
       });
 
@@ -195,21 +239,27 @@ class MeasurementController {
             status: 200,
             data: {
               summary: null,
-              weightChart: { unit: { x: 'years', y: 'kg' }, lines: { child: [], whoMedian: [] } },
-              heightChart: { unit: { x: 'years', y: 'cm' }, lines: { child: [], whoMedian: [] } },
+              weightChart: {
+                unit: { x: 'years', y: 'kg' },
+                lines: { child: [] },
+              },
+              heightChart: {
+                unit: { x: 'years', y: 'cm' },
+                lines: { child: [], whoMedian: [] },
+              },
             },
           },
           200,
         );
       }
 
-      const toAgeYears = (d: Date) =>
-        Number(
-          (
-            (d.getTime() - child.dateOfBirth.getTime()) /
-            (1000 * 60 * 60 * 24 * 30.4375 * 12)
-          ).toFixed(1),
+      const ageMonthsFromDOB = (d: Date) =>
+        Math.max(
+          0,
+          Math.floor((d.getTime() - child.dateOfBirth.getTime()) / (1000 * 60 * 60 * 24 * 30.4375)),
         );
+
+      const toAgeYears = (d: Date) => Number((ageMonthsFromDOB(d) / 12).toFixed(1));
 
       const whoHeight = await prisma.whoHeightForAge.findMany({
         where: { gender: child.gender },
@@ -225,61 +275,39 @@ class MeasurementController {
       const heightWhoLine: any[] = [];
       const weightChildLine: any[] = [];
 
-      measurements.forEach((m) => {
-        const ageMonths = Math.max(
-          0,
-          Math.floor(
-            (m.measurementDate.getTime() - child.dateOfBirth.getTime()) /
-              (1000 * 60 * 60 * 24 * 30.4375),
-          ),
-        );
-
+      for (const m of measurements) {
+        const ageMonths = ageMonthsFromDOB(m.measurementDate);
         const ageYears = Number((ageMonths / 12).toFixed(1));
         const who = findNearestWho(ageMonths);
 
-        heightChildLine.push({
-          age: ageYears,
-          value: Number(m.heightCm),
-        });
+        heightChildLine.push({ age: ageYears, value: Number(m.heightCm) });
+        heightWhoLine.push({ age: ageYears, value: who.median });
+        weightChildLine.push({ age: ageYears, value: Number(m.weightKg) });
+      }
 
-        heightWhoLine.push({
-          age: ageYears,
-          value: who.median,
-        });
-
-        weightChildLine.push({
-          age: ageYears,
-          value: Number(m.weightKg),
-        });
-      });
-
-      const last = measurements[measurements.length - 1];
-
-      const response = {
-        summary: {
-          lastWeightKg: Number(last.weightKg),
-          lastHeightCm: Number(last.heightCm),
-          lastAgeYears: toAgeYears(last.measurementDate),
-        },
-        weightChart: {
-          unit: { x: 'years', y: 'kg' },
-          lines: {
-            child: weightChildLine,
-          },
-        },
-        heightChart: {
-          unit: { x: 'years', y: 'cm' },
-          lines: {
-            child: heightChildLine,
-            whoMedian: heightWhoLine,
-          },
-        },
-      };
+      const last = measurements.at(-1)!;
 
       return c.json?.(
         {
           status: 200,
-          data: response,
+          data: {
+            summary: {
+              lastWeightKg: Number(last.weightKg),
+              lastHeightCm: Number(last.heightCm),
+              lastAgeYears: toAgeYears(last.measurementDate),
+            },
+            weightChart: {
+              unit: { x: 'years', y: 'kg' },
+              lines: { child: weightChildLine },
+            },
+            heightChart: {
+              unit: { x: 'years', y: 'cm' },
+              lines: {
+                child: heightChildLine,
+                whoMedian: heightWhoLine,
+              },
+            },
+          },
         },
         200,
       );

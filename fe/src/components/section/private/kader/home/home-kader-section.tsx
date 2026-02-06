@@ -127,9 +127,10 @@ const HomeKaderHeroSection: React.FC<HomeKaderHeroSectionProps> = ({
             <PosyanduHomeCard
               res={service.query.posyanduById}
               key={service.query.posyanduById.id}
+              //not fix
               onClick={() =>
                 namespace.router.push(
-                  `/kader/daftar-posyandu/detail/${service.query.posyanduById.id}`,
+                  `/posyandu/detail/${service.query.posyanduById.id}`,
                 )
               }
             />

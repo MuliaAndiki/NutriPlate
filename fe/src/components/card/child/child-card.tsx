@@ -12,7 +12,7 @@ interface ChildCardProps {
 const ChildCard: React.FC<ChildCardProps> = ({ res }) => {
   return (
     <Card className="w-full p-2 ">
-      <Link href={`/parent/profile-anak/detail/${res.id}`}>
+      <Link href={`/parent/profile-anak/detail-anak/${res.id}`}>
         <div className="w-full flex space-x-2 justify-start items-center h-full  ">
           <Image
             alt="child"

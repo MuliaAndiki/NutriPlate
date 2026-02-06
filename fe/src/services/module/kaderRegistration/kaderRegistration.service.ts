@@ -48,6 +48,10 @@ class KaderRegistrationApi {
     );
     return res.data;
   }
+  public async deleteKaderInPosyandu(id: string): Promise<TResponse<any>> {
+    const res = await AxiosClient.delete(`/api/kader/delete-kader/${id}`);
+    return res.data;
+  }
 }
 
 export default KaderRegistrationApi;

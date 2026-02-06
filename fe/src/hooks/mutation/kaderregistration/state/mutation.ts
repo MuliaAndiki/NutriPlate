@@ -44,6 +44,9 @@ export function useAcceptedKader() {
       namespace.queryClient.invalidateQueries({
         queryKey: cacheKey.registrion.pending(),
       });
+      namespace.queryClient.invalidateQueries({
+        queryKey: cacheKey.posyandu.kaderList(),
+      });
 
       namespace.queryClient.invalidateQueries({
         queryKey: cacheKey.registrion.accepted(),
@@ -83,7 +86,30 @@ export function useRejectKader() {
         queryKey: cacheKey.registrion.reject(),
       });
     },
-    onError: () => {
+    onError: (err) => {
+      console.error(err);
+      namespace.alert.toast({
+        title: "Failed",
+        message: "try again",
+        icon: "error",
+      });
+    },
+  });
+}
+
+export function useDeleteKaderInPosyandu() {
+  const namespace = useAppNameSpace();
+  return useMutation<TResponse<any>, Error, string>({
+    mutationFn: (id) => Api.KaderRegistration.deleteKaderInPosyandu(id),
+    onSuccess: () => {
+      namespace.alert.toast({
+        title: "Succes",
+        message: "Kamu Telah Menghapus Kader ini di Posyandu",
+        icon: "success",
+      });
+    },
+    onError: (err) => {
+      console.error(err);
       namespace.alert.toast({
         title: "Failed",
         message: "try again",

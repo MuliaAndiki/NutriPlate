@@ -54,6 +54,8 @@ interface DetailProfileAnakProps {
     setFormRegisterdChild: React.Dispatch<
       React.SetStateAction<FormRegisteredChild>
     >;
+    role: string;
+    section: any;
   };
 }
 const DetailProfileAnakHeroSection: React.FC<DetailProfileAnakProps> = ({
@@ -138,7 +140,7 @@ const DetailProfileAnakHeroSection: React.FC<DetailProfileAnakProps> = ({
             {RouteDetailChild.map((items, key) => (
               <Button variant={"btn"} className="w-full h-auto " key={key}>
                 <Link
-                  href={`${items.href}/${service.query.ChildCard.id}/${items.slice}`}
+                  href={`${items.href(state.role.toLocaleLowerCase())}/${items.href2(state.section)}/${service.query.ChildCard.id}/${items.slice}`}
                   className="w-full h-auto  "
                 >
                   <div className="w-full grid grid-cols-2 grid-rows-1 items-center ">
@@ -171,6 +173,11 @@ const DetailProfileAnakHeroSection: React.FC<DetailProfileAnakProps> = ({
                   <PosyanduHomeCard
                     res={service.query.posyanduById}
                     key={service.query.posyanduById.id}
+                    onClick={() =>
+                      namespace.router.push(
+                        `/posyandu/${service.query.posyanduById.id}`,
+                      )
+                    }
                   />
                 ) : (
                   <Select
@@ -228,6 +235,11 @@ const DetailProfileAnakHeroSection: React.FC<DetailProfileAnakProps> = ({
               <StatusAsupan
                 id={service.query.ChildCard.id}
                 data={service.query.foodSummaryDaily}
+                onDetail={() =>
+                  namespace.router.push(
+                    `/${state.role.toLocaleLowerCase()}/${state.section}/detail-anak/${service.query.ChildCard.id}/daily-summary`,
+                  )
+                }
               />
             </div>
           </div>

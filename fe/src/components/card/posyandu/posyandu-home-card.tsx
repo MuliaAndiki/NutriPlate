@@ -26,7 +26,6 @@ const PosyanduHomeCard: React.FC<PosyanduHomeCardProps> = ({
 }) => {
   return (
     <div
-      onClick={onClick}
       className="w-full flex items-center justify-between
                  bg-background border rounded-xl p-3
                  shadow-sm hover:bg-muted transition cursor-pointer"
@@ -54,6 +53,7 @@ const PosyanduHomeCard: React.FC<PosyanduHomeCardProps> = ({
       <div
         className="w-8 h-8 rounded-full bg-primary
                       flex items-center justify-center text-background"
+        onClick={onClick}
       >
         <ArrowRight size={16} />
       </div>

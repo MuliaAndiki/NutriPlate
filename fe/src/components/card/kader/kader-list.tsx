@@ -2,14 +2,26 @@ import { GetListKader } from "@/types/res";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { identifier } from "@/utils/string.format";
+import { Icon } from "@iconify/react/dist/iconify.js";
+import { AlertContexType } from "@/types/ui";
 
 interface KaderCardProps {
   index: number;
   data: GetListKader;
   onDetail?: () => void;
+  onDeleteKader?: () => void;
+  alert?: AlertContexType;
+  setRegisterKaderId?: React.Dispatch<React.SetStateAction<string>>;
 }
 
-const KaderCard: React.FC<KaderCardProps> = ({ index, data, onDetail }) => {
+const KaderCard: React.FC<KaderCardProps> = ({
+  index,
+  data,
+  onDetail,
+  onDeleteKader,
+  alert,
+  setRegisterKaderId,
+}) => {
   return (
     <div className="w-full flex items-center justify-between bg-background border rounded-xl p-3">
       <div className="flex items-center space-x-3">
@@ -33,13 +45,38 @@ const KaderCard: React.FC<KaderCardProps> = ({ index, data, onDetail }) => {
         </div>
       </div>
 
-      <Button
-        size="sm"
-        className="rounded-full text-xs px-3"
-        onClick={onDetail}
-      >
-        Detail
-      </Button>
+      <div className="flex items-center gap-2">
+        <Button
+          size="sm"
+          className="rounded-full text-xs px-3"
+          onClick={() => {
+            setRegisterKaderId!(data.id);
+            alert!.confirm({
+              title: "Peringatan",
+              deskripsi: "Apakah Anda Yakin Menghapus Ini",
+              icon: "warning",
+              onConfirm: () => {
+                onDeleteKader!();
+              },
+            });
+          }}
+          variant={"destructive"}
+        >
+          <Icon
+            icon="iconamoon:trash"
+            width="24"
+            height="24"
+            className="text-background"
+          />
+        </Button>
+        <Button
+          size="sm"
+          className="rounded-full text-xs px-3"
+          onClick={onDetail}
+        >
+          Detail
+        </Button>
+      </div>
     </div>
   );
 };

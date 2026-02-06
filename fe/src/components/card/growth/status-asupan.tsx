@@ -19,19 +19,15 @@ import {
 import { ChartContainer, type ChartConfig } from "@/components/ui/chart";
 import { Button } from "@/components/ui/button";
 import { DailySummaryResponse } from "@/types/res/foodSummary.respone";
-import { usePathname, useRouter } from "next/navigation";
 import { isPolarViewBox } from "@/utils/polar";
+
 interface StatusAsupanProps {
   data: DailySummaryResponse;
   id: string;
+  onDetail?: () => void;
 }
 
-const StatusAsupan: React.FC<StatusAsupanProps> = ({ data, id }) => {
-  const router = useRouter();
-  const pathname = usePathname();
-  const hiddenButton = pathname.includes(
-    `/parent/profile-anak/detail/${id}/daily-summary`,
-  );
+const StatusAsupan: React.FC<StatusAsupanProps> = ({ data, id, onDetail }) => {
   const percent = data.progress.energyPercent;
   const energy = data.totals.energyKcal;
   const target = data.target.energyKcal;
@@ -47,8 +43,8 @@ const StatusAsupan: React.FC<StatusAsupanProps> = ({ data, id }) => {
     data.progress.status === "GOOD"
       ? "text-primary"
       : data.progress.status === "ENOUGH"
-        ? "text-yellow-500"
-        : "text-red-600";
+        ? "text-warning/50"
+        : "text-destructive/60";
 
   const chartData = [
     {
@@ -64,7 +60,7 @@ const StatusAsupan: React.FC<StatusAsupanProps> = ({ data, id }) => {
   return (
     <Card className="flex">
       <div className="w-full flex">
-        <CardContent className="flex flex-col pb-0">
+        <CardContent className="flex flex-col pb-0 ">
           <ChartContainer
             config={chartConfig}
             className="mx-auto aspect-square w-[100px] h-[100px]"
@@ -129,28 +125,22 @@ const StatusAsupan: React.FC<StatusAsupanProps> = ({ data, id }) => {
                 <Icon
                   icon="carbon:warning"
                   width={14}
-                  className="text-red-600"
+                  className="text-destructive/60"
                 />
-                <p className="text-xs text-red-600 font-extralight">
+                <p className="text-xs text-destructive/60 font-extralight">
                   Kalori dan protein belum tercukupi
                 </p>
               </div>
             )}
 
             <div className="w-full text-end">
-              {!hiddenButton && (
-                <Button
-                  className="font-light"
-                  variant="btn"
-                  onClick={() =>
-                    router.push(
-                      `/parent/profile-anak/detail/${id}/daily-summary`,
-                    )
-                  }
-                >
-                  Lihat Detail
-                </Button>
-              )}
+              <Button
+                className="font-light"
+                variant="btn"
+                onClick={() => onDetail!()}
+              >
+                Lihat Detail
+              </Button>
             </div>
           </CardFooter>
         </div>

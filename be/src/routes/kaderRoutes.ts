@@ -69,6 +69,13 @@ class KaderRoutes {
         beforeHandle: [verifyToken().beforeHandle],
       },
     );
+    this.kaderRoutes.delete(
+      '/delete-kader/:id',
+      (c: AppContext) => KaderController.deleteKader(c),
+      {
+        beforeHandle: [verifyToken().beforeHandle],
+      },
+    );
   }
 }
 

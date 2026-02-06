@@ -6,11 +6,13 @@ import Image from "next/image";
 interface ChildMeasurementProps {
   res: MeasurementRespone;
   index?: number;
+  onDetail?: () => void;
 }
 
 const ChildMeasurement: React.FC<ChildMeasurementProps> = ({
   res,
   index = 1,
+  onDetail,
 }) => {
   if (!res) return null;
 
@@ -22,6 +24,7 @@ const ChildMeasurement: React.FC<ChildMeasurementProps> = ({
   return (
     <div
       className={`w-full flex items-center border rounded-xl overflow-hidden ${status.border}`}
+      onClick={() => onDetail!()}
     >
       <div
         className={`w-12 h-full flex items-center justify-center text-lg font-bold ${status.index}`}
@@ -31,7 +34,7 @@ const ChildMeasurement: React.FC<ChildMeasurementProps> = ({
 
       <div className="flex-1 flex items-center justify-between px-3 py-2">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-full overflow-hidden bg-background/20 flex items-center justify-center">
             {res.child.avaChild ? (
               <Image
                 src={res.child.avaChild}
@@ -41,7 +44,7 @@ const ChildMeasurement: React.FC<ChildMeasurementProps> = ({
                 className="object-cover"
               />
             ) : (
-              <span className="text-sm font-bold text-gray-600">
+              <span className="text-sm font-bold ">
                 {res.child.fullName.charAt(0)}
               </span>
             )}

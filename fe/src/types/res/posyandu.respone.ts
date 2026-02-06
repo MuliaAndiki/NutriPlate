@@ -85,6 +85,7 @@ export interface ActiveAccountResponse {
 }
 
 export interface GetListKader {
+  id: string;
   kader: KaderDetailResponse;
   createdAt: string;
   updatedAt: string;

@@ -1,6 +1,9 @@
 import { AppContext } from '@/contex/appContex';
 import { JwtPayload } from '@/types/auth.types';
-import { PickCreateKaderRegistration } from '@/types/kaderRegistration.types';
+import {
+  PickCreateKaderRegistration,
+  PickKaderRegistrationID,
+} from '@/types/kaderRegistration.types';
 import kaderRegistrationService from '@/service/kaderRegistration.service';
 import prisma from 'prisma/client';
 import { getRedis } from '@/utils/redis';
@@ -73,7 +76,6 @@ class KaderController {
         posyanduId: body.posyanduId,
       });
 
-      // Clear cache for kader registrations
       await this.redis.del([
         cacheKeys.kaderregistration.byKader(jwtUser.id),
         cacheKeys.kaderregistration.pending(body.posyanduId),
@@ -622,6 +624,73 @@ class KaderController {
           404,
         );
       }
+      return c.json?.(
+        {
+          status: 500,
+          message: 'Server internal error',
+          error: error instanceof Error ? error.message : error,
+        },
+        500,
+      );
+    }
+  }
+  public async deleteKader(c: AppContext) {
+    try {
+      const jwtUser = c.user as JwtPayload;
+      const params = c.params as PickKaderRegistrationID;
+
+      if (!jwtUser) {
+        return c.json?.(
+          {
+            status: 401,
+            message: 'Unauthorized',
+          },
+          401,
+        );
+      }
+
+      if (!params.id) {
+        return c.json?.(
+          {
+            status: 400,
+            message: 'params is required',
+          },
+          400,
+        );
+      }
+
+      const user = await prisma.user.findUnique({
+        where: {
+          id: jwtUser.id,
+        },
+        select: {
+          role: true,
+        },
+      });
+
+      if (!user || user.role !== 'POSYANDU') {
+        return c.json?.(
+          {
+            status: 403,
+            message: 'Hanya Posyandu yang dapat membatalkan',
+          },
+          403,
+        );
+      }
+
+      const deletekader = await kaderRegistrationService.deleteKaderInPosyandu(params.id);
+
+      // invalid key
+      await this.redis.del([cacheKeys.kaderregistration.byKader(jwtUser.id)]);
+      return c.json?.(
+        {
+          status: 201,
+          message: 'berhasil delete kader in posyandu',
+          data: deletekader,
+        },
+        201,
+      );
+    } catch (error) {
       return c.json?.(
         {
           status: 500,

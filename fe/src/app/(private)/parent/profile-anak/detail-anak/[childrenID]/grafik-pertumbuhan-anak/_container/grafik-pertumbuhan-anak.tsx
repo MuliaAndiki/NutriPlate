@@ -1,0 +1,67 @@
+"use client";
+
+import GrafikPertumbuhanAnakHeroSection from "@/components/section/private/parent/profile-anak/detail-profile-anak/grafik-pertumbuhan-anak/grafik-pertumbuhan-anak-section";
+import { SidebarLayout } from "@/core/layouts/sidebar.layout";
+import useService from "@/hooks/mutation/prop.service";
+import { useAppNameSpace } from "@/hooks/useAppNameSpace";
+import { useParams } from "next/navigation";
+
+const GrafikPertumbuhanAnakContainer = () => {
+  const nameSpace = useAppNameSpace();
+  const { childrenID } = useParams<{ childrenID: string }>();
+  const service = useService();
+
+  const growthChartQuery = service.measuremnt.query.growthChart(childrenID);
+  const measurementQuery = service.measuremnt.query.measurement(childrenID);
+  const growthChartData = growthChartQuery.data?.data ?? null;
+  const measurementData = measurementQuery.data?.data ?? [];
+
+  const heightChartData =
+    growthChartData?.heightChart?.lines?.child?.map(
+      (childPoint: any, index: number) => {
+        const whoPoint = growthChartData.heightChart.lines.whoMedian[index];
+
+        return {
+          age: childPoint.age,
+          child: childPoint.value,
+          whoMedian: whoPoint?.value ?? null,
+        };
+      },
+    ) ?? [];
+
+  const weightChartData =
+    growthChartData?.weightChart?.lines?.child?.map((childPoint: any) => ({
+      age: childPoint.age,
+      child: childPoint.value,
+    })) ?? [];
+
+  const title = {
+    weight: "Grafik Berat Badan vs Usia",
+    height: "Grafik Tinggi Badan vs Usia",
+  };
+
+  return (
+    <SidebarLayout>
+      <main className="w-full min-h-screen overflow-x-hidden">
+        <GrafikPertumbuhanAnakHeroSection
+          namespace={{
+            router: nameSpace.router,
+          }}
+          servive={{
+            query: {
+              heightChartData: heightChartData,
+              historyMeasument: measurementData,
+              summary: growthChartData?.summary,
+              weightChartData: weightChartData,
+            },
+          }}
+          state={{
+            title: title,
+          }}
+        />
+      </main>
+    </SidebarLayout>
+  );
+};
+
+export default GrafikPertumbuhanAnakContainer;

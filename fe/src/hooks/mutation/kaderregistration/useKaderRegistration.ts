@@ -1,5 +1,6 @@
 import {
   useAcceptedKader,
+  useDeleteKaderInPosyandu,
   useRegisterKader,
   useRejectKader,
 } from "./state/mutation";
@@ -16,6 +17,7 @@ export function useKaderRegistration() {
       registerKader: useRegisterKader,
       acceptedKader: useAcceptedKader,
       rejectedKader: useRejectKader,
+      deleteKader: useDeleteKaderInPosyandu,
     },
     query: {
       getMyRegister: useGetMyRegister,

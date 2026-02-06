@@ -40,28 +40,29 @@ export const profileChildCardsConfig: ProfileChildType[] = [
     getValue: (p) => p?.nutritionStatus,
   },
 ];
-
 export const RouteDetailChild: RouteDetailChildType[] = [
   {
     icon: "ph:baby",
     title: "Data Anak",
     icon2: "mingcute:arrow-right-fill",
-    href: "/parent/profile-anak/detail",
+    href: (role) => `/${role}`,
+    href2: (pathname) => `/${pathname}/detail-anak`,
     slice: "/data-anak",
   },
-
   {
     icon: "streamline-flex:health-care-2-remix",
     title: "Profil Kesehatan Anak",
     icon2: "mingcute:arrow-right-fill",
-    href: "/parent/profile-anak/detail",
+    href: (role) => `/${role}`,
+    href2: (pathname) => `/${pathname}/detail-anak`,
     slice: "/profile-kesehatan-anak",
   },
   {
     icon: "fluent:arrow-growth-24-filled",
     title: "Grafik Pertumbuhan Anak",
     icon2: "mingcute:arrow-right-fill",
-    href: "/parent/profile-anak/detail",
+    href: (role) => `/${role}`,
+    href2: (pathname) => `/${pathname}/detail-anak`,
     slice: "/grafik-pertumbuhan-anak",
   },
 ];

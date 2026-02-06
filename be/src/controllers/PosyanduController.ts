@@ -605,6 +605,7 @@ class PosyanduController {
           status: 'accepted',
         },
         select: {
+          id: true,
           kader: {
             select: {
               id: true,

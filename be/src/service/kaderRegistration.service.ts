@@ -257,6 +257,22 @@ class KaderRegistrationService {
       throw error;
     }
   }
+  public async deleteKaderInPosyandu(id: string) {
+    try {
+      const deleteKader = await prisma.kaderRegistration.delete({
+        where: {
+          id: id,
+        },
+        include: {
+          kader: true,
+          posyandu: true,
+        },
+      });
+      return deleteKader;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export default new KaderRegistrationService();
