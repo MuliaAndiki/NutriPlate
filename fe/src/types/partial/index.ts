@@ -90,3 +90,48 @@ export const statusKaderRegisterStyle = (
       return "bg-yellow-100 text-yellow-700";
   }
 };
+
+export const nutritionConfig: Record<
+  NutritionStatus,
+  {
+    label: string;
+    border: string;
+    badge: string;
+    index: string;
+  }
+> = {
+  normal: {
+    label: "Normal",
+    border: "border-emerald-400",
+    badge: "bg-emerald-400 text-white",
+    index: "bg-emerald-400 text-white",
+  },
+  underweight: {
+    label: "Berisiko",
+    border: "border-yellow-400",
+    badge: "bg-yellow-400 text-white",
+    index: "bg-yellow-400 text-white",
+  },
+  severely_underweight: {
+    label: "Gizi Buruk",
+    border: "border-red-500",
+    badge: "bg-red-500 text-white",
+    index: "bg-red-500 text-white",
+  },
+  overweight: {
+    label: "Berat Berlebih",
+    border: "border-blue-400",
+    badge: "bg-blue-400 text-white",
+    index: "bg-blue-400 text-white",
+  },
+};
+
+export const nutritionFilterMap: {
+  label: string;
+  value: NutritionStatus | "Semua";
+}[] = [
+  { label: "Semua", value: "Semua" },
+  { label: "Normal", value: "normal" },
+  { label: "Berisiko", value: "underweight" },
+  { label: "Gizi Buruk", value: "severely_underweight" },
+];

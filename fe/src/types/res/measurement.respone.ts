@@ -10,6 +10,13 @@ export interface MeasurementRespone {
   nutritionStatus: NutritionStatus;
   note?: string;
   createdAt: Date;
+  child: {
+    id: string;
+    fullName: string;
+    gender: string;
+    dateOfBirth: string;
+    avaChild: string;
+  };
 }
 
 export interface MeasurementDetailResponse extends MeasurementRespone {}

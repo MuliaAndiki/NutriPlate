@@ -10,7 +10,39 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { BellIcon, Book, MailIcon, MessageSquareIcon } from "lucide-react";
-const DaftarBalitaKaderSection = () => {
+import { nutritionFilterMap, NutritionStatus } from "@/types/partial";
+import { MeasurementRespone } from "@/types/res";
+import ChildMeasurement from "@/components/card/child/child-measuremet";
+
+interface DaftarBalitaKaderSectionProps {
+  service: {
+    query: {
+      isLoading: boolean;
+      children: MeasurementRespone[];
+    };
+  };
+  state: {
+    filter: NutritionStatus | "Semua";
+    setFilter: React.Dispatch<React.SetStateAction<NutritionStatus | "Semua">>;
+  };
+}
+const DaftarBalitaKaderSection: React.FC<DaftarBalitaKaderSectionProps> = ({
+  service,
+  state,
+}) => {
+  const resChildren = service.query.children;
+
+  if (!resChildren) {
+    return <div>data tidak ditemukan</div>;
+  }
+  if (service.query.isLoading) {
+    return <div>loading...</div>;
+  }
+  //filter
+  const filteredChildren =
+    state.filter === "Semua"
+      ? resChildren
+      : resChildren.filter((item) => item.nutritionStatus === state.filter);
   return (
     <section className="w-full min-h-screen flex items-center justify-start flex-col overflow-x-hidden relative p-2 space-y-2">
       <div className="w-full flex items-center justify-between ">
@@ -65,14 +97,23 @@ const DaftarBalitaKaderSection = () => {
           }
         />
         <div className="w-full grid grid-cols-4  mt-2 gap-2 grid-rows-1">
-          <ButtonWrapper>Semua</ButtonWrapper>
-          <ButtonWrapper>Normal</ButtonWrapper>
-          <ButtonWrapper>Berisiko</ButtonWrapper>
-          <ButtonWrapper>Gizi Buruk</ButtonWrapper>
+          {nutritionFilterMap.map((item) => (
+            <ButtonWrapper
+              key={item.label}
+              variant={state.filter === item.value ? "notLinter" : "linter"}
+              onClick={() => state.setFilter(item.value)}
+            >
+              {item.label}
+            </ButtonWrapper>
+          ))}
         </div>
       </div>
       <div className="w-full">
-        <ChildFallback />
+        <div className="w-full grid grid-cols-1 gap-2">
+          {filteredChildren.map((items, key) => (
+            <ChildMeasurement res={items} index={key + 1} key={items.id} />
+          ))}
+        </div>
       </div>
     </section>
   );

@@ -64,3 +64,12 @@ export function useGetParentById(id: string) {
     enabled: !!id,
   });
 }
+
+export function useGetKaderById(id: string) {
+  return useQuery({
+    queryKey: cacheKey.profile.parentById(id),
+    queryFn: () => Api.User.getKaderByID(id),
+    staleTime: 1000 * 60 * 5,
+    enabled: !!id,
+  });
+}

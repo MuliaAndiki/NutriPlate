@@ -1,10 +1,16 @@
+import ChildMeasurement from "@/components/card/child/child-measuremet";
 import KaderCard from "@/components/card/kader/kader-list";
-import ParentCard from "@/components/card/parent/parent-card";
+
 import ParentCardList from "@/components/card/parent/parent-list";
 import ChildFallback from "@/components/fallback/child.fallback";
 import { ButtonWrapper } from "@/components/wrapper/ButtonWrapper";
 import { InputWrapper } from "@/components/wrapper/InputWrapper";
-import { ChildRespone, GetListKader, ParentListResponse } from "@/types/res";
+import { nutritionFilterMap, NutritionStatus } from "@/types/partial";
+import {
+  GetListKader,
+  MeasurementRespone,
+  ParentListResponse,
+} from "@/types/res";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
@@ -15,7 +21,7 @@ interface KelolaDataSectionProps {
   service: {
     query: {
       isLoading: boolean;
-      children: ChildRespone[];
+      children: MeasurementRespone[];
       kader: GetListKader[];
       parent: ParentListResponse[];
     };
@@ -24,6 +30,10 @@ interface KelolaDataSectionProps {
     filter: "PARENT" | "KADER" | "CHILDREN";
     setFilter: React.Dispatch<
       React.SetStateAction<"PARENT" | "KADER" | "CHILDREN">
+    >;
+    detailFilter: NutritionStatus | "Semua";
+    setDetailFilter: React.Dispatch<
+      React.SetStateAction<NutritionStatus | "Semua">
     >;
   };
 }
@@ -43,20 +53,28 @@ const KelolaDataSection: React.FC<KelolaDataSectionProps> = ({
     return <div>loading...</div>;
   }
 
+  //filter
+  const filteredChildren =
+    state.detailFilter === "Semua"
+      ? resChildren
+      : resChildren.filter(
+          (item) => item.nutritionStatus === state.detailFilter,
+        );
+
   const renderContent = () => {
     switch (state.filter) {
-      //bulum ada
-      // case "CHILDREN":
-      //   if (resChildren.length === 0) {
-      //     return <ChildFallback />;
-      //   }
+      case "CHILDREN":
+        if (resChildren.length === 0) {
+          return <ChildFallback />;
+        }
 
-      //   return (
-      //     <div className="w-full grid grid-cols-1 gap-2">
-      //       {/* map children disini */}
-      //       {/* resChildren.map(child => <ChildCard />) */}
-      //     </div>
-      //   );
+        return (
+          <div className="w-full grid grid-cols-1 gap-2">
+            {filteredChildren.map((items, key) => (
+              <ChildMeasurement res={items} index={key + 1} key={items.id} />
+            ))}
+          </div>
+        );
 
       case "PARENT":
         if (resParent.length === 0) {
@@ -149,11 +167,18 @@ const KelolaDataSection: React.FC<KelolaDataSectionProps> = ({
         </ButtonWrapper>
       </div>
       {state.filter === "CHILDREN" && (
-        <div className="w-full grid grid-cols-4  mt-2 gap-2 grid-rows-1">
-          <ButtonWrapper>Semua</ButtonWrapper>
-          <ButtonWrapper>Normal</ButtonWrapper>
-          <ButtonWrapper>Berisiko</ButtonWrapper>
-          <ButtonWrapper>Gizi Buruk</ButtonWrapper>
+        <div className="w-full grid grid-cols-4 mt-2 gap-2">
+          {nutritionFilterMap.map((item) => (
+            <ButtonWrapper
+              key={item.label}
+              variant={
+                state.detailFilter === item.value ? "notLinter" : "linter"
+              }
+              onClick={() => state.setDetailFilter(item.value)}
+            >
+              {item.label}
+            </ButtonWrapper>
+          ))}
         </div>
       )}
       <div className="w-full">{renderContent()}</div>

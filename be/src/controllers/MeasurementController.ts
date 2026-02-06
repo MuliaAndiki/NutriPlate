@@ -593,6 +593,7 @@ class MeasurementController {
               fullName: true,
               gender: true,
               dateOfBirth: true,
+              avaChild: true,
             },
           },
         },
