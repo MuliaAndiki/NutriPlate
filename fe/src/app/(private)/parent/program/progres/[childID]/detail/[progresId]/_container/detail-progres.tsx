@@ -5,43 +5,41 @@ import { cacheKey } from "@/configs/cache.config";
 import { SidebarLayout } from "@/core/layouts/sidebar.layout";
 import useService from "@/hooks/mutation/prop.service";
 import { useAppNameSpace } from "@/hooks/useAppNameSpace";
-import { useDebugLog } from "@/utils/useDebug";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 
 const ProgresDetailContainer = () => {
   const namespace = useAppNameSpace();
   const service = useService();
-  const { id, progresId } = useParams<{ id: string; progresId: string }>();
+  const { childID, progresId } = useParams<{
+    childID: string;
+    progresId: string;
+  }>();
 
-  const [selectedTask, setSelectedTask] = useState<any>(null);
+  //state
+  const [taskId, setTaskId] = useState<string | null>(null);
 
   //progres
   const progresInChildDataByIdQuery =
-    service.progres.query.progresInChildByID(id);
+    service.progres.query.progresInChildByID(childID);
   const progresInChildDataById = progresInChildDataByIdQuery.data?.data ?? null;
 
   //task
   const taskQuery = service.task.query.getTask(progresId);
   const taskData = taskQuery.data?.data ?? [];
 
-  useDebugLog(taskData, [taskQuery], {
-    label: "here",
-  });
-
+  // mutation
   const cancelProgramMutation = service.progres.mutation.cancelProgram();
 
-  // daily Summary
-  const dailySummaryQuery = service.foodSummary.query.foodSummaryDaily(id);
-
+  //handler
   const handleCancelProgram = () => {
-    if (!id || !progresInChildDataById?.id) return;
+    if (!childID || !progresInChildDataById?.id) return;
 
     cancelProgramMutation.mutate(
       {
         payload: {
           id: progresInChildDataById.id,
-          childId: id,
+          childId: childID,
         },
       },
       {
@@ -49,7 +47,7 @@ const ProgresDetailContainer = () => {
           namespace.router.back();
           //key
           namespace.queryClient.invalidateQueries({
-            queryKey: cacheKey.child.byID(id),
+            queryKey: cacheKey.child.byID(childID),
           });
         },
       },
@@ -59,17 +57,14 @@ const ProgresDetailContainer = () => {
   const handleOpenCameraForTask = (taskId: string) => {
     const task = taskData.find((t: any) => t.id === taskId);
     if (task) {
-      setSelectedTask(task);
       const params = new URLSearchParams();
-      params.set("childId", id);
+      params.set("childId", childID);
       params.set("flowType", "task");
       params.set("taskName", task.title);
       namespace.router.push(`/foodCamera?${params.toString()}`);
     }
   };
 
-  //state
-  const [taskId, setTaskId] = useState<string | null>(null);
   return (
     <SidebarLayout>
       <main className="w-full">

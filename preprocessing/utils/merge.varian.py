@@ -1,49 +1,62 @@
 from pathlib import Path
-import yaml
 import shutil
+from class_registry import CLASS_TO_INDEX
 
-ROOT = Path(__file__).resolve().parents[1]     
+ROOT = Path(__file__).resolve().parents[1]
 DATA_DIR = ROOT / "data"
 OUT_DIR = ROOT / "data_merged"
 
-ORIGINAL_DATASET_NAME = "lasted"
-
-BASE_CLASS_INDEX = {
-    "ayam goreng": 1,
-    "bakwan": 3,
-    "telur" :22
-}
+ORIGINAL_DATASET = "lasted"
 
 VARIANT_DATASETS = {
-    "ayamgoreng": "ayam goreng",
-    "bakwan": "bakwan",
-    "telur" : "telur"
+    "bayam.v9i.yolov8": "bayam",
+    "kentang goreng.v12i.yolov8": "kentang",
+    "kol.v10i.yolov8": "kol",
+    "sawi.v20i.yolov8": "sawi",
+    "wortel.v29i.yolov8": "wortel",
+    "Asam Keueng.v17i.yolov8": "asam keueng",
+    "Eungkot Keumamah.v15i.yolov8": "eungkot keumamah",
+    "kuah pliek u.v13i.yolov8": "kuah pliek u",
+    "Sie Reuboh.v14i.yolov8": "sie reuboh",
 }
+
+IMG_EXT = {".jpg", ".jpeg", ".png", ".webp"}
+SPLITS = ["train", "valid", "val", "test"]
 
 
 def reset_out_dir():
     if OUT_DIR.exists():
         shutil.rmtree(OUT_DIR)
 
+    for s in ["train", "valid", "test"]:
+        (OUT_DIR / "images" / s).mkdir(parents=True, exist_ok=True)
+        (OUT_DIR / "labels" / s).mkdir(parents=True, exist_ok=True)
+
+def normalize_label(path: Path, class_idx: int):
+    lines = path.read_text().splitlines()
+    out = []
+    for l in lines:
+        p = l.split()
+        if len(p) >= 5:
+            out.append(" ".join([str(class_idx)] + p[1:]))
+    path.write_text("\n".join(out))
+
+
+def merge_original():
+    base = DATA_DIR / ORIGINAL_DATASET
+    print(f"🔗 Merge original: {ORIGINAL_DATASET}")
+
     for split in ["train", "valid", "test"]:
-        (OUT_DIR / "images" / split).mkdir(parents=True, exist_ok=True)
-        (OUT_DIR / "labels" / split).mkdir(parents=True, exist_ok=True)
-
-def merge_original_dataset():
-    dataset_dir = DATA_DIR / ORIGINAL_DATASET_NAME
-    if not dataset_dir.exists():
-        raise RuntimeError(f"Original dataset not found: {dataset_dir}")
-
-    print(f"🔗 Adding ORIGINAL dataset: {ORIGINAL_DATASET_NAME}")
-
-    for split in ["train", "valid", "test"]:
-        img_dir = dataset_dir / "images" / split
-        lbl_dir = dataset_dir / "labels" / split
+        img_dir = base / "images" / split
+        lbl_dir = base / "labels" / split
 
         if not img_dir.exists():
             continue
 
-        for img in img_dir.glob("*.*"):
+        for img in img_dir.iterdir():
+            if img.suffix.lower() not in IMG_EXT:
+                continue
+
             shutil.copy(img, OUT_DIR / "images" / split / img.name)
 
             lbl = lbl_dir / f"{img.stem}.txt"
@@ -51,61 +64,44 @@ def merge_original_dataset():
                 shutil.copy(lbl, OUT_DIR / "labels" / split / lbl.name)
 
 
-def normalize_labels(label_path: Path, index_map: dict[int, int]):
-    lines = label_path.read_text().splitlines()
-    new_lines = []
+def merge_variant(folder: str, class_name: str):
+    base_idx = CLASS_TO_INDEX[class_name]
+    dataset = DATA_DIR / folder
 
-    for line in lines:
-        parts = line.split()
-        if not parts:
-            continue
-        cls = int(parts[0])
-        new_cls = index_map.get(cls, cls)
-        new_lines.append(" ".join([str(new_cls)] + parts[1:]))
+    print(f"➕ Merge {folder} → '{class_name}' ({base_idx})")
 
-    label_path.write_text("\n".join(new_lines))
+    for split in SPLITS:
+        img_dir = dataset / split / "images"
+        lbl_dir = dataset / split / "labels"
 
-
-def merge_variant_dataset(folder: str, base_name: str):
-    dataset_dir = DATA_DIR / folder
-    if not dataset_dir.exists():
-        print(f"⚠️ Variant not found: {folder}")
-        return
-
-    print(f"🔧 Merging VARIANT: {folder} → {base_name}")
-    base_index = BASE_CLASS_INDEX[base_name]
-
-    data_yaml = yaml.safe_load((dataset_dir / "data.yaml").read_text())
-    index_map = {i: base_index for i in range(len(data_yaml["names"]))}
-
-    for split in ["train", "valid", "test"]:
-        img_dir = dataset_dir / split / "images"
-        lbl_dir = dataset_dir / split / "labels"
         if not img_dir.exists():
             continue
 
-        for img in img_dir.glob("*.*"):
-            new_img = OUT_DIR / "images" / split / f"{base_name}_{img.name}"
-            shutil.copy(img, new_img)
+        out_split = "valid" if split == "val" else split
+
+        for img in img_dir.iterdir():
+            if img.suffix.lower() not in IMG_EXT:
+                continue
+
+            new_img = f"{class_name}_{img.name}"
+            shutil.copy(img, OUT_DIR / "images" / out_split / new_img)
 
             lbl = lbl_dir / f"{img.stem}.txt"
             if lbl.exists():
-                new_lbl = OUT_DIR / "labels" / split / f"{base_name}_{img.stem}.txt"
+                new_lbl = OUT_DIR / "labels" / out_split / f"{class_name}_{img.stem}.txt"
                 shutil.copy(lbl, new_lbl)
-                normalize_labels(new_lbl, index_map)
+                normalize_label(new_lbl, base_idx)
 
 
 def main():
-    print(" MERGING DATASETS")
+    print("🚀 MERGING DATASETS")
     reset_out_dir()
+    merge_original()
 
-    merge_original_dataset()
+    for folder, cls in VARIANT_DATASETS.items():
+        merge_variant(folder, cls)
 
-    for folder, base in VARIANT_DATASETS.items():
-        merge_variant_dataset(folder, base)
-
-    print(" DONE: data_merged READY")
-
+    print("✅ MERGE SELESAI → data_merged")
 
 if __name__ == "__main__":
     main()

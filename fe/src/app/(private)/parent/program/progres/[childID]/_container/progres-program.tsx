@@ -1,24 +1,26 @@
 "use client";
 import ProgresProgramSection from "@/components/section/private/parent/program/progres/progres-section";
-import { SidebarLayout } from "@/core/layouts/sidebar.layout";
+import { useAppSelector } from "@/hooks/dispatch/dispatch";
 import useService from "@/hooks/mutation/prop.service";
 import { useAppNameSpace } from "@/hooks/useAppNameSpace";
-
 import { useParams } from "next/navigation";
 
 const ProgresProgramContainer = () => {
   const namespace = useAppNameSpace();
-  const params = useParams();
-  const id = params?.id as string | undefined;
-
+  const { childID } = useParams<{ childID: string }>();
   const service = useService();
+  const selector = useAppSelector((state) => state.posyandu);
 
-  // query
-  const childQueryById = service.user.query.childById(id ?? "");
+  // children
+  const childQueryById = service.user.query.childById(childID);
   const childDataById = childQueryById.data?.data ?? null;
 
-  const progresInChildQuery = service.progres.query.progresInChild(id ?? "");
+  //progres
+  const progresInChildQuery = service.progres.query.progresInChild(childID);
   const progresInChildData = progresInChildQuery.data?.data ?? [];
+
+  const segments = namespace.pathname.split("/");
+  const section = segments[2];
 
   return (
     <main className="w-full min-h-screen overflow-x-hidden">
@@ -36,7 +38,8 @@ const ProgresProgramContainer = () => {
           },
         }}
         state={{
-          childId: id ?? "",
+          role: selector.role!,
+          section: section,
         }}
       />
     </main>

@@ -65,6 +65,14 @@ export const RouteDetailChild: RouteDetailChildType[] = [
     href2: (pathname) => `/${pathname}/detail-anak`,
     slice: "/grafik-pertumbuhan-anak",
   },
+  {
+    icon: "hugeicons:task-add-01",
+    title: "Program yang Diikuti",
+    icon2: "mingcute:arrow-right-fill",
+    href: (role) => `/${role}`,
+    href2: (pathname) => `/${pathname}/detail-anak`,
+    slice: "/program",
+  },
 ];
 
 export const NotifikasiIcons: notifikasiIconMap[] = [

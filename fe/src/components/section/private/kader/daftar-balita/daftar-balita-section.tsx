@@ -13,8 +13,12 @@ import { BellIcon, Book, MailIcon, MessageSquareIcon } from "lucide-react";
 import { nutritionFilterMap, NutritionStatus } from "@/types/partial";
 import { MeasurementRespone } from "@/types/res";
 import ChildMeasurement from "@/components/card/child/child-measuremet";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
 interface DaftarBalitaKaderSectionProps {
+  namespace: {
+    router: AppRouterInstance;
+  };
   service: {
     query: {
       isLoading: boolean;
@@ -29,6 +33,7 @@ interface DaftarBalitaKaderSectionProps {
 const DaftarBalitaKaderSection: React.FC<DaftarBalitaKaderSectionProps> = ({
   service,
   state,
+  namespace,
 }) => {
   const resChildren = service.query.children;
 
@@ -111,7 +116,16 @@ const DaftarBalitaKaderSection: React.FC<DaftarBalitaKaderSectionProps> = ({
       <div className="w-full">
         <div className="w-full grid grid-cols-1 gap-2">
           {filteredChildren.map((items, key) => (
-            <ChildMeasurement res={items} index={key + 1} key={items.id} />
+            <ChildMeasurement
+              res={items}
+              index={key + 1}
+              key={items.id}
+              onDetail={() =>
+                namespace.router.push(
+                  `/kader/daftar-balita/detail-anak/${items.childId}`,
+                )
+              }
+            />
           ))}
         </div>
       </div>

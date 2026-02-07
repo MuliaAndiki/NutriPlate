@@ -233,7 +233,11 @@ class ProgresController {
               endPrograms: true,
             },
           },
-          task: true,
+          task: {
+            where: {
+              isBroadcast: true,
+            },
+          },
         },
         orderBy: { createdAt: 'desc' },
       });

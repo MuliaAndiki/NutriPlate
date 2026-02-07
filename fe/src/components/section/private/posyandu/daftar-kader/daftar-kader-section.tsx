@@ -64,7 +64,9 @@ const DaftarKaderPosyanduSection: React.FC<DaftarKaderPosyanduSectionProps> = ({
               index={index}
               data={item}
               onDetail={() =>
-                namespace.router.push(`/posyandu/daftar-kader/${item.kader.id}`)
+                namespace.router.push(
+                  `/posyandu/kelola-data/detail-kader/${item.kader.id}`,
+                )
               }
             />
           ))}

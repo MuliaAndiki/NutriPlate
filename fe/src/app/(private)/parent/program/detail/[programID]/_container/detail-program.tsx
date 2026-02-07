@@ -11,10 +11,11 @@ import { useState } from "react";
 const DetailProgramContainer = () => {
   const namespace = useAppNameSpace();
   const service = useService();
-  const { id } = useParams<{ id: string }>();
+  const { programID } = useParams<{ programID: string }>();
   const selector = useAppSelector((state) => state.posyandu);
+
   // program
-  const programQueryById = service.program.query.getProgramById(id);
+  const programQueryById = service.program.query.getProgramById(programID);
   const programDataById = programQueryById.data?.data ?? null;
   // child
   const childQuery = service.user.query.childAll({
@@ -29,18 +30,18 @@ const DetailProgramContainer = () => {
     service.programRegistraion.mutation.registerChild();
 
   const handleRegisterChildInProgram = () => {
-    if (!idChild || !id) return null;
+    if (!idChild || !programID) return null;
     registerChildMutation.mutate(
       {
         childId: idChild,
-        programId: id,
+        programId: programID,
       },
       {
         onSuccess: () => {
           namespace.router.back();
           //key
           namespace.queryClient.invalidateQueries({
-            queryKey: cacheKey.child.byID(id),
+            queryKey: cacheKey.child.byID(programID),
           });
         },
       },

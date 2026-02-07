@@ -1,12 +1,11 @@
 import ProgresListCard from "@/components/card/program/program-list";
-import { ProgresRespone } from "@/types/res";
-import { ChildRespone } from "@/types/res/child.respone";
+import { ChildRespone, ProgresRespone } from "@/types/res";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { ChevronLeft } from "lucide-react";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import Link from "next/link";
 
-interface ProgresProgramSectionProps {
+interface ProgramChildrenPosyanduSectionProps {
   namespace: {
     router: AppRouterInstance;
     pathname: string;
@@ -23,22 +22,22 @@ interface ProgresProgramSectionProps {
     section: string;
   };
 }
-const ProgresProgramSection: React.FC<ProgresProgramSectionProps> = ({
-  namespace,
-  service,
-  state,
-}) => {
-  // Falback Skeleton
+
+const ProgramChildrenPosyanduSection: React.FC<
+  ProgramChildrenPosyanduSectionProps
+> = ({ namespace, service, state }) => {
+  const resChildren = service.query.childType;
+  const resProgres = service.query.progres;
+
+  if (!resChildren || !resProgres) {
+    return <div>data tidak ditemukan...</div>;
+  }
   if (service.query.isLoading) {
     return <div>loading..</div>;
   }
-  const runningPrograms = service.query.progres.filter(
-    (item) => !item.isCompleted,
-  );
+  const runningPrograms = resProgres.filter((item) => !item.isCompleted);
 
-  const completedPrograms = service.query.progres.filter(
-    (item) => item.isCompleted,
-  );
+  const completedPrograms = resProgres.filter((item) => item.isCompleted);
   return (
     <section className="w-full min-h-screen flex justify-start p-2 items-center flex-col overflow-x-hidden space-y-3">
       <div className="w-full flex items-center justify-between">
@@ -70,7 +69,7 @@ const ProgresProgramSection: React.FC<ProgresProgramSectionProps> = ({
             pathname={namespace.pathname}
             onDetail={() =>
               namespace.router.push(
-                `/${state.role.toLocaleLowerCase()}/${state.section}/progres/${items.childId}/detail/${items.id}`,
+                `/${state.role.toLocaleLowerCase()}/${state.section}/detail-anak/${items.childId}/program/detail-program/${items.id}`,
               )
             }
           />
@@ -100,7 +99,7 @@ const ProgresProgramSection: React.FC<ProgresProgramSectionProps> = ({
                 pathname={namespace.pathname}
                 onDetail={() =>
                   namespace.router.push(
-                    `/${state.role.toLocaleLowerCase()}/${state.section}/progres/${items.childId}/detail/${items.id}`,
+                    `/${state.role.toLocaleLowerCase()}/${state.section}/detail-anak/${items.childId}/program/detail-program/${items.id}`,
                   )
                 }
               />
@@ -117,4 +116,4 @@ const ProgresProgramSection: React.FC<ProgresProgramSectionProps> = ({
   );
 };
 
-export default ProgresProgramSection;
+export default ProgramChildrenPosyanduSection;

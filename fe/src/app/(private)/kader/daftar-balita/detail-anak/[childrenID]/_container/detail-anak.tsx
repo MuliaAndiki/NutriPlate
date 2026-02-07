@@ -1,12 +1,12 @@
 "use client";
 
-import DetailAnakPosyanduSection from "@/components/section/private/posyandu/kelola-data/detail-anak/detail-anak-section";
+import DetailAnakKaderSection from "@/components/section/private/kader/daftar-balita/detail-anak/detail-anak-section";
 import { useAppSelector } from "@/hooks/dispatch/dispatch";
 import useService from "@/hooks/mutation/prop.service";
 import { useAppNameSpace } from "@/hooks/useAppNameSpace";
 import { useParams } from "next/navigation";
 
-const DetailAnakPosyanduContainer = () => {
+const DetailAnakKaderContainer = () => {
   const namespace = useAppNameSpace();
   const service = useService();
   const { childrenID } = useParams<{ childrenID: string }>();
@@ -33,10 +33,9 @@ const DetailAnakPosyanduContainer = () => {
   //segment
   const segments = namespace.pathname.split("/");
   const section = segments[2];
-
   return (
     <main className="w-full min-h-screen">
-      <DetailAnakPosyanduSection
+      <DetailAnakKaderSection
         namespace={{
           router: namespace.router,
         }}
@@ -61,4 +60,4 @@ const DetailAnakPosyanduContainer = () => {
   );
 };
 
-export default DetailAnakPosyanduContainer;
+export default DetailAnakKaderContainer;

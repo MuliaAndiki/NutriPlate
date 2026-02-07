@@ -9,12 +9,16 @@ const ProgramParentContainer = () => {
   const nameSpace = useAppNameSpace();
   const service = useService();
   const selector = useAppSelector((state) => state.posyandu);
+  //child
   const childQuery = service.user.query.childAll({
     role: selector.role!,
   });
   const childData = childQuery.data?.data ?? [];
+  //program
   const programsQuery = service.program.query.getPrograms();
   const programData = programsQuery.data?.data ?? [];
+
+  //state
   const [programFilter, setProgramFilter] = useState<"ALL" | "FOLLOWED">("ALL");
 
   return (

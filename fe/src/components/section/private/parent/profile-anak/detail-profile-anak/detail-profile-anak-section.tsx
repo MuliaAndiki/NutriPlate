@@ -137,7 +137,7 @@ const DetailProfileAnakHeroSection: React.FC<DetailProfileAnakProps> = ({
             Kelola informasi, kesehatan, dan pertumbuhan anak
           </p>
           <div className="w-full h-auto  space-y-2 ">
-            {RouteDetailChild.map((items, key) => (
+            {RouteDetailChild.slice(0, 3).map((items, key) => (
               <Button variant={"btn"} className="w-full h-auto " key={key}>
                 <Link
                   href={`${items.href(state.role.toLocaleLowerCase())}/${items.href2(state.section)}/${service.query.ChildCard.id}/${items.slice}`}

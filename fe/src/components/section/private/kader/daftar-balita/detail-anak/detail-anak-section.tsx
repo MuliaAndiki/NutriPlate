@@ -18,8 +18,7 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import { ChevronLeft } from "lucide-react";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import Link from "next/link";
-
-interface DetailAnakPosyanduSectionProps {
+interface DetailAnakKaderSectionProps {
   service: {
     query: {
       ChildCard: ChildRespone;
@@ -37,18 +36,16 @@ interface DetailAnakPosyanduSectionProps {
     section: any;
   };
 }
-const DetailAnakPosyanduSection: React.FC<DetailAnakPosyanduSectionProps> = ({
-  service,
+
+const DetailAnakKaderSection: React.FC<DetailAnakKaderSectionProps> = ({
   namespace,
+  service,
   state,
 }) => {
-  //not optimalizer
   if (service.query.isLoading) {
     return <div>loading...</div>;
   }
-
   const lastMeasurement = service.query.Measuremnt?.[0] ?? null;
-
   return (
     <div className="w-full min-h-screen flex justify-start items-center flex-col p-2">
       <div className="w-full flex  flex-col space-y-4">
@@ -136,7 +133,6 @@ const DetailAnakPosyanduSection: React.FC<DetailAnakPosyanduSectionProps> = ({
                 </Link>
               </Button>
             ))}
-
             <div className="w-full  rounded-lg border">
               <div className="w-full p-4 bg-primary rounded-t-lg">
                 <h1 className="text-lg font-bold text-background">
@@ -187,4 +183,4 @@ const DetailAnakPosyanduSection: React.FC<DetailAnakPosyanduSectionProps> = ({
   );
 };
 
-export default DetailAnakPosyanduSection;
+export default DetailAnakKaderSection;

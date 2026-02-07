@@ -3,10 +3,12 @@ import DaftarBalitaKaderSection from "@/components/section/private/kader/daftar-
 import { SidebarLayout } from "@/core/layouts/sidebar.layout";
 import { useAppSelector } from "@/hooks/dispatch/dispatch";
 import useService from "@/hooks/mutation/prop.service";
+import { useAppNameSpace } from "@/hooks/useAppNameSpace";
 import { NutritionStatus } from "@/types/partial";
 import { useState } from "react";
 
 const DaftarBalitaKaderContainer = () => {
+  const namespace = useAppNameSpace();
   const service = useService();
   const selector = useAppSelector((state) => state.posyandu);
 
@@ -18,6 +20,7 @@ const DaftarBalitaKaderContainer = () => {
 
   //state
   const [filter, setFilter] = useState<NutritionStatus | "Semua">("Semua");
+
   return (
     <SidebarLayout>
       <main className="w-full overflow-x-hidden min-h-screen">
@@ -31,6 +34,9 @@ const DaftarBalitaKaderContainer = () => {
           state={{
             filter: filter,
             setFilter: setFilter,
+          }}
+          namespace={{
+            router: namespace.router,
           }}
         />
       </main>

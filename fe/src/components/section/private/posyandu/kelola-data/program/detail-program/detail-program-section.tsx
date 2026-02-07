@@ -8,41 +8,31 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import { ChevronLeft } from "lucide-react";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
-interface ProgresDetailSectionProps {
+interface DetailProgramPosyanduSectionProps {
   namespace: {
     router: AppRouterInstance;
     pathname: string;
     alert: AlertContexType;
   };
   service: {
-    mutation: {
-      isPending: boolean;
-      onCancelPropgram: () => void;
-    };
     query: {
       progres: ProgresRespone;
       isLoading: boolean;
-      task: TaskProgramResponse[];
+      // task: TaskProgramResponse[];
     };
   };
   state: {
     taskId: string | null;
     setTaskId: React.Dispatch<React.SetStateAction<string | null>>;
   };
-  actions: {
-    onOpenCameraForTask: (taskId: string) => void;
-  };
 }
-const ProgresDetailSection: React.FC<ProgresDetailSectionProps> = ({
-  namespace,
-  service,
-  state,
-  actions,
-}) => {
-  const LIMIT = 9;
-  const tasks = service.query.task;
-  const slicedTasks = tasks.slice(0, LIMIT);
-  const remainingCount = tasks.length - LIMIT;
+const DetailProgramPosyanduSection: React.FC<
+  DetailProgramPosyanduSectionProps
+> = ({ namespace, service, state }) => {
+  // const LIMIT = 9;
+  // const tasks = service.query.task;
+  // const slicedTasks = tasks.slice(0, LIMIT);
+  // const remainingCount = tasks.length - LIMIT;
   if (service.query.isLoading) {
     return <div>loading...</div>;
   }
@@ -57,23 +47,6 @@ const ProgresDetailSection: React.FC<ProgresDetailSectionProps> = ({
           />
           <h1 className="font-bold text-xl">Detail Program</h1>
         </div>
-        <ButtonWrapper
-          variant={"destructive"}
-          disabled={service.mutation.isPending}
-          onClick={() => {
-            namespace.alert.modal({
-              title: "batalkan",
-              deskripsi: "yakin batalkan program ini?",
-              icon: "warning",
-              onConfirm: () => {
-                service.mutation.onCancelPropgram();
-              },
-            });
-          }}
-          className="text-background"
-        >
-          {service.mutation.isPending ? <Spinner /> : "Batalkan Program"}
-        </ButtonWrapper>
       </div>
       <div className="w-full">
         <ProgresListCard
@@ -107,43 +80,9 @@ const ProgresDetailSection: React.FC<ProgresDetailSectionProps> = ({
             Centang setelah selesai dilakukan.
           </h1>
         </div>
-        <div className="w-full space-y-2">
-          {slicedTasks.map((items) => (
-            <div key={items.id} className="w-full space-y-2">
-              <ListTask
-                res={items}
-                setTaskId={state.setTaskId}
-                taskId={state.taskId}
-              />
-
-              <button
-                onClick={() => actions.onOpenCameraForTask(items.id)}
-                className="w-full px-4 py-2 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg font-medium text-sm flex items-center justify-center space-x-2 transition"
-              >
-                <Icon icon="tabler:line-scan" width="20" height="20" />
-                <span> Scan untuk Selesaikan Task Ini</span>
-              </button>
-            </div>
-          ))}
-
-          {remainingCount > 0 && (
-            <div className="w-full text-center text-sm text-muted-foreground py-2">
-              +{remainingCount} tugas lainnya belum ditampilkan
-            </div>
-          )}
-        </div>
-      </div>
-      <div className="fixed bottom-20 left-0 w-full z-21 p-2">
-        <ButtonWrapper
-          className="w-full"
-          disabled={!state.taskId}
-          onClick={() => namespace.router.push("/parent/asupan-gizi")}
-        >
-          Tandai Selesai
-        </ButtonWrapper>
       </div>
     </section>
   );
 };
 
-export default ProgresDetailSection;
+export default DetailProgramPosyanduSection;
