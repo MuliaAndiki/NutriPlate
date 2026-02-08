@@ -17,6 +17,7 @@ export function useRegisterChildToProgram() {
       });
     },
     onError: (err) => {
+      console.log(err);
       nameSpace.alert.toast({
         title: "failed",
         message: "failed register child in program",

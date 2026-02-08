@@ -2,12 +2,7 @@ import { IMeasurement } from "../schema/measurement.schema";
 
 export type FormCreateMeasurement = Pick<
   IMeasurement,
-  | "childId"
-  | "measurementDate"
-  | "weightKg"
-  | "headCircumferenceCm"
-  | "heightCm"
-  | "note"
+  "measurementDate" | "weightKg" | "headCircumferenceCm" | "heightCm" | "note"
 >;
 
 export type FormUpdateMeasurement = Pick<

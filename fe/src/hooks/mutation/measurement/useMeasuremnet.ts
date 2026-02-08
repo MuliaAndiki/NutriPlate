@@ -1,3 +1,4 @@
+import { useCreateMeasuremnt } from "./state/mutation";
 import {
   useGetAllMeasurement,
   useGetGrowthChart,
@@ -7,7 +8,7 @@ import {
 export function useMeasuremnet() {
   return {
     mutation: {
-      //init
+      createMeasuremnt: useCreateMeasuremnt,
     },
     query: {
       growthChart: useGetGrowthChart,

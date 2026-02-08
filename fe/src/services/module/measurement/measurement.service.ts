@@ -1,11 +1,11 @@
 import { TResponse } from "@/pkg/react-query/mutation-wrapper.type";
-import { FormcreateMeasurement } from "@/types/form/measurement.type";
+import { FormCreateMeasurement } from "@/types/form";
 import AxiosClient from "@/utils/axios.client";
 
 class MeasurementApi {
   // Posyandu
   public async createMeasurementChild(
-    payload: FormcreateMeasurement,
+    payload: FormCreateMeasurement,
     id: string,
   ): Promise<TResponse<any>> {
     const res = await AxiosClient.post(`/api/measurement/${id}`, payload);
