@@ -16,6 +16,7 @@
     "turbo": "^2.0.0"
   },
   "dependencies": {
-    "framer-motion": "^12.27.1"
+    "framer-motion": "^12.27.1",
+    "swiper": "^12.1.0"
   }
 }
