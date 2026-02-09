@@ -3,6 +3,7 @@ import { ProgramRespone } from "@/types/res";
 import { ChevronLeft } from "lucide-react";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import DaftarProgramSectionSkeleton from "@/components/skeleton/private/kader/daftar-program/daftar-program-section-skeleton";
+import EmptyCard from "@/components/fallback/empty-card";
 
 interface DaftarProgramKaderSectionProps {
   namespace: {
@@ -32,15 +33,19 @@ const DaftarProgramKaderSection: React.FC<DaftarProgramKaderSectionProps> = ({
         <h1 className="text-2xl font-bold">Program Posyandu</h1>
       </div>
       <div className="w-full">
-        {service.query.program.map((items) => (
-          <ProgramCard
-            res={items}
-            key={items.id}
-            onClick={() =>
-              namespace.router.push(`/kader/daftar-program/detail/${items.id}`)
-            }
-          />
-        ))}
+        {service.query.program.length === 0 ? (
+          <EmptyCard message="Belum ada program tersedia" />
+        ) : (
+          service.query.program.map((items) => (
+            <ProgramCard
+              res={items}
+              key={items.id}
+              onClick={() =>
+                namespace.router.push(`/kader/daftar-program/detail/${items.id}`)
+              }
+            />
+          ))
+        )}
       </div>
     </section>
   );

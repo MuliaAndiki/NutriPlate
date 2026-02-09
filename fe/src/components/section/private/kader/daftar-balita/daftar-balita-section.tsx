@@ -1,9 +1,9 @@
-import ChildFallback from "@/components/fallback/child.fallback";
 import { ButtonWrapper } from "@/components/wrapper/ButtonWrapper";
 import { InputWrapper } from "@/components/wrapper/InputWrapper";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import DaftarBalitaSectionSkeleton from "@/components/skeleton/private/kader/daftar-balita/daftar-balita-section-skeleton";
 import DataNotFound from "@/components/empty/data-not-found";
+import EmptyCard from "@/components/fallback/empty-card";
 
 import {
   DropdownMenu,
@@ -30,6 +30,10 @@ interface DaftarBalitaKaderSectionProps {
   state: {
     filter: NutritionStatus | "Semua";
     setFilter: React.Dispatch<React.SetStateAction<NutritionStatus | "Semua">>;
+    search: {
+      value: string;
+      onChange: (value: string) => void;
+    };
   };
 }
 const DaftarBalitaKaderSection: React.FC<DaftarBalitaKaderSectionProps> = ({
@@ -46,10 +50,21 @@ const DaftarBalitaKaderSection: React.FC<DaftarBalitaKaderSectionProps> = ({
     return <DataNotFound />;
   }
   //filter
+  const searchKeyword = state.search.value.trim().toLowerCase();
+  const matchesSearch = (value?: string | null) =>
+    searchKeyword.length === 0 ||
+    (value ?? "").toLowerCase().includes(searchKeyword);
+
   const filteredChildren =
     state.filter === "Semua"
       ? resChildren
       : resChildren.filter((item) => item.nutritionStatus === state.filter);
+  const searchedChildren = filteredChildren.filter(
+    (item) =>
+      matchesSearch(item.child?.fullName) ||
+      matchesSearch(item.childId) ||
+      matchesSearch(item.child?.id),
+  );
   return (
     <section className="w-full min-h-screen flex items-center justify-start flex-col overflow-x-hidden relative p-2 space-y-2">
       <div className="w-full flex items-center justify-between ">
@@ -95,6 +110,8 @@ const DaftarBalitaKaderSection: React.FC<DaftarBalitaKaderSectionProps> = ({
         <InputWrapper
           className="w-full border rounded-lg"
           placeholder="cari disini...."
+          value={state.search.value}
+          onChange={(e) => state.search.onChange(e.target.value)}
           rightIcon={
             <Icon
               icon="material-symbols:search-rounded"
@@ -117,18 +134,22 @@ const DaftarBalitaKaderSection: React.FC<DaftarBalitaKaderSectionProps> = ({
       </div>
       <div className="w-full">
         <div className="w-full grid grid-cols-1 gap-2">
-          {filteredChildren.map((items, key) => (
-            <ChildMeasurement
-              res={items}
-              index={key + 1}
-              key={items.id}
-              onDetail={() =>
-                namespace.router.push(
-                  `/kader/daftar-balita/detail-anak/${items.childId}`,
-                )
-              }
-            />
-          ))}
+          {searchedChildren.length === 0 ? (
+            <EmptyCard message="Tidak ada data balita" />
+          ) : (
+            searchedChildren.map((items, key) => (
+              <ChildMeasurement
+                res={items}
+                index={key + 1}
+                key={items.id}
+                onDetail={() =>
+                  namespace.router.push(
+                    `/kader/daftar-balita/detail-anak/${items.childId}`,
+                  )
+                }
+              />
+            ))
+          )}
         </div>
       </div>
     </section>

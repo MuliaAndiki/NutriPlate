@@ -6,6 +6,7 @@ import ProgramStatusCard from "@/components/card/child/child-program-status-card
 import { Button } from "@/components/ui/button";
 import { RegistrationStatus } from "@/types/partial";
 import StatusSectionSkeleton from "@/components/skeleton/private/parent/program/status/status-section-skeleton";
+import EmptyCard from "@/components/fallback/empty-card";
 
 interface StatusProgramSectionProps {
   namespace: {
@@ -79,9 +80,7 @@ const StatusProgramSection: React.FC<StatusProgramSectionProps> = ({
 
       <div className="w-full space-y-2">
         {filteredData.length === 0 ? (
-          <p className="text-center text-muted-foreground text-sm">
-            Tidak ada data
-          </p>
+          <EmptyCard message="Tidak ada data" />
         ) : (
           filteredData.map((item) => (
             <ProgramStatusCard key={item.id} res={item} />

@@ -6,6 +6,7 @@ import { ChevronLeft } from "lucide-react";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import DetailOrangTuaSectionSkeleton from "@/components/skeleton/private/kader/daftar-orang-tua/detail/detail-orang-tua-section-skeleton";
 import DataNotFound from "@/components/empty/data-not-found";
+import EmptyCard from "@/components/fallback/empty-card";
 
 interface DetailParentSectionProps {
   namespace: {
@@ -52,9 +53,13 @@ const DetailParentSection: React.FC<DetailParentSectionProps> = ({
         <h1 className="text-2xl font-bold">Anak Terdaftar</h1>
       </div>
       <div className="w-full space-y-2">
-        {res.children?.map((items) => (
-          <ChildParent res={items} key={items.id} />
-        ))}
+        {res.children && res.children.length > 0 ? (
+          res.children.map((items) => (
+            <ChildParent res={items} key={items.id} />
+          ))
+        ) : (
+          <EmptyCard message="Belum ada data anak" />
+        )}
       </div>
     </section>
   );

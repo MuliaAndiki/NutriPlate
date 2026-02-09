@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/select";
 import PosyanduSelectionCard from "@/components/card/posyandu/posyanduSelectionCard";
 import { Spinner } from "@/components/ui/spinner";
+import EmptyCard from "@/components/fallback/empty-card";
 
 interface RegisterKaderFormProps {
   onRegisterKader: () => void;
@@ -31,34 +32,38 @@ const RegisterKaderForm: React.FC<RegisterKaderFormProps> = ({
       <h1 className="text-lg font-semibold">Daftar Posyandu</h1>
 
       <div className="w-full">
-        <Select
-          value={posyanduId}
-          onValueChange={(value) => setPosyanduId(value)}
-        >
-          <SelectTrigger className="w-full h-auto min-h-[64px]">
-            <SelectValue placeholder="Pilih Posyandu" />
-          </SelectTrigger>
+        {posyandu.length === 0 ? (
+          <EmptyCard message="Belum ada posyandu tersedia" />
+        ) : (
+          <Select
+            value={posyanduId}
+            onValueChange={(value) => setPosyanduId(value)}
+          >
+            <SelectTrigger className="w-full h-auto min-h-[64px]">
+              <SelectValue placeholder="Pilih Posyandu" />
+            </SelectTrigger>
 
-          <SelectContent>
-            <SelectGroup>
-              <SelectLabel>Posyandu</SelectLabel>
+            <SelectContent>
+              <SelectGroup>
+                <SelectLabel>Posyandu</SelectLabel>
 
-              {posyandu.map((items) => (
-                <SelectItem
-                  key={items.id}
-                  value={String(items.id)}
-                  className="w-full h-auto"
-                >
-                  <PosyanduSelectionCard res={items} />
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
+                {posyandu.map((items) => (
+                  <SelectItem
+                    key={items.id}
+                    value={String(items.id)}
+                    className="w-full h-auto"
+                  >
+                    <PosyanduSelectionCard res={items} />
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        )}
       </div>
 
       <button
-        disabled={!posyanduId || isPending}
+        disabled={!posyanduId || isPending || posyandu.length === 0}
         onClick={onRegisterKader}
         className="w-full py-2 rounded-lg bg-primary text-background text-sm font-medium disabled:opacity-50"
       >

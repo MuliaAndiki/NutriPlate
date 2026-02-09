@@ -7,6 +7,7 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import { ProgramRespone } from "@/types/res/program-with-progres";
 import Link from "next/link";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+import EmptyCard from "@/components/fallback/empty-card";
 
 interface ProgramSectionProps {
   service: {
@@ -56,13 +57,17 @@ const ProgramHeroSection: React.FC<ProgramSectionProps> = ({
         </div>
       )}
       <div className="w-full space-y-1 ">
-        {service.query.childType.slice(0, 2).map((items) => (
-          <ChildProgramCard
-            key={items.id}
-            childType={items}
-            pathname={namespace.pathname}
-          />
-        ))}
+        {service.query.childType.length === 0 ? (
+          <EmptyCard message="Belum ada data anak" />
+        ) : (
+          service.query.childType.slice(0, 2).map((items) => (
+            <ChildProgramCard
+              key={items.id}
+              childType={items}
+              pathname={namespace.pathname}
+            />
+          ))
+        )}
       </div>
       <ButtonWrapper
         className="w-full"
@@ -105,11 +110,13 @@ const ProgramHeroSection: React.FC<ProgramSectionProps> = ({
       </div>
       <div className="w-full space-y-2">
         {programRender.length === 0 ? (
-          <p className="text-sm text-foreground/60">
-            {state.programFilter === "FOLLOWED"
-              ? "Belum ada program yang diikuti anak"
-              : "Program belum tersedia"}
-          </p>
+          <EmptyCard
+            message={
+              state.programFilter === "FOLLOWED"
+                ? "Belum ada program yang diikuti anak"
+                : "Program belum tersedia"
+            }
+          />
         ) : (
           programRender.map((items) => (
             <ProgramCard

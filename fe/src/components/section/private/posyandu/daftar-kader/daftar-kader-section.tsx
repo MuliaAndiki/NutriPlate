@@ -8,6 +8,7 @@ import Link from "next/link";
 import KaderCard from "@/components/card/kader/kader-list";
 import DaftarKaderSectionSkeleton from "@/components/skeleton/private/posyandu/daftar-kader/daftar-kader-section-skeleton";
 import DataNotFound from "@/components/empty/data-not-found";
+import EmptyCard from "@/components/fallback/empty-card";
 
 interface DaftarKaderPosyanduSectionProps {
   namespace: {
@@ -54,9 +55,7 @@ const DaftarKaderPosyanduSection: React.FC<DaftarKaderPosyanduSectionProps> = ({
       </div>
 
       {service.query.kader.length === 0 ? (
-        <div className="text-center text-muted-foreground py-10">
-          Belum ada kader terdaftar
-        </div>
+        <EmptyCard message="Belum ada kader terdaftar" />
       ) : (
         <div className="flex flex-col space-y-2">
           {service.query.kader.map((item, index) => (

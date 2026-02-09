@@ -9,6 +9,7 @@ import { ChevronLeft } from "lucide-react";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import DetailProgramSectionSkeleton from "@/components/skeleton/private/kader/daftar-program/detail-program/detail-program-section-skeleton";
 import DataNotFound from "@/components/empty/data-not-found";
+import EmptyCard from "@/components/fallback/empty-card";
 
 interface DetailProgramKaderSectionProps {
   namespace: {
@@ -66,17 +67,21 @@ const DetailProgramKaderSection: React.FC<DetailProgramKaderSectionProps> = ({
       <AktifitasPropgramCard res={resProgram} />
       <BenefitPropgramCard res={resProgram} />
       <div className="w-full">
-        {childFilter.map((items) => (
-          <ChildSelectTask
-            res={items}
-            key={items.id}
-            onClick={() =>
-              namespace.router.push(
-                `/kader/daftar-program/detail/${resProgram.id}/task/${items.id}`,
-              )
-            }
-          />
-        ))}
+        {childFilter.length === 0 ? (
+          <EmptyCard message="Belum ada anak yang terdaftar" />
+        ) : (
+          childFilter.map((items) => (
+            <ChildSelectTask
+              res={items}
+              key={items.id}
+              onClick={() =>
+                namespace.router.push(
+                  `/kader/daftar-program/detail/${resProgram.id}/task/${items.id}`,
+                )
+              }
+            />
+          ))
+        )}
       </div>
     </section>
   );

@@ -31,6 +31,7 @@ import { ButtonWrapper } from "@/components/wrapper/ButtonWrapper";
 import { Spinner } from "@/components/ui/spinner";
 import PosyanduHomeCard from "@/components/card/posyandu/posyandu-home-card";
 import { Skeleton } from "@/components/ui/skeleton";
+import EmptyCard from "@/components/fallback/empty-card";
 
 interface DetailProfileAnakProps {
   namespace: {
@@ -197,11 +198,17 @@ const DetailProfileAnakHeroSection: React.FC<DetailProfileAnakProps> = ({
                     <SelectContent>
                       <SelectGroup>
                         <SelectLabel>Posyandu</SelectLabel>
-                        {service.query.Posyandu.map((items) => (
-                          <SelectItem key={items.id} value={items.id}>
-                            <PosyanduSelectionCard res={items} />
-                          </SelectItem>
-                        ))}
+                        {service.query.Posyandu.length === 0 ? (
+                          <div className="p-2">
+                            <EmptyCard message="Belum ada posyandu tersedia" />
+                          </div>
+                        ) : (
+                          service.query.Posyandu.map((items) => (
+                            <SelectItem key={items.id} value={items.id}>
+                              <PosyanduSelectionCard res={items} />
+                            </SelectItem>
+                          ))
+                        )}
                       </SelectGroup>
                     </SelectContent>
                   </Select>

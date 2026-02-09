@@ -37,6 +37,7 @@ const KelolaDataContainer = () => {
     "Semua",
   );
   const [registerKaderID, setRegisterKaderID] = useState<string>("");
+  const [searchValue, setSearchValue] = useState<string>("");
 
   //handler
   const handleDeleteKader = () => {
@@ -63,7 +64,7 @@ const KelolaDataContainer = () => {
               kader: kaderData,
               parent: parentData,
               isLoading:
-                measurementChildAllData.isLoading ||
+                measurementChildAllQuery.isLoading ||
                 kaderQuery.isLoading ||
                 parentQuery.isLoading,
             },
@@ -78,6 +79,10 @@ const KelolaDataContainer = () => {
             detailFilter: detailFilter,
             setDetailFilter: setDetailFilter,
             setRegisterKaderId: setRegisterKaderID,
+            search: {
+              value: searchValue,
+              onChange: setSearchValue,
+            },
           }}
         />
       </main>

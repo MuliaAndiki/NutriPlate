@@ -6,6 +6,7 @@ import { ChevronLeft } from "lucide-react";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import Link from "next/link";
 import ProgresSectionSkeleton from "@/components/skeleton/private/parent/program/progres/progres-section-skeleton";
+import EmptyCard from "@/components/fallback/empty-card";
 
 interface ProgresProgramSectionProps {
   namespace: {
@@ -64,25 +65,29 @@ const ProgresProgramSection: React.FC<ProgresProgramSectionProps> = ({
         <h1 className="text-2xl font-bold">Program Berjalan</h1>
       </div>
       <div className="w-full">
-        {runningPrograms.slice(0, 2).map((items) => (
-          <ProgresListCard
-            key={items.id}
-            res={items}
-            pathname={namespace.pathname}
-            onDetail={() =>
-              namespace.router.push(
-                `/${state.role.toLocaleLowerCase()}/${state.section}/progres/${items.childId}/detail/${items.id}`,
-              )
-            }
-          />
-        ))}
+        {runningPrograms.length === 0 ? (
+          <EmptyCard message="Belum ada program berjalan" />
+        ) : (
+          runningPrograms.slice(0, 2).map((items) => (
+            <ProgresListCard
+              key={items.id}
+              res={items}
+              pathname={namespace.pathname}
+              onDetail={() =>
+                namespace.router.push(
+                  `/${state.role.toLocaleLowerCase()}/${state.section}/progres/${items.childId}/detail/${items.id}`,
+                )
+              }
+            />
+          ))
+        )}
         {runningPrograms.length > 2 && (
           <Link href="#">
             <h1 className="font-light underline text-end">Selengkapnya</h1>
           </Link>
         )}
       </div>
-      {completedPrograms.length > 0 && (
+      {completedPrograms.length > 0 ? (
         <>
           <div className="w-full flex items-center">
             <Icon
@@ -113,6 +118,8 @@ const ProgresProgramSection: React.FC<ProgresProgramSectionProps> = ({
             )}
           </div>
         </>
+      ) : (
+        <EmptyCard message="Belum ada program selesai" />
       )}
     </section>
   );

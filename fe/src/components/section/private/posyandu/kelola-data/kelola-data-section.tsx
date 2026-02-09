@@ -2,6 +2,7 @@ import ChildMeasurement from "@/components/card/child/child-measuremet";
 import KaderCard from "@/components/card/kader/kader-list";
 import KelolaDataSectionSkeleton from "@/components/skeleton/private/posyandu/kelola-data/kelola-data-section-skeleton";
 import DataNotFound from "@/components/empty/data-not-found";
+import EmptyCard from "@/components/fallback/empty-card";
 
 import ParentCardList from "@/components/card/parent/parent-list";
 import ChildFallback from "@/components/fallback/child.fallback";
@@ -44,6 +45,10 @@ interface KelolaDataSectionProps {
       React.SetStateAction<NutritionStatus | "Semua">
     >;
     setRegisterKaderId: React.Dispatch<React.SetStateAction<string>>;
+    search: {
+      value: string;
+      onChange: (value: string) => void;
+    };
   };
 }
 const KelolaDataSection: React.FC<KelolaDataSectionProps> = ({
@@ -63,23 +68,46 @@ const KelolaDataSection: React.FC<KelolaDataSectionProps> = ({
   }
 
   //filter
+  const searchKeyword = state.search.value.trim().toLowerCase();
+  const matchesSearch = (value?: string | null) =>
+    searchKeyword.length === 0 ||
+    (value ?? "").toLowerCase().includes(searchKeyword);
+
   const filteredChildren =
     state.detailFilter === "Semua"
       ? resChildren
       : resChildren.filter(
           (item) => item.nutritionStatus === state.detailFilter,
         );
+  const searchedChildren = filteredChildren.filter(
+    (item) =>
+      matchesSearch(item.child?.fullName) ||
+      matchesSearch(item.childId) ||
+      matchesSearch(item.child?.id),
+  );
+  const searchedParent = resParent.filter(
+    (item) =>
+      matchesSearch(item.fullName) ||
+      matchesSearch(item.email) ||
+      matchesSearch(item.phone),
+  );
+  const searchedKader = resKader.filter(
+    (item) =>
+      matchesSearch(item.kader?.fullName) ||
+      matchesSearch(item.kader?.email) ||
+      matchesSearch(item.kader?.phone),
+  );
 
   const renderContent = () => {
     switch (state.filter) {
       case "CHILDREN":
-        if (resChildren.length === 0) {
+        if (searchedChildren.length === 0) {
           return <ChildFallback />;
         }
 
         return (
           <div className="w-full grid grid-cols-1 gap-2">
-            {filteredChildren.map((items, key) => (
+            {searchedChildren.map((items, key) => (
               <ChildMeasurement
                 res={items}
                 index={key + 1}
@@ -95,13 +123,13 @@ const KelolaDataSection: React.FC<KelolaDataSectionProps> = ({
         );
 
       case "PARENT":
-        if (resParent.length === 0) {
-          return <div>Tidak ada data parent</div>;
+        if (searchedParent.length === 0) {
+          return <EmptyCard message="Tidak ada data parent" />;
         }
 
         return (
           <div className="w-full grid grid-cols-1 gap-2">
-            {resParent.map((items, key) => (
+            {searchedParent.map((items, key) => (
               <ParentCardList
                 data={items}
                 index={key}
@@ -117,13 +145,13 @@ const KelolaDataSection: React.FC<KelolaDataSectionProps> = ({
         );
 
       case "KADER":
-        if (resKader.length === 0) {
-          return <div>Tidak ada data kader</div>;
+        if (searchedKader.length === 0) {
+          return <EmptyCard message="Tidak ada data kader" />;
         }
 
         return (
           <div className="w-full grid grid-cols-1 gap-2">
-            {resKader.map((items, idx) => (
+            {searchedKader.map((items, idx) => (
               <KaderCard
                 data={items}
                 index={idx}
@@ -153,6 +181,8 @@ const KelolaDataSection: React.FC<KelolaDataSectionProps> = ({
       <InputWrapper
         className="w-full border rounded-lg"
         placeholder="cari disini..."
+        value={state.search.value}
+        onChange={(e) => state.search.onChange(e.target.value)}
         rightIcon={
           <Icon
             icon="ic:baseline-search"

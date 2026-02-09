@@ -3,6 +3,7 @@ import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.share
 import HistoryFood from "@/components/card/food/history-food";
 import { FoodIntakeResponse } from "@/types/res";
 import RiwayatAsupanGiziSectionSkeleton from "@/components/skeleton/private/parent/asupan-gizi/riwayat-asupan-gizi/riwayat-asupan-gizi-section-skeleton";
+import EmptyCard from "@/components/fallback/empty-card";
 
 interface RiwayatGiziSectionProps {
   namespace: {
@@ -31,9 +32,13 @@ const RiwayatAsupanGiziHeroSection: React.FC<RiwayatGiziSectionProps> = ({
         </h1>
       </div>
       <div className="w-full space-y-3 ">
-        {service.query.history.map((items, key) => (
-          <HistoryFood res={items} key={key} />
-        ))}
+        {service.query.history.length === 0 ? (
+          <EmptyCard message="Belum ada riwayat asupan gizi" />
+        ) : (
+          service.query.history.map((items, key) => (
+            <HistoryFood res={items} key={key} />
+          ))
+        )}
       </div>
     </div>
   );

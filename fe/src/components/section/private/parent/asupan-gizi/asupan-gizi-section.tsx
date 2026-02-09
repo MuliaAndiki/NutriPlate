@@ -13,6 +13,7 @@ import {
   GetWeightIorRespone,
 } from "@/types/res";
 import AsupanGiziSectionSkeleton from "@/components/skeleton/private/parent/asupan-gizi/asupan-gizi-section-skeleton";
+import EmptyCard from "@/components/fallback/empty-card";
 
 interface AsupanGiziSectionProps {
   service: {
@@ -117,9 +118,13 @@ const AsupanGiziHeroSection: React.FC<AsupanGiziSectionProps> = ({
       </div>
 
       <div className="w-full space-y-3 ">
-        {service.query.historyFood.slice(0, 4).map((items) => (
-          <HistoryFood res={items} key={items.id} />
-        ))}
+        {service.query.historyFood.length === 0 ? (
+          <EmptyCard message="Belum ada riwayat asupan gizi" />
+        ) : (
+          service.query.historyFood
+            .slice(0, 4)
+            .map((items) => <HistoryFood res={items} key={items.id} />)
+        )}
       </div>
 
       <PopUp

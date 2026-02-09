@@ -17,6 +17,15 @@ import {
   type ChartConfig,
 } from "@/components/ui/chart";
 
+// not fix
+interface LaporanSectionProps {
+  service: {
+    query: {
+      isLoading: boolean;
+    };
+  };
+}
+
 const LaporanSection = () => {
   const chartData = [
     { browser: "chrome", visitors: 275, fill: "var(--color-chrome)" },

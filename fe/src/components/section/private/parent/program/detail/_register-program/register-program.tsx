@@ -2,6 +2,7 @@ import ChildProgramCard from "@/components/card/child/child-program-card";
 import { Spinner } from "@/components/ui/spinner";
 import { ButtonWrapper } from "@/components/wrapper/ButtonWrapper";
 import { ChildRespone } from "@/types/res/child.respone";
+import EmptyCard from "@/components/fallback/empty-card";
 
 interface RegisterProgramProps {
   children: ChildRespone[];
@@ -27,15 +28,19 @@ const RegisterProgram: React.FC<RegisterProgramProps> = ({
     <section className="w-full h-full flex items-center justify-center flex-col space-y-3">
       <h1 className="text-lg font-bold">Pilih anak yang akan ikut program</h1>
       <div className="w-full">
-        {childFilter.map((items) => (
-          <ChildProgramCard
-            idChild={idChild}
-            setIdChild={setIdChild}
-            childType={items}
-            key={items.id}
-            pathname={pathname}
-          />
-        ))}
+        {childFilter.length === 0 ? (
+          <EmptyCard message="Semua anak sudah terdaftar program" />
+        ) : (
+          childFilter.map((items) => (
+            <ChildProgramCard
+              idChild={idChild}
+              setIdChild={setIdChild}
+              childType={items}
+              key={items.id}
+              pathname={pathname}
+            />
+          ))
+        )}
       </div>
       <ButtonWrapper
         className="w-full h-auto"

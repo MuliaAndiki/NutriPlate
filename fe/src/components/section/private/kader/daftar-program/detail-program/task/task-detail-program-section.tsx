@@ -12,6 +12,7 @@ import CreateTaskForm from "./_create-task/create-task";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import TaskDetailProgramSectionSkeleton from "@/components/skeleton/private/kader/daftar-program/detail-program/task/task-detail-program-section-skeleton";
 import DataNotFound from "@/components/empty/data-not-found";
+import EmptyCard from "@/components/fallback/empty-card";
 
 interface TaskKaderSectionProps {
   namespace: {
@@ -94,9 +95,7 @@ const TaskKaderSection: React.FC<TaskKaderSectionProps> = ({
             ))}
           </div>
         ) : (
-          <div className="w-full border border-foreground/30 bg-foreground/20 rounded-lg flex justify-center p-2 ">
-            Belum ada task ditambahkan
-          </div>
+          <EmptyCard message="Belum ada task ditambahkan" />
         )}
       </div>
 

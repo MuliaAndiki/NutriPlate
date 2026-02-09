@@ -6,6 +6,7 @@ import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.share
 import Link from "next/link";
 import ProgramChildrenSectionSkeleton from "@/components/skeleton/private/posyandu/kelola-data/program/program-children-section-skeleton";
 import DataNotFound from "@/components/empty/data-not-found";
+import EmptyCard from "@/components/fallback/empty-card";
 
 interface ProgramChildrenPosyanduSectionProps {
   namespace: {
@@ -64,25 +65,29 @@ const ProgramChildrenPosyanduSection: React.FC<
         <h1 className="text-2xl font-bold">Program Berjalan</h1>
       </div>
       <div className="w-full">
-        {runningPrograms.slice(0, 2).map((items) => (
-          <ProgresListCard
-            key={items.id}
-            res={items}
-            pathname={namespace.pathname}
-            onDetail={() =>
-              namespace.router.push(
-                `/${state.role.toLocaleLowerCase()}/${state.section}/detail-anak/${items.childId}/program/detail-program/${items.id}`,
-              )
-            }
-          />
-        ))}
+        {runningPrograms.length === 0 ? (
+          <EmptyCard message="Belum ada program berjalan" />
+        ) : (
+          runningPrograms.slice(0, 2).map((items) => (
+            <ProgresListCard
+              key={items.id}
+              res={items}
+              pathname={namespace.pathname}
+              onDetail={() =>
+                namespace.router.push(
+                  `/${state.role.toLocaleLowerCase()}/${state.section}/detail-anak/${items.childId}/program/detail-program/${items.id}`,
+                )
+              }
+            />
+          ))
+        )}
         {runningPrograms.length > 2 && (
           <Link href="#">
             <h1 className="font-light underline text-end">Selengkapnya</h1>
           </Link>
         )}
       </div>
-      {completedPrograms.length > 0 && (
+      {completedPrograms.length > 0 ? (
         <>
           <div className="w-full flex items-center">
             <Icon
@@ -113,6 +118,8 @@ const ProgramChildrenPosyanduSection: React.FC<
             )}
           </div>
         </>
+      ) : (
+        <EmptyCard message="Belum ada program selesai" />
       )}
     </section>
   );

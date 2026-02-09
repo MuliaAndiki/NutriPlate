@@ -8,6 +8,7 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import { ChevronLeft } from "lucide-react";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import DetailProgresSectionSkeleton from "@/components/skeleton/private/parent/program/progres/detail/detail-progres.section-skeleton";
+import EmptyCard from "@/components/fallback/empty-card";
 
 interface ProgresDetailSectionProps {
   namespace: {
@@ -109,23 +110,27 @@ const ProgresDetailSection: React.FC<ProgresDetailSectionProps> = ({
           </h1>
         </div>
         <div className="w-full space-y-2">
-          {slicedTasks.map((items) => (
-            <div key={items.id} className="w-full space-y-2">
-              <ListTask
-                res={items}
-                setTaskId={state.setTaskId}
-                taskId={state.taskId}
-              />
+          {slicedTasks.length === 0 ? (
+            <EmptyCard message="Belum ada task untuk hari ini" />
+          ) : (
+            slicedTasks.map((items) => (
+              <div key={items.id} className="w-full space-y-2">
+                <ListTask
+                  res={items}
+                  setTaskId={state.setTaskId}
+                  taskId={state.taskId}
+                />
 
-              <button
-                onClick={() => actions.onOpenCameraForTask(items.id)}
-                className="w-full px-4 py-2 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg font-medium text-sm flex items-center justify-center space-x-2 transition"
-              >
-                <Icon icon="tabler:line-scan" width="20" height="20" />
-                <span> Scan untuk Selesaikan Task Ini</span>
-              </button>
-            </div>
-          ))}
+                <button
+                  onClick={() => actions.onOpenCameraForTask(items.id)}
+                  className="w-full px-4 py-2 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg font-medium text-sm flex items-center justify-center space-x-2 transition"
+                >
+                  <Icon icon="tabler:line-scan" width="20" height="20" />
+                  <span> Scan untuk Selesaikan Task Ini</span>
+                </button>
+              </div>
+            ))
+          )}
 
           {remainingCount > 0 && (
             <div className="w-full text-center text-sm text-muted-foreground py-2">

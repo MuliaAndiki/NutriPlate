@@ -7,6 +7,7 @@ import Link from "next/link";
 import PosyanduHomeCard from "@/components/card/posyandu/posyandu-home-card";
 import DaftarPosyanduSectionSkeleton from "@/components/skeleton/private/kader/daftar-posyandu/daftar-posyandu-section-skeleton";
 import DataNotFound from "@/components/empty/data-not-found";
+import EmptyCard from "@/components/fallback/empty-card";
 interface DaftarPosyanduKaderSectionProps {
   namespace: {
     router: AppRouterInstance;
@@ -66,7 +67,7 @@ const DaftarPosyanduKaderSection: React.FC<DaftarPosyanduKaderSectionProps> = ({
 
       <div className="flex flex-col space-y-3">
         {service.query.posyandu.length === 0 ? (
-          <DataNotFound message="Posyandu tidak ditemukan" />
+          <EmptyCard message="Posyandu tidak ditemukan" />
         ) : (
           service.query.posyandu.map((item) => (
             <PosyanduHomeCard key={item.id} res={item} />

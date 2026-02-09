@@ -13,6 +13,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import EmptyCard from "@/components/fallback/empty-card";
 import { NotifTypeInterface } from "@/types/partial";
 import { Button } from "@/components/ui/button";
 
@@ -158,13 +159,17 @@ const NotifikasiParentSection: React.FC<NotifikasiParentSectionProp> = ({
         ))}
       </div>
       <div className="w-full space-y-2">
-        {filtered.map((items) => (
-          <NotifikasiCard
-            key={items.id}
-            res={items}
-            isRead={readStatus[items.id] ?? false}
-          />
-        ))}
+        {filtered.length === 0 ? (
+          <EmptyCard message="Tidak ada notifikasi" />
+        ) : (
+          filtered.map((items) => (
+            <NotifikasiCard
+              key={items.id}
+              res={items}
+              isRead={readStatus[items.id] ?? false}
+            />
+          ))
+        )}
       </div>
     </div>
   );

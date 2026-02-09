@@ -20,6 +20,7 @@ const DaftarBalitaKaderContainer = () => {
 
   //state
   const [filter, setFilter] = useState<NutritionStatus | "Semua">("Semua");
+  const [searchValue, setSearchValue] = useState<string>("");
 
   return (
     <SidebarLayout>
@@ -34,6 +35,10 @@ const DaftarBalitaKaderContainer = () => {
           state={{
             filter: filter,
             setFilter: setFilter,
+            search: {
+              value: searchValue,
+              onChange: setSearchValue,
+            },
           }}
           namespace={{
             router: namespace.router,

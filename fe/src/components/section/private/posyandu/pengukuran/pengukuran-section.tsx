@@ -5,6 +5,7 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import PengukuranSectionSkeleton from "@/components/skeleton/private/posyandu/pengukuran/pengukuran-section-skeleton";
 import DataNotFound from "@/components/empty/data-not-found";
+import EmptyCard from "@/components/fallback/empty-card";
 
 interface PengukuranSectionProps {
   service: {
@@ -50,17 +51,21 @@ const PengukuranSection: React.FC<PengukuranSectionProps> = ({
         <h1 className="text-lg font-bold">Daftar Balita</h1>
       </div>
       <div className="w-full space-y-2">
-        {resChildren.map((items) => (
-          <ChildList
-            res={items}
-            key={items.id}
-            onClick={() =>
-              namespace.router.push(
-                `/posyandu/pengukuran/detail-pengukuran/${items.id}`,
-              )
-            }
-          />
-        ))}
+        {resChildren.length === 0 ? (
+          <EmptyCard message="Belum ada data balita" />
+        ) : (
+          resChildren.map((items) => (
+            <ChildList
+              res={items}
+              key={items.id}
+              onClick={() =>
+                namespace.router.push(
+                  `/posyandu/pengukuran/detail-pengukuran/${items.id}`,
+                )
+              }
+            />
+          ))
+        )}
       </div>
     </section>
   );

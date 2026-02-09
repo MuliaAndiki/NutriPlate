@@ -48,7 +48,7 @@ const DaftarOrangTuaSection: React.FC<DaftarOrangTuaSectionProps> = ({
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
         <Input
-          placeholder="Cari disini..."
+          placeholder="cari disini..."
           className="pl-9"
           value={state.value}
           onChange={(e) => state.onChange(e.target.value)}

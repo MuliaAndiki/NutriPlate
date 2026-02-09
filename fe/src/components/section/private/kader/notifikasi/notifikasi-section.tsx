@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { NotifTypeInterface } from "@/types/partial";
 import { Button } from "@/components/ui/button";
+import EmptyCard from "@/components/fallback/empty-card";
 
 interface NotifikasiKaderSectionProp {
   namespace: {
@@ -163,13 +164,17 @@ const NotifikasiKaderSection: React.FC<NotifikasiKaderSectionProp> = ({
         ))}
       </div>
       <div className="w-full space-y-2">
-        {filtered.map((items) => (
-          <NotifikasiCard
-            key={items.id}
-            res={items}
-            isRead={readStatus[items.id] ?? false}
-          />
-        ))}
+        {filtered.length === 0 ? (
+          <EmptyCard message="Tidak ada notifikasi" />
+        ) : (
+          filtered.map((items) => (
+            <NotifikasiCard
+              key={items.id}
+              res={items}
+              isRead={readStatus[items.id] ?? false}
+            />
+          ))
+        )}
       </div>
     </section>
   );
