@@ -3,6 +3,8 @@ import { InputWrapper } from "@/components/wrapper/InputWrapper";
 import { ChildRespone } from "@/types/res";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+import PengukuranSectionSkeleton from "@/components/skeleton/private/posyandu/pengukuran/pengukuran-section-skeleton";
+import DataNotFound from "@/components/empty/data-not-found";
 
 interface PengukuranSectionProps {
   service: {
@@ -22,11 +24,11 @@ const PengukuranSection: React.FC<PengukuranSectionProps> = ({
 }) => {
   const resChildren = service.query.children;
 
-  if (!resChildren) {
-    return <div>data tidak ditemukan</div>;
-  }
   if (service.query.isLoading) {
-    return <div>loading...</div>;
+    return <PengukuranSectionSkeleton />;
+  }
+  if (!resChildren) {
+    return <DataNotFound />;
   }
   return (
     <section className="flex w-full min-h-screen flex-col items-center justify-start overflow-x-hidden space-y-2 p-2">

@@ -7,6 +7,8 @@ import { camelCaseToWords } from "@/utils/string.format";
 import { formatDateTime } from "@/utils/time.format";
 import { ChevronLeft } from "lucide-react";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+import DetailProgramSectionSkeleton from "@/components/skeleton/private/kader/daftar-program/detail-program/detail-program-section-skeleton";
+import DataNotFound from "@/components/empty/data-not-found";
 
 interface DetailProgramKaderSectionProps {
   namespace: {
@@ -28,16 +30,17 @@ const DetailProgramKaderSection: React.FC<DetailProgramKaderSectionProps> = ({
   const resProgram = service.query.program;
   const resChildren = service.query.children;
 
+  if (service.query.isLoading) {
+    return <DetailProgramSectionSkeleton />;
+  }
+  // need fallback
+  if (!resProgram || !resChildren) {
+    return <DataNotFound />;
+  }
+
   const childFilter = resChildren.filter((item) =>
     item.programProgress?.some((progresId) => progresId.programId),
   );
-  // need fallback
-  if (!resProgram || !resChildren) {
-    return <div>data tidak di temukan</div>;
-  }
-  if (service.query.isLoading) {
-    return <div>loading...</div>;
-  }
   return (
     <section className="-full min-h-screen flex justify-start items-center flex-col p-2 space-y-2">
       <div className="w-full flex items-center">

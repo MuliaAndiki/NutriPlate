@@ -7,6 +7,7 @@ import {
   PosyanduRespone,
   UserResponse,
 } from "@/types/res";
+import HomeKaderSectionSkeleton from "@/components/skeleton/private/kader/home/home-kader-section-skeleton";
 import { PopUpNavigate } from "@/types/ui";
 import PopUp from "@/components/ui/pop-up";
 
@@ -51,7 +52,7 @@ const HomeKaderHeroSection: React.FC<HomeKaderHeroSectionProps> = ({
   namespace,
 }) => {
   if (service.query.isLoading) {
-    return <div>loading..</div>;
+    return <HomeKaderSectionSkeleton />;
   }
   const buttonRouting = [
     {

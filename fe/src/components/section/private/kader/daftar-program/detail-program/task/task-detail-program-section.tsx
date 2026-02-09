@@ -10,6 +10,8 @@ import PopUp from "@/components/ui/pop-up";
 import { FormCreateTask, FormUpdateTask } from "@/types/form";
 import CreateTaskForm from "./_create-task/create-task";
 import { Icon } from "@iconify/react/dist/iconify.js";
+import TaskDetailProgramSectionSkeleton from "@/components/skeleton/private/kader/daftar-program/detail-program/task/task-detail-program-section-skeleton";
+import DataNotFound from "@/components/empty/data-not-found";
 
 interface TaskKaderSectionProps {
   namespace: {
@@ -49,11 +51,11 @@ const TaskKaderSection: React.FC<TaskKaderSectionProps> = ({
 }) => {
   const resChildren = service.query.children;
   const resTask = service.query.task;
-  if (!resChildren || !resTask) {
-    return <div>data tidak di temukan</div>;
-  }
   if (service.query.isLoading) {
-    return <div>loading..</div>;
+    return <TaskDetailProgramSectionSkeleton />;
+  }
+  if (!resChildren || !resTask) {
+    return <DataNotFound />;
   }
   return (
     <section className="-full min-h-screen flex justify-start items-center flex-col p-2 space-y-2">

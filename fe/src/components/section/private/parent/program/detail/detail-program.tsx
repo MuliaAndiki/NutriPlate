@@ -11,6 +11,7 @@ import { ChevronLeft } from "lucide-react";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import RegisterProgram from "./_register-program/register-program";
 import { ChildRespone } from "@/types/res/child.respone";
+import DetailProgramSkeleton from "@/components/skeleton/private/parent/program/detail/detail-program-skeleton";
 
 interface DetailProgramSectionProps {
   service: {
@@ -42,7 +43,7 @@ const DetailProgramHeroSection: React.FC<DetailProgramSectionProps> = ({
 }) => {
   //falback skeleton
   if (service.query.isLoading) {
-    return <div>loading....</div>;
+    return <DetailProgramSkeleton />;
   }
   return (
     <section className="w-full flex justify-start items-center flex-col min-h-screen overflow-x-hidden p-2 space-y-4">

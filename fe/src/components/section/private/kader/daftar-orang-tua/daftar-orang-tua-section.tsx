@@ -5,6 +5,8 @@ import { ParentListResponse } from "@/types/res";
 import { ChevronLeft, Search } from "lucide-react";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import ParentCard from "@/components/card/parent/parent-list";
+import DaftarOrangTuaSectionSkeleton from "@/components/skeleton/private/kader/daftar-orang-tua/daftar-orang-tua-section-skeleton";
+import DataNotFound from "@/components/empty/data-not-found";
 interface DaftarOrangTuaSectionProps {
   namespace: {
     router: AppRouterInstance;
@@ -27,13 +29,10 @@ const DaftarOrangTuaSection: React.FC<DaftarOrangTuaSectionProps> = ({
   state,
 }) => {
   if (service.query.isLoading) {
-    return (
-      <section className="w-full min-h-screen flex items-center justify-center">
-        <p className="text-muted-foreground">
-          Belum ada data orang tua yang tersedia...
-        </p>
-      </section>
-    );
+    return <DaftarOrangTuaSectionSkeleton />;
+  }
+  if (!service.query.parent) {
+    return <DataNotFound />;
   }
 
   return (
@@ -58,9 +57,7 @@ const DaftarOrangTuaSection: React.FC<DaftarOrangTuaSectionProps> = ({
 
       <div className="flex flex-col space-y-2">
         {service.query.parent.length === 0 ? (
-          <div className="text-center text-muted-foreground py-10">
-            Data tidak ditemukan
-          </div>
+          <DataNotFound />
         ) : (
           service.query.parent.map((item, index) => (
             <ParentCard

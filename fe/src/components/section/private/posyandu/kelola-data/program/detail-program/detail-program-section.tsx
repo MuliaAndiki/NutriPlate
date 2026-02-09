@@ -7,6 +7,7 @@ import { AlertContexType } from "@/types/ui";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { ChevronLeft } from "lucide-react";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+import DetailProgramSectionSkeleton from "@/components/skeleton/private/posyandu/kelola-data/program/detail-program/detail-program-section-skeleton";
 
 interface DetailProgramPosyanduSectionProps {
   namespace: {
@@ -34,7 +35,7 @@ const DetailProgramPosyanduSection: React.FC<
   // const slicedTasks = tasks.slice(0, LIMIT);
   // const remainingCount = tasks.length - LIMIT;
   if (service.query.isLoading) {
-    return <div>loading...</div>;
+    return <DetailProgramSectionSkeleton />;
   }
   return (
     <section className="w-full min-h-screen overflow-x-hidden flex items-center justify-start flex-col space-y-2 p-2">

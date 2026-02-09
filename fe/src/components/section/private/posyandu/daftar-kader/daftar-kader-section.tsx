@@ -6,6 +6,8 @@ import { ChevronLeft } from "lucide-react";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import Link from "next/link";
 import KaderCard from "@/components/card/kader/kader-list";
+import DaftarKaderSectionSkeleton from "@/components/skeleton/private/posyandu/daftar-kader/daftar-kader-section-skeleton";
+import DataNotFound from "@/components/empty/data-not-found";
 
 interface DaftarKaderPosyanduSectionProps {
   namespace: {
@@ -24,11 +26,10 @@ const DaftarKaderPosyanduSection: React.FC<DaftarKaderPosyanduSectionProps> = ({
   service,
 }) => {
   if (service.query.isLoading) {
-    return (
-      <section className="w-full min-h-screen flex items-center justify-center">
-        <p className="text-muted-foreground">Memuat data kader...</p>
-      </section>
-    );
+    return <DaftarKaderSectionSkeleton />;
+  }
+  if (!service.query.kader) {
+    return <DataNotFound />;
   }
 
   return (

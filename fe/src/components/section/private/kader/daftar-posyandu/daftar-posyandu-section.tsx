@@ -5,6 +5,8 @@ import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.share
 import { Icon } from "@iconify/react/dist/iconify.js";
 import Link from "next/link";
 import PosyanduHomeCard from "@/components/card/posyandu/posyandu-home-card";
+import DaftarPosyanduSectionSkeleton from "@/components/skeleton/private/kader/daftar-posyandu/daftar-posyandu-section-skeleton";
+import DataNotFound from "@/components/empty/data-not-found";
 interface DaftarPosyanduKaderSectionProps {
   namespace: {
     router: AppRouterInstance;
@@ -26,7 +28,10 @@ const DaftarPosyanduKaderSection: React.FC<DaftarPosyanduKaderSectionProps> = ({
   service,
 }) => {
   if (service.query.isLoading) {
-    return <div className="p-4">Loading...</div>;
+    return <DaftarPosyanduSectionSkeleton />;
+  }
+  if (!service.query.posyandu) {
+    return <DataNotFound />;
   }
 
   return (
@@ -61,9 +66,7 @@ const DaftarPosyanduKaderSection: React.FC<DaftarPosyanduKaderSectionProps> = ({
 
       <div className="flex flex-col space-y-3">
         {service.query.posyandu.length === 0 ? (
-          <p className="text-center text-muted-foreground py-10">
-            Posyandu tidak ditemukan
-          </p>
+          <DataNotFound message="Posyandu tidak ditemukan" />
         ) : (
           service.query.posyandu.map((item) => (
             <PosyanduHomeCard key={item.id} res={item} />

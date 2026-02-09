@@ -4,6 +4,8 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import { ChevronLeft } from "lucide-react";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import Link from "next/link";
+import ProgramChildrenSectionSkeleton from "@/components/skeleton/private/posyandu/kelola-data/program/program-children-section-skeleton";
+import DataNotFound from "@/components/empty/data-not-found";
 
 interface ProgramChildrenPosyanduSectionProps {
   namespace: {
@@ -29,11 +31,11 @@ const ProgramChildrenPosyanduSection: React.FC<
   const resChildren = service.query.childType;
   const resProgres = service.query.progres;
 
-  if (!resChildren || !resProgres) {
-    return <div>data tidak ditemukan...</div>;
-  }
   if (service.query.isLoading) {
-    return <div>loading..</div>;
+    return <ProgramChildrenSectionSkeleton />;
+  }
+  if (!resChildren || !resProgres) {
+    return <DataNotFound />;
   }
   const runningPrograms = resProgres.filter((item) => !item.isCompleted);
 

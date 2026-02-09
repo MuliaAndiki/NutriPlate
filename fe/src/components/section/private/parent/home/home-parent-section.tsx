@@ -5,6 +5,7 @@ import CardKontenHomeParent3 from "@/components/card/general/home-parent/card-co
 import CardKontenHomeParent4 from "@/components/card/general/home-parent/card-content4";
 import { UserResponse } from "@/types/res";
 import { Icon } from "@iconify/react/dist/iconify.js";
+import HomeParentSectionSkeleton from "@/components/skeleton/private/parent/home/home-parent-section-skeleton";
 
 interface HomeParentSectionProps {
   service: {
@@ -19,7 +20,7 @@ const HomeParentHeroSection: React.FC<HomeParentSectionProps> = ({
   service,
 }) => {
   if (service.query.isLoading) {
-    return <div>loading</div>;
+    return <HomeParentSectionSkeleton />;
   }
   return (
     <div className="w-full overflow-hidden">

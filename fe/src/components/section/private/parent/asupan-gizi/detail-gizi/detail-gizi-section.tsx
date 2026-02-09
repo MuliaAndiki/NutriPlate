@@ -7,6 +7,7 @@ import FoodScanSummary from "@/components/partial/food-summary";
 import FoodDetectedList from "@/components/partial/food-detect";
 import FoodItemPopup from "@/components/partial/food-partial";
 import MakroBarDaily from "@/components/card/growth/macro-bar";
+import DetailGiziSectionSkeleton from "@/components/skeleton/private/parent/asupan-gizi/detail-gizi/detail-gizi-section-skeleton";
 
 interface DetailGiziHeroProps {
   namespace: {
@@ -24,7 +25,7 @@ const DetailGiziHeroSection: React.FC<DetailGiziHeroProps> = ({
   service,
 }) => {
   if (service.query.isLoading) {
-    return <div>loading..</div>;
+    return <DetailGiziSectionSkeleton />;
   }
   const accuracy = Math.round(
     (service.query.food.items.reduce((s, i) => s + i.mlConfidence, 0) /

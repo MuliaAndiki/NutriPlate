@@ -1,6 +1,7 @@
 import { IAuth } from "@/types/schema";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import ProfileSkeleton from "@/components/skeleton/private/posyandu/profile/profile-skeleton";
 
 interface ProfilePosyanduProps {
   service: {
@@ -17,7 +18,7 @@ const ProfilePosyanduSection: React.FC<ProfilePosyanduProps> = ({
   service,
 }) => {
   if (service.query.isLoading) {
-    return <div>loading...</div>;
+    return <ProfileSkeleton />;
   }
   return (
     <div className="w-full min-h-full flex justify-start items-start flex-col p-2">

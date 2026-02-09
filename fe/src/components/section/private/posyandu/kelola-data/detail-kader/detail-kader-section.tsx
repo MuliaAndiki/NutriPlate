@@ -2,6 +2,8 @@ import { KaderDetailResponse } from "@/types/res";
 import { ChevronLeft, Mail, Phone } from "lucide-react";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import Image from "next/image";
+import DetailKaderSectionSkeleton from "@/components/skeleton/private/posyandu/kelola-data/detail-kader/detail-kader-section-skeleton";
+import DataNotFound from "@/components/empty/data-not-found";
 
 interface DetailKaderPosyanduSectionProps {
   namespace: {
@@ -22,19 +24,11 @@ const DetailKaderPosyanduSection: React.FC<DetailKaderPosyanduSectionProps> = ({
   const resKader = service.query.kader;
 
   if (service.query.isLoading) {
-    return (
-      <section className="w-full min-h-screen flex items-center justify-center">
-        <p className="text-sm text-muted-foreground">Loading data kader...</p>
-      </section>
-    );
+    return <DetailKaderSectionSkeleton />;
   }
 
   if (!resKader) {
-    return (
-      <section className="w-full min-h-screen flex items-center justify-center">
-        <p className="text-sm text-warning">Data kader tidak ditemukan</p>
-      </section>
-    );
+    return <DataNotFound message="Data kader tidak ditemukan" />;
   }
 
   return (

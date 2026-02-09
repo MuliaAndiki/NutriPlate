@@ -10,6 +10,7 @@ import {
   profileChildCardsConfig,
   RouteDetailChild,
 } from "@/configs/component.config";
+import DetailProfileAnakSectionSkeleton from "@/components/skeleton/private/parent/profile-anak/detail-profile-anak/detail-profile-anak-section-skeleton";
 import { formatDateTime } from "@/utils/time.format";
 import { ChildRespone } from "@/types/res/child.respone";
 import { MeasurementRespone } from "@/types/res/measurement.respone";
@@ -65,7 +66,7 @@ const DetailProfileAnakHeroSection: React.FC<DetailProfileAnakProps> = ({
 }) => {
   // fallback skeleton
   if (service.query.isLoading) {
-    return <div>loading</div>;
+    return <DetailProfileAnakSectionSkeleton />;
   }
   const lastMeasurement = service.query.Measuremnt?.[0] ?? null;
 

@@ -7,6 +7,7 @@ import { ChevronLeft } from "lucide-react";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { aggregateRangeSummary } from "@/utils/summary";
 import MacroRangeChart from "@/components/card/growth/macroRange";
+import DailySummarySectionSkeleton from "@/components/skeleton/private/parent/profile-anak/detail-profile-anak/daily-summary/daily-summary-section-skeleton";
 
 interface DailySummarySectionProps {
   namespace: {
@@ -26,7 +27,7 @@ const DailySummarySection: React.FC<DailySummarySectionProps> = ({
   namespace,
   service,
 }) => {
-  if (service.query.isLoading) return <div>loading..</div>;
+  if (service.query.isLoading) return <DailySummarySectionSkeleton />;
 
   return (
     <section className="w-full flex min-h-screen flex-col space-y-5 p-2">

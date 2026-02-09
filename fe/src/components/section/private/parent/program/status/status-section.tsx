@@ -5,6 +5,7 @@ import { useState } from "react";
 import ProgramStatusCard from "@/components/card/child/child-program-status-card";
 import { Button } from "@/components/ui/button";
 import { RegistrationStatus } from "@/types/partial";
+import StatusSectionSkeleton from "@/components/skeleton/private/parent/program/status/status-section-skeleton";
 
 interface StatusProgramSectionProps {
   namespace: {
@@ -30,7 +31,7 @@ const StatusProgramSection: React.FC<StatusProgramSectionProps> = ({
       : service.query.statusChild.filter((item) => item.status === filter);
 
   if (service.query.isLoading) {
-    return <div>loading...</div>;
+    return <StatusSectionSkeleton />;
   }
 
   return (

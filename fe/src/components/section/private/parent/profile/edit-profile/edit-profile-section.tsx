@@ -8,6 +8,7 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import { ChevronLeft } from "lucide-react";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import Image from "next/image";
+import EditProfileSectionSkeleton from "@/components/skeleton/private/parent/profile/edit-profile/edit-profile-section-skeleton";
 
 interface EditProfileSectionProps {
   namespace: {
@@ -40,7 +41,7 @@ const EditProfileSection: React.FC<EditProfileSectionProps> = ({
   state,
 }) => {
   if (service.query.isLoading) {
-    return <div>loading..</div>;
+    return <EditProfileSectionSkeleton />;
   }
   return (
     <div className="w-full min-h-screen flex justify-start flex-col items-center p-2  ">

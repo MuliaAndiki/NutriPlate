@@ -10,6 +10,8 @@ import { AlertContexType } from "@/types/ui";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { ChevronLeft } from "lucide-react";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+import DetailPengukuranSectionSkeleton from "@/components/skeleton/private/posyandu/pengukuran/detail-pengukuran/detail-pengukuran-section-skeleton";
+import DataNotFound from "@/components/empty/data-not-found";
 
 interface DetailPengukuranSectionProps {
   namespace: {
@@ -43,11 +45,11 @@ const DetailPengukuranSection: React.FC<DetailPengukuranSectionProps> = ({
   const resChildren = service.query.children;
   const resMeansuremnt = service.query.historyMeasument;
 
-  if (!resChildren || !resMeansuremnt) {
-    return <div>data tidak ditemukan</div>;
-  }
   if (service.query.isLoading) {
-    return <div>loading...</div>;
+    return <DetailPengukuranSectionSkeleton />;
+  }
+  if (!resChildren || !resMeansuremnt) {
+    return <DataNotFound />;
   }
 
   return (

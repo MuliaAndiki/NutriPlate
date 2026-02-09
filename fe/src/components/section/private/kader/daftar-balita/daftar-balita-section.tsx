@@ -2,6 +2,8 @@ import ChildFallback from "@/components/fallback/child.fallback";
 import { ButtonWrapper } from "@/components/wrapper/ButtonWrapper";
 import { InputWrapper } from "@/components/wrapper/InputWrapper";
 import { Icon } from "@iconify/react/dist/iconify.js";
+import DaftarBalitaSectionSkeleton from "@/components/skeleton/private/kader/daftar-balita/daftar-balita-section-skeleton";
+import DataNotFound from "@/components/empty/data-not-found";
 
 import {
   DropdownMenu,
@@ -37,11 +39,11 @@ const DaftarBalitaKaderSection: React.FC<DaftarBalitaKaderSectionProps> = ({
 }) => {
   const resChildren = service.query.children;
 
-  if (!resChildren) {
-    return <div>data tidak ditemukan</div>;
-  }
   if (service.query.isLoading) {
-    return <div>loading...</div>;
+    return <DaftarBalitaSectionSkeleton />;
+  }
+  if (!resChildren) {
+    return <DataNotFound />;
   }
   //filter
   const filteredChildren =

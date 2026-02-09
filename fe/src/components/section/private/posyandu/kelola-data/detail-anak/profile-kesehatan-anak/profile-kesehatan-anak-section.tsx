@@ -7,6 +7,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import ProfileKesehatanAnakSectionSkeleton from "@/components/skeleton/private/posyandu/kelola-data/detail-anak/profile-kesehatan-anak/profile-kesehatan-anak-section-skeleton";
+import DataNotFound from "@/components/empty/data-not-found";
 import { Textarea } from "@/components/ui/textarea";
 import { ChildRespone } from "@/types/res";
 import { Icon } from "@iconify/react/dist/iconify.js";
@@ -28,12 +30,11 @@ const ProfileKesehatanAnakPosyanduSection: React.FC<
   ProfileKesehatanAnakPosyanduSectionProps
 > = ({ namespace, service }) => {
   const resChildren = service.query.children;
-  if (!resChildren) {
-    return <div>data tidak temukan</div>;
-  }
-
   if (service.query.isLoading) {
-    return <div>loading...</div>;
+    return <ProfileKesehatanAnakSectionSkeleton />;
+  }
+  if (!resChildren) {
+    return <DataNotFound />;
   }
   return (
     <div className="w-full min-h-screen flex justify-start items-center flex-col p-2 space-y-2">

@@ -6,6 +6,8 @@ import { ChevronLeft } from "lucide-react";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import Image from "next/image";
 import React from "react";
+import DetailPosyanduSectionSkeleton from "@/components/skeleton/general/posyandu/detail-posyandu-section-skeleton";
+import DataNotFound from "@/components/empty/data-not-found";
 
 interface DetailPosyanduKaderSectionProps {
   namespace: {
@@ -39,19 +41,11 @@ const DetailPosyanduKaderSection: React.FC<DetailPosyanduKaderSectionProps> = ({
   const data = service.query.posyandu;
 
   if (service.query.isLoading) {
-    return (
-      <section className="w-full min-h-screen flex items-center justify-center">
-        <p className="text-muted-foreground">Loading detail posyandu...</p>
-      </section>
-    );
+    return <DetailPosyanduSectionSkeleton />;
   }
 
   if (!data) {
-    return (
-      <section className="w-full min-h-screen flex items-center justify-center">
-        <p className="text-muted-foreground">Data posyandu tidak ditemukan</p>
-      </section>
-    );
+    return <DataNotFound message="Data posyandu tidak ditemukan" />;
   }
 
   const mappingContent = [

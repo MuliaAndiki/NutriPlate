@@ -7,6 +7,7 @@ import { AlertContexType } from "@/types/ui";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { ChevronLeft } from "lucide-react";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+import DetailProgresSectionSkeleton from "@/components/skeleton/private/parent/program/progres/detail/detail-progres.section-skeleton";
 
 interface ProgresDetailSectionProps {
   namespace: {
@@ -44,7 +45,7 @@ const ProgresDetailSection: React.FC<ProgresDetailSectionProps> = ({
   const slicedTasks = tasks.slice(0, LIMIT);
   const remainingCount = tasks.length - LIMIT;
   if (service.query.isLoading) {
-    return <div>loading...</div>;
+    return <DetailProgresSectionSkeleton />;
   }
   return (
     <section className="w-full min-h-screen overflow-x-hidden flex items-center justify-start flex-col space-y-2 p-2">

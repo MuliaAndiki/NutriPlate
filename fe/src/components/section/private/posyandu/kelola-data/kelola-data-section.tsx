@@ -1,5 +1,7 @@
 import ChildMeasurement from "@/components/card/child/child-measuremet";
 import KaderCard from "@/components/card/kader/kader-list";
+import KelolaDataSectionSkeleton from "@/components/skeleton/private/posyandu/kelola-data/kelola-data-section-skeleton";
+import DataNotFound from "@/components/empty/data-not-found";
 
 import ParentCardList from "@/components/card/parent/parent-list";
 import ChildFallback from "@/components/fallback/child.fallback";
@@ -53,11 +55,11 @@ const KelolaDataSection: React.FC<KelolaDataSectionProps> = ({
   const resKader = service.query.kader;
   const resParent = service.query.parent;
 
-  if (!resChildren || !resKader || !resParent) {
-    return <div>data tidak temukan</div>;
-  }
   if (service.query.isLoading) {
-    return <div>loading...</div>;
+    return <KelolaDataSectionSkeleton />;
+  }
+  if (!resChildren || !resKader || !resParent) {
+    return <DataNotFound />;
   }
 
   //filter

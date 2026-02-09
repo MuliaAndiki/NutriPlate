@@ -10,6 +10,8 @@ import {
   MeasurementRespone,
   UserResponse,
 } from "@/types/res";
+import HomePosyanduSectionSkeleton from "@/components/skeleton/private/posyandu/home/home-posyandu-section-skeleton";
+import DataNotFound from "@/components/empty/data-not-found";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import Image from "next/image";
 import Link from "next/link";
@@ -33,11 +35,11 @@ const HomePosyanduHeroSection: React.FC<HomePosyanduHeroSectionProps> = ({
   const resChild = service.query.childInPosyandu;
   const resProfile = service.query.profile;
 
-  if (!resMeasuremnt || !resKader || !resChild || !resProfile) {
-    return <div>data tidak ditemukan</div>;
-  }
   if (service.query.isLoading) {
-    return <div>loading..</div>;
+    return <HomePosyanduSectionSkeleton />;
+  }
+  if (!resMeasuremnt || !resKader || !resChild || !resProfile) {
+    return <DataNotFound />;
   }
   const lengthChild = resChild.length;
   const nutritionStatusLenghtWarning = resMeasuremnt.filter(

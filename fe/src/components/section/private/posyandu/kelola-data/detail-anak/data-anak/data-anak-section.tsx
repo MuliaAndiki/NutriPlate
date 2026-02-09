@@ -12,6 +12,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import DataAnakSectionSkeleton from "@/components/skeleton/private/posyandu/kelola-data/detail-anak/data-anak/data-anak-section-skeleton";
+import DataNotFound from "@/components/empty/data-not-found";
 import { AlertContexType } from "@/types/ui";
 import { ChildRespone } from "@/types/res";
 interface DataAnakPosyanduHeroSectionProps {
@@ -33,12 +35,11 @@ const DataAnakPosyanduHeroSection: React.FC<
 > = ({ namespace, service }) => {
   const resChildren = service.query.children;
 
-  if (!resChildren) {
-    return <div>data tidak ditemukan</div>;
-  }
-
   if (service.query.isLoading) {
-    return <div>loading...</div>;
+    return <DataAnakSectionSkeleton />;
+  }
+  if (!resChildren) {
+    return <DataNotFound />;
   }
   return (
     <div className="w-full min-h-screen flex justify-start items-center flex-col p-2 space-y-2">

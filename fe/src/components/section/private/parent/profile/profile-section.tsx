@@ -3,17 +3,26 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import Link from "next/link";
+import ProfileSectionSkeleton from "@/components/skeleton/private/parent/profile/profile-section-skeleton";
+import DataNotFound from "@/components/empty/data-not-found";
 export interface ProfileProps {
   service: {
     mutation: {
       onLogout: () => void;
     };
     query: {
-      userProfileType: IAuth;
+      userProfileType: IAuth | null | undefined;
+      isLoading: boolean;
     };
   };
 }
 const ProfileParentHeroSection: React.FC<ProfileProps> = ({ service }) => {
+  if (service.query.isLoading) {
+    return <ProfileSectionSkeleton />;
+  }
+  if (!service.query.userProfileType) {
+    return <DataNotFound />;
+  }
   const Routing = [
     {
       title: "Edit Profile",

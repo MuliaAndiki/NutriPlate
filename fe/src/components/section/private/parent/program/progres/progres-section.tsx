@@ -5,6 +5,7 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import { ChevronLeft } from "lucide-react";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import Link from "next/link";
+import ProgresSectionSkeleton from "@/components/skeleton/private/parent/program/progres/progres-section-skeleton";
 
 interface ProgresProgramSectionProps {
   namespace: {
@@ -30,7 +31,7 @@ const ProgresProgramSection: React.FC<ProgresProgramSectionProps> = ({
 }) => {
   // Falback Skeleton
   if (service.query.isLoading) {
-    return <div>loading..</div>;
+    return <ProgresSectionSkeleton />;
   }
   const runningPrograms = service.query.progres.filter(
     (item) => !item.isCompleted,

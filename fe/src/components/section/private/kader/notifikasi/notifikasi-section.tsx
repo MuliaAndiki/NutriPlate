@@ -1,4 +1,5 @@
 import NotifikasiCard from "@/components/card/notifikasi/notif-card";
+import NotifikasiSectionSkeleton from "@/components/skeleton/private/kader/notifikasi/notifikasi-section-skeleton";
 
 import { INotification } from "@/types/schema/notafication.schema";
 import { Icon } from "@iconify/react/dist/iconify.js";
@@ -53,7 +54,7 @@ const NotifikasiKaderSection: React.FC<NotifikasiKaderSectionProp> = ({
     );
   };
   if (service.query.isLoading) {
-    return <div>loading...</div>;
+    return <NotifikasiSectionSkeleton />;
   }
 
   const filtered = service.query.notifikasi.filter((item) => {

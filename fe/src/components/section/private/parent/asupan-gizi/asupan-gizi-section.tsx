@@ -12,6 +12,7 @@ import {
   GetStatusIotRespone,
   GetWeightIorRespone,
 } from "@/types/res";
+import AsupanGiziSectionSkeleton from "@/components/skeleton/private/parent/asupan-gizi/asupan-gizi-section-skeleton";
 
 interface AsupanGiziSectionProps {
   service: {
@@ -52,7 +53,7 @@ const AsupanGiziHeroSection: React.FC<AsupanGiziSectionProps> = ({
   state,
 }) => {
   if (service.query.isLoading) {
-    return <div>loading..</div>;
+    return <AsupanGiziSectionSkeleton />;
   }
   return (
     <div className="w-full min-h-screen flex justify-start items-center p-2 flex-col space-y-4">

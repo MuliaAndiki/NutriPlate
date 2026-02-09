@@ -4,6 +4,8 @@ import { UserResponse } from "@/types/res";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { ChevronLeft } from "lucide-react";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+import DetailOrantTuaSectionSkeleton from "@/components/skeleton/private/posyandu/kelola-data/detail-orang-tua/detail-orant-tua-section-skeleton";
+import DataNotFound from "@/components/empty/data-not-found";
 
 interface DetailParentPosyanduSectionProps {
   namespace: {
@@ -21,11 +23,11 @@ const DetailParentPosyanduSection: React.FC<
 > = ({ namespace, service }) => {
   const res = service.query.parentDetail;
 
-  if (!res) {
-    return <div>data tidak ditemukan</div>;
-  }
   if (service.query.isLoading) {
-    return <div>loading...</div>;
+    return <DetailOrantTuaSectionSkeleton />;
+  }
+  if (!res) {
+    return <DataNotFound />;
   }
   return (
     <section className="w-full min-h-screen flex flex-col p-2 space-y-2">

@@ -4,6 +4,7 @@ import { formatDateTime } from "@/utils/time.format";
 import { Icon } from "@iconify/react";
 import { ChevronLeft } from "lucide-react";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+import NotifikasiDetailSectionSkeleton from "@/components/skeleton/private/parent/notifikasi/detail/notifikasi-detail-section-skeleton";
 
 interface NotifikasiDetailSectionProps {
   namespace: {
@@ -23,7 +24,7 @@ const NotifikasiDetailSection: React.FC<NotifikasiDetailSectionProps> = ({
     query: { notifikasi, isLoading },
   },
 }) => {
-  if (isLoading) return <div>loading...</div>;
+  if (isLoading) return <NotifikasiDetailSectionSkeleton />;
 
   const { icon, className } = NotifiIcon[notifikasi.type] ?? DefaultNotifIcon;
 

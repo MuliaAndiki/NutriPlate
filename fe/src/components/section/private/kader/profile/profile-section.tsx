@@ -1,6 +1,8 @@
 import { IAuth } from "@/types/schema";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import ProfileSectionSkeleton from "@/components/skeleton/private/kader/profile/profile-section-skeleton";
+import DataNotFound from "@/components/empty/data-not-found";
 
 export interface ProfileProps {
   service: {
@@ -8,7 +10,7 @@ export interface ProfileProps {
       onLogout: () => void;
     };
     query: {
-      userProfileType: IAuth;
+      userProfileType: IAuth | null | undefined;
       isLoading: boolean;
     };
   };
@@ -16,7 +18,10 @@ export interface ProfileProps {
 
 const ProfileKaderSection: React.FC<ProfileProps> = ({ service }) => {
   if (service.query.isLoading) {
-    return <div>loading...</div>;
+    return <ProfileSectionSkeleton />;
+  }
+  if (!service.query.userProfileType) {
+    return <DataNotFound />;
   }
   return (
     <div className="w-full min-h-full flex justify-start items-start flex-col p-2">

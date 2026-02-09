@@ -7,6 +7,7 @@ import {
   profileChildCardsConfig,
   RouteDetailChild,
 } from "@/configs/component.config";
+import DetailAnakSectionSkeleton from "@/components/skeleton/private/posyandu/kelola-data/detail-anak/detail-anak-section-skeleton";
 import {
   ChildRespone,
   DailySummaryResponse,
@@ -44,7 +45,7 @@ const DetailAnakPosyanduSection: React.FC<DetailAnakPosyanduSectionProps> = ({
 }) => {
   //not optimalizer
   if (service.query.isLoading) {
-    return <div>loading...</div>;
+    return <DetailAnakSectionSkeleton />;
   }
 
   const lastMeasurement = service.query.Measuremnt?.[0] ?? null;

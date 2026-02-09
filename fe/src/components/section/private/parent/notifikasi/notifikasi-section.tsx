@@ -2,13 +2,8 @@ import NotifikasiCard from "@/components/card/notifikasi/notif-card";
 import { ButtonWrapper } from "@/components/wrapper/ButtonWrapper";
 import { INotification } from "@/types/schema/notafication.schema";
 import { Icon } from "@iconify/react/dist/iconify.js";
-import {
-  BellIcon,
-  Book,
-  ChevronLeft,
-  MailIcon,
-  MessageSquareIcon,
-} from "lucide-react";
+import { BellIcon, Book, ChevronLeft, MailIcon, MessageSquareIcon } from "lucide-react";
+import NotifikasiSectionSkeleton from "@/components/skeleton/private/parent/notifikasi/notifikasi-section-skeleton";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { NotifikasiIcons } from "@/configs/component.config";
 import {
@@ -54,7 +49,7 @@ const NotifikasiParentSection: React.FC<NotifikasiParentSectionProp> = ({
     );
   };
   if (service.query.isLoading) {
-    return <div>loading...</div>;
+    return <NotifikasiSectionSkeleton />;
   }
 
   const filtered = service.query.notifikasi.filter((item) => {

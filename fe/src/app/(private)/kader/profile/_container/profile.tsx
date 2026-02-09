@@ -23,7 +23,7 @@ const ProfileKaderContainer = () => {
             },
             query: {
               isLoading: profileQuery.isLoading,
-              userProfileType: profileData ?? [],
+              userProfileType: profileData ?? undefined,
             },
           }}
         />

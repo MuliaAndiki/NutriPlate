@@ -7,6 +7,7 @@ import {
   profileChildCardsConfig,
   RouteDetailChild,
 } from "@/configs/component.config";
+import DetailAnakSectionSkeleton from "@/components/skeleton/private/kader/daftar-balita/detail-anak/detail-anak-section-skeleton";
 import {
   ChildRespone,
   DailySummaryResponse,
@@ -43,7 +44,7 @@ const DetailAnakKaderSection: React.FC<DetailAnakKaderSectionProps> = ({
   state,
 }) => {
   if (service.query.isLoading) {
-    return <div>loading...</div>;
+    return <DetailAnakSectionSkeleton />;
   }
   const lastMeasurement = service.query.Measuremnt?.[0] ?? null;
   return (

@@ -5,6 +5,8 @@ import {
   statusKaderRegisterStyle,
   StatusRegisterionsKader,
 } from "@/types/partial";
+import StatusSectionSkeleton from "@/components/skeleton/private/posyandu/daftar-kader/status/status-section-skeleton";
+import DataNotFound from "@/components/empty/data-not-found";
 import { KaderRegistrationDetailResponse } from "@/types/res";
 import { ChevronLeft } from "lucide-react";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
@@ -37,7 +39,7 @@ const StatusKaderSection: React.FC<StatusKaderSectionProps> = ({
   state,
 }) => {
   if (service.query.isLoading) {
-    return <div>loading...</div>;
+    return <StatusSectionSkeleton />;
   }
   return (
     <section className="w-full min-h-screen flex flex-col p-3 space-y-3">
@@ -68,9 +70,7 @@ const StatusKaderSection: React.FC<StatusKaderSectionProps> = ({
       </div>
 
       {service.query.data.length === 0 ? (
-        <div className="text-center text-muted-foreground py-10">
-          Data tidak ditemukan
-        </div>
+        <DataNotFound />
       ) : (
         <div className="flex flex-col space-y-3">
           {service.query.data.map((item) => (

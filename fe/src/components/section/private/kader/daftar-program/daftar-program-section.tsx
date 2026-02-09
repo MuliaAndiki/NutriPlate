@@ -2,6 +2,7 @@ import ProgramCard from "@/components/card/program/program-card";
 import { ProgramRespone } from "@/types/res";
 import { ChevronLeft } from "lucide-react";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+import DaftarProgramSectionSkeleton from "@/components/skeleton/private/kader/daftar-program/daftar-program-section-skeleton";
 
 interface DaftarProgramKaderSectionProps {
   namespace: {
@@ -19,7 +20,7 @@ const DaftarProgramKaderSection: React.FC<DaftarProgramKaderSectionProps> = ({
   service,
 }) => {
   if (service.query.isLoading) {
-    return <div>loading ..</div>;
+    return <DaftarProgramSectionSkeleton />;
   }
   return (
     <section className="-full min-h-screen flex justify-start items-center flex-col p-2 space-y-2">

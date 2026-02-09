@@ -6,7 +6,7 @@ import useService from "@/hooks/mutation/prop.service";
 const ProfileParentContainer = () => {
   const service = useService();
   const useGetProfileQuery = service.user.query.profile();
-  const useGetProfileData = useGetProfileQuery.data?.data ?? [];
+  const useGetProfileData = useGetProfileQuery.data?.data ?? null;
   const logoutMutation = service.auth.mutation.logout();
   const handleLogout = () => {
     logoutMutation.mutate({});
@@ -20,7 +20,8 @@ const ProfileParentContainer = () => {
               onLogout: () => handleLogout(),
             },
             query: {
-              userProfileType: useGetProfileData ?? [],
+              userProfileType: useGetProfileData ?? undefined,
+              isLoading: useGetProfileQuery.isLoading,
             },
           }}
         />
