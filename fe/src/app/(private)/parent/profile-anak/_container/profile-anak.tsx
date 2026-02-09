@@ -8,7 +8,6 @@ import useService from "@/hooks/mutation/prop.service";
 const ProfileAnakContainer = () => {
   const service = useService();
   const selector = useAppSelector((state) => state.posyandu);
-  console.log(selector.role, "inirole");
   const childQuery = service.user.query.childAll({
     role: selector.role!,
   });

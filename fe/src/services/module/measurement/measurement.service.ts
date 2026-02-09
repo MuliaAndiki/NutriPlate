@@ -19,8 +19,11 @@ class MeasurementApi {
     const res = await AxiosClient.get(`/api/measurement/${id}`);
     return res.data;
   }
-  public async updateMeasuremntController(id: string): Promise<TResponse<any>> {
-    const res = await AxiosClient.put(`/api/measurement/${id}`);
+  public async updateMeasuremntController(
+    payload: FormCreateMeasurement,
+    id: string,
+  ): Promise<TResponse<any>> {
+    const res = await AxiosClient.put(`/api/measurement/${id}`, payload);
     return res.data;
   }
   public async getAllMeasuremnt(id: string): Promise<TResponse<any>> {

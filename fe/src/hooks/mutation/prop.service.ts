@@ -5,6 +5,7 @@ import { useFoodIntake } from "./foodintake/useFoodIntake";
 import { useFoodSummary } from "./foodsummary/useFoodSummary";
 import { useIot } from "./iot/useIot";
 import { useKaderRegistration } from "./kaderregistration/useKaderRegistration";
+import { useModels } from "./models/useModels";
 import { useMeasuremnet } from "./measurement/useMeasuremnet";
 import { useNotification } from "./notafications/useNotifications";
 import { usePosyandu } from "./posyandu/usePosyandu";
@@ -30,6 +31,7 @@ export const useService = () => ({
   foodIntake: useFoodIntake(),
   registerKader: useKaderRegistration(),
   iot: useIot(),
+  models: useModels(),
 });
 
 export default useService;

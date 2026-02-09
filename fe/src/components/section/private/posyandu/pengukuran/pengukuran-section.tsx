@@ -30,7 +30,7 @@ const PengukuranSection: React.FC<PengukuranSectionProps> = ({
   }
   return (
     <section className="flex w-full min-h-screen flex-col items-center justify-start overflow-x-hidden space-y-2 p-2">
-      <div className="w-full border-b space-y-1">
+      <div className="w-full  space-y-1">
         <h1 className="text-2xl font-bold">Pengukuran Balita</h1>
         <p className="text-lg font-bold">
           Catat berat dan tinggi balita untuk memantau pertumbuhan

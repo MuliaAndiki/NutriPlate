@@ -1,4 +1,4 @@
-import { useCreateMeasuremnt } from "./state/mutation";
+import { useCreateMeasuremnt, useUpdateMeasurement } from "./state/mutation";
 import {
   useGetAllMeasurement,
   useGetGrowthChart,
@@ -9,6 +9,7 @@ export function useMeasuremnet() {
   return {
     mutation: {
       createMeasuremnt: useCreateMeasuremnt,
+      updateMeasuremnet: useUpdateMeasurement,
     },
     query: {
       growthChart: useGetGrowthChart,

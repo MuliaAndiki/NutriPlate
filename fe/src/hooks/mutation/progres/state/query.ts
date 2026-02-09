@@ -19,3 +19,11 @@ export function useGetChildInProgram(id: string) {
     staleTime: 1000 * 60 * 5,
   });
 }
+
+export function useGetHistoryChildProgram() {
+  return useQuery({
+    queryKey: cacheKey.history.list(),
+    queryFn: () => Api.Progres.getHistoryChildProgram(),
+    staleTime: 1000 * 60 * 5,
+  });
+}

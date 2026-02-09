@@ -2,6 +2,7 @@ import {
   useCancelStart,
   useConfirmWeight,
   useHoldWeightScale,
+  useRebootIot,
   useRejectWeight,
   useStartScale,
   useTareScale,
@@ -17,6 +18,7 @@ export function useIot() {
       cancelStart: useCancelStart,
       rejectWeight: useRejectWeight,
       confirmWeight: useConfirmWeight,
+      rebootIot: useRebootIot,
     },
     query: {
       getStatusIot: useGetIotStatus,

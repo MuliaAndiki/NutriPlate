@@ -110,3 +110,25 @@ export function useConfirmWeight() {
     },
   });
 }
+
+export function useRebootIot() {
+  const namespace = useAppNameSpace();
+  return useMutation<TResponse<any>, Error, any>({
+    mutationFn: (payload) => Api.Iot.rebootIot(payload),
+    onSuccess: () => {
+      namespace.alert.toast({
+        title: "Succes",
+        message: "Iot berhasil direboot",
+        icon: "success",
+      });
+    },
+    onError: (err) => {
+      console.error("Failed reboot iot:", err);
+      namespace.alert.toast({
+        title: "Error",
+        message: "Gagal reboot iot",
+        icon: "error",
+      });
+    },
+  });
+}

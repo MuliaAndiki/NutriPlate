@@ -19,6 +19,9 @@ export function useRegisterKader() {
         message: "wait for confirmation from posyandu",
         icon: "success",
       });
+      namespace.queryClient.invalidateQueries({
+        queryKey: cacheKey.registrion.myRegister(),
+      });
     },
     onError: (err) => {
       console.error(err);
@@ -106,6 +109,12 @@ export function useDeleteKaderInPosyandu() {
         title: "Succes",
         message: "Kamu Telah Menghapus Kader ini di Posyandu",
         icon: "success",
+      });
+      namespace.queryClient.invalidateQueries({
+        queryKey: cacheKey.posyandu.kaderList(),
+      });
+      namespace.queryClient.invalidateQueries({
+        queryKey: cacheKey.registrion.accepted(),
       });
     },
     onError: (err) => {

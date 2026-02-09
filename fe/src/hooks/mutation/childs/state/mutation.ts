@@ -4,7 +4,11 @@ import { cacheKey } from "@/configs/cache.config";
 import { useAppNameSpace } from "@/hooks/useAppNameSpace";
 import { TResponse } from "@/pkg/react-query/mutation-wrapper.type";
 import Api from "@/services/props.module";
-import { FormCreateChild, FormRegisteredChild } from "@/types/form/child.form";
+import {
+  FormCreateChild,
+  FormRegisteredChild,
+  PickChilID,
+} from "@/types/form/child.form";
 
 export function useCreateChild() {
   const nameSpace = useAppNameSpace();
@@ -103,6 +107,35 @@ export function useRegisterdChildInPosyandu() {
       nameSpace.alert.toast({
         title: "failed",
         message: "failed registered child in posyandu",
+        icon: "error",
+      });
+    },
+  });
+}
+
+export function useCancelChild() {
+  const nameSpace = useAppNameSpace();
+  return useMutation<
+    TResponse<any>,
+    Error,
+    { payload: PickChilID; id: string }
+  >({
+    mutationFn: ({ payload, id }) => Api.Child.cancelChild(payload, id),
+    onSuccess: (_res, { id }) => {
+      nameSpace.queryClient.invalidateQueries({
+        queryKey: cacheKey.child.byID(id),
+      });
+      nameSpace.alert.toast({
+        title: "succes",
+        message: "succesfully cancel child",
+        icon: "success",
+      });
+    },
+    onError: (err) => {
+      console.error(err);
+      nameSpace.alert.toast({
+        title: "failed",
+        message: "failed cancel child",
         icon: "error",
       });
     },

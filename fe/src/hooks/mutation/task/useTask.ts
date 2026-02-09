@@ -3,6 +3,7 @@ import {
   useCreateTask,
   useDeleteTask,
   useDoneTask,
+  useBroadcastTask,
   useUpdateTask,
 } from "./state/mutation";
 
@@ -13,6 +14,7 @@ export function useTask() {
       createTask: useCreateTask,
       deleteTask: useDeleteTask,
       updateTask: useUpdateTask,
+      broadcastTask: useBroadcastTask,
     },
     query: {
       getTask: useGetTask,

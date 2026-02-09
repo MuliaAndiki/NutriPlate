@@ -67,8 +67,25 @@ export function useGetParentById(id: string) {
 
 export function useGetKaderById(id: string) {
   return useQuery({
-    queryKey: cacheKey.profile.parentById(id),
+    queryKey: cacheKey.profile.kaderById(id),
     queryFn: () => Api.User.getKaderByID(id),
+    staleTime: 1000 * 60 * 5,
+    enabled: !!id,
+  });
+}
+
+export function useGetKader() {
+  return useQuery({
+    queryKey: cacheKey.kader.list(),
+    queryFn: () => Api.User.getKader(),
+    staleTime: 1000 * 60 * 5,
+  });
+}
+
+export function useGetProfileById(id: string) {
+  return useQuery({
+    queryKey: cacheKey.user.byProfileId(id),
+    queryFn: () => Api.User.getProfileByID(id),
     staleTime: 1000 * 60 * 5,
     enabled: !!id,
   });

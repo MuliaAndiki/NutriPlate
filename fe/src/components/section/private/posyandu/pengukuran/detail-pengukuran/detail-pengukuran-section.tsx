@@ -24,7 +24,7 @@ interface DetailPengukuranSectionProps {
     };
     mutation: {
       isPending: boolean;
-      onCreate: () => void;
+      onMutate: () => void;
     };
   };
   state: {
@@ -32,6 +32,7 @@ interface DetailPengukuranSectionProps {
     setFormCreateMeasuremnt: React.Dispatch<
       React.SetStateAction<FormCreateMeasurement>
     >;
+    isEdit: any;
   };
 }
 const DetailPengukuranSection: React.FC<DetailPengukuranSectionProps> = ({
@@ -124,6 +125,7 @@ const DetailPengukuranSection: React.FC<DetailPengukuranSectionProps> = ({
       <div className="w-full grid grid-cols-[1fr_2fr] grid-rows-1 gap-2">
         <ButtonWrapper
           variant={"destructive"}
+          onClick={() => namespace.router.back()}
           leftIcon={
             <Icon
               icon="ic:round-check"
@@ -144,7 +146,7 @@ const DetailPengukuranSection: React.FC<DetailPengukuranSectionProps> = ({
               deskripsi: "Apakah Sudah Yakin",
               icon: "question",
               onConfirm: () => {
-                // logic
+                service.mutation.onMutate();
               },
             })
           }
@@ -157,7 +159,7 @@ const DetailPengukuranSection: React.FC<DetailPengukuranSectionProps> = ({
             />
           }
         >
-          Simpan
+          {state.isEdit ? "Update Pengukuran" : "Tambah Pengukuran"}
         </ButtonWrapper>
       </div>
       <div className="w-full flex items-center space-x-1">

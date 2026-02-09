@@ -1,4 +1,5 @@
 import {
+  useCancelChild,
   useCreateChild,
   useDeleteChild,
   useRegisterdChildInPosyandu,
@@ -12,6 +13,7 @@ export function useChild() {
       update: useUpdateChild,
       delete: useDeleteChild,
       registerd: useRegisterdChildInPosyandu,
+      cancel: useCancelChild,
     },
     query: {
       //
