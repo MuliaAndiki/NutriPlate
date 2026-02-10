@@ -8,12 +8,15 @@ import { ProgramRespone } from "@/types/res/program-with-progres";
 import Link from "next/link";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import EmptyCard from "@/components/fallback/empty-card";
+import ProgramSkeleton from "@/components/skeleton/private/posyandu/program/program-skeleton";
+import DataNotFound from "@/components/empty/data-not-found";
 
 interface ProgramSectionProps {
   service: {
     query: {
       childType: ChildRespone[];
       programType: ProgramRespone[];
+      isLoading: boolean;
     };
   };
   namespace: {
@@ -24,13 +27,27 @@ interface ProgramSectionProps {
     programFilter: "ALL" | "FOLLOWED";
     setProgramFilter: React.Dispatch<React.SetStateAction<"ALL" | "FOLLOWED">>;
   };
+  selector: {
+    role: string;
+  };
 }
 const ProgramHeroSection: React.FC<ProgramSectionProps> = ({
   service,
   namespace,
   state,
+  selector,
 }) => {
-  const programRender = service.query.programType.filter((program) => {
+  const resProgram = service.query.programType;
+  const resChildren = service.query.childType;
+
+  if (!resProgram || !resChildren) {
+    return <DataNotFound />;
+  }
+
+  if (!service.query.isLoading) {
+    return <ProgramSkeleton />;
+  }
+  const programRender = resProgram.filter((program) => {
     if (state.programFilter === "ALL") return true;
     return program.progress.length > 0;
   });
@@ -51,22 +68,24 @@ const ProgramHeroSection: React.FC<ProgramSectionProps> = ({
         Ikuti program pendampingan gizi untuk mendukung tumbuh kembang anak
       </p>
       {/* link router */}
-      {service.query.childType.length > 2 && (
+      {resChildren.length > 2 && (
         <div className="w-full ">
           <h1 className="text-primary text-end">Selengkapnya </h1>
         </div>
       )}
       <div className="w-full space-y-1 ">
-        {service.query.childType.length === 0 ? (
+        {resChildren.length === 0 ? (
           <EmptyCard message="Belum ada data anak" />
         ) : (
-          service.query.childType.slice(0, 2).map((items) => (
-            <ChildProgramCard
-              key={items.id}
-              childType={items}
-              pathname={namespace.pathname}
-            />
-          ))
+          resChildren
+            .slice(0, 2)
+            .map((items) => (
+              <ChildProgramCard
+                key={items.id}
+                childType={items}
+                pathname={namespace.pathname}
+              />
+            ))
         )}
       </div>
       <ButtonWrapper
@@ -122,6 +141,7 @@ const ProgramHeroSection: React.FC<ProgramSectionProps> = ({
             <ProgramCard
               res={items}
               key={items.id}
+              role={selector.role}
               onClick={() =>
                 namespace.router.push(`/parent/program/detail/${items.id}`)
               }

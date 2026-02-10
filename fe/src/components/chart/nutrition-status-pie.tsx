@@ -42,7 +42,7 @@ const NutritionStatusPie: React.FC<NutritionStatusPieProps> = ({ data }) => {
   }));
 
   return (
-    <Card className="flex flex-col">
+    <div className="flex flex-col">
       <CardContent className="flex-1 pb-0">
         <ChartContainer
           config={chartConfig}
@@ -53,7 +53,7 @@ const NutritionStatusPie: React.FC<NutritionStatusPieProps> = ({ data }) => {
           </PieChart>
         </ChartContainer>
       </CardContent>
-    </Card>
+    </div>
   );
 };
 

@@ -4,6 +4,7 @@ import { ChevronLeft } from "lucide-react";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import DaftarProgramSectionSkeleton from "@/components/skeleton/private/kader/daftar-program/daftar-program-section-skeleton";
 import EmptyCard from "@/components/fallback/empty-card";
+import DataNotFound from "@/components/empty/data-not-found";
 
 interface DaftarProgramKaderSectionProps {
   namespace: {
@@ -15,11 +16,19 @@ interface DaftarProgramKaderSectionProps {
       isLoading: boolean;
     };
   };
+  selector: {
+    role: string;
+  };
 }
 const DaftarProgramKaderSection: React.FC<DaftarProgramKaderSectionProps> = ({
   namespace,
   service,
+  selector,
 }) => {
+  const resProgram = service.query.program;
+  if (!resProgram) {
+    return <DataNotFound />;
+  }
   if (service.query.isLoading) {
     return <DaftarProgramSectionSkeleton />;
   }
@@ -33,15 +42,18 @@ const DaftarProgramKaderSection: React.FC<DaftarProgramKaderSectionProps> = ({
         <h1 className="text-2xl font-bold">Program Posyandu</h1>
       </div>
       <div className="w-full">
-        {service.query.program.length === 0 ? (
+        {resProgram.length === 0 ? (
           <EmptyCard message="Belum ada program tersedia" />
         ) : (
-          service.query.program.map((items) => (
+          resProgram.map((items) => (
             <ProgramCard
               res={items}
+              role={selector.role}
               key={items.id}
               onClick={() =>
-                namespace.router.push(`/kader/daftar-program/detail/${items.id}`)
+                namespace.router.push(
+                  `/kader/daftar-program/detail/${items.id}`,
+                )
               }
             />
           ))

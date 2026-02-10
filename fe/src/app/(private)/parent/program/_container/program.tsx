@@ -9,6 +9,7 @@ const ProgramParentContainer = () => {
   const nameSpace = useAppNameSpace();
   const service = useService();
   const selector = useAppSelector((state) => state.posyandu);
+
   //child
   const childQuery = service.user.query.childAll({
     role: selector.role!,
@@ -29,6 +30,7 @@ const ProgramParentContainer = () => {
             query: {
               childType: childData ?? [],
               programType: programData ?? [],
+              isLoading: programsQuery.isLoading || childQuery.isLoading,
             },
           }}
           namespace={{
@@ -38,6 +40,9 @@ const ProgramParentContainer = () => {
           state={{
             programFilter: programFilter,
             setProgramFilter: setProgramFilter,
+          }}
+          selector={{
+            role: selector.role!,
           }}
         />
       </main>

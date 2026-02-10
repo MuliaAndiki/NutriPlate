@@ -7,7 +7,6 @@ import EmptyCard from "@/components/fallback/empty-card";
 import SectionSkeleton from "@/components/skeleton/section-skeleton";
 import StatusSummarySwiper from "@/components/card/summary/status-summary-swiper";
 
-// not fix
 interface LaporanSectionProps {
   service: {
     query: {
@@ -116,19 +115,16 @@ const LaporanSection: React.FC<LaporanSectionProps> = ({ service }) => {
         />
         <h1 className="text-base font-bold">Distribusi Status Gizi</h1>
       </div>
-      <div className="w-full grid grid-cols-2 gap-2 items-center">
+      <div className="w-full flex items-center">
         {latestMeasurements.length === 0 ? (
           <EmptyCard message="Belum ada data status gizi" />
         ) : (
-          <>
+          <div className="w-full grid  grid-cols-2  border rounded-lg border-primary p-2">
             <NutritionStatusPie data={statusData} />
-            <div className="w-full space-y-2">
+            <div className="w-full flex justify-center flex-col items-start space-y-2">
               {statusData.map((item) => (
-                <div
-                  key={item.status}
-                  className="flex items-center justify-between"
-                >
-                  <div className="flex items-center space-x-2">
+                <div key={item.status} className="flex items-center flex-col">
+                  <div className="w-full flex items-center space-x-1">
                     <div
                       className="w-2 h-2 rounded-full"
                       style={{ backgroundColor: statusColorMap[item.status] }}
@@ -137,6 +133,7 @@ const LaporanSection: React.FC<LaporanSectionProps> = ({ service }) => {
                       {nutritionConfig[item.status].label}
                     </h1>
                   </div>
+                  <div className="flex items-center flex-col space-x-2"></div>
                   <h1 className="text-xs text-muted-foreground">
                     {Math.round((item.count / totalStatus) * 100)}% ={" "}
                     {item.count} balita
@@ -144,7 +141,7 @@ const LaporanSection: React.FC<LaporanSectionProps> = ({ service }) => {
                 </div>
               ))}
             </div>
-          </>
+          </div>
         )}
       </div>
 

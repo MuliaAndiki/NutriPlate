@@ -41,7 +41,6 @@ const DetailProgramHeroSection: React.FC<DetailProgramSectionProps> = ({
   namespace,
   state,
 }) => {
-  //falback skeleton
   if (service.query.isLoading) {
     return <DetailProgramSkeleton />;
   }
