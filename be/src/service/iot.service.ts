@@ -60,7 +60,7 @@ class IotService {
   }
   public async TareModeScale() {
     try {
-      const res = await this.IotGate.post('/tare');
+      const res = await this.IotGate.post('/api/tare');
       let result = res.data;
       if (typeof result === 'string') {
         result = JSON.parse(result);

@@ -12,6 +12,7 @@ interface TaskProgramCardProps {
   setTaskID: React.Dispatch<React.SetStateAction<string>>;
   alert: AlertContexType;
   onDelete: () => void;
+  onBroadcast?: (id: string) => void;
   popUp: PopUpNavigate;
   setPopUp: React.Dispatch<React.SetStateAction<PopUpNavigate>>;
   formUpdateTask: FormUpdateTask | null;
@@ -28,6 +29,7 @@ const TaskProgramCard: React.FC<TaskProgramCardProps> = ({
   taskID,
   alert,
   onDelete,
+  onBroadcast,
   popUp,
   formUpdateTask,
   setFormUpdateTask,
@@ -122,6 +124,24 @@ const TaskProgramCard: React.FC<TaskProgramCardProps> = ({
             }
           >
             Hapus
+          </ButtonWrapper>
+        </div>
+      )}
+      {taskID === res.id && onBroadcast && !res.isBroadcast && (
+        <div className="w-full">
+          <ButtonWrapper
+            className="w-full"
+            variant={"btn"}
+            onClick={() =>
+              alert.confirm({
+                title: "Perhatian",
+                deskripsi: "Broadcast task ini ke semua pengguna?",
+                icon: "warning",
+                onConfirm: () => onBroadcast(res.id),
+              })
+            }
+          >
+            Broadcast
           </ButtonWrapper>
         </div>
       )}

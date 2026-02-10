@@ -11,7 +11,7 @@ class ProgramApi {
     return res.data;
   }
   public async updateProgram(
-    payload: FormCreateProgram,
+    payload: Partial<FormCreateProgram>,
     id: string,
   ): Promise<TResponse<any>> {
     const res = await AxiosClient.put(`/api/programs/${id}`, payload);

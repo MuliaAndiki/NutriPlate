@@ -30,6 +30,7 @@ interface TaskKaderSectionProps {
       onCreateTask: () => void;
       onDelete: () => void;
       onUpdateTask: () => void;
+      onBroadcastTask?: (id: string) => void;
     };
   };
   state: {
@@ -85,6 +86,7 @@ const TaskKaderSection: React.FC<TaskKaderSectionProps> = ({
                 taskID={state.taskID}
                 alert={namespace.alert}
                 onDelete={service.mutation.onDelete}
+                onBroadcast={service.mutation.onBroadcastTask}
                 popUp={state.popUp}
                 setPopUp={state.setPopUp}
                 formUpdateTask={state.formUpdateTask}

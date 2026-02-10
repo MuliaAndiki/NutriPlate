@@ -27,7 +27,10 @@ class ProgramRouter {
       beforeHandle: [verifyToken().beforeHandle],
     });
     this.programRoutes.get('/:id', (c: AppContext) => ProgramController.getProgrambyID(c), {
-      beforeHandle: [verifyToken().beforeHandle, requireRole(['PARENT', 'KADER']).beforeHandle],
+      beforeHandle: [
+        verifyToken().beforeHandle,
+        requireRole(['PARENT', 'KADER', 'POSYANDU']).beforeHandle,
+      ],
     });
     this.programRoutes.delete('/:id', (c: AppContext) => ProgramController.deleteProgram(c), {
       beforeHandle: [verifyToken().beforeHandle, requireRole(['POSYANDU']).beforeHandle],

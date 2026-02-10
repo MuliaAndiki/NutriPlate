@@ -3,6 +3,19 @@ import BenefitPropgramCard from "@/components/card/program/benefit-program";
 import DeskripsiPropgramCard from "@/components/card/program/deskripsi-program";
 import DataNotFound from "@/components/empty/data-not-found";
 import DetailProgramSectionSkeleton from "@/components/skeleton/private/kader/daftar-program/detail-program/detail-program-section-skeleton";
+import PopUp from "@/components/ui/pop-up";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import UpdateProgramForm from "@/components/section/private/posyandu/program/detail-program/_update-program/update-program";
+import { FormCreateProgram } from "@/types/form/program.form";
+import { ChildRespone } from "@/types/res";
 import { IProgram } from "@/types/schema";
 import { AlertContexType } from "@/types/ui";
 import { camelCaseToWords } from "@/utils/string.format";
@@ -20,17 +33,39 @@ interface DetailProgramPosyanduSectionProps {
     query: {
       program: IProgram;
       isLoading: boolean;
+      children: ChildRespone[];
     };
     mutation: {
       deleteProgram: () => void;
-      isPending: boolean;
+      isPendingDelete: boolean;
+      updateProgram: () => void;
+      isPendingUpdate: boolean;
     };
+  };
+  handler: {
+    onSelectChild: (childId: string) => void;
+    onOpenChildSelect: () => void;
+    onCloseChildSelect: () => void;
+  };
+  state: {
+    showUpdate: boolean;
+    setShowUpdate: React.Dispatch<React.SetStateAction<boolean>>;
+    formUpdateProgram: FormCreateProgram | null;
+    setFormUpdateProgram: React.Dispatch<
+      React.SetStateAction<FormCreateProgram | null>
+    >;
+    showChildSelect: boolean;
+    setShowChildSelect: React.Dispatch<React.SetStateAction<boolean>>;
   };
 }
 const DetailProgramPosyanduSection: React.FC<
   DetailProgramPosyanduSectionProps
-> = ({ service, namespace }) => {
+> = ({ service, namespace, state, handler }) => {
   const resProgram = service.query.program;
+  const childrenList = service.query.children ?? [];
+  const childInProgram = childrenList.filter((item) =>
+    item.programProgress?.some((progresId) => progresId.programId === resProgram.id),
+  );
 
   if (!resProgram) {
     return <DataNotFound />;
@@ -67,10 +102,18 @@ const DetailProgramPosyanduSection: React.FC<
         <h1 className="text-lg font-bold">Aksi</h1>
         <div className="flex items-center space-x-5">
           <Icon
+            icon="mdi:man-child"
+            width="24"
+            height="24"
+            className="text-info"
+            onClick={handler.onOpenChildSelect}
+          />
+          <Icon
             icon="uil:edit"
             width="26"
             height="26"
             className="text-primary"
+            onClick={() => state.setShowUpdate(true)}
           />
           <Icon
             icon="pajamas:remove"
@@ -90,6 +133,52 @@ const DetailProgramPosyanduSection: React.FC<
           />
         </div>
       </div>
+      <PopUp
+        isOpen={state.showUpdate}
+        onClose={() => state.setShowUpdate(false)}
+      >
+        <UpdateProgramForm
+          formUpdateProgram={state.formUpdateProgram}
+          setFormUpdateProgram={state.setFormUpdateProgram}
+          isPending={service.mutation.isPendingUpdate}
+          onUpdateProgram={service.mutation.updateProgram}
+          onClose={() => state.setShowUpdate(false)}
+        />
+      </PopUp>
+      <PopUp
+        isOpen={state.showChildSelect}
+        onClose={handler.onCloseChildSelect}
+      >
+        <div className="w-full space-y-3">
+          <h1 className="text-lg font-bold">Pilih Anak</h1>
+          <Select
+            onValueChange={(value) => {
+              handler.onSelectChild(value);
+              handler.onCloseChildSelect();
+            }}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Pilih Anak" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectLabel>Daftar Anak</SelectLabel>
+                {childInProgram.length === 0 ? (
+                  <SelectItem value="empty" disabled>
+                    Tidak ada anak
+                  </SelectItem>
+                ) : (
+                  childInProgram.map((item) => (
+                    <SelectItem key={item.id} value={item.id}>
+                      {item.fullName ?? "Tanpa Nama"}
+                    </SelectItem>
+                  ))
+                )}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
+      </PopUp>
     </section>
   );
 };

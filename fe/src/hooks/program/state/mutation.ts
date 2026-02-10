@@ -39,7 +39,7 @@ export function useUpdateProgram() {
   return useMutation<
     TResponse<any>,
     Error,
-    { payload: FormCreateProgram; id: string }
+    { payload: Partial<FormCreateProgram>; id: string }
   >({
     mutationFn: ({ payload, id }) => Api.Program.updateProgram(payload, id),
     onSuccess: (_res, { id }) => {
