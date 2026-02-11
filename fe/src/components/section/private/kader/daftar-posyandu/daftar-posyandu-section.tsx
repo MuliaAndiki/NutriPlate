@@ -70,7 +70,11 @@ const DaftarPosyanduKaderSection: React.FC<DaftarPosyanduKaderSectionProps> = ({
           <EmptyCard message="Posyandu tidak ditemukan" />
         ) : (
           service.query.posyandu.map((item) => (
-            <PosyanduHomeCard key={item.id} res={item} />
+            <PosyanduHomeCard
+              key={item.id}
+              res={item}
+              onClick={() => namespace.router.push(`/posyandu/${item.id}`)}
+            />
           ))
         )}
       </div>

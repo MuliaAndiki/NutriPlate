@@ -66,10 +66,11 @@ const HomeKaderHeroSection: React.FC<HomeKaderHeroSectionProps> = ({
     {
       title: "Program Posyandu",
       rightIcon: "fluent:arrow-right-24-filled",
-      leftIcon: "raphael:parent",
+      leftIcon: "hugeicons:task-01",
       href: "/kader/daftar-program",
     },
   ];
+
   const resNotifikasi = service.query.notikasi;
   const lengthChild = service.query.childInPosyandu.length;
   const nutritionStatusLenghtWarning = service.query.measurement.filter(
@@ -87,7 +88,7 @@ const HomeKaderHeroSection: React.FC<HomeKaderHeroSectionProps> = ({
         role={service.query.profile.role}
         isRead={lengthNotifikasi}
       />
-      <section className="relative z-10 bg-background px-4  rounded-t-3xl  space-y-1">
+      <section className="relative z-10 bg-background px-4  rounded-t-3xl  space-y-2">
         <div className="w-full p-2 grid grid-cols-2 grid-rows-2 gap-2">
           <ChildrenList lengthChild={lengthChild} />
           <BalitaRiskList lengthChild={nutritionStatusLenghtWarning} />
@@ -136,7 +137,7 @@ const HomeKaderHeroSection: React.FC<HomeKaderHeroSectionProps> = ({
               //not fix
               onClick={() =>
                 namespace.router.push(
-                  `/posyandu/detail/${service.query.posyanduById.id}`,
+                  `/posyandu/${service.query.posyanduById.id}`,
                 )
               }
             />

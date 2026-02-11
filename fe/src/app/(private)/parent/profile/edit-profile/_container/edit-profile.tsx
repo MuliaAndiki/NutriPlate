@@ -81,8 +81,6 @@ const EditProfileContainer = () => {
         nameSpace.router.push("/parent/profile");
       }
 
-      console.log("ini nama", res.data.fullName);
-
       setIsEdit(false);
     } catch (error) {
       nameSpace.alert.toast({
@@ -104,6 +102,7 @@ const EditProfileContainer = () => {
             onChangeAvatars: handleChangeAvatar,
             onRemovePreview: handleRemovePreview,
             onUpdateProfile: () => handleUpdateProfile(),
+            isPending: updateProfile.isPending,
           },
           query: {
             profileUser: useGetProfileData,

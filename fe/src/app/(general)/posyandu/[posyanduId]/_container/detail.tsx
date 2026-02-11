@@ -9,6 +9,8 @@ const DetailPosyanduKaderContainer = () => {
   const namespace = useAppNameSpace();
   const service = useService();
   const { posyanduId } = useParams<{ posyanduId: string }>();
+
+  //posyandu
   const posyandubyIdQuery = service.posyandu.query.getPosyanduById(posyanduId);
   const posyandubyIdData = posyandubyIdQuery.data?.data ?? null;
 

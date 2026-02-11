@@ -13,9 +13,9 @@ const PosyanduList: React.FC<ListPosyanduProps> = ({ length }) => {
     >
       <Image
         alt="baby"
-        src={"/images/error.png"}
-        width={100}
-        height={100}
+        src={"/images/posyandu.png"}
+        width={80}
+        height={80}
         className=""
       />
       <div className="w-full flex items-start flex-col">

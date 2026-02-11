@@ -10,6 +10,8 @@ import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.share
 import Image from "next/image";
 import EditProfileSectionSkeleton from "@/components/skeleton/private/parent/profile/edit-profile/edit-profile-section-skeleton";
 import DataNotFound from "@/components/empty/data-not-found";
+import { isPending } from "@reduxjs/toolkit";
+import { Spinner } from "@/components/ui/spinner";
 
 interface EditProfileSectionProps {
   namespace: {
@@ -29,6 +31,7 @@ interface EditProfileSectionProps {
       onUpdateProfile: () => void;
       onRemovePreview: () => void;
       onChangeAvatars: (e: any) => void;
+      isPending: boolean;
     };
     query: {
       profileUser: IAuth;
@@ -64,19 +67,26 @@ const EditProfileSection: React.FC<EditProfileSectionProps> = ({
           <div className="w-full flex items-center gap-4">
             <Button
               variant={"destructive"}
+              disabled={service.mutation.isPending}
               className="flex items-center"
               onClick={() => state.setIsEdit(false)}
             >
-              <Icon icon="bxs:edit" width="24" height="24" />
-              <h1>Batalkan</h1>
+              <Icon
+                icon="bxs:edit"
+                width="24"
+                height="24"
+                className="text-background"
+              />
+              <h1 className="text-background">Batalkan</h1>
             </Button>
             <Button
               variant={"btn"}
               className="flex items-center"
+              disabled={service.mutation.isPending}
               onClick={() => service.mutation.onUpdateProfile()}
             >
               <Icon icon="bxs:edit" width="24" height="24" />
-              <h1>Simpan</h1>
+              <h1>{service.mutation.isPending ? <Spinner /> : "Simpan"}</h1>
             </Button>
           </div>
         ) : (
