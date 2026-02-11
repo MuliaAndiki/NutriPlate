@@ -15,6 +15,7 @@ const ProgramParentContainer = () => {
     role: selector.role!,
   });
   const childData = childQuery.data?.data ?? [];
+
   //program
   const programsQuery = service.program.query.getPrograms();
   const programData = programsQuery.data?.data ?? [];

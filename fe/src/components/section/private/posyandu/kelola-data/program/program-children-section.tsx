@@ -68,18 +68,15 @@ const ProgramChildrenPosyanduSection: React.FC<
         {runningPrograms.length === 0 ? (
           <EmptyCard message="Belum ada program berjalan" />
         ) : (
-          runningPrograms.slice(0, 2).map((items) => (
-            <ProgresListCard
-              key={items.id}
-              res={items}
-              pathname={namespace.pathname}
-              onDetail={() =>
-                namespace.router.push(
-                  `/${state.role.toLocaleLowerCase()}/${state.section}/detail-anak/${items.childId}/program/detail-program/${items.id}`,
-                )
-              }
-            />
-          ))
+          runningPrograms
+            .slice(0, 2)
+            .map((items) => (
+              <ProgresListCard
+                key={items.id}
+                res={items}
+                pathname={namespace.pathname}
+              />
+            ))
         )}
         {runningPrograms.length > 2 && (
           <Link href="#">
@@ -104,11 +101,6 @@ const ProgramChildrenPosyanduSection: React.FC<
                 key={items.id}
                 res={items}
                 pathname={namespace.pathname}
-                onDetail={() =>
-                  namespace.router.push(
-                    `/${state.role.toLocaleLowerCase()}/${state.section}/detail-anak/${items.childId}/program/detail-program/${items.id}`,
-                  )
-                }
               />
             ))}
             {completedPrograms.length > 1 && (

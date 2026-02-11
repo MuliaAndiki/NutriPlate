@@ -28,8 +28,10 @@ interface UbahPasswordSectionProps {
     >;
   };
   service: {
-    onUpdate: () => void;
-    isPending: boolean;
+    mutation: {
+      onUpdate: () => void;
+      isPending: boolean;
+    };
   };
 }
 const UbahPasswordSection: React.FC<UbahPasswordSectionProps> = ({
@@ -38,7 +40,7 @@ const UbahPasswordSection: React.FC<UbahPasswordSectionProps> = ({
   service,
 }) => {
   return (
-    <section className="flex w-full min-h-screen flex-col items-center justify-start overflow-x-hidden space-y-2">
+    <section className="flex w-full min-h-screen flex-col items-center justify-start overflow-x-hidden space-y-2 p-2">
       <div className="w-full flex  items-center">
         <ChevronLeft
           onClick={() => nameSpace.router.back()}
@@ -112,9 +114,9 @@ const UbahPasswordSection: React.FC<UbahPasswordSectionProps> = ({
       <div className="mt-2 w-full">
         <ButtonWrapper
           className="w-full"
-          onClick={() => service.onUpdate()}
+          onClick={() => service.mutation.onUpdate()}
           disabled={
-            service.isPending ||
+            service.mutation.isPending ||
             !state.confirmPassword ||
             !state.formUpdatePassword
           }

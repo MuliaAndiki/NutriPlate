@@ -5,6 +5,8 @@ import useService from "@/hooks/mutation/prop.service";
 
 const ProfileParentContainer = () => {
   const service = useService();
+
+  //profile
   const useGetProfileQuery = service.user.query.profile();
   const useGetProfileData = useGetProfileQuery.data?.data ?? null;
   const logoutMutation = service.auth.mutation.logout();

@@ -1,13 +1,12 @@
 "use client";
 
-import DailySummaryKaderSection from "@/components/section/private/kader/daftar-balita/detail-anak/daily-summary/daily-summary-section";
-
+import DailySummaryPosyanduSection from "@/components/section/private/posyandu/kelola-data/detail-anak/daily-summary/daily-summary-section";
 import { SidebarLayout } from "@/core/layouts/sidebar.layout";
 import useService from "@/hooks/mutation/prop.service";
 import { useAppNameSpace } from "@/hooks/useAppNameSpace";
 import { useParams } from "next/navigation";
 
-const DailySummaryPosyanduContainer = () => {
+const DailySummaryKaderContainer = () => {
   const namespace = useAppNameSpace();
   const { childrenID } = useParams<{ childrenID: string }>();
   const service = useService();
@@ -40,7 +39,7 @@ const DailySummaryPosyanduContainer = () => {
   return (
     <SidebarLayout>
       <main className="w-full min-h-screen overflow-x-hidden">
-        <DailySummaryKaderSection
+        <DailySummaryPosyanduSection
           namespace={{ router: namespace.router }}
           service={{
             query: {
@@ -59,4 +58,4 @@ const DailySummaryPosyanduContainer = () => {
   );
 };
 
-export default DailySummaryPosyanduContainer;
+export default DailySummaryKaderContainer;

@@ -11,6 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Spinner } from "@/components/ui/spinner";
 
 interface IotControllerCardProps {
   onStartScale: () => void;
@@ -119,8 +120,12 @@ const IotControllerCard: React.FC<IotControllerCardProps> = ({
         )}
       </div>
       {iotId === null ? (
-        <ButtonWrapper onClick={() => onConnectIot()} className="w-full">
-          Connect Iot
+        <ButtonWrapper
+          onClick={() => onConnectIot()}
+          className="w-full"
+          disabled={isPending}
+        >
+          {isPending ? <Spinner /> : "Connect Iot"}
         </ButtonWrapper>
       ) : (
         <div className="w-full space-y-2 pb-4 border-b">

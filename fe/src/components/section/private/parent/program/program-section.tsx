@@ -44,7 +44,7 @@ const ProgramHeroSection: React.FC<ProgramSectionProps> = ({
     return <DataNotFound />;
   }
 
-  if (!service.query.isLoading) {
+  if (service.query.isLoading) {
     return <ProgramSkeleton />;
   }
   const programRender = resProgram.filter((program) => {
@@ -88,13 +88,7 @@ const ProgramHeroSection: React.FC<ProgramSectionProps> = ({
             ))
         )}
       </div>
-      <ButtonWrapper
-        className="w-full"
-        variant={"btn"}
-        startIcon={<Icon icon="line-md:arrow-down" width="24" height="24" />}
-      >
-        Ikuti Program
-      </ButtonWrapper>
+
       <div className="w-full flex items-center justify-start">
         <Icon
           icon="si:ai-note-duotone"
@@ -108,7 +102,7 @@ const ProgramHeroSection: React.FC<ProgramSectionProps> = ({
         <div className="w-full">
           <Button
             className="w-full"
-            variant={state.programFilter === "ALL" ? "linter" : "notLinter"}
+            variant={state.programFilter === "ALL" ? "notLinter" : "linter"}
             onClick={() => state.setProgramFilter("ALL")}
           >
             Semua Program
@@ -119,7 +113,7 @@ const ProgramHeroSection: React.FC<ProgramSectionProps> = ({
           <Button
             className="w-full"
             variant={
-              state.programFilter === "FOLLOWED" ? "linter" : "notLinter"
+              state.programFilter === "FOLLOWED" ? "notLinter" : "linter"
             }
             onClick={() => state.setProgramFilter("FOLLOWED")}
           >

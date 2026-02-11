@@ -9,6 +9,7 @@ import { ChevronLeft } from "lucide-react";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import Image from "next/image";
 import EditProfileSectionSkeleton from "@/components/skeleton/private/parent/profile/edit-profile/edit-profile-section-skeleton";
+import DataNotFound from "@/components/empty/data-not-found";
 
 interface EditProfileSectionProps {
   namespace: {
@@ -40,6 +41,11 @@ const EditProfileSection: React.FC<EditProfileSectionProps> = ({
   service,
   state,
 }) => {
+  const resProfile = service.query.profileUser;
+
+  if (!resProfile) {
+    return <DataNotFound />;
+  }
   if (service.query.isLoading) {
     return <EditProfileSectionSkeleton />;
   }
@@ -93,7 +99,7 @@ const EditProfileSection: React.FC<EditProfileSectionProps> = ({
           >
             <Image
               alt="profile"
-              src={service.query.profileUser.avaUrl ?? "/avatars/1.png"}
+              src={resProfile.avaUrl ?? "/avatars/1.png"}
               width={150}
               height={150}
               className="object-cover rounded-full aspect-square"
@@ -135,7 +141,7 @@ const EditProfileSection: React.FC<EditProfileSectionProps> = ({
       <div className="w-full">
         <label className="text-lg font-bold">Nama Lengkap</label>
         <Input
-          defaultValue={service.query.profileUser.fullName}
+          defaultValue={resProfile.fullName}
           disabled={!state.isEdit}
           onChange={(e) =>
             state.setFormUpdateProfile((prev) => ({
@@ -148,9 +154,7 @@ const EditProfileSection: React.FC<EditProfileSectionProps> = ({
       <div className="w-full">
         <label className="text-lg font-bold">Nomor Hp/Email</label>
         <Input
-          defaultValue={
-            service.query.profileUser.phone ?? service.query.profileUser.email
-          }
+          defaultValue={resProfile.phone ?? resProfile.email}
           disabled={!state.isEdit}
           onChange={(e) =>
             state.setFormUpdateProfile((prev) => ({
@@ -163,8 +167,8 @@ const EditProfileSection: React.FC<EditProfileSectionProps> = ({
       <div className="w-full">
         <label className="text-lg font-bold">Peran</label>
         <Input
-          defaultValue={service.query.profileUser.role}
-          value={service.query.profileUser.role}
+          defaultValue={resProfile.role}
+          value={resProfile.role}
           disabled
         />
       </div>

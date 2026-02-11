@@ -31,7 +31,7 @@ const HeaderHomeCard: React.FC<HeaderHomeProps> = ({ res, role, isRead }) => {
         <div className="p-3 rounded-xl bg-background absolute top-15 -right-3">
           <Link href={`/${role.toLocaleLowerCase()}/notifikasi`}>
             {isRead === false && (
-              <div className="w-3 h-3 rounded-full bg-destructive absolute translate-y-2 " />
+              <div className="w-3 h-3 rounded-full bg-destructive absolute translate-y-0 -translate-x-1 " />
             )}
             <Icon
               icon="mdi:bell-outline"

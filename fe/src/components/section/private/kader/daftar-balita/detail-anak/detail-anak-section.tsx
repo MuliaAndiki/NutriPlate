@@ -143,7 +143,7 @@ const DetailAnakKaderSection: React.FC<DetailAnakKaderSectionProps> = ({
               <div className="w-full p-2">
                 <PosyanduHomeCard
                   res={service.query.posyanduById}
-                  key={service.query.posyanduById.id}
+                  key={service.query.posyanduById.id ?? ""}
                   onClick={() =>
                     namespace.router.push(
                       `/posyandu/${service.query.posyanduById.id}`,

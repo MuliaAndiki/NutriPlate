@@ -12,9 +12,15 @@ import { parsePayload } from "@/utils/parse.format";
 const EditProfileContainer = () => {
   const nameSpace = useAppNameSpace();
   const service = useService();
+
+  //profile
   const useGetProfileQuery = service.user.query.profile();
   const useGetProfileData = useGetProfileQuery.data?.data ?? null;
+
+  //mutation
   const updateProfile = service.user.mutation.updateProfile();
+
+  //state
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const { avatar, selectAvatar, removePreview } = useAvatarReducer();
   const [formUpdateProfile, setFormUpdateProfile] = useState<FormUpdateProfile>(
@@ -25,6 +31,7 @@ const EditProfileContainer = () => {
     },
   );
 
+  //handler
   const handleChangeAvatar = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -87,32 +94,30 @@ const EditProfileContainer = () => {
   };
 
   return (
-    <SidebarLayout>
-      <main className="w-full min-h-screen overflow-x-hidden">
-        <EditProfileSection
-          namespace={{
-            router: nameSpace.router,
-          }}
-          service={{
-            mutation: {
-              onChangeAvatars: handleChangeAvatar,
-              onRemovePreview: handleRemovePreview,
-              onUpdateProfile: () => handleUpdateProfile(),
-            },
-            query: {
-              profileUser: useGetProfileData,
-              isLoading: useGetProfileQuery.isLoading,
-            },
-          }}
-          state={{
-            isEdit: isEdit,
-            preview: avatar.preview,
-            setFormUpdateProfile: setFormUpdateProfile,
-            setIsEdit: setIsEdit,
-          }}
-        />
-      </main>
-    </SidebarLayout>
+    <main className="w-full min-h-screen overflow-x-hidden">
+      <EditProfileSection
+        namespace={{
+          router: nameSpace.router,
+        }}
+        service={{
+          mutation: {
+            onChangeAvatars: handleChangeAvatar,
+            onRemovePreview: handleRemovePreview,
+            onUpdateProfile: () => handleUpdateProfile(),
+          },
+          query: {
+            profileUser: useGetProfileData,
+            isLoading: useGetProfileQuery.isLoading,
+          },
+        }}
+        state={{
+          isEdit: isEdit,
+          preview: avatar.preview,
+          setFormUpdateProfile: setFormUpdateProfile,
+          setIsEdit: setIsEdit,
+        }}
+      />
+    </main>
   );
 };
 
