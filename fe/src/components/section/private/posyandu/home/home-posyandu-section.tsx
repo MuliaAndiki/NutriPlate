@@ -101,7 +101,7 @@ const HomePosyanduHeroSection: React.FC<HomePosyanduHeroSectionProps> = ({
         isRead={lengthNotifikasi}
       />
 
-      <section className="relative z-10 bg-background px-4  rounded-t-3xl  space-y-1">
+      <section className="relative z-10 bg-background px-4 py-6 rounded-t-3xl  space-y-1">
         <div className="w-full p-2 grid grid-cols-2 grid-rows-2 gap-2">
           <ChildrenList lengthChild={lengthChild} />
           <BalitaRiskList lengthChild={nutritionStatusLenghtWarning} />

@@ -5,10 +5,13 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import Link from "next/link";
 import ProfileSectionSkeleton from "@/components/skeleton/private/parent/profile/profile-section-skeleton";
 import DataNotFound from "@/components/empty/data-not-found";
+import { Spinner } from "@/components/ui/spinner";
+
 export interface ProfileProps {
   service: {
     mutation: {
       onLogout: () => void;
+      isPending: boolean;
     };
     query: {
       userProfileType: IAuth;
@@ -16,14 +19,18 @@ export interface ProfileProps {
     };
   };
 }
+
 const ProfileParentHeroSection: React.FC<ProfileProps> = ({ service }) => {
   const resProfile = service.query.userProfileType;
+
   if (service.query.isLoading) {
     return <ProfileSectionSkeleton />;
   }
+
   if (!resProfile) {
     return <DataNotFound />;
   }
+
   const Routing = [
     {
       title: "Edit Profile",
@@ -39,67 +46,95 @@ const ProfileParentHeroSection: React.FC<ProfileProps> = ({ service }) => {
     },
     {
       title: "Personalisasi & Bahasa",
-      icon2: "mingcute:arrow-right-fill",
       icon: "uil:setting",
+      icon2: "mingcute:arrow-right-fill",
       href: "/setting",
     },
     {
       title: "Kebijakan Privasi",
-      icon2: "mingcute:arrow-right-fill",
       icon: "ic:outline-policy",
+      icon2: "mingcute:arrow-right-fill",
       href: "/policy",
     },
+    {
+      title: "Tentang Aplikasi",
+      icon: "mdi:about-circle-outline",
+      icon2: "mingcute:arrow-right-fill",
+      href: "/about",
+    },
   ];
-  return (
-    <div className="w-full min-h-full flex justify-start items-start flex-col p-2">
-      <div className="w-full flex justify-center items-center flex-col space-y-5">
-        <Image
-          alt="profile"
-          src={resProfile.avaUrl ?? "/avatars/1.png"}
-          width={150}
-          height={150}
-          className="object-cover rounded-full"
-        />
 
-        <h1 className="text-2xl font-bold">{resProfile.fullName}</h1>
-        <h1 className="font-light">{resProfile.email ?? resProfile.phone}</h1>
-      </div>
-      <div className="w-full flex flex-col h-full max-h-lg  items-center justify-between">
-        <div className="w-full my-2 flex  space-y-2 justify-center flex-col items-center">
-          {Routing.map((items, key) => (
-            <Button
-              className="w-full flex items-start  justify-start p-1 h-auto"
-              key={key}
-              variant={"liner"}
-            >
-              <Link
-                className="w-full flex items-center justify-between h-auto p-2"
-                href={items.href}
-              >
-                <div className="flex h-auto justify-start items-center w-full space-x-4 ">
-                  <Icon
-                    icon={items.icon}
-                    width={34}
-                    height={34}
-                    className="text-primary scale-150 "
-                  />
-                  <h1 className="text-lg font-semibold">{items.title}</h1>
-                </div>
-                <Icon icon={items.icon2} width={34} height={34} />
-              </Link>
-            </Button>
-          ))}
+  return (
+    <div className="relative w-full min-h-screen flex flex-col p-4 overflow-hidden bg-background">
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-chart-2/5" />
+
+      <div className="absolute -top-40 -left-40 h-[500px] w-[500px] rounded-full bg-primary/20 blur-3xl animate-float opacity-70" />
+      <div className="absolute -bottom-40 -right-40 h-[550px] w-[550px] rounded-full bg-chart-2/20 blur-3xl animate-float-slow animate-float-delay-2 opacity-70" />
+      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 h-60 w-60 rounded-full bg-chart-3/20 blur-2xl animate-float-fast animate-float-delay-1 opacity-60" />
+
+      <div className="absolute inset-0 backdrop-blur-[2px]" />
+
+      <div className="relative z-10 w-full flex flex-col h-full">
+        <div className="w-full flex flex-col items-center space-y-6 rounded-2xl bg-card/70  border border-border p-6 shadow-enhanced">
+          <Image
+            alt="profile"
+            src={resProfile.avaUrl ?? "/avatars/1.png"}
+            width={140}
+            height={140}
+            className="object-cover rounded-full aspect-square border-4 border-primary/20 shadow-enhanced"
+          />
+
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-foreground">
+              {resProfile.fullName}
+            </h1>
+            <p className="text-muted-foreground text-sm mt-1">
+              {resProfile.email ?? resProfile.phone}
+            </p>
+          </div>
         </div>
 
-        <Button
-          className="w-full text-background"
-          variant={"destructive"}
-          onClick={() => service.mutation.onLogout()}
-        >
-          Keluar
-        </Button>
+        <div className="w-full flex flex-col flex-1 justify-between mt-6">
+          <div className="w-full flex flex-col space-y-3">
+            {Routing.map((items, key) => (
+              <Button
+                key={key}
+                className="w-full justify-start h-auto p-0 hover-lift"
+                variant="liner"
+              >
+                <Link
+                  href={items.href}
+                  className="w-full flex items-center justify-between p-4"
+                >
+                  <div className="flex items-center space-x-4">
+                    <Icon
+                      icon={items.icon}
+                      width={28}
+                      height={28}
+                      className="text-primary"
+                    />
+                    <span className="text-base font-semibold">
+                      {items.title}
+                    </span>
+                  </div>
+                  <Icon icon={items.icon2} width={22} height={22} />
+                </Link>
+              </Button>
+            ))}
+          </div>
+
+          <Button
+            className="w-full mt-6"
+            variant="destructive"
+            disabled={service.mutation.isPending}
+            onClick={() => service.mutation.onLogout()}
+          >
+            {service.mutation.isPending ? <Spinner /> : "Keluar"}
+          </Button>
+        </div>
       </div>
     </div>
   );
 };
+
 export default ProfileParentHeroSection;

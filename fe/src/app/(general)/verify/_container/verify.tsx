@@ -25,7 +25,7 @@ const VerifyContainer = () => {
 
   if (!identifier || !target) {
     // not fix
-    nameSpace.router.replace("/login");
+    nameSpace.router.back();
     return null;
   }
   const handleVerfiyOtp = () => {

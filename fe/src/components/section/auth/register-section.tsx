@@ -49,9 +49,9 @@ const RegisterHeroSection: React.FC<RegisterProps> = ({ service, state }) => {
         <div className="flex absolute flex-col items-center top-0 w-full z-[-1]">
           <Image alt="icon" src={"/images/auth.png"} width={300} height={300} />
         </div>
-        <div className="w-full h-full mt-55 bg-background flex items-center justify-start flex-col rounded-t-3xl py-5 z-0">
-          <div className="w-full px-6">
-            <h1 className="text-3xl font-bold">Daftar Akun</h1>
+        <div className="w-full h-full mt-55 bg-background flex items-center justify-start flex-col rounded-t-3xl p-4 z-0">
+          <div className="w-full ">
+            <h1 className="text-3xl text-center font-bold">Daftar</h1>
           </div>
           <form
             onSubmit={(e) => {

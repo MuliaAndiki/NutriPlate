@@ -9,6 +9,8 @@ const ProfileParentContainer = () => {
   //profile
   const useGetProfileQuery = service.user.query.profile();
   const useGetProfileData = useGetProfileQuery.data?.data ?? null;
+
+  //mutation
   const logoutMutation = service.auth.mutation.logout();
   const handleLogout = () => {
     logoutMutation.mutate({});
@@ -20,6 +22,7 @@ const ProfileParentContainer = () => {
           service={{
             mutation: {
               onLogout: () => handleLogout(),
+              isPending: logoutMutation.isPending,
             },
             query: {
               userProfileType: useGetProfileData ?? undefined,

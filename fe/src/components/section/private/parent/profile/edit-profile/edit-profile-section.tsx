@@ -10,7 +10,6 @@ import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.share
 import Image from "next/image";
 import EditProfileSectionSkeleton from "@/components/skeleton/private/parent/profile/edit-profile/edit-profile-section-skeleton";
 import DataNotFound from "@/components/empty/data-not-found";
-import { isPending } from "@reduxjs/toolkit";
 import { Spinner } from "@/components/ui/spinner";
 
 interface EditProfileSectionProps {

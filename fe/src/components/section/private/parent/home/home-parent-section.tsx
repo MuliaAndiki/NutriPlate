@@ -40,7 +40,7 @@ const HomeParentHeroSection: React.FC<HomeParentSectionProps> = ({
         role={resProfile.role}
         isRead={lengthIsRead}
       />
-      <section className="relative z-10 bg-background px-4 py-6 rounded-t-3xl -mt-6 space-y-1">
+      <section className="relative z-10 bg-background px-4 py-6 rounded-t-3xl  space-y-1">
         <CardKontenHomeParent />
         <div className="w-full flex items-center flex-col space-y-4 ">
           <div className="w-full flex items-center flex-col">
