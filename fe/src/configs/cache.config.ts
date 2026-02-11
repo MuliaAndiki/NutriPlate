@@ -116,7 +116,9 @@ export const cacheKey = {
     byPosyandu: (id: string, status?: string | null) => [
       `programregistration:posyandu:${id}${status ? `:${status}` : ""}`,
     ],
-    pending: (posyanduId: string) => [`programregistration:pending:${posyanduId}`],
+    pending: (posyanduId: string) => [
+      `programregistration:pending:${posyanduId}`,
+    ],
     accepted: (posyanduId: string) => [
       `programregistration:accepted:${posyanduId}`,
     ],
@@ -138,7 +140,9 @@ export const cacheKey = {
     byID: (id: string) => [`kaderregistration:id:${id}`],
     byKader: (id: string) => [`kaderregistration:kader:${id}`],
     byPosyandu: (id: string) => [`kaderregistration:posyandu:${id}`],
-    pending: (posyanduId: string) => [`kaderregistration:pending:${posyanduId}`],
+    pending: (posyanduId: string) => [
+      `kaderregistration:pending:${posyanduId}`,
+    ],
     accepted: (posyanduId: string) => [
       `kaderregistration:accepted:${posyanduId}`,
     ],

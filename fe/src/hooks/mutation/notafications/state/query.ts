@@ -3,9 +3,9 @@ import Api from "@/services/props.module";
 import { useQuery } from "@tanstack/react-query";
 
 // All By User
-export function useGetNotification(token?: string) {
+export function useGetNotification(token: string) {
   return useQuery({
-    queryKey: cacheKey.notification.byUser(token!),
+    queryKey: cacheKey.notification.byUser(token),
     queryFn: () => Api.Notification.getNotafications(),
     staleTime: 1000 * 60 * 5,
     enabled: !!token,

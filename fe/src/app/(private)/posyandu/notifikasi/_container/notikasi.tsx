@@ -16,6 +16,7 @@ const NotifikasiPosyanduContainer = () => {
   const notifikasiQuery = service.notafication.query.getNotification(
     selector.token!,
   );
+
   const notifikasiData = notifikasiQuery.data?.data ?? [];
 
   const [filtered, setFiltered] = useState<"Read" | "NotRead">("NotRead");

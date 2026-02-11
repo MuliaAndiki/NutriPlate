@@ -9,8 +9,9 @@ import Link from "next/link";
 interface HeaderHomeProps {
   res: UserResponse;
   role: string;
+  isRead: boolean;
 }
-const HeaderHomeCard: React.FC<HeaderHomeProps> = ({ res, role }) => {
+const HeaderHomeCard: React.FC<HeaderHomeProps> = ({ res, role, isRead }) => {
   return (
     <section className="relative min-h-[35vh] w-full">
       <div className="absolute inset-0 z-0">
@@ -29,6 +30,9 @@ const HeaderHomeCard: React.FC<HeaderHomeProps> = ({ res, role }) => {
 
         <div className="p-3 rounded-xl bg-background absolute top-15 -right-3">
           <Link href={`/${role.toLocaleLowerCase()}/notifikasi`}>
+            {isRead === false && (
+              <div className="w-3 h-3 rounded-full bg-destructive absolute translate-y-2 " />
+            )}
             <Icon
               icon="mdi:bell-outline"
               width="34"

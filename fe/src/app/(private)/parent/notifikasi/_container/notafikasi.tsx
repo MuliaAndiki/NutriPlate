@@ -6,6 +6,7 @@ import useService from "@/hooks/mutation/prop.service";
 import { useAppNameSpace } from "@/hooks/useAppNameSpace";
 import { NotifTypeInterface } from "@/types/partial";
 import { useState, useEffect } from "react";
+import Api from "@/services/props.module";
 
 const NotafikasiParentContainer = () => {
   const namespace = useAppNameSpace();
@@ -22,55 +23,56 @@ const NotafikasiParentContainer = () => {
   const [readStatus, setReadStatus] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
+    let isMounted = true;
     const fetchReadStatus = async () => {
-      const statuses: Record<string, boolean> = {};
-      for (const notif of notifikasiData) {
-        try {
-          const readStatusQuery = service.notafication.query.isNotificationRead(
-            notif.id,
-          );
+      if (notifikasiData.length === 0) {
+        if (isMounted) setReadStatus({});
+        return;
+      }
 
-          if (readStatusQuery.data?.data?.isRead !== undefined) {
-            statuses[notif.id] = readStatusQuery.data.data.isRead;
-          } else {
+      const statuses: Record<string, boolean> = {};
+      await Promise.all(
+        notifikasiData.map(async (notif: any) => {
+          try {
+            const res = await Api.Notification.isNotificationRead(notif.id);
+            statuses[notif.id] = res?.data?.isRead ?? false;
+          } catch (error) {
+            console.warn("Failed to fetch read status:", error);
             statuses[notif.id] = false;
           }
-        } catch (error) {
-          console.warn("Failed to fetch read status:", error);
-          statuses[notif.id] = false;
-        }
-      }
-      setReadStatus(statuses);
+        }),
+      );
+
+      if (isMounted) setReadStatus(statuses);
     };
 
-    if (notifikasiData.length > 0) {
-      fetchReadStatus();
-    }
-  }, [notifikasiData, service]);
+    fetchReadStatus();
+    return () => {
+      isMounted = false;
+    };
+  }, [notifikasiData]);
 
   return (
-    <SidebarLayout>
-      <main className="w-full overflow-x-hidden min-h-screen">
-        <NotifikasiParentSection
-          namespace={{
-            router: namespace.router,
-          }}
-          service={{
-            query: {
-              notifikasi: notifikasiData ?? [],
-              isLoading: notifikasiQuery.isLoading,
-            },
-          }}
-          state={{
-            filter: filtered,
-            setFilter: setFiltered,
-            selectedTypes: selectTypes,
-            setSelectedTypes: setSelectedTypes,
-          }}
-          readStatus={readStatus}
-        />
-      </main>
-    </SidebarLayout>
+    <main className="w-full overflow-x-hidden min-h-screen">
+      <NotifikasiParentSection
+        namespace={{
+          router: namespace.router,
+        }}
+        service={{
+          query: {
+            notifikasi: notifikasiData ?? [],
+            isLoading: notifikasiQuery.isLoading,
+          },
+        }}
+        state={{
+          filter: filtered,
+          setFilter: setFiltered,
+          selectedTypes: selectTypes,
+          setSelectedTypes: setSelectedTypes,
+        }}
+        readStatus={readStatus}
+      />
+    </main>
   );
 };
 

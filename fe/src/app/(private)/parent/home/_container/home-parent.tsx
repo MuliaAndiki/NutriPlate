@@ -1,14 +1,21 @@
 "use client";
 import HomeParentHeroSection from "@/components/section/private/parent/home/home-parent-section";
 import { SidebarLayout } from "@/core/layouts/sidebar.layout";
+import { useAppSelector } from "@/hooks/dispatch/dispatch";
 import useService from "@/hooks/mutation/prop.service";
-import { setRole } from "@/stores/posyanduSlice/posyanduSlice";
-import { useEffect } from "react";
 
 const HomeParentContainer = () => {
   const service = useService();
+  const selector = useAppSelector((state) => state.posyandu);
+
+  //profile
   const profileQuery = service.user.query.profile();
   const profileData = profileQuery.data?.data ?? null;
+
+  const notifikasiQuery = service.notafication.query.getNotification(
+    selector.token!,
+  );
+  const notifikasiData = notifikasiQuery.data?.data ?? [];
 
   return (
     <SidebarLayout>
@@ -17,7 +24,8 @@ const HomeParentContainer = () => {
           service={{
             query: {
               profile: profileData ?? null,
-              isLoading: profileQuery.isLoading,
+              isLoading: profileQuery.isLoading || notifikasiQuery.isLoading,
+              notifikasi: notifikasiData,
             },
           }}
         />

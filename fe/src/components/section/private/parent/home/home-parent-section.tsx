@@ -6,12 +6,15 @@ import CardKontenHomeParent4 from "@/components/card/general/home-parent/card-co
 import { UserResponse } from "@/types/res";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import HomeParentSectionSkeleton from "@/components/skeleton/private/parent/home/home-parent-section-skeleton";
+import DataNotFound from "@/components/empty/data-not-found";
+import { INotification } from "@/types/schema";
 
 interface HomeParentSectionProps {
   service: {
     query: {
       profile: UserResponse;
       isLoading: boolean;
+      notifikasi: INotification;
     };
   };
 }
@@ -19,14 +22,23 @@ interface HomeParentSectionProps {
 const HomeParentHeroSection: React.FC<HomeParentSectionProps> = ({
   service,
 }) => {
+  const resProfile = service.query.profile;
+  const resNotifikasi = service.query.notifikasi;
+
+  if (!resProfile || !resNotifikasi) {
+    return <DataNotFound />;
+  }
   if (service.query.isLoading) {
     return <HomeParentSectionSkeleton />;
   }
+
+  const lengthIsRead = resNotifikasi.isRead === false;
   return (
     <div className="w-full overflow-hidden">
       <HeaderHomeCard
-        res={service.query.profile ?? null}
-        role={service.query.profile.role}
+        res={resProfile ?? null}
+        role={resProfile.role}
+        isRead={lengthIsRead}
       />
       <section className="relative z-10 bg-background px-4 py-6 rounded-t-3xl -mt-6 space-y-1">
         <CardKontenHomeParent />

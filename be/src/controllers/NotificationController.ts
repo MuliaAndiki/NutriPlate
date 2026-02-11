@@ -113,7 +113,7 @@ class NotificationController {
         }
 
         whereCondition = {
-          OR: [{ isBroadcast: true }, { isBroadcast: false, userId: posyandu.id }],
+          OR: [{ isBroadcast: true }, { isBroadcast: false, userId: user.id }],
         };
       } else if (user.role === 'ADMIN') {
         whereCondition = {
@@ -127,10 +127,6 @@ class NotificationController {
         where: whereCondition,
         orderBy: { createdAt: 'desc' },
       });
-
-      if (notifications.length === 0) {
-        return c.json?.({ status: 404, message: 'notification not found' }, 404);
-      }
 
       await this.redis.set(cacheKey, JSON.stringify(notifications), { EX: 60 }).catch(() => {});
 
@@ -204,7 +200,6 @@ class NotificationController {
       const notification = await prisma.notifications.findFirst({
         where: {
           id: notParams.id,
-          isBroadcast: true,
         },
       });
 
@@ -290,7 +285,7 @@ class NotificationController {
         this.redis.del(cacheKey),
         this.redis.del(cacheKeys.notification.byUser(jwtUser.id)),
       ]).catch(error);
-      if (!notafication || notafication.isBroadcast === false) {
+      if (!notafication || notafication.isBroadcast !== false) {
         return c.json?.(
           {
             status: 400,

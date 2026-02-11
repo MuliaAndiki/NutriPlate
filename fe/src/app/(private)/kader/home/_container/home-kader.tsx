@@ -1,15 +1,17 @@
 "use client";
 import HomeKaderHeroSection from "@/components/section/private/kader/home/home-kader-section";
 import { SidebarLayout } from "@/core/layouts/sidebar.layout";
+import { useAppSelector } from "@/hooks/dispatch/dispatch";
 import useService from "@/hooks/mutation/prop.service";
 import { useAppNameSpace } from "@/hooks/useAppNameSpace";
-import { setPosyanduId, setRole } from "@/stores/posyanduSlice/posyanduSlice";
+import { setPosyanduId } from "@/stores/posyanduSlice/posyanduSlice";
 import { PopUpNavigate } from "@/types/ui";
 import { useEffect, useState } from "react";
 
 const HomeKaderContainer = () => {
   const service = useService();
   const namespace = useAppNameSpace();
+  const selector = useAppSelector((state) => state.posyandu);
   // profile
   const profileQuery = service.user.query.profile();
   const profileData = profileQuery.data?.data ?? null;
@@ -42,6 +44,12 @@ const HomeKaderContainer = () => {
   //posyanduById
   const posyanduByIdQuery = service.posyandu.query.getPosyanduById(posyanduId);
   const posyanduByIdData = posyanduByIdQuery.data?.data ?? null;
+
+  //notifikasi
+  const notifikasiQuery = service.notafication.query.getNotification(
+    selector.token!,
+  );
+  const notifikasiData = notifikasiQuery.data?.data ?? [];
 
   const [posyanduSelectId, setPosyanduSelectId] = useState<string>("");
   const registerKaderMutation = service.registerKader.mutation.registerKader();
@@ -78,12 +86,14 @@ const HomeKaderContainer = () => {
                 childInPosyanduQuery.isLoading ||
                 posyanduQuery.isLoading ||
                 MeasurementAllQuery.isLoading ||
-                posyanduByIdQuery.isLoading,
+                posyanduByIdQuery.isLoading ||
+                notifikasiQuery.isLoading,
               profile: profileData ?? null,
               measurement: MeasurementAllData ?? [],
               childInPosyandu: childInPosyanduData ?? [],
               posyandu: posyanduData ?? [],
               posyanduById: posyanduByIdData ?? null,
+              notikasi: notifikasiData,
             },
             mutation: {
               onRegisterKader: handleRegisterKader,

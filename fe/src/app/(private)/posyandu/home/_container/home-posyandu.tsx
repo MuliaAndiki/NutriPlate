@@ -5,6 +5,7 @@ import useService from "@/hooks/mutation/prop.service";
 import { useEffect } from "react";
 import { useAppNameSpace } from "@/hooks/useAppNameSpace";
 import { setPosyanduId } from "@/stores/posyanduSlice/posyanduSlice";
+import { useAppSelector } from "@/hooks/dispatch/dispatch";
 
 const HomePosyanduContainer = () => {
   const service = useService();
@@ -14,6 +15,7 @@ const HomePosyanduContainer = () => {
   const profileData = profileQuery.data?.data ?? null;
   const posyanduId = profileData?.posyandu?.id ?? "";
   const role = profileData?.role ?? "";
+  const selector = useAppSelector((state) => state.posyandu);
 
   useEffect(() => {
     if (!profileData) return;
@@ -35,7 +37,12 @@ const HomePosyanduContainer = () => {
   const kaderQuery = service.posyandu.query.getKaderList();
   const KaderData = kaderQuery.data?.data ?? [];
 
-  console.log("feta", profileData);
+  //notifikasi
+  const notifikasiQuery = service.notafication.query.getNotification(
+    selector.token!,
+  );
+  const notifikasiData = notifikasiQuery.data?.data ?? [];
+
   return (
     <SidebarLayout>
       <main className="w-full min-h-screen overflow-x-hidden">
@@ -46,11 +53,13 @@ const HomePosyanduContainer = () => {
                 profileQuery.isLoading ||
                 childInPosyanduQuery.isLoading ||
                 kaderQuery.isLoading ||
-                MeasurementAllQuery.isLoading,
+                MeasurementAllQuery.isLoading ||
+                notifikasiQuery.isLoading,
               profile: profileData ?? null,
               measurement: MeasurementAllData ?? [],
               childInPosyandu: childInPosyanduData ?? [],
               kader: KaderData ?? [],
+              notifikasi: notifikasiData,
             },
           }}
         />

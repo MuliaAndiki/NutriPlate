@@ -19,6 +19,7 @@ import BalitaWarningList from "@/components/card/kader/balita-warning";
 import PosyanduList from "@/components/card/kader/list-posyandu";
 import PosyanduHomeCard from "@/components/card/posyandu/posyandu-home-card";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+import { INotification } from "@/types/schema";
 
 interface HomeKaderHeroSectionProps {
   namespace: {
@@ -32,6 +33,7 @@ interface HomeKaderHeroSectionProps {
       posyandu: PosyanduRespone[];
       measurement: MeasurementRespone[];
       posyanduById: PosyanduRespone;
+      notikasi: INotification;
     };
     mutation: {
       onRegisterKader: () => void;
@@ -68,6 +70,7 @@ const HomeKaderHeroSection: React.FC<HomeKaderHeroSectionProps> = ({
       href: "/kader/daftar-program",
     },
   ];
+  const resNotifikasi = service.query.notikasi;
   const lengthChild = service.query.childInPosyandu.length;
   const nutritionStatusLenghtWarning = service.query.measurement.filter(
     (item) => item.nutritionStatus === "severely_underweight",
@@ -76,11 +79,13 @@ const HomeKaderHeroSection: React.FC<HomeKaderHeroSectionProps> = ({
     (item) => item.nutritionStatus === "underweight",
   ).length;
   const posyanduLenght = service.query.posyandu.length;
+  const lengthNotifikasi = resNotifikasi.isRead === false;
   return (
     <div className="w-full overflow-hidden">
       <HeaderHomeCard
         res={service.query.profile ?? null}
         role={service.query.profile.role}
+        isRead={lengthNotifikasi}
       />
       <section className="relative z-10 bg-background px-4  rounded-t-3xl  space-y-1">
         <div className="w-full p-2 grid grid-cols-2 grid-rows-2 gap-2">

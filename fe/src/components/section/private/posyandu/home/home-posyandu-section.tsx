@@ -15,6 +15,7 @@ import DataNotFound from "@/components/empty/data-not-found";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import Image from "next/image";
 import Link from "next/link";
+import { INotification } from "@/types/schema";
 
 interface HomePosyanduHeroSectionProps {
   service: {
@@ -24,6 +25,7 @@ interface HomePosyanduHeroSectionProps {
       childInPosyandu: ChildListByPosyanduData[];
       kader: KaderDetailResponse[];
       measurement: MeasurementRespone[];
+      notifikasi: INotification;
     };
   };
 }
@@ -34,11 +36,18 @@ const HomePosyanduHeroSection: React.FC<HomePosyanduHeroSectionProps> = ({
   const resKader = service.query.kader;
   const resChild = service.query.childInPosyandu;
   const resProfile = service.query.profile;
+  const resNotifikasi = service.query.notifikasi;
 
   if (service.query.isLoading) {
     return <HomePosyanduSectionSkeleton />;
   }
-  if (!resMeasuremnt || !resKader || !resChild || !resProfile) {
+  if (
+    !resMeasuremnt ||
+    !resKader ||
+    !resChild ||
+    !resProfile ||
+    !resNotifikasi
+  ) {
     return <DataNotFound />;
   }
   const lengthChild = resChild.length;
@@ -49,6 +58,7 @@ const HomePosyanduHeroSection: React.FC<HomePosyanduHeroSectionProps> = ({
     (item) => item.nutritionStatus === "underweight",
   ).length;
   const KaderLenght = resKader.length;
+  const lengthNotifikasi = resNotifikasi.isRead === false;
 
   const ActionFast = [
     {
@@ -85,7 +95,11 @@ const HomePosyanduHeroSection: React.FC<HomePosyanduHeroSectionProps> = ({
 
   return (
     <section className="w-full overflow-hidden">
-      <HeaderHomeCard res={resProfile ?? null} role={resProfile.role} />
+      <HeaderHomeCard
+        res={resProfile ?? null}
+        role={resProfile.role}
+        isRead={lengthNotifikasi}
+      />
 
       <section className="relative z-10 bg-background px-4  rounded-t-3xl  space-y-1">
         <div className="w-full p-2 grid grid-cols-2 grid-rows-2 gap-2">
