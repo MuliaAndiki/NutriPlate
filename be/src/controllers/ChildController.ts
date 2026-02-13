@@ -1,20 +1,13 @@
-import { cacheKeys } from '@/cache/cacheKey';
 import { AppContext } from '@/contex/appContex';
 import { JwtPayload } from '@/types/auth.types';
 import { PickChilID, PickCreateChild, PickRegisteredChild } from '@/types/child.types';
 import { PickPosyanduID } from '@/types/posyandu.types';
 import { uploadCloudinary } from '@/utils/clodinary';
 import { ParseUpdateData } from '@/utils/parseUpdateData';
-import { getRedis } from '@/utils/redis';
 import { Prisma } from '@prisma/client';
-import { error } from 'console';
 import prisma from 'prisma/client';
 
 class ChildController {
-  private get redis() {
-    return getRedis();
-  }
-
   public async createChild(c: AppContext) {
     try {
       const jwtUser = c.user as JwtPayload;
@@ -190,12 +183,6 @@ class ChildController {
         },
         data: update,
       });
-
-      const cacheKeysToDelete = [
-        cacheKeys.child.byID(childID.id),
-        cacheKeys.child.byParent(parent.id),
-        cacheKeys.child.byPosyandu(child.posyanduId || ''),
-      ];
       if (!child) {
         return c.json?.(
           {
@@ -205,8 +192,6 @@ class ChildController {
           400,
         );
       }
-      const delet = await this.redis.del(cacheKeysToDelete).catch(error);
-      console.log('key redis', delet);
       return c.json?.(
         {
           status: 200,
@@ -267,26 +252,12 @@ class ChildController {
           403,
         );
       }
-      // Fetch child first to get posyanduId for cache deletion
-      const childData = await prisma.child.findUnique({
-        where: { id: childID.id },
-        select: { posyanduId: true },
-      });
-
       const child = await prisma.child.delete({
         where: {
           id: childID.id,
           parentId: parent.id,
         },
       });
-
-      const cacheKeysToDelete = [
-        cacheKeys.child.byParent(parent.id),
-        cacheKeys.child.byID(childID.id),
-        cacheKeys.child.byPosyandu(childData?.posyanduId || ''),
-      ];
-      const deletd = await this.redis.del(cacheKeysToDelete).catch(error);
-      console.log('Redis keys deleted:', deletd);
       if (!child) {
         return c.json?.(
           {
@@ -406,7 +377,6 @@ class ChildController {
           404,
         );
       }
-      const cacheKey = cacheKeys.child.byID(child.id);
 
       const registerd = await prisma.child.update({
         where: {
@@ -426,11 +396,6 @@ class ChildController {
           400,
         );
       }
-
-      await Promise.all([
-        this.redis.del(cacheKey),
-        this.redis.del(cacheKeys.child.byPosyandu(registerd.posyanduId || '')),
-      ]).catch(error);
 
       return c.json?.(
         {
@@ -541,7 +506,6 @@ class ChildController {
           404,
         );
       }
-      const cacheKey = cacheKeys.child.byID(child.id);
 
       const cancel = await prisma.child.update({
         where: {
@@ -561,10 +525,6 @@ class ChildController {
           400,
         );
       } else {
-        await Promise.all([
-          this.redis.del(cacheKey),
-          this.redis.del(cacheKeys.child.byPosyandu(cancel.posyanduId || '')),
-        ]).catch(error);
       }
 
       return c.json?.(

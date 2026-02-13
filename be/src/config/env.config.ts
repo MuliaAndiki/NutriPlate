@@ -4,7 +4,6 @@ const envSchema = z.object({
   DATABASE_URL: z.string().url(),
   ML_APP: z.string().url(),
   NODE_ENV: z.string(),
-  REDIS_URL: z.string().url(),
   PORT: z.string(),
   JWT_SECRET: z.string(),
   FRONTEND_URL: z.string().url(),

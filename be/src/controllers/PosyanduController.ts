@@ -1,7 +1,6 @@
 import { AppContext } from '@/contex/appContex';
 import { JwtPayload, PickActiveAccount } from '@/types/auth.types';
 import { PickCreatePosyandu, PickPosyanduID } from '@/types/posyandu.types';
-import { getRedis } from '@/utils/redis';
 import prisma from 'prisma/client';
 import bcryptjs from 'bcryptjs';
 import crypto from 'crypto';
@@ -9,13 +8,8 @@ import { env } from '@/config/env.config';
 import { sendActivationEmail } from '@/utils/sendActiveEmail';
 import { generateOtp } from '@/utils/generate-otp';
 import { sendOTPEmail } from '@/utils/mailer';
-import { cacheKeys } from '@/cache/cacheKey';
-import { error } from 'console';
 
 class PosyanduController {
-  private get redis() {
-    return getRedis();
-  }
   public async createPosyandu(c: AppContext) {
     try {
       const jwtUser = c.user as JwtPayload;
@@ -127,26 +121,9 @@ class PosyanduController {
       }
 
       let whereConditional: any = {};
-      let cacheKey = cacheKeys.posyandu.list();
 
       if (user.role === 'POSYANDU') {
         whereConditional.userID = user.id;
-        cacheKey = cacheKeys.posyandu.byUser(user.id);
-      }
-      try {
-        const cachePosyandu = await this.redis.get(cacheKey);
-        if (cachePosyandu) {
-          return c.json?.(
-            {
-              status: 200,
-              message: 'successfully get posyandu (cache)',
-              data: JSON.parse(cachePosyandu),
-            },
-            200,
-          );
-        }
-      } catch (error) {
-        console.warn('Redis error, fallback to DB');
       }
 
       const posyandu = await prisma.posyandu.findMany({
@@ -172,10 +149,6 @@ class PosyanduController {
       if (!posyandu || posyandu.length === 0) {
         return c.json?.({ status: 404, message: 'posyandu not found' }, 404);
       }
-
-      await this.redis
-        .set(cacheKey, JSON.stringify(posyandu), { EX: 60 })
-        .catch((err) => console.warn('Redis set error', err));
 
       return c.json?.(
         {
@@ -221,30 +194,11 @@ class PosyanduController {
         );
       }
 
-      const cacheKey = cacheKeys.posyandu.byID(params.id);
-      try {
-        const cachePosyandu = await this.redis.get(cacheKey);
-        if (cachePosyandu) {
-          return c.json?.(
-            {
-              status: 200,
-              message: 'succesfully get posyandu by id',
-              data: JSON.parse(cachePosyandu),
-            },
-            200,
-          );
-        }
-      } catch (error) {
-        console.warn('Redis Error, fallback DB');
-      }
-
       const posyandu = await prisma.posyandu.findUnique({
         where: {
           id: params.id,
         },
       });
-
-      await this.redis.set(cacheKey, JSON.stringify(posyandu), { EX: 60 }).catch(error);
       if (!posyandu) {
         return c.json?.(
           {
@@ -371,8 +325,6 @@ class PosyanduController {
       }
       const isUpdateEmail = typeof posyanduBody.email === 'string' && posyanduBody.email.length > 0;
 
-      const cacheKey = cacheKeys.posyandu.byID(params.id);
-
       const result = await prisma.$transaction(async (tx) => {
         const posyandu = await tx.posyandu.update({
           where: {
@@ -421,8 +373,6 @@ class PosyanduController {
         }
         return { posyandu, user };
       });
-
-      await this.redis.del(cacheKey).catch(error);
 
       if (!result) {
         return c.json?.(
@@ -496,7 +446,6 @@ class PosyanduController {
         );
       }
 
-      const cacheKey = cacheKeys.posyandu.byID(params.id);
       const result = await prisma.$transaction(async (tx) => {
         const posyandu = await tx.posyandu.delete({
           where: {
@@ -510,8 +459,6 @@ class PosyanduController {
         });
         return { posyandu, user };
       });
-
-      await this.redis.del(cacheKey).catch(error);
       if (!result) {
         return c.json?.(
           {
@@ -586,19 +533,6 @@ class PosyanduController {
         );
       }
 
-      const cacheKey = cacheKeys.kaderregistration.byPosyandu(posyandu.id);
-      const cached = await this.redis.get(cacheKey);
-      if (cached) {
-        return c.json?.(
-          {
-            status: 200,
-            message: 'Berhasil mendapatkan daftar kader',
-            data: JSON.parse(cached),
-          },
-          200,
-        );
-      }
-
       const kaderList = await prisma.kaderRegistration.findMany({
         where: {
           posyanduId: posyandu.id,
@@ -623,8 +557,6 @@ class PosyanduController {
           updatedAt: 'desc',
         },
       });
-
-      await this.redis.set(cacheKey, JSON.stringify(kaderList), { EX: 60 });
 
       return c.json?.(
         {

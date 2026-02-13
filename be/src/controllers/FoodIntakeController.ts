@@ -3,51 +3,10 @@ import { JwtPayload } from '@/types/auth.types';
 import foodIntakeService from '@/service/foodIntake.service';
 import prisma from 'prisma/client';
 import crypto from 'crypto';
-import { cacheKeys } from '@/cache/cacheKey';
-import { getRedis } from '@/utils/redis';
 import { PickFoodID, FoodHistoryQuery } from '@/types/food.types';
 import { uploadCloudinary } from '@/utils/clodinary';
 
 class FoodIntakeController {
-  private get redis() {
-    return getRedis();
-  }
-
-  private async invalidateFoodCaches(userId: string, childId?: string, foodIntakeId?: string) {
-    try {
-      const patterns: string[] = [
-        cacheKeys.food.byUser(userId),
-        `${cacheKeys.food.history(userId, '*')}*`,
-      ];
-
-      if (childId) {
-        patterns.push(`${cacheKeys.food.history(userId, childId)}*`);
-      }
-
-      if (foodIntakeId) {
-        patterns.push(cacheKeys.food.byID(foodIntakeId));
-      }
-
-      for (const pattern of patterns) {
-        let cursor = '0';
-        do {
-          const { cursor: nextCursor, keys } = await this.redis.scan(cursor, {
-            MATCH: pattern,
-            COUNT: 100,
-          });
-          cursor = String(nextCursor);
-
-          if (keys.length > 0) {
-            await this.redis.del(keys);
-            console.log(`Invalidated ${keys.length} food cache entries for pattern: ${pattern}`);
-          }
-        } while (cursor !== '0');
-      }
-    } catch (error) {
-      console.warn('Failed to invalidate food caches:', error);
-    }
-  }
-
   private formatFoodItems(items: any[]) {
     return items.map((item) => ({
       id: item.id,
@@ -438,8 +397,6 @@ class FoodIntakeController {
         console.log(' FoodRawImage created with Cloudinary URL');
       }
 
-      await this.invalidateFoodCaches(jwtUser.id, childId, savedData.foodIntake.id);
-
       const processingTime = Date.now() - startTime;
 
       const foodWithItems = {
@@ -495,24 +452,6 @@ class FoodIntakeController {
         );
       }
 
-      const cacheKey = cacheKeys.food.byUser(jwtUser.id);
-
-      try {
-        const cache = await this.redis.get(cacheKey);
-        if (cache) {
-          return c.json?.(
-            {
-              status: 200,
-              message: 'succesfully get history Food',
-              data: JSON.parse(cache),
-            },
-            200,
-          );
-        }
-      } catch (error) {
-        console.warn(`redis error, fallback db ${error}`);
-      }
-
       const history = await prisma.food.findMany({
         where: {
           child: {
@@ -528,10 +467,6 @@ class FoodIntakeController {
           },
           400,
         );
-      } else {
-        await this.redis.set(cacheKey, JSON.stringify(history), {
-          EX: 60,
-        });
       }
       return c.json?.(
         {
@@ -565,24 +500,6 @@ class FoodIntakeController {
 
       if (!params?.id) {
         return c.json?.({ status: 400, message: 'Food intake ID is required' }, 400);
-      }
-
-      const cacheKey = cacheKeys.food.byID(params.id);
-
-      try {
-        const cache = await this.redis.get(cacheKey);
-        if (cache) {
-          return c.json?.(
-            {
-              status: 200,
-              message: 'Successfully retrieved food intake (cached)',
-              data: JSON.parse(cache),
-            },
-            200,
-          );
-        }
-      } catch (error) {
-        console.warn(`Redis cache error: ${error}`);
       }
 
       const food = await prisma.food.findUnique({
@@ -627,8 +544,6 @@ class FoodIntakeController {
       }
 
       const response = this.formatFoodResponse(food);
-
-      await this.redis.setEx(cacheKey, 300, JSON.stringify(response));
 
       return c.json?.(
         {
@@ -696,23 +611,6 @@ class FoodIntakeController {
         }
       }
 
-      const cacheKey = cacheKeys.food.historyByChild(
-        params.childId,
-        page,
-        limit,
-        query.startDate || '',
-        query.endDate || '',
-      );
-
-      try {
-        const cache = await this.redis.get(cacheKey);
-        if (cache) {
-          return c.json?.(JSON.parse(cache), 200);
-        }
-      } catch (error) {
-        console.warn(`Redis cache error: ${error}`);
-      }
-
       // Fetch from database
       const [history, total] = await Promise.all([
         prisma.food.findMany({
@@ -755,8 +653,6 @@ class FoodIntakeController {
           },
         },
       };
-
-      await this.redis.setEx(cacheKey, 60, JSON.stringify(response));
 
       return c.json?.(response, 200);
     } catch (error) {
@@ -815,8 +711,6 @@ class FoodIntakeController {
           where: { id: params.id },
         });
       });
-
-      await this.invalidateFoodCaches(jwtUser.id, food.childId, params.id);
 
       return c.json?.(
         {

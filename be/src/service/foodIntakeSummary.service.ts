@@ -1,4 +1,3 @@
-import { getRedis } from '@/utils/redis';
 import prisma from 'prisma/client';
 import { FoodIntakeDailySummary } from '@/types/foodIntake.types';
 import { getAgeInMonths } from '@/utils/age';
@@ -19,24 +18,10 @@ import { getMacroTargets } from '@/utils/akg';
  */
 
 class FoodIntakeSummaryService {
-  private redis;
-
-  constructor() {
-    this.redis = getRedis();
-  }
-
   public async getDailySummary(childId: string, date: Date, skipCache = false) {
-    const redis = getRedis();
     const dateStr = date.toISOString().split('T')[0];
-    const cacheKey = `daily-summary:${childId}:${dateStr}`;
-
-    if (!skipCache) {
-      const cached = await redis.get(cacheKey);
-      if (cached) {
-        return JSON.parse(cached);
-      }
-    } else {
-      console.warn(`⚠️ Cache bypassed for ${cacheKey} (debug mode)`);
+    if (skipCache) {
+      console.warn(`⚠️ Cache bypassed for daily-summary:${childId}:${dateStr} (debug mode)`);
     }
 
     const child = await prisma.child.findUnique({
@@ -165,7 +150,6 @@ class FoodIntakeSummaryService {
       },
     };
 
-    await redis.setEx(cacheKey, 86400, JSON.stringify(result));
     return result;
   }
 
@@ -173,12 +157,9 @@ class FoodIntakeSummaryService {
     try {
       const dateObj = typeof date === 'string' ? new Date(date) : date;
       const dateStr = dateObj.toISOString().split('T')[0];
-      const cacheKey = `daily-summary:${childId}:${dateStr}`;
-
-      await this.redis.del(cacheKey);
-      console.log(`✓ Invalidated cache: ${cacheKey}`);
+      console.log(`ℹ️ Cache disabled: skip invalidation for daily-summary:${childId}:${dateStr}`);
     } catch (error) {
-      console.warn(`⚠️ Failed to invalidate cache:`, error);
+      console.warn(`⚠️ Failed to handle cache invalidation:`, error);
     }
   }
 
@@ -188,17 +169,8 @@ class FoodIntakeSummaryService {
    */
   public async flushAllChildCache(childId: string): Promise<number> {
     try {
-      const pattern = `daily-summary:${childId}:*`;
-      const keys = await this.redis.keys(pattern);
-
-      if (keys.length === 0) {
-        console.log(`ℹ️ No cache keys found for child ${childId}`);
-        return 0;
-      }
-
-      const deleted = await (this.redis.del as any)(keys);
-      console.log(`🗑️ Flushed ${deleted} cache entries for child ${childId}`);
-      return deleted;
+      console.log(`ℹ️ Cache disabled: skip flush for child ${childId}`);
+      return 0;
     } catch (error) {
       console.warn(`⚠️ Failed to flush cache for child ${childId}:`, error);
       return 0;
