@@ -1,9 +1,24 @@
 import axios, { AxiosInstance } from 'axios';
 import { env } from '@/config/env.config';
+import { pingHost } from './ping';
+
+let cachedScaleURL: string | null = null;
+
+function log(title: string, message?: any) {
+  const time = new Date().toLocaleTimeString();
+  console.log(
+    `%c[IoT ${time}] %c${title}`,
+    'color:#00bcd4;font-weight:bold',
+    'color:#4caf50;font-weight:bold',
+    message ?? '',
+  );
+}
 
 export function AxiosService() {
+  const hostname = 'nutriplate.local';
+
   const scaleURLs = [
-    'http://nutriplate.local',
+    `http://${hostname}`,
     env.SCALE_BASE_URL,
     'http://192.168.1.100',
     'http://192.168.0.100',
@@ -12,81 +27,86 @@ export function AxiosService() {
   ].filter(Boolean);
 
   const IotHit: AxiosInstance = axios.create({
-    timeout: 30000,
+    timeout: 10000,
   });
+
+  async function warmupScale(url: string) {
+    try {
+      await axios.get(`${url}/api/status`, { timeout: 2000 });
+    } catch {}
+  }
 
   IotHit.interceptors.request.use(async (config) => {
-    if (!config.baseURL) {
-      for (const url of scaleURLs) {
-        try {
-          await axios.get(`${url}/api/status`, { timeout: 2000 });
-          config.baseURL = url;
-          console.log(` Scale found at: ${url}`);
-          break;
-        } catch (error) {}
-      }
+    // 🔥 WAKE UP mDNS + ARP
+    await pingHost(hostname);
 
-      if (!config.baseURL) {
-        throw new Error(
-          'Scale not found. Please ensure: 1) Scale is powered on 2) Connected to WiFi 3) Try again',
-        );
-      }
+    // pakai cache kalau sudah ketemu
+    if (cachedScaleURL) {
+      config.baseURL = cachedScaleURL;
+      return config;
     }
-    return config;
+
+    // discovery loop
+    for (const url of scaleURLs) {
+      try {
+        await warmupScale(url);
+
+        await axios.get(`${url}/api/status`, { timeout: 2000 });
+
+        cachedScaleURL = url;
+        config.baseURL = url;
+
+        console.log('✅ Scale discovered at:', url);
+        return config;
+      } catch {}
+    }
+
+    throw new Error('Scale tidak ditemukan. Pastikan device hidup & satu jaringan.');
   });
+
+  // reset cache kalau request gagal (device reboot / pindah wifi)
+  IotHit.interceptors.response.use(
+    (res) => res,
+    () => {
+      cachedScaleURL = null;
+      return Promise.reject();
+    },
+  );
 
   const MlHit: AxiosInstance = axios.create({
     baseURL: env.ML_APP,
     timeout: 50000,
   });
 
-  async function discoverScale(): Promise<{
-    url: string;
-    ip: string;
-    deviceInfo: any;
-  }> {
-    console.log('🔍 Looking for scale...');
+  async function discoverScale() {
+    await pingHost(hostname);
 
     for (const url of scaleURLs) {
       try {
-        const response = await axios.get(`${url}/api/status`, { timeout: 3000 });
-        const ip = response.data.ip || extractIPFromURL(url);
+        await warmupScale(url);
 
-        console.log(` Scale found: ${url} (IP: ${ip})`);
+        const res = await axios.get(`${url}/api/status`, { timeout: 3000 });
+
+        cachedScaleURL = url;
 
         return {
           url,
-          ip,
-          deviceInfo: response.data,
+          ip: res.data?.ip || 'unknown',
+          deviceInfo: res.data,
         };
-      } catch (error) {
-        console.log(`❌ Not at: ${url}`);
-      }
+      } catch {}
     }
 
-    throw new Error(`
-      Scale not found! Check:
-      1.  Scale is powered ON
-      2.  Connected to WiFi
-      3.  Try restarting scale
-      4. s Make sure you're on the same WiFi network
-      
-      Tried locations: ${scaleURLs.join(', ')}
-    `);
+    throw new Error('Scale tidak ditemukan di jaringan.');
   }
 
   async function getCurrentIP(): Promise<string> {
     try {
-      const response = await IotHit.get('/api/status');
-      return response.data.ip || 'unknown';
-    } catch (error) {
+      const res = await IotHit.get('/api/status');
+      return res.data?.ip || 'unknown';
+    } catch {
       return 'unknown';
     }
-  }
-
-  function extractIPFromURL(url: string): string {
-    const match = url.match(/(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/);
-    return match ? match[0] : 'unknown';
   }
 
   return {

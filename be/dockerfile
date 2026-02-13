@@ -1,14 +1,16 @@
-FROM oven/bun:1.3.1
+FROM oven/bun:1.1-slim
 
 WORKDIR /app
 
 COPY package.json bun.lockb ./
-COPY be ./be
+COPY prisma ./prisma/
 
-RUN bun install --filter=be
+RUN bun install
+RUN bun prisma generate
 
-WORKDIR /app/be
+COPY . .
 
 EXPOSE 3001
+
 
 CMD ["bun", "run", "start"]
