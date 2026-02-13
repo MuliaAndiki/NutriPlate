@@ -78,9 +78,12 @@ export function useDeleteTask() {
   const namespace = useAppNameSpace();
   return useMutation<TResponse<any>, Error, string>({
     mutationFn: (id) => Api.Task.deleteTask(id),
-    onSuccess: () => {
+    onSuccess: (_res, id) => {
       namespace.queryClient.invalidateQueries({
         queryKey: cacheKey.task.notBroadcast(),
+      });
+      namespace.queryClient.invalidateQueries({
+        queryKey: cacheKey.task.byProgresId(id),
       });
       namespace.alert.toast({
         title: "berhasil ",
@@ -107,9 +110,12 @@ export function useUpdateTask() {
     { payload: FormCreateTask; id: string }
   >({
     mutationFn: ({ id, payload }) => Api.Task.updateTask(id, payload),
-    onSuccess: () => {
+    onSuccess: (_res, { id }) => {
       namespace.queryClient.invalidateQueries({
         queryKey: cacheKey.task.notBroadcast(),
+      });
+      namespace.queryClient.invalidateQueries({
+        queryKey: cacheKey.task.byProgresId(id),
       });
       namespace.alert.toast({
         title: "berhasil ",
