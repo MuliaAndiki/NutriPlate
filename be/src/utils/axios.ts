@@ -3,14 +3,14 @@ import { env } from '@/config/env.config';
 
 export function AxiosService() {
   const scaleURLs = [
+    'http://nutriplate.local',
     env.SCALE_BASE_URL,
     'http://192.168.1.100',
     'http://192.168.0.100',
     'http://10.0.0.100',
     'http://192.168.18.100',
-  ];
+  ].filter(Boolean);
 
-  // Smart scale instance
   const IotHit: AxiosInstance = axios.create({
     timeout: 30000,
   });

@@ -75,7 +75,6 @@ const AsupanGiziContainer = () => {
       },
     );
   };
-
   const handleConnectIot = async () => {
     setIsLoadingConnect(true);
 
@@ -84,15 +83,14 @@ const AsupanGiziContainer = () => {
       const freshIotData = res.data?.data ?? null;
 
       if (!freshIotData) {
-        window.open("http://192.168.4.1", "_blank");
+        window.open("http://nutriplate.local", "_blank");
       }
     } catch (err) {
-      window.open("http://192.168.4.1", "_blank");
+      window.open("http://nutriplate.local", "_blank");
     } finally {
       setIsLoadingConnect(false);
     }
   };
-
   const handleConfirmWeight = () => {
     if (!ensureIotReady()) return null;
 
