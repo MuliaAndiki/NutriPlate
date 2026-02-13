@@ -82,14 +82,7 @@ const UpdateProgramForm: React.FC<UpdateProgramFormProps> = ({
             onChange={(e) => updateField("durationRegister", e.target.value)}
           />
         </div>
-        <div className="space-y-2">
-          <h1 className="text-sm font-bold">Mulai Program</h1>
-          <Input
-            type="date"
-            value={formUpdateProgram.startPrograms ?? ""}
-            onChange={(e) => updateField("startPrograms", e.target.value)}
-          />
-        </div>
+
         <div className="space-y-2">
           <h1 className="text-sm font-bold">Selesai Program</h1>
           <Input

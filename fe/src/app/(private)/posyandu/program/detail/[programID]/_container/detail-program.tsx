@@ -42,9 +42,6 @@ const DetailProgramPosyanduContainer = () => {
     durationRegister: program.durationRegister
       ? program.durationRegister.split("T")[0]
       : "",
-    startPrograms: program.startPrograms
-      ? program.startPrograms.split("T")[0]
-      : "",
     endPrograms: program.endPrograms ? program.endPrograms.split("T")[0] : "",
     activity: program.activity ?? [],
     benefit: program.benefit ?? [],
