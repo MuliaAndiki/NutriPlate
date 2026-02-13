@@ -78,15 +78,17 @@ const IotControllerCard: React.FC<IotControllerCardProps> = ({
               <ButtonWrapper
                 variant={"destructive"}
                 className="text-background w-full"
+                disabled={isPending}
                 onClick={() => onCancelStart()}
               >
-                Hentikan
+                {isPending ? <Spinner /> : "Hentikan"}
               </ButtonWrapper>
             </div>
             <div className="w-full">
               <ButtonWrapper
                 className="w-full"
                 variant={"default"}
+                disabled={isPending}
                 onClick={() => onHoldWeight()}
               >
                 Gunakan Berat Ini
@@ -104,7 +106,7 @@ const IotControllerCard: React.FC<IotControllerCardProps> = ({
                 onClick={() => onRejectWeight()}
                 disabled={isPending}
               >
-                Tolak Berat Ini
+                {isPending ? <Spinner /> : "Tolak Berat Ini"}
               </ButtonWrapper>
             </div>
 

@@ -5,6 +5,15 @@ import { ButtonWrapper } from "@/components/wrapper/ButtonWrapper";
 import { FormCreateTask } from "@/types/form";
 import { PopUpNavigate } from "@/types/ui";
 import { Icon } from "@iconify/react/dist/iconify.js";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface CreateTaskFormProps {
   formCreateTask: FormCreateTask;
@@ -62,16 +71,30 @@ const CreateTaskForm: React.FC<CreateTaskFormProps> = ({
 
       <div className="w-full space-y-2">
         <h1 className="text-sm font-bold">Jenis Makan</h1>
-        <Input
-          placeholder="Contoh: Sarapan"
+        <Select
           value={formCreateTask.mealType}
-          onChange={(e) =>
+          onValueChange={(value) =>
             setFormCreateTask((prev) => ({
               ...prev,
-              mealType: e.target.value,
+              mealType: value,
             }))
           }
-        />
+        >
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder="Pilih Waktu Makan" />
+          </SelectTrigger>
+
+          <SelectContent>
+            <SelectGroup>
+              <SelectLabel>Waktu Makan</SelectLabel>
+
+              <SelectItem value="BREAKFAST">Sarapan</SelectItem>
+              <SelectItem value="LUNCH">Makan Siang</SelectItem>
+              <SelectItem value="SNACK">Camilan</SelectItem>
+              <SelectItem value="DINNER">Makan Malam</SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
       </div>
 
       <div className="w-full grid grid-cols-2 gap-2">
