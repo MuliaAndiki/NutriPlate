@@ -8,8 +8,12 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import HomeParentSectionSkeleton from "@/components/skeleton/private/parent/home/home-parent-section-skeleton";
 import DataNotFound from "@/components/empty/data-not-found";
 import { INotification } from "@/types/schema";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
 interface HomeParentSectionProps {
+  namespace: {
+    router: AppRouterInstance;
+  };
   service: {
     query: {
       profile: UserResponse;
@@ -21,6 +25,7 @@ interface HomeParentSectionProps {
 
 const HomeParentHeroSection: React.FC<HomeParentSectionProps> = ({
   service,
+  namespace,
 }) => {
   const resProfile = service.query.profile;
   const resNotifikasi = service.query.notifikasi;
@@ -59,9 +64,9 @@ const HomeParentHeroSection: React.FC<HomeParentSectionProps> = ({
             </p>
           </div>
 
-          <CardKontenHomeParent2 />
-          <CardKontenHomeParent3 />
-          <CardKontenHomeParent4 />
+          <CardKontenHomeParent2 router={namespace.router} />
+          <CardKontenHomeParent3 router={namespace.router} />
+          <CardKontenHomeParent4 router={namespace.router} />
         </div>
       </section>
     </div>

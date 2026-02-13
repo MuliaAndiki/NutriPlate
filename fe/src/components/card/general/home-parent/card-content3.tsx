@@ -1,7 +1,13 @@
 import Image from "next/image";
 import { ButtonWrapper } from "@/components/wrapper/ButtonWrapper";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
-const CardKontenHomeParent3 = () => {
+interface CardKontenHomeParent3Props {
+  router: AppRouterInstance;
+}
+const CardKontenHomeParent3: React.FC<CardKontenHomeParent3Props> = ({
+  router,
+}) => {
   return (
     <div className="w-full bg-linear-to-r from-primary/40 space-x-4 p-4 relative overflow-hidden z-0 to-primary rounded-lg flex items-center  justify-between">
       <Image

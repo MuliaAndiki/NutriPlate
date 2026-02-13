@@ -133,15 +133,13 @@ const StatusAsupan: React.FC<StatusAsupanProps> = ({ data, id, onDetail }) => {
               </div>
             )}
 
-            <div className="w-full text-end">
-              <Button
-                className="font-light"
-                variant="btn"
-                onClick={() => onDetail!()}
-              >
-                Lihat Detail
-              </Button>
-            </div>
+            {onDetail && (
+              <div className="w-full text-end">
+                <Button className="font-light" variant="btn" onClick={onDetail}>
+                  Lihat Detail
+                </Button>
+              </div>
+            )}
           </CardFooter>
         </div>
       </div>

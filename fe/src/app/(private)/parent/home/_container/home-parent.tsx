@@ -3,9 +3,11 @@ import HomeParentHeroSection from "@/components/section/private/parent/home/home
 import { SidebarLayout } from "@/core/layouts/sidebar.layout";
 import { useAppSelector } from "@/hooks/dispatch/dispatch";
 import useService from "@/hooks/mutation/prop.service";
+import { useAppNameSpace } from "@/hooks/useAppNameSpace";
 
 const HomeParentContainer = () => {
   const service = useService();
+  const namespace = useAppNameSpace();
   const selector = useAppSelector((state) => state.posyandu);
 
   //profile
@@ -21,6 +23,9 @@ const HomeParentContainer = () => {
     <SidebarLayout>
       <main className="w-full min-h-screen overflow-x-hidden">
         <HomeParentHeroSection
+          namespace={{
+            router: namespace.router,
+          }}
           service={{
             query: {
               profile: profileData ?? null,

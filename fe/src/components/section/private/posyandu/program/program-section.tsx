@@ -5,6 +5,7 @@ import ProgramSkeleton from "@/components/skeleton/private/posyandu/program/prog
 import { ButtonWrapper } from "@/components/wrapper/ButtonWrapper";
 import { ProgramRespone } from "@/types/res/program-with-progres";
 import { Icon } from "@iconify/react/dist/iconify.js";
+import Link from "next/link";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
 interface ProgramPosyanduSectionProps {
@@ -67,6 +68,14 @@ const ProgramPosyanduSection: React.FC<ProgramPosyanduSectionProps> = ({
             Tambah
           </ButtonWrapper>
         )}
+        <Link href={`/posyandu/program/status`}>
+          <Icon
+            icon="fluent:status-12-filled"
+            width="44"
+            height="44"
+            className="text-primary"
+          />
+        </Link>
       </div>
       <p className="font-light text-start">
         Kelola seluruh program kesehatan posyandu dari sini.
@@ -85,7 +94,7 @@ const ProgramPosyanduSection: React.FC<ProgramPosyanduSectionProps> = ({
           Semua Program
         </ButtonWrapper>
       </div>
-      <div className="w-full">
+      <div className="w-full space-y-2">
         {filteredProgram.length === 0 ? (
           <EmptyCard message="Belum ada program berjalan" />
         ) : (

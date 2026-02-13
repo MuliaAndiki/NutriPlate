@@ -827,7 +827,7 @@ class ProgresController {
   public async acceptProgramRegistration(c: AppContext) {
     try {
       const jwtUser = c.user as JwtPayload;
-      const body = c.body as { id: string };
+      const params = c.params as { id: string };
 
       if (!jwtUser) {
         return c.json?.(
@@ -871,7 +871,7 @@ class ProgresController {
         );
       }
 
-      if (!body.id) {
+      if (!params?.id) {
         return c.json?.(
           {
             status: 400,
@@ -882,7 +882,7 @@ class ProgresController {
       }
 
       const registration = await programRegistrationService.acceptRegistration(
-        body.id,
+        params.id,
         posyandu.id,
       );
 
@@ -932,7 +932,7 @@ class ProgresController {
   public async rejectProgramRegistration(c: AppContext) {
     try {
       const jwtUser = c.user as JwtPayload;
-      const body = c.body as { id: string };
+      const params = c.params as { id: string };
 
       if (!jwtUser) {
         return c.json?.(
@@ -976,7 +976,7 @@ class ProgresController {
         );
       }
 
-      if (!body.id) {
+      if (!params?.id) {
         return c.json?.(
           {
             status: 400,
@@ -987,7 +987,7 @@ class ProgresController {
       }
 
       const registration = await programRegistrationService.rejectRegistration(
-        body.id,
+        params.id,
         posyandu.id,
       );
 

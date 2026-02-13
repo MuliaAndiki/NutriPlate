@@ -1,6 +1,13 @@
 import Image from "next/image";
 import { ButtonWrapper } from "@/components/wrapper/ButtonWrapper";
-const CardKontenHomeParent4 = () => {
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+
+interface CardKontenHomeParent4Props {
+  router: AppRouterInstance;
+}
+const CardKontenHomeParent4: React.FC<CardKontenHomeParent4Props> = ({
+  router,
+}) => {
   return (
     <div className="w-full bg-linear-to-r from-primary to-primary/40 relative overflow-hidden p-4 rounded-lg flex justify-between items-center z-0">
       <div className="w-full flex flex-col items-start z-2 ">
@@ -8,7 +15,11 @@ const CardKontenHomeParent4 = () => {
         <p className="font-light text-background">
           Ikuti program gizi dari posyandu sesuai usia dan kebutuhan anak.
         </p>
-        <ButtonWrapper variant={"splash"} className="text-primary font-light">
+        <ButtonWrapper
+          variant={"splash"}
+          className="text-primary font-light"
+          onClick={() => router.push("/parent/profile-anak")}
+        >
           Mulai Sekarang
         </ButtonWrapper>
       </div>

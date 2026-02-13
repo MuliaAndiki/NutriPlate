@@ -1,9 +1,16 @@
 import BabyMerge from "@/components/svg/baby.merge";
 import { ButtonWrapper } from "@/components/wrapper/ButtonWrapper";
 import { Icon } from "@iconify/react/dist/iconify.js";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import Image from "next/image";
 
-const CardKontenHomeParent2 = () => {
+interface CardKontenHomeParent2Props {
+  router: AppRouterInstance;
+}
+
+const CardKontenHomeParent2: React.FC<CardKontenHomeParent2Props> = ({
+  router,
+}) => {
   return (
     <div className="w-full bg-linear-to-r from-info to-info/40 relative overflow-hidden p-4 rounded-lg flex justify-between items-center z-0">
       <div className="w-full flex flex-col items-start max-w-sm justify-center z-2">
@@ -13,7 +20,11 @@ const CardKontenHomeParent2 = () => {
         <p className="font-light text-background">
           Pantau berat, tinggi, dan status pertumbuhan anak secara berkala.
         </p>
-        <ButtonWrapper className="text-info font-light" variant={"splash"}>
+        <ButtonWrapper
+          className="text-info font-light"
+          variant={"splash"}
+          onClick={() => router.push("/parent/profile-anak")}
+        >
           Mulai Sekarang
         </ButtonWrapper>
       </div>

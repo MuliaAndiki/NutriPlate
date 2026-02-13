@@ -7,7 +7,6 @@ import {
 import AxiosClient from "@/utils/axios.client";
 
 class ProgramRegistrationApi {
-  // Create registration/assignment (parent register OR posyandu assign)
   public async registerChildToProgram(
     payload: FormRegisterChildToProgram,
   ): Promise<TResponse<any>> {
@@ -15,13 +14,11 @@ class ProgramRegistrationApi {
     return res.data;
   }
 
-  // Get registrations (parent/posyandu can see their registrations)
   public async getProgramRegistrations(): Promise<TResponse<any>> {
     const res = await AxiosClient.get("/api/progres/registrations");
     return res.data;
   }
 
-  // Accept registration
   public async acceptProgramRegistration(
     payload: FormAcceptProgramRegistration,
   ): Promise<TResponse<any>> {
@@ -32,7 +29,6 @@ class ProgramRegistrationApi {
     return res.data;
   }
 
-  // Reject registration
   public async rejectProgramRegistration(
     payload: FormRejectProgramRegistration,
   ): Promise<TResponse<any>> {
