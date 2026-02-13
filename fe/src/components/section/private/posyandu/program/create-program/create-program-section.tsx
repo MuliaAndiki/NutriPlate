@@ -105,7 +105,7 @@ const CreateProgramSection: React.FC<CreateProgramSectionProps> = ({
         />
       </div>
 
-      <div className="w-full grid grid-cols-2 gap-2">
+      <div className="w-full  gap-2">
         <div className="space-y-2">
           <h1 className="text-sm font-bold">Selesai Program</h1>
           <Input

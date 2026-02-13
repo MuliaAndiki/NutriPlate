@@ -41,7 +41,7 @@ const DaftarProgramKaderSection: React.FC<DaftarProgramKaderSectionProps> = ({
         />
         <h1 className="text-2xl font-bold">Program Posyandu</h1>
       </div>
-      <div className="w-full">
+      <div className="w-full space-y-2">
         {resProgram.length === 0 ? (
           <EmptyCard message="Belum ada program tersedia" />
         ) : (

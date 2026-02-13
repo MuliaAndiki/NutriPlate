@@ -14,13 +14,13 @@ export function useCreateProgram() {
   >({
     mutationFn: ({ payload, id }) => Api.Program.createProgram(payload, id),
     onSuccess: () => {
-      nameSpace.queryClient.invalidateQueries({
-        queryKey: cacheKey.program.list(),
-      });
       nameSpace.alert.toast({
         title: "succes",
         message: "succesfully create program",
         icon: "success",
+      });
+      nameSpace.queryClient.invalidateQueries({
+        queryKey: cacheKey.program.list(),
       });
     },
     onError: (err) => {

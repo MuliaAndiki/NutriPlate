@@ -64,10 +64,12 @@ const DetailProgramPosyanduSection: React.FC<
   const resProgram = service.query.program;
   const childrenList = service.query.children ?? [];
   const childInProgram = childrenList.filter((item) =>
-    item.programProgress?.some((progresId) => progresId.programId === resProgram.id),
+    item.programProgress?.some(
+      (progresId) => progresId.programId === resProgram?.id,
+    ),
   );
 
-  if (!resProgram) {
+  if (!resProgram || !childrenList) {
     return <DataNotFound />;
   }
   if (service.query.isLoading) {

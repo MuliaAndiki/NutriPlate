@@ -5,6 +5,15 @@ import { ButtonWrapper } from "@/components/wrapper/ButtonWrapper";
 import { FormUpdateTask } from "@/types/form";
 import { PopUpNavigate } from "@/types/ui";
 import { Icon } from "@iconify/react/dist/iconify.js";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface UpdateTaskFormProps {
   formUpdateTask: FormUpdateTask | null;
@@ -71,11 +80,27 @@ const UpdateTaskForm: React.FC<UpdateTaskFormProps> = ({
 
       <div className="w-full space-y-2">
         <h1 className="text-sm font-bold">Jenis Makan</h1>
-        <Input
-          placeholder="Contoh: Sarapan"
+        <Select
           value={formUpdateTask.mealType}
-          onChange={(e) => updateField("mealType", e.target.value)}
-        />
+          onValueChange={(value) =>
+            updateField("mealType", value as FormUpdateTask["mealType"])
+          }
+        >
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder="Pilih Waktu Makan" />
+          </SelectTrigger>
+
+          <SelectContent>
+            <SelectGroup>
+              <SelectLabel>Waktu Makan</SelectLabel>
+
+              <SelectItem value="BREAKFAST">Sarapan</SelectItem>
+              <SelectItem value="LUNCH">Makan Siang</SelectItem>
+              <SelectItem value="SNACK">Camilan</SelectItem>
+              <SelectItem value="DINNER">Makan Malam</SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
       </div>
 
       <div className="w-full grid grid-cols-2 gap-2">

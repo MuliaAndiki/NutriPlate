@@ -36,6 +36,7 @@ class ProgramController {
         );
       }
 
+      const cacheKey = cacheKeys.program.list();
       const posyandu = await prisma.posyandu.findUnique({
         where: { id: params.id },
       });
@@ -70,6 +71,7 @@ class ProgramController {
         },
       });
 
+      await this.redis.del(cacheKey);
       return c.json?.(
         {
           status: 200,
