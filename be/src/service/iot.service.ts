@@ -154,6 +154,22 @@ class IotService {
       throw error;
     }
   }
+  public async resetPassword() {
+    try {
+      const res = await this.IotGate.post('/api/reset-password');
+      let result = res.data;
+      if (typeof result === 'string') {
+        result = JSON.parse(result);
+      }
+      const cleanRespone = cleanNaNValues(result);
+      return cleanRespone;
+    } catch (error) {
+      if (this.isAxiosError(error)) {
+        throw new Error(error.code || error.message || 'Iot Not Working');
+      }
+      throw error;
+    }
+  }
 }
 
 export default new IotService();

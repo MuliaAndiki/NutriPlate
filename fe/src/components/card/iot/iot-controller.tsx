@@ -29,6 +29,7 @@ interface IotControllerCardProps {
   onConnectIot: () => void;
   setSelectChildId: React.Dispatch<React.SetStateAction<string>>;
   selectedChildId: string;
+  isLoadingConnect: boolean;
 }
 
 const IotControllerCard: React.FC<IotControllerCardProps> = ({
@@ -47,6 +48,7 @@ const IotControllerCard: React.FC<IotControllerCardProps> = ({
   child,
   setSelectChildId,
   selectedChildId,
+  isLoadingConnect,
 }) => {
   const displayWeight =
     weight?.weight && weight.weight > 0
@@ -123,9 +125,9 @@ const IotControllerCard: React.FC<IotControllerCardProps> = ({
         <ButtonWrapper
           onClick={() => onConnectIot()}
           className="w-full"
-          disabled={isPending}
+          disabled={isLoadingConnect}
         >
-          {isPending ? <Spinner /> : "Connect Iot"}
+          {isLoadingConnect ? <Spinner /> : "Connect Iot"}
         </ButtonWrapper>
       ) : (
         <div className="w-full space-y-2 pb-4 border-b">

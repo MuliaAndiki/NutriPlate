@@ -8,6 +8,7 @@ import { ChevronLeft, Trash2 } from "lucide-react";
 import { Spinner } from "@/components/ui/spinner";
 import { DailySummaryResponse, FoodIntakeResponse } from "@/types/res";
 import FoodScanResult from "@/components/card/food/food-result";
+import { useAlert } from "@/hooks/useAlert/costum-alert";
 
 interface FoodCameraSectionProps {
   service: {
@@ -43,6 +44,7 @@ const FoodCameraSection = ({
   },
   actions,
 }: FoodCameraSectionProps) => {
+  const { toast } = useAlert();
   const webcamRef = useRef<Webcam>(null);
   const [photo, setPhoto] = useState<string | null>(null);
   const [weight, setWeight] = useState<string>("");
@@ -96,11 +98,37 @@ const FoodCameraSection = ({
         },
         {
           onSuccess: (res: any) => {
-            setResponseFoodIntake(res.data);
+            const data = res?.data;
+            const isEmptyArray = Array.isArray(data) && data.length === 0;
+            const isEmptyItems =
+              data && Array.isArray(data.items) && data.items.length === 0;
+
+            if (isEmptyArray || isEmptyItems) {
+              toast({
+                title: "Item tidak terdeteksi",
+                message: "Coba ambil foto ulang dengan pencahayaan yang baik.",
+                icon: "warning",
+              });
+              return;
+            }
+
+            setError("");
+            setResponseFoodIntake(data);
             setMode("result");
           },
           onError: (err: any) => {
-            setError(err?.message || "Gagal menyimpan data makanan");
+            const errorMessage = err?.message || "Gagal menyimpan data makanan";
+
+            if (/tidak\s*terdeteksi|not\s*detected/i.test(errorMessage)) {
+              toast({
+                title: "Item tidak terdeteksi",
+                message: errorMessage,
+                icon: "warning",
+              });
+              return;
+            }
+
+            setError(errorMessage);
           },
         },
       );
@@ -244,8 +272,8 @@ const FoodCameraSection = ({
       </div>
 
       {iotWeight > 0 && (
-        <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-3 mb-4">
-          <p className="font-semibold text-emerald-800">
+        <div className="bg-background/50 border border-primary/20 rounded-lg p-3 mb-4">
+          <p className="font-semibold text-primary/80">
             ⚖️ Berat Timbangan: {iotWeight} g
           </p>
         </div>

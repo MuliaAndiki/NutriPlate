@@ -46,6 +46,38 @@ class IotController {
       );
     }
   }
+  public async resetPassword(c: AppContext) {
+    try {
+      const jwtUser = c.user as JwtPayload;
+      if (!jwtUser) {
+        return c.json?.(
+          {
+            status: 401,
+            message: 'Unauthorized',
+          },
+          401,
+        );
+      }
+      const response = await iotService.resetPassword();
+
+      return c.json?.(
+        {
+          status: 200,
+          message: 'ok',
+          data: response ?? null,
+        },
+        200,
+      );
+    } catch (error) {
+      return c.json?.(
+        {
+          status: 500,
+          message: 'server internal error',
+        },
+        500,
+      );
+    }
+  }
   public async getStatus(c: AppContext) {
     try {
       const jwtUser = c.user as JwtPayload;

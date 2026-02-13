@@ -46,6 +46,7 @@ interface AsupanGiziSectionProps {
     holdingWeight: number;
     setSelectChildId: React.Dispatch<React.SetStateAction<string>>;
     selectChildId: string;
+    isLoadingConnect: boolean;
   };
 }
 const AsupanGiziHeroSection: React.FC<AsupanGiziSectionProps> = ({
@@ -95,6 +96,7 @@ const AsupanGiziHeroSection: React.FC<AsupanGiziSectionProps> = ({
           child={service.query.child}
           setSelectChildId={state.setSelectChildId}
           selectedChildId={state.selectChildId}
+          isLoadingConnect={state.isLoadingConnect}
         />
       </div>
 

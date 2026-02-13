@@ -44,6 +44,9 @@ class IotRoutes {
     this.iotRoutes.post('/confirm-weight', (c: AppContext) => IotController.confirmWeight(c), {
       beforeHandle: [verifyToken().beforeHandle],
     });
+    this.iotRoutes.post(`/reset-wifi`, (c: AppContext) => IotController.resetPassword(c), {
+      beforeHandle: [verifyToken().beforeHandle],
+    });
   }
 }
 

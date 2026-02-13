@@ -15,10 +15,10 @@ const AsupanGiziContainer = () => {
   const footHistoryData = footHistoryQuery.data?.data ?? [];
   //state
   const [showFlowPopUp, setShowFlowPopUp] = useState(false);
-
   const [isScaling, setIsScaling] = useState<boolean>(false);
   const [holdingWeight, setHoldingWeight] = useState<number>(0);
   const [selectChildId, setSelectChildId] = useState<string>("");
+  const [isLoadingConnect, setIsLoadingConnect] = useState<boolean>(false);
 
   //iot status
   const iotStatusQuery = service.iot.query.getStatusIot();
@@ -30,10 +30,6 @@ const AsupanGiziContainer = () => {
   });
   const childData = childQuery.data?.data ?? [];
 
-  //daily Summary not fix
-  const dailySummaryQuery =
-    service.foodSummary.query.foodSummaryDaily(selectChildId);
-  const dailySummaryData = dailySummaryQuery.data?.data ?? null;
   // weight
   const weightQuery = service.iot.query.getWeight({
     enabled: isScaling,
@@ -81,9 +77,10 @@ const AsupanGiziContainer = () => {
   };
 
   const handleConnectIot = async () => {
+    setIsLoadingConnect(true);
+
     try {
       const res = await iotStatusQuery.refetch();
-
       const freshIotData = res.data?.data ?? null;
 
       if (!freshIotData) {
@@ -91,6 +88,8 @@ const AsupanGiziContainer = () => {
       }
     } catch (err) {
       window.open("http://192.168.4.1", "_blank");
+    } finally {
+      setIsLoadingConnect(false);
     }
   };
 
@@ -247,6 +246,7 @@ const AsupanGiziContainer = () => {
             holdingWeight: holdingWeight,
             selectChildId: selectChildId,
             setSelectChildId: setSelectChildId,
+            isLoadingConnect: isLoadingConnect,
           }}
         />
       </main>

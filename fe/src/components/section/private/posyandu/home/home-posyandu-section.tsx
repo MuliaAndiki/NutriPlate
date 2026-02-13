@@ -83,13 +83,13 @@ const HomePosyanduHeroSection: React.FC<HomePosyanduHeroSectionProps> = ({
       title: "Kader & Orang Tua",
       rightIcon: "fluent:arrow-right-24-filled",
       leftIcon: "mdi:human-male-child",
-      href: "#",
+      href: "/posyandu/kelola-data",
     },
     {
       title: "Program Posyandu",
       rightIcon: "fluent:arrow-right-24-filled",
       leftIcon: "mdi:human-male-child",
-      href: "#",
+      href: "/posyandu/program",
     },
   ];
 
