@@ -1,18 +1,12 @@
-import { cacheKeys } from '@/cache/cacheKey';
 import { AppContext } from '@/contex/appContex';
 import { NotificationService } from '@/service/notifikasi.service';
 import { JwtPayload } from '@/types/auth.types';
 import { PickCreateTask, PickTaskID, PickTaskProgresID } from '@/types/task.types';
 import { ParseUpdateData } from '@/utils/parseUpdateData';
-import { getRedis } from '@/utils/redis';
 import { NotifType } from '@prisma/client';
-import { error } from 'console';
 import prisma from 'prisma/client';
 
 class SubtaskController {
-  private get redis() {
-    return getRedis();
-  }
   public async createTask(c: AppContext) {
     try {
       const jwtUser = c.user as JwtPayload;
@@ -124,8 +118,6 @@ class SubtaskController {
         },
       });
 
-      await this.redis.del(cacheKeys.task.byProgresId(progresBase.id));
-
       return c.json?.(
         {
           status: 200,
@@ -162,24 +154,6 @@ class SubtaskController {
 
       if (!params?.progressId) {
         return c.json?.({ status: 400, message: 'progressId is required' }, 400);
-      }
-
-      const cacheKey = cacheKeys.task.byProgresId(params.progressId);
-
-      try {
-        const cacheTask = await this.redis.get(cacheKey);
-        if (cacheTask) {
-          return c.json?.(
-            {
-              status: 200,
-              message: 'successfully get task (cache)',
-              data: JSON.parse(cacheTask),
-            },
-            200,
-          );
-        }
-      } catch (_) {
-        // cache failure should NEVER break API
       }
 
       const progress = await prisma.nutritionProgramProgress.findUnique({
@@ -234,10 +208,6 @@ class SubtaskController {
           },
         },
       });
-
-      if (task.length > 0) {
-        await this.redis.set(cacheKey, JSON.stringify(task), { EX: 60 });
-      }
 
       return c.json?.(
         {
@@ -336,8 +306,6 @@ class SubtaskController {
         data: payload,
       });
 
-      await this.redis.del(cacheKeys.task.byID(params.id)).catch(error);
-
       return c.json?.(
         {
           status: 200,
@@ -432,8 +400,6 @@ class SubtaskController {
         where: { id: params.id },
       });
 
-      await this.redis.del(cacheKeys.task.byID(params.id)).catch(error);
-
       return c.json?.(
         {
           status: 200,
@@ -467,24 +433,6 @@ class SubtaskController {
           401,
         );
       }
-      const cacheKey = cacheKeys.task.list();
-
-      try {
-        const cache = await this.redis.get(cacheKey);
-        if (cache) {
-          return c.json?.(
-            {
-              status: 200,
-              message: 'successfully get cache',
-              data: JSON.parse(cache),
-            },
-            200,
-          );
-        }
-      } catch (error) {
-        console.warn(`redis error, fallback db ${error}`);
-      }
-
       const task = await prisma.taskProgram.findMany({
         where: {
           isBroadcast: false,
@@ -510,8 +458,6 @@ class SubtaskController {
           },
           400,
         );
-      } else {
-        await this.redis.set(cacheKey, JSON.stringify(task), { EX: 60 });
       }
       return c.json?.(
         {
@@ -609,12 +555,6 @@ class SubtaskController {
           isBroadcast: true,
         });
       }
-
-      await Promise.all([
-        this.redis.del(cacheKeys.task.byRole('PARENT')),
-        this.redis.del(cacheKeys.task.byRole('POSYANDU')),
-        this.redis.del(cacheKeys.task.byRole('KADER')),
-      ]).catch(console.error);
 
       return c.json?.(
         {
@@ -747,13 +687,6 @@ class SubtaskController {
         where: { id: task.id },
         data: { isComplated: true },
       });
-
-      await Promise.all([
-        this.redis.del(cacheKeys.task.byRole('PARENT')),
-        this.redis.del(cacheKeys.task.byRole('POSYANDU')),
-        this.redis.del(cacheKeys.task.byRole('KADER')),
-        this.redis.del(cacheKeys.progress.byChild(task.progresId)),
-      ]).catch(console.error);
 
       return c.json?.(
         {

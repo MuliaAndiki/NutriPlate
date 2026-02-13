@@ -1,17 +1,11 @@
 import app from '@/app';
-import { cacheKeys } from '@/cache/cacheKey';
 import { AppContext } from '@/contex/appContex';
 import { JwtPayload } from '@/types/auth.types';
 import { PickPosyanduID } from '@/types/posyandu.types';
 import { PickCreateProgram, PickProgramID } from '@/types/programNutriPlate.types';
 import { parseDateTime } from '@/utils/form.helper';
-import { getRedis } from '@/utils/redis';
-import { error } from 'console';
 import prisma from 'prisma/client';
 class ProgramController {
-  private get redis() {
-    return getRedis();
-  }
   public async createProgram(c: AppContext) {
     try {
       const jwtUser = c.user as JwtPayload;
@@ -36,7 +30,6 @@ class ProgramController {
         );
       }
 
-      const cacheKey = cacheKeys.program.list();
       const posyandu = await prisma.posyandu.findUnique({
         where: { id: params.id },
       });
@@ -71,7 +64,6 @@ class ProgramController {
         },
       });
 
-      await this.redis.del(cacheKey);
       return c.json?.(
         {
           status: 200,
@@ -152,11 +144,6 @@ class ProgramController {
           403,
         );
       }
-      const cacheKeysToDelete = [
-        cacheKeys.program.byID(programs.id),
-        cacheKeys.program.byPosyandu(programs.posyandu?.id || ''),
-      ];
-
       const programUpdate = await prisma.nutriplateProgram.update({
         where: {
           id: programs.id,
@@ -165,7 +152,6 @@ class ProgramController {
           ...prog,
         },
       });
-      await this.redis.del(cacheKeysToDelete).catch(error);
       app.server?.publish(
         `user:${jwtUser.id}`,
         JSON.stringify({
@@ -272,27 +258,6 @@ class ProgramController {
         whereCondition.posyanduId = posyanduId;
       }
 
-      const cacheKey =
-        user.role === 'ADMIN'
-          ? cacheKeys.program.list()
-          : cacheKeys.program.byPosyandu(posyanduId!);
-
-      try {
-        const cached = await this.redis.get(cacheKey);
-        if (cached) {
-          return c.json?.(
-            {
-              status: 200,
-              message: 'successfully get programs (cache)',
-              data: JSON.parse(cached),
-            },
-            200,
-          );
-        }
-      } catch (error) {
-        console.warn(`redis error, fallback db: ${error}`);
-      }
-
       const programs = await prisma.nutriplateProgram.findMany({
         where: whereCondition,
         orderBy: { createdAt: 'asc' },
@@ -315,8 +280,6 @@ class ProgramController {
           },
         },
       });
-
-      await this.redis.set(cacheKey, JSON.stringify(programs), { EX: 60 }).catch(console.error);
 
       return c.json?.(
         {
@@ -361,23 +324,6 @@ class ProgramController {
           400,
         );
       }
-      const cacheKey = cacheKeys.program.byID(progParams.id);
-      try {
-        const cachePrograms = await this.redis.get(cacheKey);
-        if (cachePrograms) {
-          return c.json?.(
-            {
-              status: 200,
-              message: 'succesfully get programs by id',
-              data: JSON.parse(cachePrograms),
-            },
-            200,
-          );
-        }
-      } catch (error) {
-        console.warn(`redis error, fallback db: ${error}`);
-      }
-
       const program = await prisma.nutriplateProgram.findFirst({
         where: {
           id: progParams.id,
@@ -391,8 +337,6 @@ class ProgramController {
           },
           400,
         );
-      } else {
-        await this.redis.set(cacheKey, JSON.stringify(program), { EX: 60 }).catch(error);
       }
 
       return c.json?.(
@@ -454,7 +398,6 @@ class ProgramController {
           404,
         );
       }
-      const cacheKeysToDelete = [cacheKeys.program.byID(prog.id)];
       const user = await prisma.user.findFirst({
         where: {
           id: jwtUser.id,
@@ -486,10 +429,6 @@ class ProgramController {
           },
           400,
         );
-      } else {
-        // Also delete byPosyandu cache
-        cacheKeysToDelete.push(cacheKeys.program.byPosyandu(program.posyanduId));
-        await this.redis.del(cacheKeysToDelete).catch(error);
       }
       return c.json?.(
         {

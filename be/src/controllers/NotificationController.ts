@@ -1,17 +1,11 @@
-import { cacheKeys } from '@/cache/cacheKey';
 import { AppContext } from '@/contex/appContex';
 import { JwtPayload } from '@/types/auth.types';
 import { PickCreateNotification, PickNotifID } from '@/types/notificatios.types';
-import { getRedis } from '@/utils/redis';
 import prisma from 'prisma/client';
 import app from '@/app';
-import { error } from 'console';
 import { NotificationService } from '@/service/notifikasi.service';
 
 class NotificationController {
-  private get redis() {
-    return getRedis();
-  }
   public async createNotification(c: AppContext) {
     try {
       const jwtUser = c.user as JwtPayload;
@@ -35,12 +29,6 @@ class NotificationController {
           isBroadcast: false,
         },
       });
-
-      // Invalidate notification caches after creation
-      await Promise.all([
-        this.redis.del(cacheKeys.notification.list()),
-        this.redis.del(cacheKeys.notification.byUser(jwtUser.id)),
-      ]).catch(() => {});
 
       return c.json?.(
         {
@@ -79,23 +67,6 @@ class NotificationController {
         return c.json?.({ status: 401, message: 'Unauthorized' }, 401);
       }
 
-      const cacheKey = cacheKeys.notification.byUser(user.id);
-      try {
-        const cacheNotif = await this.redis.get(cacheKey);
-        if (cacheNotif) {
-          return c.json?.(
-            {
-              status: 200,
-              message: 'successfully get notifications (cache)',
-              data: JSON.parse(cacheNotif),
-            },
-            200,
-          );
-        }
-      } catch {
-        console.warn('redis error, fallback db');
-      }
-
       let whereCondition: any = {};
 
       if (user.role === 'PARENT' || user.role === 'KADER') {
@@ -127,8 +98,6 @@ class NotificationController {
         where: whereCondition,
         orderBy: { createdAt: 'desc' },
       });
-
-      await this.redis.set(cacheKey, JSON.stringify(notifications), { EX: 60 }).catch(() => {});
 
       app.server?.publish(
         `user:${user.id}`,
@@ -181,22 +150,6 @@ class NotificationController {
           400,
         );
       }
-      const cacheKey = cacheKeys.notification.byID(notParams.id);
-      try {
-        const cacheNotify = await this.redis.get(cacheKey);
-        if (cacheNotify) {
-          return c.json?.(
-            {
-              status: 200,
-              message: 'succesfully get notification by id',
-              data: JSON.parse(cacheNotify),
-            },
-            200,
-          );
-        }
-      } catch (error) {
-        console.warn(`redis error, fallback db:${error}`);
-      }
       const notification = await prisma.notifications.findFirst({
         where: {
           id: notParams.id,
@@ -212,8 +165,6 @@ class NotificationController {
           404,
         );
       }
-
-      await this.redis.set(cacheKey, JSON.stringify(notification), { EX: 60 }).catch(error);
       return c.json?.(
         {
           status: 200,
@@ -257,8 +208,6 @@ class NotificationController {
           400,
         );
       }
-      const cacheKey = cacheKeys.notification.byID(notParams.id);
-
       const notafication = await prisma.notifications.update({
         where: {
           id: notParams.id,
@@ -279,12 +228,6 @@ class NotificationController {
           payload: notafication,
         }),
       );
-
-      // Invalidate both ID and user-scoped caches
-      await Promise.all([
-        this.redis.del(cacheKey),
-        this.redis.del(cacheKeys.notification.byUser(jwtUser.id)),
-      ]).catch(error);
       if (!notafication || notafication.isBroadcast !== false) {
         return c.json?.(
           {
@@ -338,7 +281,6 @@ class NotificationController {
           400,
         );
       }
-      const cacheKey = cacheKeys.notification.byID(notParams.id);
       const notification = await prisma.notifications.delete({
         where: {
           id: notParams.id,
@@ -355,11 +297,6 @@ class NotificationController {
         });
       }
 
-      // Invalidate both ID and user-scoped caches
-      await Promise.all([
-        this.redis.del(cacheKey),
-        this.redis.del(cacheKeys.notification.byUser(jwtUser.id)),
-      ]).catch(error);
       app.server?.publish(
         `user:${jwtUser.id}`,
         JSON.stringify({
@@ -401,13 +338,6 @@ class NotificationController {
         );
       }
       const notification = await NotificationService.broadcastFromDraft(jwtUser.id, notParams.id);
-
-      // Invalidate notification caches after broadcast
-      await Promise.all([
-        this.redis.del(cacheKeys.notification.byID(notParams.id)),
-        this.redis.del(cacheKeys.notification.list()),
-        this.redis.del(cacheKeys.notification.byUser(jwtUser.id)),
-      ]).catch(() => {});
 
       return c.json?.({
         status: 200,
@@ -468,13 +398,6 @@ class NotificationController {
         );
       }
 
-      // ✅ Simpan per-user read status di Redis dengan key: notification:user:{userId}:{notifId}
-      const readKey = `notification:read:${jwtUser.id}:${notParams.id}`;
-      await this.redis.set(readKey, 'true', { EX: 86400 * 30 }); // 30 hari
-
-      // Invalidate user's notification list cache
-      await this.redis.del(cacheKeys.notification.byUser(jwtUser.id)).catch(() => {});
-
       return c.json?.(
         {
           status: 200,
@@ -526,9 +449,6 @@ class NotificationController {
         );
       }
 
-      const readKey = `notification:read:${jwtUser.id}:${notParams.id}`;
-      const isRead = await this.redis.get(readKey);
-
       return c.json?.(
         {
           status: 200,
@@ -536,7 +456,7 @@ class NotificationController {
           data: {
             notificationId: notParams.id,
             userId: jwtUser.id,
-            isRead: isRead === 'true',
+            isRead: false,
           },
         },
         200,

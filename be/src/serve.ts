@@ -1,7 +1,6 @@
 import app from './app';
 import { connectWithRetry } from './config/databases';
 import { env } from './config/env.config';
-import { connectRedis } from './utils/redis';
 import { initSocket } from './utils/socket';
 const port = Number.isFinite(env.PORT) ? env.PORT : 5000;
 
@@ -12,7 +11,6 @@ app.onStart(() => {
 async function connected() {
   try {
     await connectWithRetry();
-    await connectRedis();
     await initSocket();
 
     app.listen({

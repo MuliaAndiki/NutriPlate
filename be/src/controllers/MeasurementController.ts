@@ -2,14 +2,9 @@ import prisma from 'prisma/client';
 import { AppContext } from '@/contex/appContex';
 import { JwtPayload } from '@/types/auth.types';
 import whoGrowthCalculationService from '@/service/whoGrowth.service';
-import { cacheKeys } from '@/cache/cacheKey';
-import { getRedis } from '@/utils/redis';
 import { PickCreateMeasurements, PickMeasurementsChildID } from '@/types/measurement.types';
 
 class MeasurementController {
-  private get redis() {
-    return getRedis();
-  }
   public async createMeasurement(c: AppContext) {
     try {
       const jwtUser = c.user as JwtPayload;
@@ -117,14 +112,6 @@ class MeasurementController {
           recommendation: JSON.parse(JSON.stringify(recommendation)),
         },
       });
-
-      // Invalidate related caches
-      await Promise.all([
-        this.redis.del(cacheKeys.measurement.byChild(child.id)),
-        this.redis.del(cacheKeys.evaluation.byChild(child.id)),
-        this.redis.del(cacheKeys.measurement.list()),
-        this.redis.del(cacheKeys.evaluation.list()),
-      ]).catch(() => {});
 
       return c.json?.(
         {
@@ -341,23 +328,6 @@ class MeasurementController {
           400,
         );
       }
-      const cacheKey = cacheKeys.measurement.byChild(params.childID);
-
-      try {
-        const cacheMeasurementChild = await this.redis.get(cacheKey);
-        if (cacheMeasurementChild) {
-          return c.json?.(
-            {
-              status: 200,
-              message: 'succesfully get by MeasureChild',
-              data: JSON.parse(cacheMeasurementChild),
-            },
-            200,
-          );
-        }
-      } catch (error) {
-        console.warn(`redis error, fallback DM ${error}`);
-      }
       const measurement = await prisma.measurement.findMany({
         where: { childId: params.childID },
         orderBy: { createdAt: 'asc' },
@@ -371,8 +341,6 @@ class MeasurementController {
           },
           400,
         );
-      } else {
-        await this.redis.set(cacheKey, JSON.stringify(measurement), { EX: 60 });
       }
 
       return c.json?.(
@@ -511,13 +479,6 @@ class MeasurementController {
         },
       });
 
-      await Promise.all([
-        this.redis.del(cacheKeys.measurement.byChild(child.id)),
-        this.redis.del(cacheKeys.evaluation.byChild(child.id)),
-        this.redis.del(cacheKeys.measurement.list()),
-        this.redis.del(cacheKeys.evaluation.list()),
-      ]).catch(() => {});
-
       return c.json?.(
         {
           status: 200,
@@ -587,24 +548,6 @@ class MeasurementController {
         return c.json?.({ status: 403, message: 'Tidak memiliki akses ke posyandu ini' }, 403);
       }
 
-      const cacheKey = cacheKeys.measurement.byPosyandu(posyanduId);
-
-      try {
-        const cached = await this.redis.get(cacheKey);
-        if (cached) {
-          return c.json?.(
-            {
-              status: 200,
-              message: 'successfully get measurements',
-              data: JSON.parse(cached),
-            },
-            200,
-          );
-        }
-      } catch (err) {
-        console.warn('[redis] fallback db:', err);
-      }
-
       const measurements = await prisma.measurement.findMany({
         where: {
           child: {
@@ -627,10 +570,6 @@ class MeasurementController {
         },
         take: 100,
       });
-
-      if (measurements.length > 0) {
-        await this.redis.set(cacheKey, JSON.stringify(measurements), { EX: 120 });
-      }
 
       return c.json?.(
         {

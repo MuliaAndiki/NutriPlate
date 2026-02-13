@@ -1,7 +1,6 @@
 import prisma from 'prisma/client';
 
 class UserSesionService {
-  // intall redis nanti
   public async getHisryLogin(jwtId: string) {
     try {
       const historyLogin = await prisma.userSession.findMany({
