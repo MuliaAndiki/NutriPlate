@@ -130,7 +130,7 @@ const DetailPengukuranSection: React.FC<DetailPengukuranSectionProps> = ({
           onClick={() => namespace.router.back()}
           leftIcon={
             <Icon
-              icon="ic:round-check"
+              icon="material-symbols:close-rounded"
               width="24"
               height="24"
               className="text-background"

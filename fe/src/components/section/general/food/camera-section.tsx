@@ -28,6 +28,7 @@ interface FoodCameraSectionProps {
   actions: {
     onSuccess: () => void;
     onCancel: () => void;
+    onRefetchSummary: () => Promise<any>;
   };
 }
 
@@ -113,8 +114,12 @@ const FoodCameraSection = ({
             }
 
             setError("");
-            setResponseFoodIntake(data);
-            setMode("result");
+            actions
+              .onRefetchSummary()
+              .finally(() => {
+                setResponseFoodIntake(data);
+                setMode("result");
+              });
           },
           onError: (err: any) => {
             const errorMessage =

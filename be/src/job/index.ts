@@ -24,7 +24,7 @@ export const nutriplateProgramCron = new Elysia().use(
           console.log(` ${result.count} nutriplate program started`);
         }
       } catch (error) {
-        console.error('❌ Cron nutriplate error:', error);
+        console.error(' Cron nutriplate error:', error);
       }
     },
   }),
@@ -62,10 +62,10 @@ export const otpCleanupCron = new Elysia().use(
         });
 
         if (result.count > 0) {
-          console.log(`🧹 ${result.count} unverified user(s) deleted`);
+          console.log(` ${result.count} unverified user(s) deleted`);
         }
       } catch (error) {
-        console.error('❌ OTP cleanup cron error:', error);
+        console.error(' OTP cleanup cron error:', error);
       }
     },
   }),

@@ -58,6 +58,14 @@ const FoodCameraContainer = () => {
     router.back();
   };
 
+  const handleRefetchSummary = async () => {
+    if (!childId) return;
+    await namespace.queryClient.invalidateQueries({
+      queryKey: cacheKey.foodSummaryDaily.byChild(childId),
+    });
+    return dailySummaryQuery.refetch();
+  };
+
   return (
     <SidebarLayout>
       <main className="w-full min-h-screen overflow-x-hidden">
@@ -79,6 +87,7 @@ const FoodCameraContainer = () => {
           actions={{
             onSuccess: handleSuccess,
             onCancel: handleCancel,
+            onRefetchSummary: handleRefetchSummary,
           }}
         />
       </main>

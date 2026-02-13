@@ -25,10 +25,11 @@ export interface ProfileProps {
 }
 
 const ProfileKaderSection: React.FC<ProfileProps> = ({ service, seletor }) => {
+  const resProfile = service.query.userProfileType;
   if (service.query.isLoading) {
     return <ProfileSectionSkeleton />;
   }
-  if (!service.query.userProfileType) {
+  if (!resProfile) {
     return <DataNotFound />;
   }
 
@@ -37,19 +38,14 @@ const ProfileKaderSection: React.FC<ProfileProps> = ({ service, seletor }) => {
       <div className="w-full flex justify-center items-center flex-col space-y-5">
         <Image
           alt="profile"
-          src={service.query.userProfileType.avaUrl ?? "/avatars/1.png"}
+          src={resProfile.avaUrl ?? "/avatars/1.png"}
           width={150}
           height={150}
           className="object-cover rounded-full"
         />
 
-        <h1 className="text-2xl font-bold">
-          {service.query.userProfileType.fullName}
-        </h1>
-        <h1 className="font-light">
-          {service.query.userProfileType.email ??
-            service.query.userProfileType.phone}
-        </h1>
+        <h1 className="text-2xl font-bold">{resProfile.fullName}</h1>
+        <h1 className="font-light">{resProfile.email ?? resProfile.phone}</h1>
       </div>
       <div className="w-full flex flex-col flex-1 justify-between mt-6">
         <div className="w-full flex flex-col space-y-3">

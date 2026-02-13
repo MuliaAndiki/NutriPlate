@@ -15,16 +15,16 @@ const CreateProgramContainer = () => {
 
   const createProgramMutation = service.program.mutation.createProgram();
 
-  const [formCreateProgram, setFormCreateProgram] =
-    useState<FormCreateProgram>({
+  const [formCreateProgram, setFormCreateProgram] = useState<FormCreateProgram>(
+    {
       name: "",
       description: "",
       durationRegister: "",
-      startPrograms: "",
       endPrograms: "",
       activity: [],
       benefit: [],
-    });
+    },
+  );
 
   const handleCreateProgram = () => {
     if (!formCreateProgram.name || !formCreateProgram.description) {

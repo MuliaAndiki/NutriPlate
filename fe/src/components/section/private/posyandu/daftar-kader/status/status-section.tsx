@@ -39,8 +39,13 @@ const StatusKaderSection: React.FC<StatusKaderSectionProps> = ({
   service,
   state,
 }) => {
+  const resKaderRegister = service.query.data;
   if (service.query.isLoading) {
     return <StatusSectionSkeleton />;
+  }
+
+  if (!resKaderRegister) {
+    return <DataNotFound />;
   }
   return (
     <section className="w-full min-h-screen flex flex-col p-3 space-y-3">
@@ -70,11 +75,11 @@ const StatusKaderSection: React.FC<StatusKaderSectionProps> = ({
         )}
       </div>
 
-      {service.query.data.length === 0 ? (
+      {resKaderRegister.length === 0 ? (
         <EmptyCard message="Tidak ada data" />
       ) : (
         <div className="flex flex-col space-y-3">
-          {service.query.data.map((item) => (
+          {resKaderRegister.map((item) => (
             <KaderRegisterPendingCard
               key={item.id}
               res={item}

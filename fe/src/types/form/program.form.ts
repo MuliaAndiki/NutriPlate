@@ -7,7 +7,6 @@ export type FormCreateProgram = Pick<
   | "durationRegister"
   | "activity"
   | "benefit"
-  | "startPrograms"
   | "endPrograms"
 >;
 

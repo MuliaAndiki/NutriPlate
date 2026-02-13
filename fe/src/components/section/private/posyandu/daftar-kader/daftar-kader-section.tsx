@@ -26,10 +26,11 @@ const DaftarKaderPosyanduSection: React.FC<DaftarKaderPosyanduSectionProps> = ({
   namespace,
   service,
 }) => {
+  const resKader = service.query.kader;
   if (service.query.isLoading) {
     return <DaftarKaderSectionSkeleton />;
   }
-  if (!service.query.kader) {
+  if (!resKader) {
     return <DataNotFound />;
   }
 
@@ -54,11 +55,11 @@ const DaftarKaderPosyanduSection: React.FC<DaftarKaderPosyanduSectionProps> = ({
         </Link>
       </div>
 
-      {service.query.kader.length === 0 ? (
+      {resKader.length === 0 ? (
         <EmptyCard message="Belum ada kader terdaftar" />
       ) : (
         <div className="flex flex-col space-y-2">
-          {service.query.kader.map((item, index) => (
+          {resKader.map((item, index) => (
             <KaderCard
               key={item.kader.id}
               index={index}

@@ -82,9 +82,7 @@ const CreateProgramSection: React.FC<CreateProgramSectionProps> = ({
         <Textarea
           placeholder="Tulis satu aktivitas per baris"
           value={formatList(state.formCreateProgram.activity ?? [])}
-          onChange={(e) =>
-            updateField("activity", parseList(e.target.value))
-          }
+          onChange={(e) => updateField("activity", parseList(e.target.value))}
         />
       </div>
 
@@ -108,14 +106,6 @@ const CreateProgramSection: React.FC<CreateProgramSectionProps> = ({
       </div>
 
       <div className="w-full grid grid-cols-2 gap-2">
-        <div className="space-y-2">
-          <h1 className="text-sm font-bold">Mulai Program</h1>
-          <Input
-            type="date"
-            value={state.formCreateProgram.startPrograms ?? ""}
-            onChange={(e) => updateField("startPrograms", e.target.value)}
-          />
-        </div>
         <div className="space-y-2">
           <h1 className="text-sm font-bold">Selesai Program</h1>
           <Input

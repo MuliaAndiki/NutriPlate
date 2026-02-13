@@ -138,7 +138,7 @@ export const RoutingProfile: RoutingProfileType[] = [
     title: "Ubah Kata Sandi",
     icon: "material-symbols:lock-outline",
     icon2: "mingcute:arrow-right-fill",
-    href: (role) => `/${role}/profile/ubah-password`,
+    href: () => `/ubah-password`,
   },
   {
     title: "Personalisasi & Bahasa",
