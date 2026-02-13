@@ -1,10 +1,12 @@
 "use client";
 import ProfileParentHeroSection from "@/components/section/private/parent/profile/profile-section";
 import { SidebarLayout } from "@/core/layouts/sidebar.layout";
+import { useAppSelector } from "@/hooks/dispatch/dispatch";
 import useService from "@/hooks/mutation/prop.service";
 
 const ProfileParentContainer = () => {
   const service = useService();
+  const selector = useAppSelector((state) => state.posyandu);
 
   //profile
   const useGetProfileQuery = service.user.query.profile();
@@ -28,6 +30,9 @@ const ProfileParentContainer = () => {
               userProfileType: useGetProfileData ?? undefined,
               isLoading: useGetProfileQuery.isLoading,
             },
+          }}
+          selector={{
+            role: selector.role!,
           }}
         />
       </main>

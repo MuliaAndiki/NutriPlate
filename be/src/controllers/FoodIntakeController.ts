@@ -352,14 +352,21 @@ class FoodIntakeController {
             );
           }
         } catch (error) {
+          const status =
+            (error as Error & { status?: number })?.status || 500;
+          const message =
+            error instanceof Error
+              ? error.message
+              : 'Food detection failed';
+
           console.error(' Inference failed:', error);
           return c.json?.(
             {
-              status: 500,
-              message: 'Food detection failed',
+              status,
+              message,
               error: error instanceof Error ? error.message : error,
             },
-            500,
+            status,
           );
         }
       } else {

@@ -117,7 +117,11 @@ const FoodCameraSection = ({
             setMode("result");
           },
           onError: (err: any) => {
-            const errorMessage = err?.message || "Gagal menyimpan data makanan";
+            const errorMessage =
+              err?.response?.data?.message ||
+              err?.response?.data?.detail ||
+              err?.message ||
+              "Gagal menyimpan data makanan";
 
             if (/tidak\s*terdeteksi|not\s*detected/i.test(errorMessage)) {
               toast({
@@ -128,7 +132,11 @@ const FoodCameraSection = ({
               return;
             }
 
-            setError(errorMessage);
+            toast({
+              title: "Gagal menyimpan data",
+              message: errorMessage,
+              icon: "error",
+            });
           },
         },
       );

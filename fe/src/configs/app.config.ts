@@ -1,6 +1,6 @@
 import React from "react";
 
-import { SidebarContentType } from "@/types/partial";
+import { RoutingProfileType, SidebarContentType } from "@/types/partial";
 
 interface AppConfig {
   name: string;
@@ -126,3 +126,36 @@ export const SidebarDefaultData: SidebarContentType[] = [
 ];
 
 export type UserRole = "PARENT" | "KADER" | "POSYANDU" | "ADMIN";
+
+export const RoutingProfile: RoutingProfileType[] = [
+  {
+    title: "Edit Profile",
+    icon: "akar-icons:edit",
+    icon2: "mingcute:arrow-right-fill",
+    href: (role) => `/${role}/profile/edit-profile`,
+  },
+  {
+    title: "Ubah Kata Sandi",
+    icon: "material-symbols:lock-outline",
+    icon2: "mingcute:arrow-right-fill",
+    href: (role) => `/${role}/profile/ubah-password`,
+  },
+  {
+    title: "Personalisasi & Bahasa",
+    icon: "uil:setting",
+    icon2: "mingcute:arrow-right-fill",
+    href: () => "/setting",
+  },
+  {
+    title: "Kebijakan Privasi",
+    icon: "ic:outline-policy",
+    icon2: "mingcute:arrow-right-fill",
+    href: () => "/policy",
+  },
+  {
+    title: "Tentang Aplikasi",
+    icon: "mdi:about-circle-outline",
+    icon2: "mingcute:arrow-right-fill",
+    href: () => "/about",
+  },
+];

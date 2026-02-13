@@ -25,7 +25,7 @@ class PosyanduApi {
     return res.data;
   }
   public async updatePosyandu(
-    payload: FormCreatePosyandu,
+    payload: Partial<FormCreatePosyandu>,
     id: string,
   ): Promise<TResponse<any>> {
     const res = await AxiosClient.put(`/api/posyandu/${id}`, payload);

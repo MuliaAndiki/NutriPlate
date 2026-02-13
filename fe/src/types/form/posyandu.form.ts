@@ -16,7 +16,7 @@ export type FormCreatePosyandu = Pick<
 
 export type FormUpdatePosyandu = Pick<
   IPosyandu,
-  "id" | "name" | "scheduleDay" | "avaUrl" | "email" | "phone"
+  "name" | "scheduleDay" | "avaUrl" | "email" | "phone"
 >;
 
 export type FormVerifyPosyandu = {

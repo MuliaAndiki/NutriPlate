@@ -88,7 +88,7 @@ const HomePosyanduHeroSection: React.FC<HomePosyanduHeroSectionProps> = ({
     {
       title: "Program Posyandu",
       rightIcon: "fluent:arrow-right-24-filled",
-      leftIcon: "mdi:human-male-child",
+      leftIcon: "hugeicons:task-01",
       href: "/posyandu/program",
     },
   ];

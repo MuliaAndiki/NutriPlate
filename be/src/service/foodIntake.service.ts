@@ -109,7 +109,13 @@ class FoodIntakeService {
       });
 
       if (!response.data?.success || !response.data?.detections) {
-        throw new Error('Invalid ML response');
+        const detail =
+          response.data?.detail ||
+          response.data?.message ||
+          'Invalid ML response';
+        throw new Error(
+          typeof detail === 'string' ? detail : JSON.stringify(detail),
+        );
       }
 
       const result = {
@@ -120,7 +126,24 @@ class FoodIntakeService {
       await this.redis.setEx(cacheKey, 86400, JSON.stringify(result));
       return result;
     } catch (err) {
-      throw new Error(`Inference failed: ${err}`);
+      if (this.isAxiosError(err)) {
+        const status = err.response?.status;
+        const detail =
+          err.response?.data?.detail ||
+          err.response?.data?.message ||
+          err.message ||
+          'Inference request failed';
+
+        const error = new Error(
+          typeof detail === 'string' ? detail : JSON.stringify(detail),
+        ) as Error & { status?: number };
+        error.status = status;
+        throw error;
+      }
+
+      const message =
+        err instanceof Error ? err.message : String(err);
+      throw new Error(`Inference failed: ${message}`);
     }
   }
 

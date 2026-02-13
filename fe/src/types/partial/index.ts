@@ -135,3 +135,10 @@ export const nutritionFilterMap: {
   { label: "Berisiko", value: "underweight" },
   { label: "Gizi Buruk", value: "severely_underweight" },
 ];
+
+export interface RoutingProfileType {
+  title: string;
+  icon: string;
+  icon2: string;
+  href?: (role: string) => string;
+}

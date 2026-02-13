@@ -41,7 +41,7 @@ const UpdateTaskForm: React.FC<UpdateTaskFormProps> = ({
   return (
     <section className="w-full h-full flex flex-col space-y-3">
       <div className="w-full flex justify-between items-center">
-        <h1 className="text-lg font-bold">Update Task Baru</h1>
+        <h1 className="text-lg font-bold">Perbarui Tugas Baru</h1>
         <Icon
           icon="material-symbols:cancel-outline-rounded"
           width="24"
@@ -52,7 +52,7 @@ const UpdateTaskForm: React.FC<UpdateTaskFormProps> = ({
       </div>
 
       <div className="w-full space-y-2">
-        <h1 className="text-sm font-bold">Judul Task</h1>
+        <h1 className="text-sm font-bold">Judul Tugas</h1>
         <Input
           placeholder="Masukkan judul task"
           value={formUpdateTask.title}
@@ -157,7 +157,7 @@ const UpdateTaskForm: React.FC<UpdateTaskFormProps> = ({
         }
         onClick={onUpdateTask}
       >
-        {isPending ? <Spinner /> : "Update Task"}
+        {isPending ? <Spinner /> : "perbarui Tugas"}
       </ButtonWrapper>
     </section>
   );

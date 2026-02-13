@@ -12,6 +12,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Spinner } from "@/components/ui/spinner";
+import { calculateAge } from "@/utils/age";
+import Image from "next/image";
 
 interface IotControllerCardProps {
   onStartScale: () => void;
@@ -153,11 +155,20 @@ const IotControllerCard: React.FC<IotControllerCardProps> = ({
                       value={item.id}
                       className="w-full h-auto"
                     >
-                      <div className="flex flex-col">
-                        <span className="font-semibold">{item.fullName}</span>
-                        <span className="text-xs text-muted-foreground">
-                          {item.gender} • {item.dateOfBirth}
-                        </span>
+                      <div className="flex items-center space-x-2">
+                        <Image
+                          alt="avatars"
+                          src={item.avaChild ? item.avaChild : "/avatars/1.png"}
+                          width={30}
+                          height={30}
+                          className="aspect-square rounded-full object-cover"
+                        />
+                        <div className="flex flex-col justify-start items-start">
+                          <span className="font-semibold">{item.fullName}</span>
+                          <span className="text-xs text-muted-foreground">
+                            {item.gender} • {calculateAge(item.dateOfBirth)}
+                          </span>
+                        </div>
                       </div>
                     </SelectItem>
                   ))}

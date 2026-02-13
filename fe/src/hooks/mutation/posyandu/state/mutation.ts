@@ -36,7 +36,7 @@ export function useUpdatePosyandu() {
   return useMutation<
     TResponse<any>,
     Error,
-    { payload: FormCreatePosyandu; id: string }
+    { payload: Partial<FormCreatePosyandu>; id: string }
   >({
     mutationFn: ({ payload, id }) => Api.Posyandu.updatePosyandu(payload, id),
     onSuccess: (_res, { id }) => {
