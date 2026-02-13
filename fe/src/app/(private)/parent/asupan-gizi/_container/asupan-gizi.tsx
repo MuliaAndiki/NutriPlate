@@ -48,10 +48,13 @@ const AsupanGiziContainer = () => {
 
   //error handling
   const ensureIotReady = () => {
-    if (!iotStatusData?.id) {
+    if (!iotStatusData?.id || iotStatusData?.status === "offline") {
       namespace.alert.toast({
         title: "Timbangan belum terhubung",
-        message: "Silakan hubungkan timbangan terlebih dahulu",
+        message:
+          iotStatusData?.status === "offline"
+            ? "Timbangan sedang offline. Pastikan perangkat online di VPS."
+            : "Silakan hubungkan timbangan terlebih dahulu",
         icon: "error",
       });
       return false;
@@ -82,11 +85,19 @@ const AsupanGiziContainer = () => {
       const res = await iotStatusQuery.refetch();
       const freshIotData = res.data?.data ?? null;
 
-      if (!freshIotData) {
-        window.open("http://nutriplate.local", "_blank");
+      if (!freshIotData || freshIotData?.status === "offline") {
+        namespace.alert.toast({
+          title: "Timbangan belum online",
+          message: "Cek koneksi perangkat ke VPS dan coba lagi.",
+          icon: "error",
+        });
       }
     } catch (err) {
-      window.open("http://nutriplate.local", "_blank");
+      namespace.alert.toast({
+        title: "Gagal konek ke timbangan",
+        message: "Terjadi error saat cek status perangkat.",
+        icon: "error",
+      });
     } finally {
       setIsLoadingConnect(false);
     }
