@@ -1,174 +1,236 @@
-import { AxiosService } from '@/utils/axios';
-import { cleanNaNValues } from '@/utils/cleanValues';
+import prisma from 'prisma/client';
+import { IotStatus, Prisma } from '@prisma/client';
+import type {
+  IotCommandExecutedRequest,
+  IotCommandPayload,
+  IotRegisterRequest,
+  IotSendCommandRequest,
+  IotStatusRequest,
+  IotUpdateRequest,
+} from '@/types/iot.types';
 
 class IotService {
-  private IotGate;
-  private isAxiosError;
-  constructor() {
-    const { IotHit, isAxiosError } = AxiosService();
-    this.IotGate = IotHit;
-    this.isAxiosError = isAxiosError;
-  }
-  public async RebootIot() {
-    try {
-      const res = await this.IotGate.post('/api/reset');
-      let result = res.data;
-      if (typeof result === 'string') {
-        result = JSON.parse(result);
-      }
+  public async receiveStatus(payload: IotStatusRequest) {
+    const device = await prisma.iotDevice.findUnique({
+      where: { deviceToken: payload.token },
+    });
 
-      const cleanRespone = cleanNaNValues(result);
-      return cleanRespone;
-    } catch (error) {
-      if (this.isAxiosError(error)) {
-        throw new Error(error.code || error.message || 'Iot Not Working');
-      }
-      throw error;
+    if (!device) {
+      return {
+        success: false,
+        error: 'Device not registered',
+        needRegister: true,
+      };
     }
-  }
-  public async getStatusIot() {
-    try {
-      const res = await this.IotGate.get('/api/status', {
-        timeout: 3000,
-      });
 
-      let result = res.data;
-      if (typeof result === 'string') {
-        result = JSON.parse(result);
-      }
+    const pendingCommand = device.command as IotCommandPayload | null;
+    const commandType = pendingCommand?.type ?? null;
 
-      return cleanNaNValues(result);
-    } catch (error) {
-      return null;
-    }
+    // 🔥 FIX: Hanya set command ke null jika ada command yang dikirim
+    await prisma.iotDevice.update({
+      where: { deviceToken: payload.token },
+      data: {
+        lastWeight: payload.weight,
+        lastStableWeight: payload.stable_weight ?? null,
+        lastStatus: payload.status,
+        lastOnline: new Date(),
+        status: IotStatus.online,
+        // Jika ada command, hapus (set null). Jika tidak, biarkan null
+        command: commandType ? Prisma.JsonNull : Prisma.JsonNull,
+      },
+    });
+
+    return {
+      success: true,
+      command: commandType,
+    };
   }
-  public async StartScale() {
-    try {
-      const res = await this.IotGate.post('/api/start-weighing');
-      let result = res.data;
-      if (typeof result === 'string') {
-        result = JSON.parse(result);
-      }
-      const cleanRespone = cleanNaNValues(result);
-      return cleanRespone;
-    } catch (error) {
-      if (this.isAxiosError(error)) {
-        throw new Error(error.code || error.message || 'Iot Not Working');
-      }
-      throw error;
+
+  public async commandExecuted(payload: IotCommandExecutedRequest) {
+    const device = await prisma.iotDevice.findUnique({
+      where: { deviceToken: payload.token },
+    });
+
+    if (!device) {
+      return {
+        success: false,
+        error: 'Device not registered',
+      };
     }
+
+    await prisma.iotDevice.update({
+      where: { deviceToken: payload.token },
+      data: {
+        lastOnline: new Date(),
+        status: IotStatus.online,
+      },
+    });
+
+    // 🔥 BISA JUGA LOG COMMAND HISTORY KALAU MAU
+    console.log(
+      `✅ Command ${payload.command} executed on ${payload.token} with status ${payload.status}`,
+    );
+
+    return {
+      success: true,
+    };
   }
-  public async TareModeScale() {
-    try {
-      const res = await this.IotGate.post('/api/tare');
-      let result = res.data;
-      if (typeof result === 'string') {
-        result = JSON.parse(result);
-      }
-      const cleanRespone = cleanNaNValues(result);
-      return cleanRespone;
-    } catch (error) {
-      if (this.isAxiosError(error)) {
-        throw new Error(error.code || error.message || 'Iot Not Working');
-      }
-      throw error;
+
+  public async sendCommand(payload: IotSendCommandRequest) {
+    const device = await prisma.iotDevice.findUnique({
+      where: { deviceToken: payload.token },
+    });
+
+    if (!device) {
+      return {
+        success: false,
+        message: 'Device not registered',
+      };
     }
+
+    const command: IotCommandPayload = {
+      type: payload.command,
+      sent: false,
+      createdAt: new Date().toISOString(),
+    };
+
+    await prisma.iotDevice.update({
+      where: { deviceToken: payload.token },
+      data: {
+        command: command as unknown as Prisma.InputJsonValue,
+      },
+    });
+
+    return {
+      success: true,
+      message: `Command ${payload.command} queued for device ${payload.token}`,
+    };
   }
-  public async HoldWeight() {
-    try {
-      const res = await this.IotGate.post('/api/hold-weight');
-      let result = res.data;
-      if (typeof result === 'string') {
-        result = JSON.parse(result);
-      }
-      const cleanRespone = cleanNaNValues(result);
-      return cleanRespone;
-    } catch (error) {
-      if (this.isAxiosError(error)) {
-        throw new Error(error.code || error.message || 'Iot Not Working');
-      }
-      throw error;
-    }
+
+  public async getDevices() {
+    return prisma.iotDevice.findMany({
+      orderBy: { updatedAt: 'desc' },
+    });
   }
-  public async GetWeight() {
-    try {
-      const res = await this.IotGate.get('/api/weight');
-      let result = res.data;
-      if (typeof result === 'string') {
-        result = JSON.parse(result);
-      }
-      const cleanRespone = cleanNaNValues(result);
-      return cleanRespone;
-    } catch (error) {
-      if (this.isAxiosError(error)) {
-        throw new Error(error.code || error.message || 'Iot Not Working');
-      }
-      throw error;
-    }
+
+  public async getDeviceDetail(token: string) {
+    return prisma.iotDevice.findUnique({
+      where: { deviceToken: token },
+    });
   }
-  public async CancelStart() {
-    try {
-      const res = await this.IotGate.post('/api/cancel-weighing');
-      let result = res.data;
-      if (typeof result === 'string') {
-        result = JSON.parse(result);
-      }
-      const cleanRespone = cleanNaNValues(result);
-      return cleanRespone;
-    } catch (error) {
-      if (this.isAxiosError(error)) {
-        throw new Error(error.code || error.message || 'Iot Not Working');
-      }
-      throw error;
+
+  public async getDeviceFoods(token: string) {
+    const device = await prisma.iotDevice.findUnique({
+      where: { deviceToken: token },
+    });
+
+    if (!device) {
+      return {
+        success: false,
+        error: 'Device not registered',
+      };
     }
+
+    const foods = await prisma.food.findMany({
+      where: {
+        OR: [{ iotId: device.id }, { iotId: device.deviceToken }],
+      },
+      orderBy: { createdAt: 'desc' },
+      include: {
+        items: true,
+        child: {
+          select: {
+            id: true,
+            fullName: true,
+          },
+        },
+      },
+    });
+
+    return {
+      success: true,
+      data: foods,
+    };
   }
-  public async RejectWeight() {
-    try {
-      const res = await this.IotGate.post('/api/reject-weight');
-      let result = res.data;
-      if (typeof result === 'string') {
-        result = JSON.parse(result);
-      }
-      const cleanRespone = cleanNaNValues(result);
-      return cleanRespone;
-    } catch (error) {
-      if (this.isAxiosError(error)) {
-        throw new Error(error.code || error.message || 'Iot Not Working');
-      }
-      throw error;
-    }
+
+  public async registerDevice(payload: IotRegisterRequest) {
+    const device = await prisma.iotDevice.upsert({
+      where: { deviceToken: payload.token },
+      update: {
+        deviceName: payload.name,
+        pairingToken: payload.pairingToken ?? null,
+        parentId: payload.parentId ?? null,
+        posyanduId: payload.posyanduId ?? null,
+        status: IotStatus.online,
+        lastOnline: new Date(),
+      },
+      create: {
+        deviceToken: payload.token,
+        deviceName: payload.name,
+        pairingToken: payload.pairingToken ?? null,
+        parentId: payload.parentId ?? null,
+        posyanduId: payload.posyanduId ?? null,
+        status: IotStatus.online,
+        lastOnline: new Date(),
+      },
+    });
+
+    return {
+      success: true,
+      data: device,
+    };
   }
-  public async ConfirmWeight() {
-    try {
-      const res = await this.IotGate.post('/api/confirm-weight');
-      let result = res.data;
-      if (typeof result === 'string') {
-        result = JSON.parse(result);
-      }
-      const cleanRespone = cleanNaNValues(result);
-      return cleanRespone;
-    } catch (error) {
-      if (this.isAxiosError(error)) {
-        throw new Error(error.code || error.message || 'Iot Not Working');
-      }
-      throw error;
+
+  public async updateDevice(token: string, payload: IotUpdateRequest) {
+    const device = await prisma.iotDevice.findUnique({
+      where: { deviceToken: token },
+    });
+
+    if (!device) {
+      return {
+        success: false,
+        error: 'Device not registered',
+      };
     }
+
+    const updated = await prisma.iotDevice.update({
+      where: { deviceToken: token },
+      data: {
+        deviceName: payload.deviceName ?? undefined,
+        parentId: payload.parentId ?? undefined,
+        posyanduId: payload.posyanduId ?? undefined,
+        pairingToken: payload.pairingToken ?? undefined,
+        batteryLevel: payload.batteryLevel ?? undefined,
+        firmwareVersion: payload.firmwareVersion ?? undefined,
+        ipAddress: payload.ipAddress ?? undefined,
+      },
+    });
+
+    return {
+      success: true,
+      data: updated,
+    };
   }
-  public async resetPassword() {
-    try {
-      const res = await this.IotGate.post('/api/reset-password');
-      let result = res.data;
-      if (typeof result === 'string') {
-        result = JSON.parse(result);
-      }
-      const cleanRespone = cleanNaNValues(result);
-      return cleanRespone;
-    } catch (error) {
-      if (this.isAxiosError(error)) {
-        throw new Error(error.code || error.message || 'Iot Not Working');
-      }
-      throw error;
+
+  public async deleteDevice(token: string) {
+    const device = await prisma.iotDevice.findUnique({
+      where: { deviceToken: token },
+    });
+
+    if (!device) {
+      return {
+        success: false,
+        error: 'Device not registered',
+      };
     }
+
+    await prisma.iotDevice.delete({
+      where: { deviceToken: token },
+    });
+
+    return {
+      success: true,
+    };
   }
 }
 

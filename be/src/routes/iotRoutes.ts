@@ -17,34 +17,30 @@ class IotRoutes {
     this.routes();
   }
   private routes() {
-    this.iotRoutes.post('/reboot', (c: AppContext) => IotController.RebootIot(c), {
+    // Public endpoints (device)
+    this.iotRoutes.post('/status', (c: AppContext) => IotController.receiveStatus(c));
+    this.iotRoutes.post('/command-executed', (c: AppContext) => IotController.commandExecuted(c));
+
+    // Protected endpoints (dashboard)
+    this.iotRoutes.post('/command/send', (c: AppContext) => IotController.sendCommand(c), {
       beforeHandle: [verifyToken().beforeHandle],
     });
-    this.iotRoutes.get('/status', (c: AppContext) => IotController.getStatus(c), {
+    this.iotRoutes.get('/devices', (c: AppContext) => IotController.getDevices(c), {
       beforeHandle: [verifyToken().beforeHandle],
     });
-    this.iotRoutes.post('/start-weighing', (c: AppContext) => IotController.startScale(c), {
+    this.iotRoutes.get('/device/:token', (c: AppContext) => IotController.getDeviceDetail(c), {
       beforeHandle: [verifyToken().beforeHandle],
     });
-    this.iotRoutes.post('/tare', (c: AppContext) => IotController.tareMode(c), {
+    this.iotRoutes.get('/device/:token/foods', (c: AppContext) => IotController.getDeviceFoods(c), {
       beforeHandle: [verifyToken().beforeHandle],
     });
-    this.iotRoutes.post('/hold-weight', (c: AppContext) => IotController.HoldWeight(c), {
+    this.iotRoutes.post('/register', (c: AppContext) => IotController.registerDevice(c), {
       beforeHandle: [verifyToken().beforeHandle],
     });
-    this.iotRoutes.get('/weight', (c: AppContext) => IotController.getWeight(c), {
+    this.iotRoutes.put('/device/:token', (c: AppContext) => IotController.updateDevice(c), {
       beforeHandle: [verifyToken().beforeHandle],
     });
-    this.iotRoutes.post('/cancel-weighing', (c: AppContext) => IotController.cancelStart(c), {
-      beforeHandle: [verifyToken().beforeHandle],
-    });
-    this.iotRoutes.post('/reject-weight', (c: AppContext) => IotController.rejectWeight(c), {
-      beforeHandle: [verifyToken().beforeHandle],
-    });
-    this.iotRoutes.post('/confirm-weight', (c: AppContext) => IotController.confirmWeight(c), {
-      beforeHandle: [verifyToken().beforeHandle],
-    });
-    this.iotRoutes.post(`/reset-wifi`, (c: AppContext) => IotController.resetPassword(c), {
+    this.iotRoutes.delete('/device/:token', (c: AppContext) => IotController.deleteDevice(c), {
       beforeHandle: [verifyToken().beforeHandle],
     });
   }

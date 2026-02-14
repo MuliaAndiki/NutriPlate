@@ -82,25 +82,30 @@ model Posyandu {
 
   @@map("posyandu")
 }
-
 model IotDevice {
   id               String    @id @default(uuid())
   parentId         String?
   posyanduId       String?
-  macAddress       String    @unique
+  deviceToken      String    @unique
   deviceName       String
-  pairingToken     String?
-  pairingExpiresAt DateTime?
-  batteryLevel     Int?
+  pairingToken     String?   
+  lastWeight       Float?             
+  lastStableWeight Float?
+  lastStatus       String?            
   lastOnline       DateTime?
-  status           IotStatus
+  batteryLevel     Int?
+  status           IotStatus @default(offline)
+  firmwareVersion  String?
+  ipAddress        String?
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
+  command          Json?             
+  
+  foods            Food[]             
+  
   parent           User?     @relation(fields: [parentId], references: [id])
   posyandu         Posyandu? @relation(fields: [posyanduId], references: [id])
 
-  @@index([parentId])
-  @@index([posyanduId])
   @@map("iot_devices")
 }
 
@@ -120,7 +125,6 @@ model Measurement {
   @@index([childId])
   @@map("measurements")
 }
-
 model Food {
   id              String           @id @default(uuid())
   childId         String
@@ -136,6 +140,8 @@ model Food {
   items           FoodIntakeItem[]
   child           Child            @relation(fields: [childId], references: [id])
   food            FoodRawImage[]
+
+  iotDevice       IotDevice?       @relation(fields: [iotId], references: [id])
 
   @@index([childId])
   @@index([iotId])
