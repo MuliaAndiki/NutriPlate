@@ -1,5 +1,4 @@
 import app from '@/app';
-import { cacheKeys } from '@/cache/cacheKey';
 import { AppContext } from '@/contex/appContex';
 import { JwtPayload } from '@/types/auth.types';
 import {
@@ -8,17 +7,12 @@ import {
   PickProgramProgresID,
 } from '@/types/programNutritionProgres.types';
 import { PickCreateProgramRegistration } from '@/types/programRegistration.types';
-import { getRedis } from '@/utils/redis';
 import programRegistrationService from '@/service/programRegistration.service';
 import { NotificationService } from '@/service/notifikasi.service';
 import { NotifType } from '@prisma/client';
 import prisma from 'prisma/client';
 
 class ProgresController {
-  private get redis() {
-    return getRedis();
-  }
-
   private async assignChildrenToProgramBulk(c: AppContext, jwtUser: JwtPayload) {
     try {
       const progresBody = c.body as PickAssingPrograms;
@@ -112,11 +106,6 @@ class ProgresController {
         });
       }
 
-      await this.redis.del([
-        cacheKeys.progress.byRole('POSYANDU'),
-        cacheKeys.progress.byRole('PARENT'),
-      ]);
-
       return c.json?.(
         {
           status: 201,
@@ -194,24 +183,6 @@ class ProgresController {
         }
       }
 
-      const cacheKey = cacheKeys.progress.byChild(params.childId);
-
-      try {
-        const cache = await this.redis.get(cacheKey);
-        if (cache) {
-          return c.json?.(
-            {
-              status: 200,
-              message: 'successfully get progress by child (cache)',
-              data: JSON.parse(cache),
-            },
-            200,
-          );
-        }
-      } catch (error) {
-        console.warn('redis error, fallback db', error);
-      }
-
       const progres = await prisma.nutritionProgramProgress.findMany({
         where: {
           childId: params.childId,
@@ -261,10 +232,6 @@ class ProgresController {
         };
       });
 
-      await this.redis
-        .set(cacheKey, JSON.stringify(progresWithSummary), { EX: 60 })
-        .catch(console.error);
-
       return c.json?.(
         {
           status: 200,
@@ -311,23 +278,6 @@ class ProgresController {
         );
       }
 
-      const cacheKey = cacheKeys.progress.byID(params.id);
-      try {
-        const cache = await this.redis.get(cacheKey);
-        if (cache) {
-          return c.json?.(
-            {
-              status: 200,
-              message: 'succesfully get ChildInProgres (cache)',
-              data: JSON.parse(cache),
-            },
-            200,
-          );
-        }
-      } catch (error) {
-        console.warn(`redis error, fallback Db ${error}`);
-      }
-
       const progres = await prisma.nutritionProgramProgress.findFirst({
         where: {
           id: params.id,
@@ -367,8 +317,6 @@ class ProgresController {
           status,
         },
       };
-
-      await this.redis.set(cacheKey, JSON.stringify(responeData), { EX: 60 });
 
       return c.json?.(
         {
@@ -443,10 +391,6 @@ class ProgresController {
       }
       //   Redis Not Fix
       //   debug nanti
-      const cacheKey = [
-        cacheKeys.progress.byID(params.id),
-        cacheKeys.progress.byRole(jwtUser.role),
-      ];
       const progress = await prisma.nutritionProgramProgress.delete({
         where: {
           childId: child.id,
@@ -462,8 +406,6 @@ class ProgresController {
           },
         },
       });
-
-      await this.redis.del(cacheKey).catch(console.error);
       if (!progress) {
         return c.json?.(
           {
@@ -556,33 +498,6 @@ class ProgresController {
         };
       }
 
-      let cacheKey = '';
-      if (user.role === 'PARENT') {
-        cacheKey = cacheKeys.history.byRole('PARENT:' + user.id);
-      } else if (user.role === 'POSYANDU') {
-        const posyandu = await prisma.posyandu.findFirst({
-          where: { userID: user.id },
-          select: { id: true },
-        });
-        cacheKey = cacheKeys.history.byRole('POSYANDU:' + (posyandu?.id || ''));
-      }
-
-      try {
-        const cacheHistory = await this.redis.get(cacheKey);
-        if (cacheHistory) {
-          return c.json?.(
-            {
-              status: 200,
-              message: 'succesfuly get history by cache',
-              data: JSON.parse(cacheHistory),
-            },
-            200,
-          );
-        }
-      } catch (error) {
-        console.warn(`redis error, fallback db ${error}`);
-      }
-
       const history = await prisma.nutritionProgramProgress.findMany({
         where: whereCondicional,
         include: {
@@ -611,9 +526,6 @@ class ProgresController {
           },
           404,
         );
-      }
-      if (history && history.length > 0) {
-        await this.redis.set(cacheKey, JSON.stringify(history), { EX: 60 }).catch(console.error);
       }
 
       return c.json?.(
@@ -701,13 +613,6 @@ class ProgresController {
           });
         }
 
-        await this.redis.del([
-          cacheKeys.programregistration.byParent(jwtUser.id),
-          cacheKeys.programregistration.pending(registration.posyanduId),
-          cacheKeys.programregistration.accepted(registration.posyanduId),
-          cacheKeys.programregistration.byPosyandu(registration.posyanduId, null),
-        ]);
-
         return c.json?.(
           {
             status: 201,
@@ -760,17 +665,9 @@ class ProgresController {
       const rawStatus = new URL(c.request.url).searchParams.get('status');
 
       const status = rawStatus === 'pending' || rawStatus === 'accepted' ? rawStatus : undefined;
-      let cacheKey = '';
       let data: any[] = [];
 
       if (user.role === 'PARENT') {
-        cacheKey = cacheKeys.programregistration.byParent(user.id);
-
-        const cached = await this.redis.get(cacheKey);
-        if (cached) {
-          return c.json?.({ status: 200, message: 'success', data: JSON.parse(cached) }, 200);
-        }
-
         data = await programRegistrationService.getProgramRegistrations({
           role: 'PARENT',
           parentId: user.id,
@@ -785,13 +682,6 @@ class ProgresController {
           return c.json?.({ status: 404, message: 'Posyandu tidak ditemukan' }, 404);
         }
 
-        cacheKey = cacheKeys.programregistration.byPosyandu(posyandu.id, status!);
-
-        const cached = await this.redis.get(cacheKey);
-        if (cached) {
-          return c.json?.({ status: 200, message: 'success', data: JSON.parse(cached) }, 200);
-        }
-
         data = await programRegistrationService.getProgramRegistrations({
           role: 'POSYANDU',
           posyanduId: posyandu.id,
@@ -800,8 +690,6 @@ class ProgresController {
       } else {
         return c.json?.({ status: 403, message: 'Role tidak diizinkan' }, 403);
       }
-
-      await this.redis.set(cacheKey, JSON.stringify(data), { EX: 60 });
 
       return c.json?.(
         {
@@ -892,12 +780,6 @@ class ProgresController {
         title: 'Program Diterima',
         message: `Program "${registration.program?.name}" untuk anak "${registration.child?.fullName}" telah diterima oleh ${posyandu.name}. Mohon konfirmasi terima program.`,
       });
-
-      await this.redis.del([
-        cacheKeys.programregistration.pending(posyandu.id),
-        cacheKeys.programregistration.accepted(posyandu.id),
-        cacheKeys.programregistration.byParent(registration.parentId),
-      ]);
 
       return c.json?.(
         {
@@ -997,12 +879,6 @@ class ProgresController {
         title: 'Program Ditolak',
         message: `Program "${registration.program?.name}" untuk anak "${registration.child?.fullName}" telah ditolak oleh ${posyandu.name}. Silakan hubungi posyandu untuk informasi lebih lanjut.`,
       });
-
-      await this.redis.del([
-        cacheKeys.programregistration.pending(posyandu.id),
-        cacheKeys.programregistration.accepted(posyandu.id),
-        cacheKeys.programregistration.byParent(registration.parentId),
-      ]);
 
       return c.json?.(
         {

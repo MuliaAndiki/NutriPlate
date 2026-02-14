@@ -3,41 +3,17 @@ import { JwtPayload, PickID, PickUpdatePassword, PickUpdateProfile } from '@/typ
 import { AppContext } from '@/contex/appContex';
 import { uploadCloudinary } from '@/utils/clodinary';
 import bcrypt from 'bcryptjs';
-import { getRedis } from '@/utils/redis';
 import { PickChilID } from '@/types/child.types';
-import { cacheKeys } from '@/cache/cacheKey';
-import { error } from 'console';
 import { generateOtp } from '@/utils/generate-otp';
 import { sendOTPEmail } from '@/utils/mailer';
 
 class UserController {
-  private get redis() {
-    return getRedis();
-  }
   public async getProfile(c: AppContext) {
     try {
       const jwtUser = c.user as JwtPayload;
 
       if (!jwtUser) {
         return c.json?.({ status: 401, message: 'Unauthorized' }, 401);
-      }
-
-      const cacheKey = cacheKeys.user.byID(jwtUser.id);
-
-      try {
-        const cacheProfile = await this.redis.get(cacheKey);
-        if (cacheProfile) {
-          return c.json?.(
-            {
-              status: 200,
-              message: 'successfully get cache profile',
-              data: JSON.parse(cacheProfile),
-            },
-            200,
-          );
-        }
-      } catch (error) {
-        console.warn(`redis error, fallback db ${error}`);
       }
 
       const user = await prisma.user.findUnique({
@@ -98,8 +74,6 @@ class UserController {
         profileData.posyandu = posyandu?.posyandu?.[0] || null;
       }
 
-      await this.redis.set(cacheKey, JSON.stringify(profileData), { EX: 60 }).catch(console.error);
-
       return c.json?.(
         {
           status: 200,
@@ -135,7 +109,6 @@ class UserController {
           401,
         );
       }
-      const cacheKey = [cacheKeys.user.byID(jwtUser.id)];
 
       const isUpdateEmail = typeof user.email === 'string' && user.email.length > 0;
       const isUpdatePhone = typeof user.email === 'string' && user.email.length > 0;
@@ -190,8 +163,6 @@ class UserController {
           data,
         });
       });
-
-      await this.redis.del(cacheKey).catch(error);
       return c.json?.(
         {
           status: 201,
@@ -227,7 +198,6 @@ class UserController {
           401,
         );
       }
-      const cacheKey = cacheKeys.user.byID(jwtUser.id);
       const auth = await prisma.user.delete({
         where: {
           id: jwtUser.id,
@@ -242,8 +212,6 @@ class UserController {
           },
           400,
         );
-      } else {
-        await this.redis.del(cacheKey).catch(error);
       }
       return c.json?.(
         {
@@ -308,18 +276,15 @@ class UserController {
           },
           400,
         );
-      } else {
-        await this.redis.del(cacheKeys.user.byID(jwtUser.id)).catch(error);
-
-        return c.json?.(
-          {
-            status: 200,
-            message: 'successfully update password',
-            data: user,
-          },
-          200,
-        );
       }
+      return c.json?.(
+        {
+          status: 200,
+          message: 'successfully update password',
+          data: user,
+        },
+        200,
+      );
     } catch (error) {
       console.error(error);
       return c.json?.(
@@ -369,27 +334,6 @@ class UserController {
         return c.json?.({ status: 403, message: 'Tidak memiliki akses posyandu' }, 403);
       }
 
-      const cacheKey =
-        jwtUser.role === 'ADMIN'
-          ? cacheKeys.parent.list()
-          : cacheKeys.parent.byPosyandu(posyanduId!);
-
-      try {
-        const cached = await this.redis.get(cacheKey);
-        if (cached) {
-          return c.json?.(
-            {
-              status: 200,
-              message: 'successfully get parents',
-              data: JSON.parse(cached),
-            },
-            200,
-          );
-        }
-      } catch (err) {
-        console.warn('[redis] fallback db:', err);
-      }
-
       const parents = await prisma.user.findMany({
         where:
           jwtUser.role === 'ADMIN'
@@ -411,10 +355,6 @@ class UserController {
         orderBy: {
           createdAt: 'desc',
         },
-      });
-
-      await this.redis.set(cacheKey, JSON.stringify(parents), {
-        EX: 60,
       });
 
       return c.json?.(
@@ -459,22 +399,6 @@ class UserController {
           400,
         );
       }
-      const cacheKey = cacheKeys.parent.byID(parentID.id);
-      try {
-        const cacheParent = await this.redis.get(cacheKey);
-        if (cacheParent) {
-          return c.json?.(
-            {
-              status: 200,
-              message: 'succesfully get by parent',
-              data: JSON.parse(cacheParent),
-            },
-            200,
-          );
-        }
-      } catch (error) {
-        console.warn(`redis error, fallback db ${error}`);
-      }
 
       const parent = await prisma.user.findFirst({
         where: {
@@ -501,7 +425,6 @@ class UserController {
           400,
         );
       }
-      await this.redis.set(cacheKey, JSON.stringify(parent), { EX: 60 }).catch(error);
 
       return c.json?.(
         {
@@ -545,23 +468,6 @@ class UserController {
           400,
         );
       }
-      const cacheKey = cacheKeys.user.byID(userID.id);
-      try {
-        const cacheUser = await this.redis.get(cacheKey);
-
-        if (cacheUser) {
-          return c.json?.(
-            {
-              status: 200,
-              message: 'succesfully get cache redis',
-              data: JSON.parse(cacheUser),
-            },
-            200,
-          );
-        }
-      } catch (error) {
-        console.warn(`redis error, fallback db ${error}`);
-      }
 
       const auth = await prisma.user.findUnique({
         where: {
@@ -577,8 +483,6 @@ class UserController {
           },
           400,
         );
-      } else {
-        await this.redis.set(cacheKey, JSON.stringify(auth), { EX: 60 }).catch(error);
       }
       return c.json?.(
         {
@@ -661,22 +565,6 @@ class UserController {
           401,
         );
       }
-      const cacheKey = cacheKeys.kader.list();
-      try {
-        const cacheKader = await this.redis.get(cacheKey);
-        if (cacheKader) {
-          return c.json?.(
-            {
-              status: 200,
-              message: 'succesfully get kader by cache',
-              data: JSON.parse(cacheKader),
-            },
-            200,
-          );
-        }
-      } catch (error) {
-        console.warn(`redis error, fallback db ${error}`);
-      }
 
       const user = await prisma.user.findMany({
         where: {
@@ -692,8 +580,6 @@ class UserController {
           },
           400,
         );
-      } else {
-        await this.redis.set(cacheKey, JSON.stringify(user), { EX: 60 }).catch(error);
       }
       return c.json?.(
         {
@@ -737,22 +623,6 @@ class UserController {
           400,
         );
       }
-      const cacheKey = cacheKeys.kader.byID(userID.id);
-      try {
-        const cacheKaderID = await this.redis.get(cacheKey);
-        if (cacheKaderID) {
-          return c.json?.(
-            {
-              status: 200,
-              message: 'succesfully get Kader by Cache',
-              data: JSON.parse(cacheKaderID),
-            },
-            200,
-          );
-        }
-      } catch (error) {
-        console.warn(`redis error, fallback db ${error}`);
-      }
 
       const kader = await prisma.user.findUnique({
         where: {
@@ -768,8 +638,6 @@ class UserController {
           },
           400,
         );
-      } else {
-        await this.redis.set(cacheKey, JSON.stringify(kader), { EX: 60 }).catch(error);
       }
       return c.json?.(
         {
@@ -1012,30 +880,10 @@ class UserController {
         );
       }
 
-      const cacheKey = cacheKeys.child.byID(chilParams.id);
-      try {
-        const cacheChild = await this.redis.get(cacheKey);
-
-        if (cacheChild) {
-          return c.json?.(
-            {
-              status: 200,
-              message: 'successfully get cache child',
-              data: JSON.parse(cacheChild),
-            },
-            200,
-          );
-        }
-      } catch (error) {
-        console.warn(`redis error, fallback db ${error}`);
-      }
-
       const child = await prisma.child.findFirst({
         where:
           user.role === 'PARENT' ? { id: chilParams.id, parentId: user.id } : { id: chilParams.id },
       });
-
-      await this.redis.set(cacheKey, JSON.stringify(child), { EX: 60 }).catch(error);
       if (!child) {
         return c.json?.(
           {

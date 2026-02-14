@@ -1,6 +1,5 @@
 import { AxiosService } from '@/utils/axios';
 import { cleanNaNValues } from '@/utils/cleanValues';
-import { getRedis } from '@/utils/redis';
 class MlService {
   private MlGate;
   private isAxiosError;

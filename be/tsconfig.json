@@ -23,7 +23,6 @@
     "scripts",
     "types",
     "api",
-    "cache/cacheKey.ts",
     "src/types/programNutriPlate/.ts"
   ],
   "exclude": ["node_modules", "dist", ".vercel"]

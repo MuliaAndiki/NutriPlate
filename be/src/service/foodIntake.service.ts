@@ -1,10 +1,8 @@
 import { AxiosService } from '@/utils/axios';
-import { getRedis } from '@/utils/redis';
 import prisma from 'prisma/client';
 import crypto from 'crypto';
 import { FoodDetection } from '@/types/foodIntake.types';
 import { Prisma } from '@prisma/client';
-import { cacheKeys } from '@/cache/cacheKey';
 import foodIntakeSummaryService from './foodIntakeSummary.service';
 import FormData from 'form-data';
 import { normalizeFoodClassKey } from '@/utils/normalizer';
@@ -75,13 +73,11 @@ const fromPrismaJson = (value: any): any => {
 class FoodIntakeService {
   private MlGate;
   private isAxiosError;
-  private redis;
 
   constructor() {
     const { MlHit, isAxiosError } = AxiosService();
     this.MlGate = MlHit;
     this.isAxiosError = isAxiosError;
-    this.redis = getRedis();
   }
 
   public async inferenceYolo(imageBuffer: Buffer): Promise<{
@@ -90,13 +86,7 @@ class FoodIntakeService {
   }> {
     try {
       const imageHash = crypto.createHash('sha256').update(imageBuffer).digest('hex');
-      const cacheKey = cacheKeys.models.detect(imageHash);
       console.log('ML BASE URL:', this.MlGate.defaults.baseURL);
-
-      try {
-        const cached = await this.redis.get(cacheKey);
-        if (cached) return JSON.parse(cached);
-      } catch {}
 
       const formData = new FormData();
       formData.append('image', imageBuffer, {
@@ -122,8 +112,6 @@ class FoodIntakeService {
         detections: response.data.detections as FoodDetection[],
         image_size: response.data.image_size,
       };
-
-      await this.redis.setEx(cacheKey, 86400, JSON.stringify(result));
       return result;
     } catch (err) {
       if (this.isAxiosError(err)) {
@@ -189,10 +177,6 @@ class FoodIntakeService {
 
   private async getNutrientPer100g(foodClassName: string) {
     const normalizedName = normalizeFoodClassKey(foodClassName);
-    const cacheKey = `nutrient:${normalizedName}`;
-
-    const cached = await this.redis.get(cacheKey);
-    if (cached) return JSON.parse(cached);
 
     const foodClass = await prisma.foodClasses.findUnique({
       where: { name: normalizedName },
@@ -222,7 +206,6 @@ class FoodIntakeService {
           vitaminC: 0,
         };
 
-    await this.redis.setEx(cacheKey, 60 * 60 * 24 * 7, JSON.stringify(nutrient));
     return nutrient;
   }
 
@@ -305,28 +288,6 @@ class FoodIntakeService {
       }
 
       console.log(` ML model version changed: ${activeModel.version} → ${newVersion}`);
-      try {
-        let cursor = '0';
-        do {
-          const { cursor: nextCursor, keys } = await this.redis.scan(cursor, {
-            MATCH: 'ml:detect:*',
-            COUNT: 100,
-          });
-
-          cursor = String(nextCursor);
-
-          if (keys.length > 0) {
-            await this.redis.del(keys);
-            console.log(`   Deleted ${keys.length} inference cache entries`);
-          }
-        } while (cursor !== '0');
-      } catch (redisError) {
-        console.warn(
-          ` Failed to invalidate inference cache: ${
-            redisError instanceof Error ? redisError.message : redisError
-          }`,
-        );
-      }
     } catch (error) {
       console.warn(
         ` handleModelVersionChange error: ${error instanceof Error ? error.message : error}`,
