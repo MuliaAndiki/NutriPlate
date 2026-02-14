@@ -1,13 +1,28 @@
-import app from "./app";
-import { connectWithRetry } from "./config/databases";
-import "@/utils/redis";
+import app from './app';
+import { connectWithRetry } from './config/databases';
+import { env } from './config/env.config';
+import { connectRedis } from './utils/redis';
+import { initSocket } from './utils/socket';
+const port = Number.isFinite(env.PORT) ? env.PORT : 5000;
 
-connectWithRetry()
-  .then(() => {
-    const port = process.env.PORT ? Number(process.env.PORT) : 5000;
-    app.listen(port);
-    console.log(`🦊 Elysia running at http://localhost:${port}`);
-  })
-  .catch((err) => {
-    console.error("❌ Could not connect to database after retries:", err);
-  });
+app.onStart(() => {
+  console.log(`🦊 Elysia running at http://localhost:${port}`);
+});
+
+async function connected() {
+  try {
+    await connectWithRetry();
+    await connectRedis();
+    await initSocket();
+
+    app.listen({
+      port,
+      hostname: '0.0.0.0',
+    });
+  } catch (error) {
+    console.error('❌ Could not connect to database after retries:', error);
+    process.exit(1);
+  }
+}
+
+connected();

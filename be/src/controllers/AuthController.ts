@@ -1,20 +1,24 @@
-import bcryptjs from "bcryptjs";
-import jwt from "jsonwebtoken";
+import bcryptjs from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 
 import {
   PickRegister,
   PickLogin,
   JwtPayload,
-  PickForgotPasswordEmail,
+  PickForgotPassword,
   PickVerify,
   PickSendOtp,
   PickResetPassword,
-  PickActiveAccount,
-} from "@/types/auth.types";
-import prisma from "prisma/client";
-import { AppContext } from "@/contex/appContex";
-import { generateOtp } from "@/utils/generate-otp";
-import { sendOTPEmail } from "@/utils/mailer";
+} from '@/types/auth.types';
+import prisma from 'prisma/client';
+import { AppContext } from '@/contex/appContex';
+import { generateOtp } from '@/utils/generate-otp';
+import { sendOTPEmail } from '@/utils/mailer';
+import { OAuth2Client } from 'google-auth-library';
+import { env } from '@/config/env.config';
+import axios from 'axios';
+
+const googleClient = new OAuth2Client(env.GOOGLE_CLIENT_ID);
 
 class AuthController {
   public async register(c: AppContext) {
@@ -22,19 +26,16 @@ class AuthController {
       const auth = c.body as PickRegister;
       const { email, phone } = auth;
       if (!auth.fullName || !auth.password) {
-        return c.json?.(
-          { status: 400, message: "All fields are required" },
-          400
-        );
+        return c.json?.({ status: 400, message: 'All fields are required' }, 400);
       }
 
       if (!auth.email && !auth.phone) {
         return c.json?.(
           {
             status: 400,
-            message: "email of phone is required",
+            message: 'email of phone is required',
           },
-          400
+          400,
         );
       }
 
@@ -45,10 +46,7 @@ class AuthController {
       });
 
       if (isAlreadyRegistered) {
-        return c.json?.(
-          { status: 400, message: "Email already registered" },
-          400
-        );
+        return c.json?.({ status: 400, message: 'Email already registered' }, 400);
       }
 
       const hashedPassword = await bcryptjs.hash(auth.password, 10);
@@ -61,7 +59,7 @@ class AuthController {
           data: {
             fullName: auth.fullName,
             password: hashedPassword,
-            role: auth.role || "PARENT",
+            role: auth.role || 'PARENT',
             email: auth.email,
             phone: auth.phone,
             otp: otp,
@@ -73,10 +71,10 @@ class AuthController {
         return c.json?.(
           {
             status: 201,
-            message: "successfully registed use email",
+            message: 'successfully registed use email',
             data: newUsers,
           },
-          201
+          201,
         );
       }
       if (phone) {
@@ -85,28 +83,35 @@ class AuthController {
             fullName: auth.fullName,
             password: hashedPassword,
             phone: phone,
-            role: auth.role || "PARENT",
+            role: auth.role || 'PARENT',
             isVerify: true,
           },
         });
         return c.json?.(
           {
             status: 201,
-            message: "successfully registed use phone",
+            message: 'successfully registed use phone',
             data: newUsers,
           },
-          201
+          201,
         );
       }
+      return c.json?.(
+        {
+          status: 400,
+          message: 'Invalid register request',
+        },
+        400,
+      );
     } catch (error) {
       console.error(error);
       return c.json?.(
         {
           status: 500,
-          message: "Server Interval Error",
+          message: 'Server Interval Error',
           error: error instanceof Error ? error.message : error,
         },
-        500
+        500,
       );
     }
   }
@@ -120,9 +125,9 @@ class AuthController {
         return c.json?.(
           {
             status: 400,
-            message: "password is required",
+            message: 'password is required',
           },
-          400
+          400,
         );
       }
 
@@ -130,9 +135,9 @@ class AuthController {
         return c.json?.(
           {
             status: 400,
-            message: "email of phone is required",
+            message: 'email of phone is required',
           },
-          400
+          400,
         );
       }
 
@@ -146,46 +151,63 @@ class AuthController {
         return c.json?.(
           {
             status: 400,
-            message: "email & phone not registed",
+            message: 'email & phone not registed',
           },
-          400
+          400,
         );
       }
+
+      await prisma.userSession.deleteMany({
+        where: {
+          userId: selectLogin.id,
+        },
+      });
 
       if (!selectLogin.isVerify) {
         return c.json?.(
           {
             status: 400,
-            message: "account not verify",
+            message: 'account not verify',
           },
-          400
+          400,
         );
       }
 
-      const validatePassword = await bcryptjs.compare(
-        auth.password,
-        selectLogin.password!
-      );
+      const validatePassword = await bcryptjs.compare(auth.password, selectLogin.password!);
       if (!validatePassword) {
         return c.json?.(
           {
             status: 400,
-            message: "Email or Phone & Password Not Match",
+            message: 'Email or Phone & Password Not Match',
           },
-          400
+          400,
         );
       }
 
+      const ipAddress =
+        c.headers['x-forwarded-for']?.split(',')[0] ||
+        c.headers['x-real-ip'] ||
+        c.headers['cf-connecting-ip'] ||
+        'unknown';
+
+      const session = await prisma.userSession.create({
+        data: {
+          userId: selectLogin.id,
+          userAgent: c.headers['user-agent'] ?? 'unknown',
+          ipAddress: ipAddress,
+          expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
+        },
+      });
+
       const payload: JwtPayload = {
         id: selectLogin.id,
-        email: selectLogin.email!,
-        fullName: selectLogin.fullName,
+        sessionId: session.id,
         role: selectLogin.role,
       };
-      if (!process.env.JWT_SECRET) throw new Error("JWT_SECRET not set");
+      if (!process.env.JWT_SECRET) throw new Error('JWT_SECRET not set');
 
       const token = jwt.sign(payload, process.env.JWT_SECRET, {
-        expiresIn: "1d",
+        expiresIn: '1d',
       });
       await prisma.user.update({
         where: { id: selectLogin.id },
@@ -196,19 +218,19 @@ class AuthController {
         {
           status: 200,
           data: { ...selectLogin, token },
-          message: "Login successfully",
+          message: 'Login successfully',
         },
-        200
+        200,
       );
     } catch (error) {
       console.error(error);
       return c.json?.(
         {
           status: 500,
-          message: "Internal server error",
+          message: 'Internal server error',
           error: error instanceof Error ? error.message : error,
         },
-        500
+        500,
       );
     }
   }
@@ -218,52 +240,81 @@ class AuthController {
       const auth = c.user as JwtPayload;
 
       if (!auth?.id) {
-        return c.json?.({ status: 401, message: "Unauthorized" }, 401);
+        return c.json?.({ status: 401, message: 'Unauthorized' }, 401);
       }
 
       const user = await prisma.user.findUnique({
         where: { id: auth.id },
+        select: {
+          id: true,
+        },
       });
 
       if (!user) {
-        return c.json?.({ status: 404, message: "Account not found" }, 404);
+        return c.json?.({ status: 404, message: 'Account not found' }, 404);
+      }
+
+      const session = await prisma.userSession.findFirst({
+        where: {
+          userId: user.id,
+        },
+        select: {
+          id: true,
+        },
+      });
+
+      if (!session) {
+        return c.json?.(
+          {
+            status: 404,
+            message: 'session not found',
+          },
+          404,
+        );
       }
 
       await prisma.user.update({
-        where: { id: auth.id },
+        where: { id: user.id },
         data: { token: null },
+      });
+
+      await prisma.userSession.delete({
+        where: {
+          id: session.id,
+          userId: user.id,
+        },
       });
 
       return c.json?.(
         {
           status: 200,
-          message: "Account logged out successfully",
+          message: 'Account logged out successfully',
         },
-        200
+        200,
       );
     } catch (error) {
       console.error(error);
       return c.json?.(
         {
           status: 500,
-          message: "Internal server error",
+          message: 'Internal server error',
           error: error instanceof Error ? error.message : error,
         },
-        500
+        500,
       );
     }
   }
   public async forgotPassword(c: AppContext) {
     try {
-      const auth = c.body as PickForgotPasswordEmail;
+      const auth = c.body as PickForgotPassword;
       const { email, phone } = auth;
       if (!auth.email && !auth.phone) {
         return c.json?.(
           {
             status: 400,
-            message: "Email Required",
+            message: 'Email Required',
           },
-          400
+          400,
         );
       }
       const user = await prisma.user.findFirst({
@@ -276,9 +327,9 @@ class AuthController {
         return c.json?.(
           {
             status: 404,
-            message: "Email & Phone Not Found",
+            message: 'Email & Phone Not Found',
           },
-          404
+          404,
         );
       }
       let newForgot;
@@ -301,9 +352,9 @@ class AuthController {
           {
             status: 200,
             data: newForgot,
-            message: "successfully found email",
+            message: 'successfully found email',
           },
-          200
+          200,
         );
       }
       if (phone) {
@@ -315,10 +366,10 @@ class AuthController {
         return c.json?.(
           {
             status: 200,
-            message: "successfully found phone",
+            message: 'successfully found phone',
             data: newForgot,
           },
-          200
+          200,
         );
       }
     } catch (error) {
@@ -326,10 +377,10 @@ class AuthController {
       return c.json?.(
         {
           status: 500,
-          message: "Server Internal Error",
+          message: 'Server Internal Error',
           error: error instanceof Error ? error.message : error,
         },
-        500
+        500,
       );
     }
   }
@@ -340,9 +391,9 @@ class AuthController {
         return c.json?.(
           {
             status: 400,
-            message: "Email & Otp requaired",
+            message: 'Email & Otp requaired',
           },
-          400
+          400,
         );
       }
       const user = await prisma.user.findFirst({
@@ -356,9 +407,9 @@ class AuthController {
         return c.json?.(
           {
             status: 404,
-            message: "Email or OTP Not Found / OTP Failed",
+            message: 'Email or OTP Not Found / OTP Failed',
           },
-          404
+          404,
         );
       }
 
@@ -370,34 +421,34 @@ class AuthController {
       return c.json?.(
         {
           status: 200,
-          message: "Otp isVerify",
+          message: 'Otp isVerify',
           data: updateUser,
         },
-        200
+        200,
       );
     } catch (error) {
       console.error(error);
       return c.json?.(
         {
           status: 500,
-          message: "Server Internal Error",
+          message: 'Server Internal Error',
           error: error instanceof Error ? error.message : error,
         },
-        500
+        500,
       );
     }
   }
 
-  public async sendOtp(c: AppContext) {
+  public async resendOtp(c: AppContext) {
     try {
       const auth = c.body as PickSendOtp;
       if (!auth.email) {
         return c.json?.(
           {
             status: 400,
-            message: "Email is required",
+            message: 'Email is required',
           },
-          400
+          400,
         );
       }
       const user = await prisma.user.findFirstOrThrow({
@@ -410,9 +461,9 @@ class AuthController {
         return c.json?.(
           {
             status: 404,
-            message: "Account Not Found",
+            message: 'Account Not Found',
           },
-          404
+          404,
         );
       }
 
@@ -429,20 +480,20 @@ class AuthController {
       return c.json?.(
         {
           status: 200,
-          message: "Succes Update Otp",
+          message: 'Succes Update Otp',
           data: newOtp,
         },
-        200
+        200,
       );
     } catch (error) {
       console.error(error);
       return c.json?.(
         {
           status: 500,
-          message: "Server Internal Error",
+          message: 'Server Internal Error',
           error: error instanceof Error ? error.message : error,
         },
-        500
+        500,
       );
     }
   }
@@ -454,18 +505,18 @@ class AuthController {
         return c.json?.(
           {
             status: 404,
-            message: "NewPassword required ",
+            message: 'NewPassword required ',
           },
-          404
+          404,
         );
       }
       if (!auth.email && !auth.phone) {
         return c.json?.(
           {
             status: 400,
-            message: "email or phone is required",
+            message: 'email or phone is required',
           },
-          400
+          400,
         );
       }
 
@@ -478,18 +529,18 @@ class AuthController {
         return c.json?.(
           {
             status: 404,
-            message: "accound Not Found",
+            message: 'accound Not Found',
           },
-          404
+          404,
         );
       }
       if (!user.isVerify) {
         return c.json?.(
           {
             status: 400,
-            message: "accound not verify",
+            message: 'accound not verify',
           },
-          400
+          400,
         );
       }
 
@@ -503,20 +554,158 @@ class AuthController {
       return c.json?.(
         {
           status: 200,
-          message: "Succes Reset Password",
+          message: 'Succes Reset Password',
           data: newPassword,
         },
-        200
+        200,
       );
     } catch (error) {
       console.error(error);
       return c.json?.(
         {
           status: 500,
-          message: "Server Internal Error",
+          message: 'Server Internal Error',
           error: error instanceof Error ? error.message : error,
         },
-        500
+        500,
+      );
+    }
+  }
+  public async LoginWithGoogle(c: AppContext) {
+    try {
+      const { code } = c.body as { code: string };
+
+      if (!code) {
+        return c.json?.(
+          {
+            status: 400,
+            message: 'Google authorization code is required',
+          },
+          400,
+        );
+      }
+
+      const tokenResponse = await axios.post(
+        'https://oauth2.googleapis.com/token',
+        {
+          code,
+          client_id: process.env.GOOGLE_CLIENT_ID,
+          client_secret: process.env.GOOGLE_CLIENT_SECRET,
+          redirect_uri: 'postmessage',
+          grant_type: 'authorization_code',
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+
+      const { id_token } = tokenResponse.data;
+
+      if (!id_token) {
+        return c.json?.(
+          {
+            status: 400,
+            message: 'Failed to retrieve Google id_token',
+          },
+          400,
+        );
+      }
+
+      const ticket = await googleClient.verifyIdToken({
+        idToken: id_token,
+        audience: process.env.GOOGLE_CLIENT_ID,
+      });
+
+      const payload = ticket.getPayload();
+
+      if (!payload || !payload.email) {
+        return c.json?.(
+          {
+            status: 400,
+            message: 'Invalid Google token payload',
+          },
+          400,
+        );
+      }
+
+      const { email, name } = payload;
+
+      let user = await prisma.user.findUnique({
+        where: { email },
+      });
+
+      if (!user) {
+        user = await prisma.user.create({
+          data: {
+            email,
+            fullName: name ?? 'Google User',
+            role: 'PARENT',
+            isVerify: true,
+            password: null,
+          },
+        });
+      }
+
+      await prisma.userSession.deleteMany({
+        where: { userId: user.id },
+      });
+
+      const ipAddress =
+        c.headers['x-forwarded-for']?.split(',')[0] ||
+        c.headers['x-real-ip'] ||
+        c.headers['cf-connecting-ip'] ||
+        'unknown';
+
+      const session = await prisma.userSession.create({
+        data: {
+          userId: user.id,
+          userAgent: c.headers['user-agent'] ?? 'unknown',
+          ipAddress,
+          expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
+        },
+      });
+
+      if (!process.env.JWT_SECRET) {
+        throw new Error('JWT_SECRET not set');
+      }
+
+      const jwtPayload: JwtPayload = {
+        id: user.id,
+        sessionId: session.id,
+        role: user.role,
+      };
+
+      const token = jwt.sign(jwtPayload, process.env.JWT_SECRET, {
+        expiresIn: '1d',
+      });
+
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { token },
+      });
+
+      return c.json?.(
+        {
+          status: 200,
+          message: 'Login with Google successfully',
+          data: {
+            ...user,
+            token,
+          },
+        },
+        200,
+      );
+    } catch (error) {
+      console.error(error);
+      return c.json?.(
+        {
+          status: 500,
+          message: 'Server Internal Error',
+          error: error instanceof Error ? error.message : error,
+        },
+        500,
       );
     }
   }

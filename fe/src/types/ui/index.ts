@@ -1,4 +1,4 @@
-type ToastType = 'success' | 'error' | 'warning' | 'info' | 'question';
+type ToastType = "success" | "error" | "warning" | "info" | "question";
 export interface ModalProps {
   title: string;
   icon: ToastType;
@@ -21,3 +21,23 @@ export interface AlertContexType {
   modal: (p: ModalProps) => void;
   confirm: (p: ModalProps) => Promise<boolean>;
 }
+
+export interface NagivationType {
+  name: string;
+  icon: any;
+  href: string;
+}
+
+export interface PopUpProps {
+  isOpen: boolean;
+  children: React.ReactNode;
+  onClose: () => void;
+  className?: string;
+}
+
+export type PopUpNavigate =
+  | "fProgram"
+  | "fRegisterKader"
+  | "fTask"
+  | "fuTask"
+  | null;

@@ -1,4 +1,5 @@
 export interface ProfileChild {
+  [key: string]: unknown;
   birthWeightKg?: number;
   birthHeightCm?: number;
   pregnancyAgeWeeks?: number;
@@ -6,8 +7,12 @@ export interface ProfileChild {
   chronicConditions?: string[];
   feedingType?: string;
   activityLevel?: string;
-  baselineWeightKg?: number;
-  baselineHeightCm?: number;
-  baselineBmi?: number;
-  baselineZscore?: number;
+}
+
+export interface MetricsRespone {
+  [key: string]: unknown;
+  precision: Number;
+  recall: Number;
+  mAP50: Number;
+  mAP50_95: Number;
 }

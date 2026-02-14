@@ -1,11 +1,11 @@
-import { AppContext } from "@/contex/appContex";
-import { AppFile } from "@/types/appFile";
+import { AppContext } from '@/contex/appContex';
+import { AppFile } from '@/types/appFile';
 export const formDataMiddleware = () => ({
   beforeHandle: async (c: AppContext) => {
-    const contentType = c.request.headers.get("content-type") || "";
+    const contentType = c.request.headers.get('content-type') || '';
 
     try {
-      if (contentType.includes("application/json")) {
+      if (contentType.includes('application/json')) {
         const rawBody = await c.request.text();
         const jsonBody = JSON.parse(rawBody);
 
@@ -15,7 +15,7 @@ export const formDataMiddleware = () => ({
         return;
       }
 
-      if (contentType.includes("multipart/form-data")) {
+      if (contentType.includes('multipart/form-data')) {
         const formData = await c.request.formData();
         const body: Record<string, any> = {};
         const files: Record<string, AppFile[]> = {};
@@ -26,7 +26,7 @@ export const formDataMiddleware = () => ({
             const fileData: AppFile = {
               fieldname: key,
               originalname: value.name,
-              encoding: "7bit",
+              encoding: '7bit',
               mimetype: value.type,
               buffer: buffer,
               size: value.size,
@@ -48,7 +48,7 @@ export const formDataMiddleware = () => ({
       (c as any).body = {};
       c.files = {};
     } catch (error) {
-      console.error("❌ Error in formDataMiddleware:", error);
+      console.error('❌ Error in formDataMiddleware:', error);
 
       (c as any).body = (c as any).body || {};
       c.files = c.files || {};

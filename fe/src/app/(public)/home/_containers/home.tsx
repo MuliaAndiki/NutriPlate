@@ -1,23 +1,40 @@
 "use client";
-import { themeConfig } from "@/configs/theme.config";
-import NavLayout from "@/core/layouts/nav.layout";
-import { useTheme } from "@/core/providers/theme.provider";
+
+import SplashHeroSection from "@/components/section/public/SplashHero";
+import StepTwo from "@/components/section/public/SplashTwo";
+import StepThree from "@/components/section/public/SplashTree";
+import StepFour from "@/components/section/public/SplashFour";
+import { useEffect, useState } from "react";
+import StepFinal from "@/components/section/public/SplashFinal";
 
 export default function ContainerHome() {
-  const { theme } = useTheme();
+  const [showSplash, setShowSplash] = useState(true);
+  const [step, setStep] = useState<"sp1" | "sp2" | "sp3" | "sp4" | "final">(
+    "sp1",
+  );
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowSplash(false);
+    }, 4000);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
-    <NavLayout>
-      <main
-        className={`container  mx-auto bg-[${themeConfig[theme].primary.background}]`}
-      >
-        <div
-          data-aos="fade-up"
-          className="flex flex-col items-center justify-center h-screen"
-        >
-          <h1 className="text-4xl font-bold">Home</h1>
-        </div>
-      </main>
-    </NavLayout>
+    <main className="w-full min-h-screen overflow-x-hidden">
+      {step === "sp1" && (
+        <SplashHeroSection
+          showSplash={showSplash}
+          step={step}
+          setStep={setStep}
+        />
+      )}
+
+      {step === "sp2" && <StepTwo setStep={setStep} />}
+      {step === "sp3" && <StepThree setStep={setStep} />}
+      {step === "sp4" && <StepFour setStep={setStep} />}
+      {step === "final" && <StepFinal />}
+    </main>
   );
 }

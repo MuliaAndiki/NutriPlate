@@ -1,4 +1,4 @@
-import { RoleType } from "@prisma/client";
+import { RoleType } from '@prisma/client';
 
 export interface Auth {
   id: string;
@@ -8,7 +8,7 @@ export interface Auth {
   phone: string;
   token?: string;
   role: RoleType;
-  photoUrl: string;
+  avaUrl: string;
   createdAt: Date;
   updatedAt: Date;
   otp?: string;
@@ -16,25 +16,18 @@ export interface Auth {
   isVerify?: boolean;
   activateToken?: string;
   activateExp?: string;
+  sessionId: string;
 }
 
-export type JwtPayload = Pick<
-  Auth,
-  "id" | "email" | "role" | "fullName" | "token"
->;
-export type PickRegister = Pick<
-  Auth,
-  "email" | "fullName" | "password" | "role" | "phone"
->;
-export type PickLogin = Pick<Auth, "email" | "password" | "phone">;
-export type PickID = Pick<Auth, "id">;
-export type PickForgotPasswordEmail = Pick<Auth, "email" | "phone">;
-export type PickVerify = Pick<Auth, "email" | "otp">;
-export type PickSendOtp = Pick<Auth, "email">;
-export type PickResetPassword = Pick<Auth, "email" | "password" | "phone">;
-export type PickUpdateProfile = Pick<
-  Auth,
-  "email" | "fullName" | "photoUrl" | "phone"
->;
-export type PickUpdatePassword = Pick<Auth, "password">;
-export type PickActiveAccount = Pick<Auth, "activateToken" | "password">;
+export type JwtPayload = Pick<Auth, 'id' | 'role' | 'sessionId'>;
+export type PickRegister = Pick<Auth, 'email' | 'fullName' | 'password' | 'role' | 'phone'>;
+export type PickLogin = Pick<Auth, 'email' | 'password' | 'phone' | 'id'>;
+export type PickID = Pick<Auth, 'id'>;
+export type PickForgotPassword = Pick<Auth, 'email' | 'phone'>;
+export type PickVerify = Pick<Auth, 'email' | 'otp'>;
+export type PickSendOtp = Pick<Auth, 'email'>;
+export type PickResetPassword = Pick<Auth, 'email' | 'password' | 'phone'>;
+export type PickUpdateProfile = Pick<Auth, 'email' | 'fullName' | 'avaUrl' | 'phone'>;
+export type PickUpdatePassword = Pick<Auth, 'password'>;
+export type PickActiveAccount = Pick<Auth, 'activateToken' | 'password'>;
+export type PickLoginAllReady = Pick<Auth, 'token'>;

@@ -42,97 +42,105 @@ interface ThemeConfig {
 
 export const themeConfig: ThemeConfig = {
   light: {
-    background: '#F5EAFF',
-    foreground: '#911DEC',
+    background: "#F4FBF9",
+    foreground: "#0F172A",
+
     card: {
-      background: '#FFFFFF',
-      foreground: '#911DEC',
+      background: "#FFFFFF",
+      foreground: "#0F172A",
     },
     popover: {
-      background: '#FFFFFF',
-      foreground: '#911DEC',
+      background: "#FFFFFF",
+      foreground: "#0F172A",
     },
     primary: {
-      background: '#911DEC',
-      foreground: '#F5EAFF',
+      background: "#00AF91",
+      foreground: "#FFFFFF",
     },
+
     secondary: {
-      background: '#F5EAFF',
-      foreground: '#911DEC',
+      background: "#E6F7F3",
+      foreground: "#007A66",
     },
+
     muted: {
-      background: '#F5EAFF',
-      foreground: 'rgba(145, 29, 236, 0.6)',
+      background: "#F1F5F9",
+      foreground: "rgba(15, 23, 42, 0.6)",
     },
+
     accent: {
-      background: '#F5EAFF',
-      foreground: '#911DEC',
+      background: "#D1FAF3",
+      foreground: "#007A66",
     },
+
     destructive: {
-      background: '#FA0C00',
-      foreground: '#FFFFFF',
+      background: "#DC2626",
+      foreground: "#FFFFFF",
     },
+
     warning: {
-      background: '#FECA13',
-      foreground: '#FECA1322',
+      background: "#FACC15",
+      foreground: "#854D0E",
     },
     success: {
-      background: '#28DE25',
-      foreground: '#28DE2522',
+      background: "#22C55E",
+      foreground: "#14532D",
     },
+
     info: {
-      background: '#04B4FC',
-      foreground: '#04B4FC22',
+      background: "#0EA5E9",
+      foreground: "#FFFFFF",
     },
-    border: 'rgba(145, 29, 236, 0.2)',
-    input: 'rgba(145, 29, 236, 0.2)',
-    ring: 'rgba(145, 29, 236, 0.3)',
+
+    border: "rgba(0, 175, 145, 0.25)",
+    input: "rgba(0, 175, 145, 0.25)",
+    ring: "rgba(0, 175, 145, 0.4)",
   },
   dark: {
-    background: '#1A1A1A',
-    foreground: '#F5EAFF',
+    background: "#1A1A1A",
+    foreground: "#F5EAFF",
     card: {
-      background: '#2A2A2A',
-      foreground: '#F5EAFF',
+      background: "#2A2A2A",
+      foreground: "#F5EAFF",
     },
     popover: {
-      background: '#2A2A2A',
-      foreground: '#F5EAFF',
+      background: "#2A2A2A",
+      foreground: "#F5EAFF",
     },
     primary: {
-      background: '#911DEC',
-      foreground: '#F5EAFF',
+      background: "#911DEC",
+      foreground: "#F5EAFF",
     },
     secondary: {
-      background: '#2A2A2A',
-      foreground: '#F5EAFF',
+      background: "#2A2A2A",
+      foreground: "#F5EAFF",
     },
     muted: {
-      background: '#2A2A2A',
-      foreground: 'rgba(245, 234, 255, 0.6)',
+      background: "#2A2A2A",
+      foreground: "rgba(245, 234, 255, 0.6)",
     },
     accent: {
-      background: '#2A2A2A',
-      foreground: '#F5EAFF',
+      background: "#2A2A2A",
+      foreground: "#F5EAFF",
     },
     destructive: {
-      background: '#FA0C00',
-      foreground: '#F5EAFF',
+      background: "#FA0C00",
+      foreground: "#F5EAFF",
     },
     warning: {
-      background: '#FECA13',
-      foreground: '#FECA1322',
+      background: "#FECA13",
+      foreground: "#FECA1322",
     },
     success: {
-      background: '#28DE25',
-      foreground: '#28DE2522',
+      background: "#28DE25",
+      foreground: "#28DE2522",
     },
     info: {
-      background: '#04B4FC',
-      foreground: '#04B4FC22',
+      background: "#04B4FC",
+      foreground: "#04B4FC22",
     },
-    border: 'rgba(245, 234, 255, 0.1)',
-    input: 'rgba(245, 234, 255, 0.15)',
-    ring: 'rgba(245, 234, 255, 0.3)',
+    border: "rgba(245, 234, 255, 0.1)",
+    input: "rgba(245, 234, 255, 0.15)",
+    ring: "rgba(245, 234, 255, 0.3)",
   },
 };

@@ -1,12 +1,19 @@
-import { NutritionType } from "@prisma/client";
+import { NutritionStatus } from '@prisma/client';
 
 export interface IMeasurements {
   id: string;
   childID: string;
-  measurement_date: string;
-  weight_kg: number;
-  eight_cm: number;
-  head_circumference_cm: number;
-  nutrition_status: NutritionType;
+  measurementDate: string;
+  weightKg: number;
+  heightCm: number;
+  headCircumferenceCm: number;
+  nutritionStatus: NutritionStatus;
   note: string;
 }
+
+export type PickCreateMeasurements = Pick<
+  IMeasurements,
+  'headCircumferenceCm' | 'heightCm' | 'measurementDate' | 'note' | 'nutritionStatus' | 'weightKg'
+>;
+
+export type PickMeasurementsChildID = Pick<IMeasurements, 'childID'> & { id?: string };

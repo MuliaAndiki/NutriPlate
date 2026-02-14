@@ -1,48 +1,52 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { useSelector } from 'react-redux';
-import type { RootState } from '@/stores/store';
-import { usePathname, useRouter } from 'next/navigation';
-import { getCookie } from 'cookies-next';
-import { useAppDispatch } from '@/hooks/dispatch/dispatch';
-import { setCurrentUser } from '@/stores/authSlice/authSlice';
-import { APP_SESSION_COOKIE_KEY } from '@/configs/cookies.config';
+import { getCookie } from "cookies-next";
+import { usePathname, useRouter } from "next/navigation";
+import React from "react";
+import { useEffect } from "react";
+
+import { APP_SESSION_COOKIE_KEY } from "@/configs/cookies.config";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
-  const currentUser = useSelector((state: RootState) => state.auth.currentUser);
-  const dispatch = useAppDispatch();
 
-  React.useEffect(() => {
-    if (!currentUser?.user?.token) {
-      const token = getCookie(APP_SESSION_COOKIE_KEY);
-      if (token) {
-        dispatch(setCurrentUser({ user: { token } } as any));
-      }
-    }
-  }, [currentUser, dispatch]);
-
-  React.useEffect(() => {
+  useEffect(() => {
+    const currentToken = getCookie(APP_SESSION_COOKIE_KEY);
+    const baseRole = getCookie("user_role");
     const isAuthPage =
-      pathname?.startsWith('/login') ||
-      pathname?.startsWith('/register') ||
-      pathname?.startsWith('/home');
+      pathname?.startsWith("/login") ||
+      pathname?.startsWith("/register") ||
+      pathname?.startsWith("/home") ||
+      pathname.startsWith("/verify-otp") ||
+      pathname?.startsWith("/forgot-password") ||
+      pathname.startsWith("/verify-password") ||
+      pathname.startsWith("/reset-password");
 
-    const isAuthenticated = Boolean(currentUser?.user?.token);
+    const isAuthenticated = Boolean(currentToken);
 
     if (!isAuthenticated && !isAuthPage) {
-      router.replace('/login');
+      router.replace("/home");
+
       return;
     }
 
     if (isAuthenticated && isAuthPage) {
-      // setUp
-      // router.replace('/home');
-      return;
+      switch (baseRole) {
+        case "PARENT":
+          router.replace("/parent/home");
+          break;
+        case "KADER":
+          router.replace("/kader/home");
+          break;
+        case "POSYANDU":
+          router.replace("/posyandu/home");
+          break;
+        case "ADMIN":
+          router.replace("/admin/home");
+      }
     }
-  }, [pathname, currentUser, router]);
+  }, [pathname, router]);
 
   return <>{children}</>;
 }

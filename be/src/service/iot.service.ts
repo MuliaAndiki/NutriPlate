@@ -1,0 +1,175 @@
+import { AxiosService } from '@/utils/axios';
+import { cleanNaNValues } from '@/utils/cleanValues';
+
+class IotService {
+  private IotGate;
+  private isAxiosError;
+  constructor() {
+    const { IotHit, isAxiosError } = AxiosService();
+    this.IotGate = IotHit;
+    this.isAxiosError = isAxiosError;
+  }
+  public async RebootIot() {
+    try {
+      const res = await this.IotGate.post('/api/reset');
+      let result = res.data;
+      if (typeof result === 'string') {
+        result = JSON.parse(result);
+      }
+
+      const cleanRespone = cleanNaNValues(result);
+      return cleanRespone;
+    } catch (error) {
+      if (this.isAxiosError(error)) {
+        throw new Error(error.code || error.message || 'Iot Not Working');
+      }
+      throw error;
+    }
+  }
+  public async getStatusIot() {
+    try {
+      const res = await this.IotGate.get('/api/status', {
+        timeout: 3000,
+      });
+
+      let result = res.data;
+      if (typeof result === 'string') {
+        result = JSON.parse(result);
+      }
+
+      return cleanNaNValues(result);
+    } catch (error) {
+      return null;
+    }
+  }
+  public async StartScale() {
+    try {
+      const res = await this.IotGate.post('/api/start-weighing');
+      let result = res.data;
+      if (typeof result === 'string') {
+        result = JSON.parse(result);
+      }
+      const cleanRespone = cleanNaNValues(result);
+      return cleanRespone;
+    } catch (error) {
+      if (this.isAxiosError(error)) {
+        throw new Error(error.code || error.message || 'Iot Not Working');
+      }
+      throw error;
+    }
+  }
+  public async TareModeScale() {
+    try {
+      const res = await this.IotGate.post('/api/tare');
+      let result = res.data;
+      if (typeof result === 'string') {
+        result = JSON.parse(result);
+      }
+      const cleanRespone = cleanNaNValues(result);
+      return cleanRespone;
+    } catch (error) {
+      if (this.isAxiosError(error)) {
+        throw new Error(error.code || error.message || 'Iot Not Working');
+      }
+      throw error;
+    }
+  }
+  public async HoldWeight() {
+    try {
+      const res = await this.IotGate.post('/api/hold-weight');
+      let result = res.data;
+      if (typeof result === 'string') {
+        result = JSON.parse(result);
+      }
+      const cleanRespone = cleanNaNValues(result);
+      return cleanRespone;
+    } catch (error) {
+      if (this.isAxiosError(error)) {
+        throw new Error(error.code || error.message || 'Iot Not Working');
+      }
+      throw error;
+    }
+  }
+  public async GetWeight() {
+    try {
+      const res = await this.IotGate.get('/api/weight');
+      let result = res.data;
+      if (typeof result === 'string') {
+        result = JSON.parse(result);
+      }
+      const cleanRespone = cleanNaNValues(result);
+      return cleanRespone;
+    } catch (error) {
+      if (this.isAxiosError(error)) {
+        throw new Error(error.code || error.message || 'Iot Not Working');
+      }
+      throw error;
+    }
+  }
+  public async CancelStart() {
+    try {
+      const res = await this.IotGate.post('/api/cancel-weighing');
+      let result = res.data;
+      if (typeof result === 'string') {
+        result = JSON.parse(result);
+      }
+      const cleanRespone = cleanNaNValues(result);
+      return cleanRespone;
+    } catch (error) {
+      if (this.isAxiosError(error)) {
+        throw new Error(error.code || error.message || 'Iot Not Working');
+      }
+      throw error;
+    }
+  }
+  public async RejectWeight() {
+    try {
+      const res = await this.IotGate.post('/api/reject-weight');
+      let result = res.data;
+      if (typeof result === 'string') {
+        result = JSON.parse(result);
+      }
+      const cleanRespone = cleanNaNValues(result);
+      return cleanRespone;
+    } catch (error) {
+      if (this.isAxiosError(error)) {
+        throw new Error(error.code || error.message || 'Iot Not Working');
+      }
+      throw error;
+    }
+  }
+  public async ConfirmWeight() {
+    try {
+      const res = await this.IotGate.post('/api/confirm-weight');
+      let result = res.data;
+      if (typeof result === 'string') {
+        result = JSON.parse(result);
+      }
+      const cleanRespone = cleanNaNValues(result);
+      return cleanRespone;
+    } catch (error) {
+      if (this.isAxiosError(error)) {
+        throw new Error(error.code || error.message || 'Iot Not Working');
+      }
+      throw error;
+    }
+  }
+  public async resetPassword() {
+    try {
+      const res = await this.IotGate.post('/api/reset-password');
+      let result = res.data;
+      if (typeof result === 'string') {
+        result = JSON.parse(result);
+      }
+      const cleanRespone = cleanNaNValues(result);
+      return cleanRespone;
+    } catch (error) {
+      if (this.isAxiosError(error)) {
+        throw new Error(error.code || error.message || 'Iot Not Working');
+      }
+      throw error;
+    }
+  }
+}
+
+export default new IotService();

@@ -12,17 +12,10 @@ export interface IPosyandu {
   expOtps: string;
 }
 
-export type PickPosyanduID = Pick<IPosyandu, "id">;
+export type PickPosyanduID = Pick<IPosyandu, 'id'>;
 export type PickCreatePosyandu = Pick<
   IPosyandu,
-  | "name"
-  | "district"
-  | "phone"
-  | "avaUrl"
-  | "scheduleDay"
-  | "village"
-  | "subDistrict"
-  | "email"
+  'name' | 'district' | 'phone' | 'avaUrl' | 'scheduleDay' | 'village' | 'subDistrict' | 'email'
 >;
 
-export type PickOtpPosyanduVerify = Pick<IPosyandu, "email" | "otp">;
+export type PickOtpPosyanduVerify = Pick<IPosyandu, 'email' | 'otp'>;

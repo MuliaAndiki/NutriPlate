@@ -1,4 +1,4 @@
-import { IotStatus } from "@prisma/client";
+import { IotStatus } from '@prisma/client';
 
 export interface IIot {
   id: string;

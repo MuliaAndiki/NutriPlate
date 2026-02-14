@@ -1,0 +1,172 @@
+import { Icon } from "@iconify/react/dist/iconify.js";
+import Link from "next/link";
+import HistoryFood from "@/components/card/food/history-food";
+import IotStatus from "@/components/card/iot/iot-status";
+import { Button } from "@/components/ui/button";
+import PopUp from "@/components/ui/pop-up";
+import { ButtonWrapper } from "@/components/wrapper/ButtonWrapper";
+import IotControllerCard from "@/components/card/iot/iot-controller";
+import {
+  ChildRespone,
+  FoodIntakeResponse,
+  GetStatusIotRespone,
+  GetWeightIorRespone,
+} from "@/types/res";
+import AsupanGiziSectionSkeleton from "@/components/skeleton/private/parent/asupan-gizi/asupan-gizi-section-skeleton";
+import EmptyCard from "@/components/fallback/empty-card";
+
+interface AsupanGiziSectionProps {
+  service: {
+    query: {
+      historyFood: FoodIntakeResponse[];
+      isLoading: boolean;
+      iot: GetStatusIotRespone | null;
+      weightIot: GetWeightIorRespone | null;
+      child: ChildRespone[];
+    };
+    mutation: {
+      onStartScale: () => void;
+      onTareScale: () => void;
+      isPending: boolean;
+      onCancelStart: () => void;
+      onHoldWeight: () => void;
+      onRejectWeight: () => void;
+      onConfirmWeight: () => void;
+    };
+  };
+  actions: {
+    handleSelectTaskScan: () => void;
+    handleSelectManualScan: () => void;
+    onConnectIot: () => void;
+  };
+  state: {
+    showFlowPopUp: boolean;
+    setShowFlowPopUp: React.Dispatch<React.SetStateAction<boolean>>;
+    isActive: boolean;
+    holdingWeight: number;
+    setSelectChildId: React.Dispatch<React.SetStateAction<string>>;
+    selectChildId: string;
+    isLoadingConnect: boolean;
+  };
+}
+const AsupanGiziHeroSection: React.FC<AsupanGiziSectionProps> = ({
+  service,
+  actions,
+  state,
+}) => {
+  if (service.query.isLoading) {
+    return <AsupanGiziSectionSkeleton />;
+  }
+  return (
+    <div className="w-full min-h-screen flex justify-start items-center p-2 flex-col space-y-4">
+      <div className="w-full">
+        <h1 className="text-2xl font-extrabold text-start">Asupan Gizi Anak</h1>
+      </div>
+      <div className="mt-2 w-full">
+        <h1 className="text-lg font-semibold">
+          Timbang dan foto makanan si kecil untuk mengetahui kandungan gizinya
+        </h1>
+      </div>
+      <div className="w-full">
+        <IotStatus res={service.query.iot} key={service.query.iot?.id} />
+      </div>
+      <div className="w-full flex items-center">
+        <Icon
+          icon="fluent:iot-16-regular"
+          width="36"
+          height="36"
+          className="text-primary"
+        />
+        <h1 className="text-2xl font-bold">Kontrol Timbangan</h1>
+      </div>
+      <div className="w-full">
+        <IotControllerCard
+          isPending={service.mutation.isPending}
+          onStartScale={service.mutation.onStartScale}
+          onTareScale={service.mutation.onTareScale}
+          weight={service.query.weightIot!}
+          isActive={state.isActive}
+          onCancelStart={service.mutation.onCancelStart}
+          onHoldWeight={service.mutation.onHoldWeight}
+          holdingWeight={state.holdingWeight}
+          onRejectWeight={service.mutation.onRejectWeight}
+          onConfirmWeight={service.mutation.onConfirmWeight}
+          iotId={service.query.iot?.id ?? null}
+          onConnectIot={actions.onConnectIot}
+          child={service.query.child}
+          setSelectChildId={state.setSelectChildId}
+          selectedChildId={state.selectChildId}
+          isLoadingConnect={state.isLoadingConnect}
+        />
+      </div>
+
+      <div className="w-full flex items-center justify-between">
+        <div className="w-full flex space-x-2 items-center">
+          <Icon
+            icon="ic:sharp-history"
+            width="24"
+            height="24"
+            className="text-primary scale-110"
+          />
+          <h1 className="text-2xl font-bold">Riwayat Asupan Gizi</h1>
+        </div>
+        {service.query.historyFood.length > 5 && (
+          <Link href={"/parent/asupan-gizi/riwayat-asupan-gizi"}>
+            <Button variant={"btn"} className="font-light">
+              Lihat Semua
+            </Button>
+          </Link>
+        )}
+      </div>
+
+      <div className="w-full space-y-3 ">
+        {service.query.historyFood.length === 0 ? (
+          <EmptyCard message="Belum ada riwayat asupan gizi" />
+        ) : (
+          service.query.historyFood
+            .slice(0, 4)
+            .map((items) => <HistoryFood res={items} key={items.id} />)
+        )}
+      </div>
+
+      <PopUp
+        isOpen={state.showFlowPopUp}
+        onClose={() => state.setShowFlowPopUp(false)}
+      >
+        <div className="w-full space-y-4">
+          <h2 className="text-2xl font-bold text-center">Pilih Mode Scan</h2>
+          <p className="text-center text-muted-foreground">
+            Pilih cara Anda ingin scan makanan
+          </p>
+
+          <div className="w-full space-y-3 pt-4">
+            <ButtonWrapper
+              className="w-full h-auto p-4 flex flex-col items-center"
+              onClick={actions.handleSelectManualScan}
+            >
+              <p className="font-semibold text-lg"> Scan Manual</p>
+            </ButtonWrapper>
+
+            <ButtonWrapper
+              variant="outline"
+              className="w-full h-auto p-4 flex flex-col items-center"
+              onClick={actions.handleSelectTaskScan}
+            >
+              <p className="font-semibold text-lg"> Selesaikan Task</p>
+            </ButtonWrapper>
+          </div>
+
+          <ButtonWrapper
+            variant="outline"
+            className="w-full"
+            onClick={() => state.setShowFlowPopUp(false)}
+          >
+            Batal
+          </ButtonWrapper>
+        </div>
+      </PopUp>
+    </div>
+  );
+};
+
+export default AsupanGiziHeroSection;

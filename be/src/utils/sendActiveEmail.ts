@@ -1,10 +1,7 @@
-import nodemailer from "nodemailer";
-import { env } from "@/config/env.config";
+import nodemailer from 'nodemailer';
+import { env } from '@/config/env.config';
 
-export const sendActivationEmail = async (
-  to: string,
-  activationLink: string
-) => {
+export const sendActivationEmail = async (to: string, activationLink: string) => {
   const transporter = nodemailer.createTransport({
     host: env.SMTP_HOST,
     port: env.SMTP_PORT,
@@ -18,7 +15,7 @@ export const sendActivationEmail = async (
   await transporter.sendMail({
     from: `"NutriPlate" <${env.SMTP_USER}>`,
     to,
-    subject: "Aktivasi Akun Posyandu Anda",
+    subject: 'Aktivasi Akun Posyandu Anda',
     text: `Aktivasi akun Anda dengan membuka link berikut: ${activationLink}`,
     html: `
       <div style="font-family:Arial,sans-serif;line-height:1.6;">

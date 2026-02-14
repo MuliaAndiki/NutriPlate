@@ -1,0 +1,23 @@
+name: Deploy Backend to Coolify
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "be/**"
+      - "api/**"
+      - "Dockerfile"
+      - "docker-compose.yaml"
+      - "package.json"
+      - "turbo.json"
+
+jobs:
+  deploy:
+    name: Trigger Coolify Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Call Coolify Webhook
+        # run: |
+        #   curl -X POST "${{ secrets.COOLIFY_WEBHOOK_URL }}"

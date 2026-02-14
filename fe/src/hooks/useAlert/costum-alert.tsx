@@ -1,16 +1,17 @@
-'use client';
-import { toast } from 'react-hot-toast';
-import { createContext, useContext, useState } from 'react';
-import { AlertContexType } from '@/types/ui';
-import { ModalProps } from '@/types/ui';
-import { ToastProps } from '@/types/ui';
-import { AlertModal } from '@/core/components/alert-modal';
-import { ToastEffect } from '@/core/components/alert-toast';
+"use client";
+import { createContext, useContext, useState } from "react";
+import { toast } from "react-hot-toast";
+
+import { AlertModal } from "@/core/components/alert-modal";
+import { ToastEffect } from "@/core/components/alert-toast";
+import { AlertContexType } from "@/types/ui";
+import { ModalProps } from "@/types/ui";
+import { ToastProps } from "@/types/ui";
 const AlertContex = createContext<AlertContexType | undefined>(undefined);
 
 export const useAlert = (): AlertContexType => {
   const contex = useContext(AlertContex);
-  if (!contex) throw new Error('useAlert must be used within an AlertProvider');
+  if (!contex) throw new Error("useAlert must be used within an AlertProvider");
   return contex;
 };
 export const AlertProvinder = ({ children }: { children: React.ReactNode }) => {
@@ -19,7 +20,13 @@ export const AlertProvinder = ({ children }: { children: React.ReactNode }) => {
 
   const toastAlert = ({ message, title, icon, onVoid }: ToastProps) => {
     toast.custom((t) => (
-      <ToastEffect t={t} title={title} message={message} icon={icon} onVoid={onVoid} />
+      <ToastEffect
+        t={t}
+        title={title}
+        message={message}
+        icon={icon}
+        onVoid={onVoid}
+      />
     ));
   };
 
@@ -46,7 +53,9 @@ export const AlertProvinder = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <AlertContex.Provider value={{ toast: toastAlert, modal: showModal, confirm }}>
+    <AlertContex.Provider
+      value={{ toast: toastAlert, modal: showModal, confirm }}
+    >
       {children}
       {modal && (
         <AlertModal
@@ -55,10 +64,10 @@ export const AlertProvinder = ({ children }: { children: React.ReactNode }) => {
           title={modal.title}
           deskripsi={modal.deskripsi}
           icon={modal.icon}
-          confirmButtonText={modal.confirmButtonText || 'OK'}
-          confirmButtonColor={modal.confirmButtonColor || 'bg-primary'}
+          confirmButtonText={modal.confirmButtonText || "OK"}
+          confirmButtonColor={modal.confirmButtonColor || "bg-primary"}
           onConfirm={handleConfirm}
-          cancelText={'Batal'}
+          cancelText={"Batal"}
           onCancel={handleCancel}
         />
       )}
