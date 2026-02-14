@@ -95,9 +95,7 @@ const StatusChildInProgramSection: React.FC<
               <div
                 key={item.id}
                 className="w-full space-y-2"
-                onClick={() =>
-                  state.onSelect(isSelected ? null : item.id)
-                }
+                onClick={() => state.onSelect(isSelected ? null : item.id)}
               >
                 <ProgramStatusCard res={item} />
                 {isSelected && item.status === "pending" && (
@@ -113,7 +111,7 @@ const StatusChildInProgramSection: React.FC<
                       Terima
                     </ButtonWrapper>
                     <ButtonWrapper
-                      className="w-full"
+                      className="w-full text-background"
                       variant={"destructive"}
                       onClick={(e) => {
                         e.stopPropagation();

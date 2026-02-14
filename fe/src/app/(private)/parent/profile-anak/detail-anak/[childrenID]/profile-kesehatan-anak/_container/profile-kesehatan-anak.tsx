@@ -77,26 +77,25 @@ const ProfileKesehatanAnakContainer = () => {
   }, [childDataByID.id]);
 
   return (
-    <SidebarLayout>
-      <main className="w-full min-h-screen overflow-x-hidden">
-        <ProfileKesehatanAnakHeroSection
-          namespace={{
-            router: nameSpace.router,
-          }}
-          state={{
-            formUpdateProfileChild: formUpdateProfileChild,
-            setFormUpdateProfileChild: setFormUpdateProfileChild,
-            isEdit: isEdit,
-            setIsEdit: setIsEdit,
-          }}
-          service={{
-            mutation: {
-              onUpdate: () => handleUpdateProfileChild(),
-            },
-          }}
-        />
-      </main>
-    </SidebarLayout>
+    <main className="w-full min-h-screen overflow-x-hidden">
+      <ProfileKesehatanAnakHeroSection
+        namespace={{
+          router: nameSpace.router,
+        }}
+        state={{
+          formUpdateProfileChild: formUpdateProfileChild,
+          setFormUpdateProfileChild: setFormUpdateProfileChild,
+          isEdit: isEdit,
+          setIsEdit: setIsEdit,
+        }}
+        service={{
+          mutation: {
+            onUpdate: () => handleUpdateProfileChild(),
+            isPending: updateProfile.isPending,
+          },
+        }}
+      />
+    </main>
   );
 };
 

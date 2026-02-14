@@ -17,6 +17,7 @@ import {
 import { FormUpdateChild } from "@/types/form/child.form";
 import { AlertContexType } from "@/types/ui";
 import UploadsTrigger from "@/utils/uploadTrigger";
+import { Spinner } from "@/components/ui/spinner";
 interface DataAnakHeroSectionProps {
   namespace: {
     router: AppRouterInstance;
@@ -38,6 +39,7 @@ interface DataAnakHeroSectionProps {
       onChangeAva: (e: any) => void;
       onRemovePreview: () => void;
       onDelete: (id: string) => void;
+      isPending: boolean;
     };
   };
 }
@@ -179,7 +181,8 @@ const DataAnakHeroSection: React.FC<DataAnakHeroSectionProps> = ({
         <div className="w-full grid grid-cols-2 grid-rows-1  items-center gap-4 mt-4 ">
           <Button
             variant={"destructive"}
-            className="w-full"
+            className="w-full text-background"
+            disabled={service.mutation.isPending}
             onClick={() => {
               namespace.alert.modal({
                 title: "Perhatian",
@@ -192,7 +195,7 @@ const DataAnakHeroSection: React.FC<DataAnakHeroSectionProps> = ({
               });
             }}
           >
-            Hapus Data
+            {service.mutation.isPending ? <Spinner /> : "Hapus Data"}
           </Button>
           <Button
             variant={"btn"}
@@ -206,6 +209,8 @@ const DataAnakHeroSection: React.FC<DataAnakHeroSectionProps> = ({
         <div className="w-full grid grid-cols-2 grid-rows-1  items-center gap-4 mt-4 ">
           <Button
             variant={"destructive"}
+            className="text-background"
+            disabled={service.mutation.isPending}
             onClick={() => {
               state.setIsEdit(false);
             }}
@@ -215,8 +220,9 @@ const DataAnakHeroSection: React.FC<DataAnakHeroSectionProps> = ({
           <Button
             className="w-full"
             onClick={() => service.mutation.onUpdate()}
+            disabled={service.mutation.isPending}
           >
-            Simpan
+            {service.mutation.isPending ? <Spinner /> : "Simpan"}
           </Button>
         </div>
       )}

@@ -17,6 +17,10 @@ const ProgramPosyanduContainer = () => {
   const programQuery = service.program.query.getPrograms();
   const programData = programQuery.data?.data ?? [];
 
+  //status child
+  const childRegisterQuery = service.programRegistraion.query.getMyStatus();
+  const childRegisterData = childRegisterQuery.data?.data ?? [];
+
   const filteredProgram = useMemo<ProgramRespone[]>(() => {
     if (filter === "all") return programData;
     const now = new Date();
@@ -40,10 +44,11 @@ const ProgramPosyanduContainer = () => {
         <ProgramPosyanduSection
           service={{
             query: {
-              isLoading: programQuery.isLoading,
+              isLoading: programQuery.isLoading || childRegisterQuery.isLoading,
               program: programData ?? [],
               filteredProgram: filteredProgram ?? [],
               filter: filter,
+              statusChild: childRegisterData ?? [],
             },
           }}
           handler={{

@@ -17,8 +17,8 @@ const ChildCard: React.FC<ChildCardProps> = ({ res }) => {
           <Image
             alt="child"
             src={res.avaChild ? res.avaChild : "/images/childDummy.png"}
-            width={90}
-            height={90}
+            width={80}
+            height={80}
             className="aspect-square rounded-lg object-cover"
           />
           <div className="w-full">

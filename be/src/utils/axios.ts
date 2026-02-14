@@ -37,26 +37,23 @@ export function AxiosService() {
   }
 
   IotHit.interceptors.request.use(async (config) => {
-    // 🔥 WAKE UP mDNS + ARP
     await pingHost(hostname);
 
-    // pakai cache kalau sudah ketemu
     if (cachedScaleURL) {
       config.baseURL = cachedScaleURL;
       return config;
     }
 
-    // discovery loop
     for (const url of scaleURLs) {
       try {
-        await warmupScale(url);
+        await warmupScale(url!);
 
         await axios.get(`${url}/api/status`, { timeout: 2000 });
 
-        cachedScaleURL = url;
+        cachedScaleURL = url ?? '';
         config.baseURL = url;
 
-        console.log('✅ Scale discovered at:', url);
+        console.log(' Scale discovered at:', url);
         return config;
       } catch {}
     }
@@ -64,7 +61,6 @@ export function AxiosService() {
     throw new Error('Scale tidak ditemukan. Pastikan device hidup & satu jaringan.');
   });
 
-  // reset cache kalau request gagal (device reboot / pindah wifi)
   IotHit.interceptors.response.use(
     (res) => res,
     () => {
@@ -83,11 +79,11 @@ export function AxiosService() {
 
     for (const url of scaleURLs) {
       try {
-        await warmupScale(url);
+        await warmupScale(url ?? '');
 
         const res = await axios.get(`${url}/api/status`, { timeout: 3000 });
 
-        cachedScaleURL = url;
+        cachedScaleURL = url ?? '';
 
         return {
           url,

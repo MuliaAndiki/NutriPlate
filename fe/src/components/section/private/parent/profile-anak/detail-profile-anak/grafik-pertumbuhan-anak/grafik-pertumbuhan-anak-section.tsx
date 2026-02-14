@@ -78,19 +78,6 @@ const GrafikPertumbuhanAnakHeroSection: React.FC<
           historyMeasument={servive.query.historyMeasument ?? []}
         />
       </div>
-      {servive ? (
-        <div className="w-full bg-destructive/50 p-2 border rounded-lg flex items-center justify-center ">
-          <Icon
-            icon="solar:danger-circle-outline"
-            width="14"
-            height="14"
-            className="text-destructive"
-          />
-          <h1 className="text-destructive flex items-center justify-center">
-            Menunggu data pengukuran posyandu
-          </h1>
-        </div>
-      ) : null}
     </div>
   );
 };

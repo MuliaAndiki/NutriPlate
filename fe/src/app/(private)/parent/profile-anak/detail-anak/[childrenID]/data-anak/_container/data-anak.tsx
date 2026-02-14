@@ -121,6 +121,7 @@ const DataAnakContainer = () => {
             onDelete: handleDeleteChild,
             onRemovePreview: handleRemovePreview,
             onUpdate: () => handleUpdateChild(),
+            isPending: updateChild.isPending || deleteChild.isPending,
           },
         }}
         state={{

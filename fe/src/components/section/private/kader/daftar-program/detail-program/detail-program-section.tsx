@@ -1,4 +1,3 @@
-import ChildSelectTask from "@/components/card/child/child-select-task";
 import AktifitasPropgramCard from "@/components/card/program/aktivitas-program";
 import BenefitPropgramCard from "@/components/card/program/benefit-program";
 import DeskripsiPropgramCard from "@/components/card/program/deskripsi-program";
@@ -10,6 +9,7 @@ import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.share
 import DetailProgramSectionSkeleton from "@/components/skeleton/private/kader/daftar-program/detail-program/detail-program-section-skeleton";
 import DataNotFound from "@/components/empty/data-not-found";
 import EmptyCard from "@/components/fallback/empty-card";
+import ChildInProgram from "@/components/card/child/child-inprogram";
 
 interface DetailProgramKaderSectionProps {
   namespace: {
@@ -70,17 +70,21 @@ const DetailProgramKaderSection: React.FC<DetailProgramKaderSectionProps> = ({
         {childFilter.length === 0 ? (
           <EmptyCard message="Belum ada anak yang terdaftar" />
         ) : (
-          childFilter.map((items) => (
-            <ChildSelectTask
-              res={items}
-              key={items.id}
-              onClick={() =>
-                namespace.router.push(
-                  `/kader/daftar-program/detail/${resProgram.id}/task/${items.id}`,
-                )
-              }
-            />
-          ))
+          <div className="w-full  rounded-lg  space-y-2">
+            <div className="w-full p-4 bg-primary/60 rounded-t-lg">
+              <h1 className="text-lg font-bold">Balita Terdaftar</h1>
+            </div>
+            {childFilter.map((item) => (
+              <ChildInProgram
+                res={item}
+                onClick={() =>
+                  namespace.router.push(
+                    `/kader/daftar-program/detail/${resProgram.id}/task/${item.id}`,
+                  )
+                }
+              />
+            ))}
+          </div>
         )}
       </div>
     </section>

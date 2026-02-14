@@ -1,3 +1,5 @@
+import { NutritionStatus } from '@prisma/client';
+
 // Food Intake related types
 export interface FoodDetection {
   class: string;
@@ -100,7 +102,42 @@ export interface FoodIntakeDailyTotals {
 export interface FoodIntakeDailySummary {
   childId: string;
   date: string; // YYYY-MM-DD
-  totalIntakes: number; // Number of food intakes (POST requests)
+  totalIntakes: number;
   items: FoodIntakeDailySummaryItem[];
   totals: FoodIntakeDailyTotals;
+}
+
+export interface ChildDailyNutritionSummary {
+  childId: string;
+  date: string;
+  ageMonths: number;
+
+  who: {
+    stuntingStatus: string;
+    severity: string;
+    zScore: number | null;
+    riskLevel: string;
+  } | null;
+
+  totals: FoodIntakeDailyTotals;
+
+  target: {
+    energyKcal: number;
+    baseEnergyKcal: number;
+    correctionFactor: number;
+    nutritionStatus: NutritionStatus;
+    macro: {
+      proteinGram: number;
+      carbGram: number;
+      fatGram: number;
+      fiberGram: number;
+      source: string;
+      referenceAgeMonths: number;
+    };
+  };
+
+  progress: {
+    energyPercent: number;
+    status: 'GOOD' | 'ENOUGH' | 'LOW';
+  };
 }

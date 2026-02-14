@@ -16,10 +16,10 @@ const KaderList: React.FC<ListKaderProps> = ({ length }) => {
         src={"/images/error.png"}
         width={100}
         height={100}
-        className=""
+        className="object-cover"
       />
       <div className="w-full flex items-start flex-col">
-        <h1 className="text-lg font-bold">Tersedia</h1>
+        <h1 className="text-sm font-bold">Tersedia</h1>
         <p className="text-xl font-bold">
           {length}
           <span className="font-light text-sm">Kader</span>
