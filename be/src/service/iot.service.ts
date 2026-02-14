@@ -11,39 +11,45 @@ import type {
 
 class IotService {
   public async receiveStatus(payload: IotStatusRequest) {
-    const device = await prisma.iotDevice.findUnique({
-      where: { deviceToken: payload.token },
-    });
+    try {
+      const device = await prisma.iotDevice.findUnique({
+        where: { deviceToken: payload.token },
+      });
 
-    if (!device) {
+      if (!device) {
+        return {
+          success: false,
+          error: 'Device not registered',
+          needRegister: true,
+        };
+      }
+
+      const pendingCommand = device.command as IotCommandPayload | null;
+      const commandType = pendingCommand?.type ?? null;
+
+      await prisma.iotDevice.update({
+        where: { deviceToken: payload.token },
+        data: {
+          lastWeight: payload.weight,
+          lastStableWeight: payload.stable_weight ?? null,
+          lastStatus: payload.status,
+          lastOnline: new Date(),
+          status: IotStatus.online,
+          command: Prisma.JsonNull,
+        },
+      });
+
+      return {
+        success: true,
+        command: commandType,
+      };
+    } catch (error) {
+      console.error('Error in receiveStatus:', error);
       return {
         success: false,
-        error: 'Device not registered',
-        needRegister: true,
+        error: 'server internal error',
       };
     }
-
-    const pendingCommand = device.command as IotCommandPayload | null;
-    const commandType = pendingCommand?.type ?? null;
-
-    // 🔥 FIX: Hanya set command ke null jika ada command yang dikirim
-    await prisma.iotDevice.update({
-      where: { deviceToken: payload.token },
-      data: {
-        lastWeight: payload.weight,
-        lastStableWeight: payload.stable_weight ?? null,
-        lastStatus: payload.status,
-        lastOnline: new Date(),
-        status: IotStatus.online,
-        // Jika ada command, hapus (set null). Jika tidak, biarkan null
-        command: commandType ? Prisma.JsonNull : Prisma.JsonNull,
-      },
-    });
-
-    return {
-      success: true,
-      command: commandType,
-    };
   }
 
   public async commandExecuted(payload: IotCommandExecutedRequest) {

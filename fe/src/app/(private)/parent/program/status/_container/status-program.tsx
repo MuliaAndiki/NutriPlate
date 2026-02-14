@@ -7,6 +7,8 @@ import { useAppNameSpace } from "@/hooks/useAppNameSpace";
 const StatusProgramContainer = () => {
   const nameSpace = useAppNameSpace();
   const service = useService();
+
+  //status
   const statusChildQuery = service.programRegistraion.query.getMyStatus();
   const statusChildData = statusChildQuery.data?.data ?? null;
 
