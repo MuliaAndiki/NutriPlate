@@ -14,7 +14,7 @@ const BalitaRiskList: React.FC<BalitaRiskProps> = ({ lengthChild }) => {
         className=""
       />
       <div className="w-full flex items-start flex-col">
-        <h1 className="text-lg font-bold">Balita Berisiko</h1>
+        <h1 className="text-sm font-bold">Balita Berisiko</h1>
         <p className="text-xl font-bold">
           {lengthChild}
           <span className="font-light text-sm">balita</span>

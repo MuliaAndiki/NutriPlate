@@ -107,7 +107,7 @@ const DetailPosyanduKaderSection: React.FC<DetailPosyanduKaderSectionProps> = ({
                 height={22}
                 className="text-primary"
               />
-              <span className="text-lg font-semibold">{item.name}</span>
+              <span className="text-sm font-semibold">{item.name}</span>
               <span className="text-end">:</span>
             </div>
             <span className="text-sm text-muted-foreground">{item.res}</span>

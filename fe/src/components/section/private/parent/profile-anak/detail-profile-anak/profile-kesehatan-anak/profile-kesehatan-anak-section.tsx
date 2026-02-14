@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { FormUpdateProfileChild } from "@/types/form/child.form";
+import { Spinner } from "@/components/ui/spinner";
 
 interface ProfileKesehatanAnakSectionProps {
   namespace: {
@@ -22,6 +23,7 @@ interface ProfileKesehatanAnakSectionProps {
   service: {
     mutation: {
       onUpdate: () => void;
+      isPending: boolean;
     };
   };
   state: {
@@ -284,15 +286,20 @@ const ProfileKesehatanAnakHeroSection: React.FC<
           ) : (
             <div className="w-full grid grid-cols-2 grid-rows-1 gap-2">
               <Button
-                className=""
+                className="text-background"
                 type="button"
                 variant={"destructive"}
+                disabled={service.mutation.isPending}
                 onClick={() => state.setIsEdit(false)}
               >
                 Batalkan
               </Button>
-              <Button variant={"btn"} type="submit">
-                Simpan
+              <Button
+                variant={"btn"}
+                type="submit"
+                disabled={service.mutation.isPending}
+              >
+                {service.mutation.isPending ? <Spinner /> : "Simpan"}
               </Button>
             </div>
           )}

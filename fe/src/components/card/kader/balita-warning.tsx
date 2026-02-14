@@ -14,7 +14,7 @@ const BalitaWarningList: React.FC<BalitaWarningProps> = ({ lengthChild }) => {
         className=""
       />
       <div className="w-full flex items-start flex-col">
-        <h1 className="text-lg font-bold">Balita Kurang Gizi</h1>
+        <h1 className="text-sm font-bold">Balita Kurang Gizi</h1>
         <p className="text-xl font-bold">
           {lengthChild}
           <span className="font-light text-sm">balita</span>

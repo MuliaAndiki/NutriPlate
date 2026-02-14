@@ -1,27 +1,17 @@
 import prisma from 'prisma/client';
-import { FoodIntakeDailySummary } from '@/types/foodIntake.types';
+import { FoodIntakeDailySummary, FoodIntakeDailySummaryItem } from '@/types/foodIntake.types';
 import { getAgeInMonths } from '@/utils/age';
 import { getBaseEnergyKcal, getEnergyCorrectionFactor } from '@/utils/energyTarget.util';
 import { GrowthClassification, GrowthRecommendation } from '@/types/who.types';
 import { parsePrismaJson } from '@/utils/prisma.json';
 import { NutritionStatus } from '@prisma/client';
 import { getMacroTargets } from '@/utils/akg';
-/**
- * FoodIntakeSummaryService
- *
- * Responsibilities:
- * 1. Calculate daily food intake totals (read-only)
- * 2. Aggregate nutrition across all items
- * 3. Cache results in Redis (24h TTL)
- * 4. NO WRITES to database
- * 5. NO MODIFICATION of POST /intake logic
- */
 
 class FoodIntakeSummaryService {
   public async getDailySummary(childId: string, date: Date, skipCache = false) {
     const dateStr = date.toISOString().split('T')[0];
     if (skipCache) {
-      console.warn(`⚠️ Cache bypassed for daily-summary:${childId}:${dateStr} (debug mode)`);
+      console.warn(` Cache bypassed for daily-summary:${childId}:${dateStr} (debug mode)`);
     }
 
     const child = await prisma.child.findUnique({
@@ -84,7 +74,13 @@ class FoodIntakeSummaryService {
       fatGram: 0,
       carbGram: 0,
       fiberGram: 0,
+      calciumMg: 0,
+      ironMg: 0,
+      vitaminA: 0,
+      vitaminC: 0,
     };
+
+    const items: FoodIntakeDailySummaryItem[] = [];
 
     for (const intake of foodIntakes) {
       for (const item of intake.items) {
@@ -93,6 +89,26 @@ class FoodIntakeSummaryService {
         totals.fatGram += Number(item.fatGram ?? 0);
         totals.carbGram += Number(item.carbGram ?? 0);
         totals.fiberGram += Number(item.fiberGram ?? 0);
+        totals.calciumMg += Number(item.calciumMg ?? 0);
+        totals.ironMg += Number(item.ironMg ?? 0);
+        totals.vitaminA += Number(item.vitaminA ?? 0);
+        totals.vitaminC += Number(item.vitaminC ?? 0);
+
+        items.push({
+          foodClassName: item.foodClassName,
+          weightGram: Number(item.weightGram ?? 0),
+          mlConfidence: Number(item.mlConfidence ?? 0),
+          energyKcal: Number(item.energyKcal ?? 0),
+          proteinGram: Number(item.proteinGram ?? 0),
+          fatGram: Number(item.fatGram ?? 0),
+          carbGram: Number(item.carbGram ?? 0),
+          fiberGram: Number(item.fiberGram ?? 0),
+          calciumMg: Number(item.calciumMg ?? 0),
+          ironMg: Number(item.ironMg ?? 0),
+          vitaminA: Number(item.vitaminA ?? 0),
+          vitaminC: Number(item.vitaminC ?? 0),
+          timestamp: item.createdAt ?? intake.createdAt,
+        });
       }
     }
 
@@ -115,6 +131,8 @@ class FoodIntakeSummaryService {
     const result = {
       childId,
       date: dateStr,
+      totalIntakes: foodIntakes.length,
+      items,
       ageMonths,
 
       who: classification
@@ -157,34 +175,22 @@ class FoodIntakeSummaryService {
     try {
       const dateObj = typeof date === 'string' ? new Date(date) : date;
       const dateStr = dateObj.toISOString().split('T')[0];
-      console.log(`ℹ️ Cache disabled: skip invalidation for daily-summary:${childId}:${dateStr}`);
+      console.log(`ℹ Cache disabled: skip invalidation for daily-summary:${childId}:${dateStr}`);
     } catch (error) {
-      console.warn(`⚠️ Failed to handle cache invalidation:`, error);
+      console.warn(` Failed to handle cache invalidation:`, error);
     }
   }
 
-  /**
-   * DANGEROUS: Clear ALL cache for a specific child
-   * Use this if stale cache is causing issues
-   */
   public async flushAllChildCache(childId: string): Promise<number> {
     try {
-      console.log(`ℹ️ Cache disabled: skip flush for child ${childId}`);
+      console.log(`ℹ Cache disabled: skip flush for child ${childId}`);
       return 0;
     } catch (error) {
-      console.warn(`⚠️ Failed to flush cache for child ${childId}:`, error);
+      console.warn(` Failed to flush cache for child ${childId}:`, error);
       return 0;
     }
   }
 
-  /**
-   * Get summary for multiple days (useful for trends)
-   *
-   * @param childId - UUID of child
-   * @param startDate - Start date (inclusive)
-   * @param endDate - End date (inclusive)
-   * @returns {Array<FoodIntakeDailySummary>} Array of daily summaries
-   */
   public async getDateRangeSummary(
     childId: string,
     startDate: string | Date,

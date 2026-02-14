@@ -7,6 +7,7 @@ import { ProgramRespone } from "@/types/res/program-with-progres";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import Link from "next/link";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+import { ProgramRegistrationDetailResponse } from "@/types/res";
 
 interface ProgramPosyanduSectionProps {
   namespace: {
@@ -18,6 +19,7 @@ interface ProgramPosyanduSectionProps {
       program: ProgramRespone[];
       filteredProgram: ProgramRespone[];
       filter: "running" | "all";
+      statusChild: ProgramRegistrationDetailResponse[];
     };
   };
   handler: {
@@ -35,15 +37,19 @@ const ProgramPosyanduSection: React.FC<ProgramPosyanduSectionProps> = ({
   selector,
 }) => {
   const resProgram = service.query.program;
+  const resRegisterion = service.query.statusChild;
   const filter = service.query.filter;
   const filteredProgram = service.query.filteredProgram;
 
-  if (!resProgram) {
+  if (!resProgram || !resRegisterion) {
     return <DataNotFound />;
   }
   if (service.query.isLoading) {
     return <ProgramSkeleton />;
   }
+
+  const notifyChild =
+    resRegisterion.filter((item) => item.status === "pending").length >= 1;
 
   return (
     <section className="flex w-full min-h-screen flex-col items-center justify-start overflow-x-hidden space-y-2 p-2">
@@ -69,6 +75,9 @@ const ProgramPosyanduSection: React.FC<ProgramPosyanduSectionProps> = ({
           </ButtonWrapper>
         )}
         <Link href={`/posyandu/program/status`}>
+          {notifyChild && (
+            <div className="w-3 h-3 rounded-full bg-destructive absolute translate-y-6 translate-x-2" />
+          )}
           <Icon
             icon="fluent:status-12-filled"
             width="44"

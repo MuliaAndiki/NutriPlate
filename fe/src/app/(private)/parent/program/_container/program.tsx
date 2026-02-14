@@ -20,6 +20,10 @@ const ProgramParentContainer = () => {
   const programsQuery = service.program.query.getPrograms();
   const programData = programsQuery.data?.data ?? [];
 
+  //statusr registerion
+  const registerionQuery = service.programRegistraion.query.getMyStatus();
+  const registerionData = registerionQuery.data?.data ?? [];
+
   //state
   const [programFilter, setProgramFilter] = useState<"ALL" | "FOLLOWED">("ALL");
 
@@ -31,7 +35,11 @@ const ProgramParentContainer = () => {
             query: {
               childType: childData ?? [],
               programType: programData ?? [],
-              isLoading: programsQuery.isLoading || childQuery.isLoading,
+              isLoading:
+                programsQuery.isLoading ||
+                childQuery.isLoading ||
+                registerionQuery.isLoading,
+              statusChild: registerionData ?? [],
             },
           }}
           namespace={{

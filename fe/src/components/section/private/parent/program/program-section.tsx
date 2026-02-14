@@ -10,6 +10,7 @@ import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.share
 import EmptyCard from "@/components/fallback/empty-card";
 import ProgramSkeleton from "@/components/skeleton/private/posyandu/program/program-skeleton";
 import DataNotFound from "@/components/empty/data-not-found";
+import { ProgramRegistrationDetailResponse } from "@/types/res";
 
 interface ProgramSectionProps {
   service: {
@@ -17,6 +18,7 @@ interface ProgramSectionProps {
       childType: ChildRespone[];
       programType: ProgramRespone[];
       isLoading: boolean;
+      statusChild: ProgramRegistrationDetailResponse[];
     };
   };
   namespace: {
@@ -39,8 +41,9 @@ const ProgramHeroSection: React.FC<ProgramSectionProps> = ({
 }) => {
   const resProgram = service.query.programType;
   const resChildren = service.query.childType;
+  const resRegisterion = service.query.statusChild;
 
-  if (!resProgram || !resChildren) {
+  if (!resProgram || !resChildren || !resRegisterion) {
     return <DataNotFound />;
   }
 
@@ -51,11 +54,17 @@ const ProgramHeroSection: React.FC<ProgramSectionProps> = ({
     if (state.programFilter === "ALL") return true;
     return program.progress.length > 0;
   });
+
+  const notifiyRegis =
+    resRegisterion.filter((item) => item.status === "pending").length >= 1;
   return (
     <div className="w-full min-h-full flex justify-start items-start flex-col space-y-5 p-2">
       <div className="w-full flex items-center justify-between">
         <h1 className="text-2xl font-extrabold">Program Gizi Anak</h1>
         <Link href={"/parent/program/status"}>
+          {notifiyRegis && (
+            <div className="w-3 h-3 absolute rounded-full  translate-y-4 bg-destructive " />
+          )}
           <Icon
             icon="fluent:status-12-filled"
             width="34"

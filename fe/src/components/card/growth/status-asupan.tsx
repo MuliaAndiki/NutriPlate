@@ -110,9 +110,9 @@ const StatusAsupan: React.FC<StatusAsupanProps> = ({ data, id, onDetail }) => {
           </div>
         </CardContent>
 
-        <div className="w-full">
+        <div className="w-full ">
           <CardHeader className="pb-0">
-            <CardTitle className="text-lg">Status Asupan Hari Ini</CardTitle>
+            <CardTitle className="text-sm">Status Asupan Hari Ini</CardTitle>
           </CardHeader>
 
           <CardFooter className="flex-col gap-2 text-sm">
@@ -125,6 +125,7 @@ const StatusAsupan: React.FC<StatusAsupanProps> = ({ data, id, onDetail }) => {
                 <Icon
                   icon="carbon:warning"
                   width={14}
+                  height={14}
                   className="text-destructive/60"
                 />
                 <p className="text-xs text-destructive/60 font-extralight">

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { RegistrationStatus } from "@/types/partial";
 import StatusSectionSkeleton from "@/components/skeleton/private/parent/program/status/status-section-skeleton";
 import EmptyCard from "@/components/fallback/empty-card";
+import DataNotFound from "@/components/empty/data-not-found";
 
 interface StatusProgramSectionProps {
   namespace: {
@@ -24,16 +25,19 @@ const StatusProgramSection: React.FC<StatusProgramSectionProps> = ({
   namespace,
   service,
 }) => {
+  const resStatusChild = service.query.statusChild;
   const [filter, setFilter] = useState<"all" | RegistrationStatus>("all");
-
-  const filteredData =
-    filter === "all"
-      ? service.query.statusChild
-      : service.query.statusChild.filter((item) => item.status === filter);
-
   if (service.query.isLoading) {
     return <StatusSectionSkeleton />;
   }
+  if (!resStatusChild) {
+    return <DataNotFound />;
+  }
+
+  const filteredData =
+    filter === "all"
+      ? resStatusChild
+      : resStatusChild.filter((item) => item.status === filter);
 
   return (
     <section className="w-full min-h-screen flex flex-col p-2 space-y-3">
