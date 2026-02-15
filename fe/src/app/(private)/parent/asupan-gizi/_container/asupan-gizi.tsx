@@ -2,7 +2,7 @@
 import AsupanGiziHeroSection from "@/components/section/private/parent/asupan-gizi/asupan-gizi-section";
 import { SidebarLayout } from "@/core/layouts/sidebar.layout";
 import useService from "@/hooks/mutation/prop.service";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAppNameSpace } from "@/hooks/useAppNameSpace";
 import { useAppSelector } from "@/hooks/dispatch/dispatch";
 
@@ -23,13 +23,36 @@ const AsupanGiziContainer = () => {
   // iot devices
   const iotDevicesQuery = service.iot.query.getDevices();
   const iotDevicesData = iotDevicesQuery.data?.data ?? [];
-  const onlineDevices = iotDevicesData.filter((item) => item.status === "online");
+  const onlineDevices = iotDevicesData.filter(
+    (item) => item.status === "online",
+  );
   const [selectedDeviceToken, setSelectedDeviceToken] = useState<string>("");
-  const activeDeviceToken = selectedDeviceToken || onlineDevices[0]?.deviceToken || "";
+  const activeDeviceToken =
+    selectedDeviceToken || onlineDevices[0]?.deviceToken || "";
   const activeDevice =
-    onlineDevices.find((item) => item.deviceToken === activeDeviceToken) ?? null;
+    onlineDevices.find((item) => item.deviceToken === activeDeviceToken) ??
+    null;
 
-  // iot status (detail)
+  useEffect(() => {
+    if (onlineDevices.length === 0) {
+      if (selectedDeviceToken) {
+        setSelectedDeviceToken("");
+      }
+      return;
+    }
+    if (!selectedDeviceToken && onlineDevices.length > 0) {
+      setSelectedDeviceToken(onlineDevices[0].deviceToken);
+      return;
+    }
+    if (
+      selectedDeviceToken &&
+      !onlineDevices.some((item) => item.deviceToken === selectedDeviceToken)
+    ) {
+      setSelectedDeviceToken(onlineDevices[0].deviceToken);
+    }
+  }, [onlineDevices, selectedDeviceToken]);
+
+  // iot status
   const iotStatusQuery = service.iot.query.getDeviceDetail(activeDeviceToken, {
     enabled: Boolean(activeDeviceToken),
     refetchInterval: isScaling ? 500 : false,
@@ -43,9 +66,11 @@ const AsupanGiziContainer = () => {
   });
   const childData = childQuery.data?.data ?? [];
 
-  // weight (from lastStableWeight/lastWeight)
+  // weight
   const weightData =
-    iotStatusData?.lastStableWeight ?? iotStatusData?.lastWeight ?? null;
+    iotStatusData?.lastStableWeight && iotStatusData.lastStableWeight > 0
+      ? iotStatusData.lastStableWeight
+      : (iotStatusData?.lastWeight ?? null);
 
   // mutation
   const startScaleMutation = service.iot.mutation.startScale();
@@ -108,9 +133,10 @@ const AsupanGiziContainer = () => {
       {
         onSuccess: () => {
           const confirmedWeight =
-            iotStatusData?.lastStableWeight ??
-            iotStatusData?.lastWeight ??
-            holdingWeight;
+            iotStatusData?.lastStableWeight &&
+            iotStatusData.lastStableWeight > 0
+              ? iotStatusData.lastStableWeight
+              : (iotStatusData?.lastWeight ?? holdingWeight);
           setHoldingWeight(confirmedWeight);
           setIsScaling(false);
           handleOpenScanPopUp();
@@ -147,7 +173,10 @@ const AsupanGiziContainer = () => {
         onSuccess: () => {
           setIsScaling(false);
           setHoldingWeight(
-            iotStatusData?.lastStableWeight ?? iotStatusData?.lastWeight ?? 0,
+            iotStatusData?.lastStableWeight &&
+              iotStatusData.lastStableWeight > 0
+              ? iotStatusData.lastStableWeight
+              : (iotStatusData?.lastWeight ?? 0),
           );
         },
         onError: () => {
@@ -182,6 +211,9 @@ const AsupanGiziContainer = () => {
         onSuccess: () => {
           setHoldingWeight(0);
           setIsScaling(false);
+          setTimeout(() => {
+            iotStatusQuery.refetch();
+          }, 800);
         },
         onError: () => {
           iotStatusQuery.refetch();
