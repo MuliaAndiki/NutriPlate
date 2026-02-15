@@ -163,7 +163,7 @@ export const cacheKey = {
   },
   // not fix
   iot: {
-    byItem: () => [`iot:item`],
-    weight: () => [`iot:weight`],
+    list: () => ["iot:list"],
+    device: (token: string) => [`iot:device:${token}`],
   },
 };

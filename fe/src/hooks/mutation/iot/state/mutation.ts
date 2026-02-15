@@ -5,8 +5,9 @@ import { useMutation } from "@tanstack/react-query";
 
 export function useStartScale() {
   const namespace = useAppNameSpace();
-  return useMutation<TResponse<any>, Error, any>({
-    mutationFn: () => Api.Iot.startScale(),
+  return useMutation<TResponse<any>, Error, { token: string }>({
+    mutationFn: (payload) =>
+      Api.Iot.sendCommand({ token: payload.token, command: "start-weighing" }),
     onSuccess: () => {
       //
     },
@@ -23,8 +24,9 @@ export function useStartScale() {
 
 export function useTareScale() {
   const namespace = useAppNameSpace();
-  return useMutation<TResponse<any>, Error, any>({
-    mutationFn: () => Api.Iot.tareScale(),
+  return useMutation<TResponse<any>, Error, { token: string }>({
+    mutationFn: (payload) =>
+      Api.Iot.sendCommand({ token: payload.token, command: "tare" }),
     onSuccess: () => {
       //
     },
@@ -41,8 +43,9 @@ export function useTareScale() {
 
 export function useHoldWeightScale() {
   const namespace = useAppNameSpace();
-  return useMutation<TResponse<any>, Error, any>({
-    mutationFn: () => Api.Iot.holdWeight(),
+  return useMutation<TResponse<any>, Error, { token: string }>({
+    mutationFn: (payload) =>
+      Api.Iot.sendCommand({ token: payload.token, command: "hold-weight" }),
     onSuccess: () => {
       //
     },
@@ -59,8 +62,12 @@ export function useHoldWeightScale() {
 
 export function useCancelStart() {
   const namespace = useAppNameSpace();
-  return useMutation<TResponse<any>, Error, any>({
-    mutationFn: () => Api.Iot.cancelStart(),
+  return useMutation<TResponse<any>, Error, { token: string }>({
+    mutationFn: (payload) =>
+      Api.Iot.sendCommand({
+        token: payload.token,
+        command: "cancel-weighing",
+      }),
     onSuccess: () => {
       //
     },
@@ -77,8 +84,9 @@ export function useCancelStart() {
 
 export function useRejectWeight() {
   const namespace = useAppNameSpace();
-  return useMutation<TResponse<any>, Error, any>({
-    mutationFn: () => Api.Iot.rejectWeight(),
+  return useMutation<TResponse<any>, Error, { token: string }>({
+    mutationFn: (payload) =>
+      Api.Iot.sendCommand({ token: payload.token, command: "reject-weight" }),
     onSuccess: () => {
       //
     },
@@ -95,8 +103,9 @@ export function useRejectWeight() {
 
 export function useConfirmWeight() {
   const namespace = useAppNameSpace();
-  return useMutation<TResponse<any>, Error, any>({
-    mutationFn: () => Api.Iot.confirmWeight(),
+  return useMutation<TResponse<any>, Error, { token: string }>({
+    mutationFn: (payload) =>
+      Api.Iot.sendCommand({ token: payload.token, command: "confirm-weight" }),
     onSuccess: () => {
       //
     },
@@ -113,8 +122,9 @@ export function useConfirmWeight() {
 
 export function useRebootIot() {
   const namespace = useAppNameSpace();
-  return useMutation<TResponse<any>, Error, any>({
-    mutationFn: (payload) => Api.Iot.rebootIot(payload),
+  return useMutation<TResponse<any>, Error, { token: string }>({
+    mutationFn: (payload) =>
+      Api.Iot.sendCommand({ token: payload.token, command: "reboot" }),
     onSuccess: () => {
       namespace.alert.toast({
         title: "Succes",

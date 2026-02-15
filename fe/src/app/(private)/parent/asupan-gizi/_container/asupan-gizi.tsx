@@ -20,8 +20,21 @@ const AsupanGiziContainer = () => {
   const [selectChildId, setSelectChildId] = useState<string>("");
   const [isLoadingConnect, setIsLoadingConnect] = useState<boolean>(false);
 
-  //iot status
-  const iotStatusQuery = service.iot.query.getStatusIot();
+  // iot devices
+  const iotDevicesQuery = service.iot.query.getDevices();
+  const iotDevicesData = iotDevicesQuery.data?.data ?? [];
+  const onlineDevices = iotDevicesData.filter((item) => item.status === "online");
+  const [selectedDeviceToken, setSelectedDeviceToken] = useState<string>("");
+  const activeDeviceToken = selectedDeviceToken || onlineDevices[0]?.deviceToken || "";
+  const activeDevice =
+    onlineDevices.find((item) => item.deviceToken === activeDeviceToken) ?? null;
+
+  // iot status (detail)
+  const iotStatusQuery = service.iot.query.getDeviceDetail(activeDeviceToken, {
+    enabled: Boolean(activeDeviceToken),
+    refetchInterval: isScaling ? 500 : false,
+    staleTime: 0,
+  });
   const iotStatusData = iotStatusQuery.data?.data ?? null;
 
   // child
@@ -30,13 +43,9 @@ const AsupanGiziContainer = () => {
   });
   const childData = childQuery.data?.data ?? [];
 
-  // weight
-  const weightQuery = service.iot.query.getWeight({
-    enabled: isScaling,
-    refetchInterval: isScaling ? 500 : false,
-    staleTime: 0,
-  });
-  const weightData = isScaling ? (weightQuery.data ?? null) : null;
+  // weight (from lastStableWeight/lastWeight)
+  const weightData =
+    iotStatusData?.lastStableWeight ?? iotStatusData?.lastWeight ?? null;
 
   // mutation
   const startScaleMutation = service.iot.mutation.startScale();
@@ -63,7 +72,7 @@ const AsupanGiziContainer = () => {
     if (!ensureIotReady()) return null;
 
     startScaleMutation.mutate(
-      {},
+      { token: activeDeviceToken },
       {
         onSuccess: () => {
           setHoldingWeight(0);
@@ -79,10 +88,10 @@ const AsupanGiziContainer = () => {
     setIsLoadingConnect(true);
 
     try {
-      const res = await iotStatusQuery.refetch();
-      const freshIotData = res.data?.data ?? null;
+      const res = await iotDevicesQuery.refetch();
+      const freshIotData = res.data?.data ?? [];
 
-      if (!freshIotData) {
+      if (!freshIotData.length) {
         window.open("http://nutriplate.local", "_blank");
       }
     } catch (err) {
@@ -95,10 +104,13 @@ const AsupanGiziContainer = () => {
     if (!ensureIotReady()) return null;
 
     onConfirmWeightMutation.mutate(
-      {},
+      { token: activeDeviceToken },
       {
-        onSuccess: (res) => {
-          const confirmedWeight = res.data?.weight || holdingWeight;
+        onSuccess: () => {
+          const confirmedWeight =
+            iotStatusData?.lastStableWeight ??
+            iotStatusData?.lastWeight ??
+            holdingWeight;
           setHoldingWeight(confirmedWeight);
           setIsScaling(false);
           handleOpenScanPopUp();
@@ -114,7 +126,7 @@ const AsupanGiziContainer = () => {
     if (!ensureIotReady()) return null;
 
     rejectWeightMutation.mutate(
-      {},
+      { token: activeDeviceToken },
       {
         onSuccess: () => {
           setHoldingWeight(0);
@@ -130,11 +142,13 @@ const AsupanGiziContainer = () => {
   const handleHoldWeight = () => {
     if (!ensureIotReady()) return null;
     holdWeightMutation.mutate(
-      {},
+      { token: activeDeviceToken },
       {
-        onSuccess: (res) => {
+        onSuccess: () => {
           setIsScaling(false);
-          setHoldingWeight(res.data.weight);
+          setHoldingWeight(
+            iotStatusData?.lastStableWeight ?? iotStatusData?.lastWeight ?? 0,
+          );
         },
         onError: () => {
           iotStatusQuery.refetch();
@@ -147,7 +161,7 @@ const AsupanGiziContainer = () => {
     if (!ensureIotReady()) return null;
 
     cancelStartMutation.mutate(
-      {},
+      { token: activeDeviceToken },
       {
         onSuccess: () => {
           setHoldingWeight(0);
@@ -163,11 +177,10 @@ const AsupanGiziContainer = () => {
     if (!ensureIotReady()) return null;
 
     tareModeMutation.mutate(
-      {},
+      { token: activeDeviceToken },
       {
         onSuccess: () => {
           setHoldingWeight(0);
-          weightQuery.refetch();
           setIsScaling(false);
         },
         onError: () => {
@@ -209,11 +222,13 @@ const AsupanGiziContainer = () => {
               historyFood: footHistoryData ?? [],
               isLoading:
                 footHistoryQuery.isLoading ||
+                iotDevicesQuery.isLoading ||
                 iotStatusQuery.isLoading ||
-                weightQuery.isLoading ||
                 childQuery.isLoading,
               iot: iotStatusData ?? null,
-              weightIot: weightData,
+              iotDevices: onlineDevices,
+              selectedDeviceToken: activeDeviceToken,
+              weightIot: weightData !== null ? { weight: weightData } : null,
               child: childData ?? [],
             },
             mutation: {
@@ -236,6 +251,7 @@ const AsupanGiziContainer = () => {
             handleSelectManualScan: handleSelectManualScan,
             handleSelectTaskScan: handleSelectTaskScan,
             onConnectIot: handleConnectIot,
+            onSelectDevice: setSelectedDeviceToken,
           }}
           state={{
             setShowFlowPopUp: setShowFlowPopUp,

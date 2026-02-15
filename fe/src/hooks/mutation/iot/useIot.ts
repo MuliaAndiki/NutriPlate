@@ -7,7 +7,7 @@ import {
   useStartScale,
   useTareScale,
 } from "./state/mutation";
-import { useGetIotStatus, useGetWeight } from "./state/query";
+import { useGetIotDeviceDetail, useGetIotDevices } from "./state/query";
 
 export function useIot() {
   return {
@@ -21,8 +21,8 @@ export function useIot() {
       rebootIot: useRebootIot,
     },
     query: {
-      getStatusIot: useGetIotStatus,
-      getWeight: useGetWeight,
+      getDevices: useGetIotDevices,
+      getDeviceDetail: useGetIotDeviceDetail,
     },
   };
 }

@@ -72,7 +72,6 @@ class IotService {
       },
     });
 
-    // 🔥 BISA JUGA LOG COMMAND HISTORY KALAU MAU
     console.log(
       `✅ Command ${payload.command} executed on ${payload.token} with status ${payload.status}`,
     );
@@ -114,8 +113,31 @@ class IotService {
   }
 
   public async getDevices() {
-    return prisma.iotDevice.findMany({
+    const now = Date.now();
+    const devices = await prisma.iotDevice.findMany({
       orderBy: { updatedAt: 'desc' },
+    });
+
+    const offlineThresholdMs = 60_000;
+    const updates = devices
+      .filter((device) => {
+        if (!device.lastOnline) return false;
+        return now - new Date(device.lastOnline).getTime() > offlineThresholdMs;
+      })
+      .map((device) =>
+        prisma.iotDevice.update({
+          where: { id: device.id },
+          data: { status: IotStatus.offline },
+        }),
+      );
+
+    if (updates.length > 0) {
+      await prisma.$transaction(updates);
+    }
+
+    return devices.filter((device) => {
+      if (!device.lastOnline) return false;
+      return now - new Date(device.lastOnline).getTime() <= offlineThresholdMs;
     });
   }
 

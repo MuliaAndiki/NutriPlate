@@ -1,31 +1,30 @@
 import { cacheKey } from "@/configs/cache.config";
 import Api from "@/services/props.module";
-import { GetWeightIorRespone } from "@/types/res";
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 
-export function useGetIotStatus() {
+export function useGetIotDevices() {
   return useQuery({
-    queryKey: cacheKey.iot.byItem(),
-    queryFn: () => Api.Iot.statusIot(),
+    queryKey: cacheKey.iot.list(),
+    queryFn: () => Api.Iot.getDevices(),
     staleTime: 1000 * 60 * 5,
+    refetchInterval: 1000 * 60,
   });
 }
-export function useGetWeight(
+
+export function useGetIotDeviceDetail(
+  token: string,
   options?: Partial<
     UseQueryOptions<
-      GetWeightIorRespone,
+      Awaited<ReturnType<typeof Api.Iot.getDeviceDetail>>,
       Error,
-      GetWeightIorRespone,
-      ReturnType<typeof cacheKey.iot.weight>
+      Awaited<ReturnType<typeof Api.Iot.getDeviceDetail>>,
+      ReturnType<typeof cacheKey.iot.device>
     >
   >,
 ) {
   return useQuery({
-    queryKey: cacheKey.iot.weight(),
-    queryFn: async () => {
-      const res = await Api.Iot.getWeight();
-      return res.data;
-    },
+    queryKey: cacheKey.iot.device(token),
+    queryFn: () => Api.Iot.getDeviceDetail(token),
     ...options,
   });
 }

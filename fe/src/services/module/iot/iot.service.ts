@@ -1,41 +1,36 @@
 import { TResponse } from "@/pkg/react-query/mutation-wrapper.type";
 import AxiosClient from "@/utils/axios.client";
+import { IotDeviceResponse } from "@/types/res";
 
 class IotApi {
-  public async rebootIot(payload: any): Promise<TResponse<any>> {
-    const res = await AxiosClient.post("/api/iot/reboot", payload);
+  public async getDevices(): Promise<TResponse<IotDeviceResponse[]>> {
+    const res = await AxiosClient.get("/api/iot/devices");
     return res.data;
   }
-  public async statusIot(): Promise<TResponse<any>> {
-    const res = await AxiosClient.get("/api/iot/status");
+
+  public async getDeviceDetail(
+    token: string,
+  ): Promise<TResponse<IotDeviceResponse>> {
+    const res = await AxiosClient.get(`/api/iot/device/${token}`);
     return res.data;
   }
-  public async startScale(): Promise<TResponse<any>> {
-    const res = await AxiosClient.post("/api/iot/start-weighing");
+
+  public async sendCommand(payload: {
+    token: string;
+    command: string;
+  }): Promise<TResponse<any>> {
+    const res = await AxiosClient.post("/api/iot/command/send", payload);
     return res.data;
   }
-  public async tareScale(): Promise<TResponse<any>> {
-    const res = await AxiosClient.post("/api/iot/tare");
-    return res.data;
-  }
-  public async holdWeight(): Promise<TResponse<any>> {
-    const res = await AxiosClient.post("/api/iot/hold-weight");
-    return res.data;
-  }
-  public async getWeight(): Promise<TResponse<any>> {
-    const res = await AxiosClient.get("/api/iot/weight");
-    return res.data;
-  }
-  public async cancelStart(): Promise<TResponse<any>> {
-    const res = await AxiosClient.post("/api/iot/cancel-weighing");
-    return res.data;
-  }
-  public async rejectWeight(): Promise<TResponse<any>> {
-    const res = await AxiosClient.post("/api/iot/reject-weight");
-    return res.data;
-  }
-  public async confirmWeight(): Promise<TResponse<any>> {
-    const res = await AxiosClient.post("/api/iot/confirm-weight");
+
+  public async registerDevice(payload: {
+    token: string;
+    name: string;
+    parentId?: string;
+    posyanduId?: string;
+    pairingToken?: string;
+  }): Promise<TResponse<IotDeviceResponse>> {
+    const res = await AxiosClient.post("/api/iot/register", payload);
     return res.data;
   }
 }
