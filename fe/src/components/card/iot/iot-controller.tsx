@@ -52,9 +52,10 @@ const IotControllerCard: React.FC<IotControllerCardProps> = ({
   selectedChildId,
   isLoadingConnect,
 }) => {
+  const weightValue = weight?.weight;
   const displayWeight =
-    weight?.weight && weight.weight > 0
-      ? weight.weight
+    typeof weightValue === "number"
+      ? weightValue
       : holdingWeight > 0
         ? holdingWeight
         : null;
