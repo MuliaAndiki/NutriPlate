@@ -8,9 +8,10 @@ interface IotStatusProps {
 }
 
 const IotStatus: React.FC<IotStatusProps> = ({ res }) => {
-  const deviceId = res?.id ?? "-";
-  const deviceName = res?.name ?? "-";
+  const deviceId = res?.deviceToken ?? res?.id ?? "-";
+  const deviceName = res?.deviceName ?? "-";
   const deviceStatus = res?.status ? kebabCaseToWords(res.status) : "-";
+  const battery = res?.batteryLevel ?? "-";
 
   return (
     <Card className="w-full p-4">
@@ -37,7 +38,7 @@ const IotStatus: React.FC<IotStatusProps> = ({ res }) => {
           </h1>
 
           <h1 className="text-lg">
-            Status Baterai : <span className="font-medium">-</span>
+            Status Baterai : <span className="font-medium">{battery}</span>
           </h1>
         </div>
       </div>

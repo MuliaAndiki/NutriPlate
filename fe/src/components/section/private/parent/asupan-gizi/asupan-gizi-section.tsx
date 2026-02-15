@@ -11,9 +11,19 @@ import {
   FoodIntakeResponse,
   GetStatusIotRespone,
   GetWeightIorRespone,
+  IotDeviceResponse,
 } from "@/types/res";
 import AsupanGiziSectionSkeleton from "@/components/skeleton/private/parent/asupan-gizi/asupan-gizi-section-skeleton";
 import EmptyCard from "@/components/fallback/empty-card";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface AsupanGiziSectionProps {
   service: {
@@ -23,6 +33,8 @@ interface AsupanGiziSectionProps {
       iot: GetStatusIotRespone | null;
       weightIot: GetWeightIorRespone | null;
       child: ChildRespone[];
+      iotDevices: IotDeviceResponse[];
+      selectedDeviceToken: string;
     };
     mutation: {
       onStartScale: () => void;
@@ -38,6 +50,7 @@ interface AsupanGiziSectionProps {
     handleSelectTaskScan: () => void;
     handleSelectManualScan: () => void;
     onConnectIot: () => void;
+    onSelectDevice: (token: string) => void;
   };
   state: {
     showFlowPopUp: boolean;
@@ -67,8 +80,38 @@ const AsupanGiziHeroSection: React.FC<AsupanGiziSectionProps> = ({
           Timbang dan foto makanan si kecil untuk mengetahui kandungan gizinya
         </h1>
       </div>
-      <div className="w-full">
-        <IotStatus res={service.query.iot} key={service.query.iot?.id} />
+      <div className="w-full space-y-3">
+        {service.query.selectedDeviceToken ? (
+          <IotStatus res={service.query.iot} key={service.query.iot?.id} />
+        ) : null}
+        <div className="w-full">
+          <label className="text-sm font-semibold block mb-2">
+            Pilih Device Online
+          </label>
+          <Select
+            value={service.query.selectedDeviceToken}
+            onValueChange={(value) => actions.onSelectDevice(value)}
+          >
+            <SelectTrigger className="w-full h-auto min-h-[48px]">
+              <SelectValue placeholder="Pilih device" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectLabel>Device Online</SelectLabel>
+                {service.query.iotDevices.length === 0 && (
+                  <SelectItem value="-" disabled>
+                    Tidak ada device online
+                  </SelectItem>
+                )}
+                {service.query.iotDevices.map((item) => (
+                  <SelectItem key={item.id} value={item.deviceToken}>
+                    {item.deviceName} • {item.deviceToken}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
       <div className="w-full flex items-center">
         <Icon
