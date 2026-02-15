@@ -1,10 +1,10 @@
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI
-
 from config.config import config 
 
-MODEL_PATH = "/home/muliaandiki/project/NutriPlate/api/models/1.0.pt"
-RESULT_PATH = "/home/muliaandiki/project/NutriPlate/api/models/results.csv"
+MODEL_PATH = "models/1.0.pt"
+RESULT_PATH = "models/results.csv"
+
 app = FastAPI()
 
 origins = [
