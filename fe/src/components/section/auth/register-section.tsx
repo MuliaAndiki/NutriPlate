@@ -125,7 +125,7 @@ const RegisterHeroSection: React.FC<RegisterProps> = ({ service, state }) => {
                 <SelectContent>
                   <SelectGroup>
                     <SelectLabel>Peran</SelectLabel>
-                    <SelectItem value="PARENT">Parent</SelectItem>
+                    <SelectItem value="PARENT">Orang Tua</SelectItem>
                     <SelectItem value="KADER">Kader</SelectItem>
                   </SelectGroup>
                 </SelectContent>

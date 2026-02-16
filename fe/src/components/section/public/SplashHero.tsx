@@ -81,23 +81,16 @@ const SplashHeroSection: React.FC<SplashProps> = ({
             >
               <UiSplashV1 />
             </div>
-
-            <div
-              className="w-full flex justify-center mt-6 z-1"
-              data-aos="fade-up"
-              data-aos-delay="450"
+            <ButtonWrapper
+              variant="splash"
+              rightIcon={
+                <Icon icon="formkit:arrowright" width="36" height="36" />
+              }
+              onClick={() => setStep("sp2")}
+              className="font-bold text-xl h-auto w-auto"
             >
-              <ButtonWrapper
-                variant="splash"
-                rightIcon={
-                  <Icon icon="formkit:arrowright" width="36" height="36" />
-                }
-                onClick={() => setStep("sp2")}
-                className="font-bold text-xl h-auto w-auto"
-              >
-                Mulai Sekarang
-              </ButtonWrapper>
-            </div>
+              Mulai Sekarang
+            </ButtonWrapper>
           </motion.div>
         )}
       </AnimatePresence>

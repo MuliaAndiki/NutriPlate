@@ -19,6 +19,7 @@ const AsupanGiziContainer = () => {
   const [holdingWeight, setHoldingWeight] = useState<number>(0);
   const [selectChildId, setSelectChildId] = useState<string>("");
   const [isLoadingConnect, setIsLoadingConnect] = useState<boolean>(false);
+  const [selectedDeviceToken, setSelectedDeviceToken] = useState<string>("");
 
   // iot devices
   const iotDevicesQuery = service.iot.query.getDevices();
@@ -26,12 +27,9 @@ const AsupanGiziContainer = () => {
   const onlineDevices = iotDevicesData.filter(
     (item) => item.status === "online",
   );
-  const [selectedDeviceToken, setSelectedDeviceToken] = useState<string>("");
+
   const activeDeviceToken =
     selectedDeviceToken || onlineDevices[0]?.deviceToken || "";
-  const activeDevice =
-    onlineDevices.find((item) => item.deviceToken === activeDeviceToken) ??
-    null;
 
   useEffect(() => {
     if (onlineDevices.length === 0) {

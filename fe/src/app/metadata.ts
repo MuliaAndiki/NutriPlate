@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 
 export const siteConfig = {
   name: "NutriPlate",
@@ -29,9 +29,12 @@ export const metadata: Metadata = {
   keywords: siteConfig.keywords,
   icons: {
     icon: [
-      { url: "/favicon/favicon-32x32.png", sizes: "32x32", type: "image/png" },
-      { url: "/favicon/favicon-16x16.png", sizes: "16x16", type: "image/png" },
-      { url: "/images/logo.svg", type: "image/svg" },
+      { url: "/favicon/favicon.svg", type: "image/svg+xml" },
+      {
+        url: "/favicon/favicon-96x96.svg",
+        sizes: "96x96",
+        type: "image/svg+xml",
+      },
     ],
     shortcut: "/favicon/favicon.ico",
     apple: [
@@ -46,10 +49,6 @@ export const metadata: Metadata = {
         rel: "mask-icon",
         url: "/images/logo.svg",
         color: siteConfig.themeColor,
-      },
-      {
-        rel: "manifest",
-        url: "/favicon/site.webmanifest",
       },
     ],
   },
@@ -84,10 +83,6 @@ export const metadata: Metadata = {
     "msvalidate.01": process.env.NEXT_PUBLIC_MS_VALIDATION || "",
     "msapplication-TileColor": siteConfig.themeColor,
     "msapplication-config": "/favicon/browserconfig.xml",
-    "theme-color": siteConfig.themeColor,
-    "apple-mobile-web-app-capable": "yes",
-    "apple-mobile-web-app-status-bar-style": "black-translucent",
-    "apple-mobile-web-app-title": siteConfig.name,
   },
   robots: {
     index: true,
@@ -116,10 +111,12 @@ export const metadata: Metadata = {
   formatDetection: {
     telephone: false,
   },
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 5,
-    viewportFit: "cover",
-  },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  viewportFit: "cover",
+  themeColor: siteConfig.themeColor,
 };

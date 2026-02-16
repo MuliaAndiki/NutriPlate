@@ -33,18 +33,15 @@ export function usePWAUpdate(onUpdateAvailable?: () => void) {
       onControllerChange,
     );
 
-    // Register service worker
     navigator.serviceWorker
       .register("/sw.js", {
         scope: "/",
-        updateViaCache: "none",
       })
       .then((registration) => {
         registrationRef.current = registration;
         setUpdateRegistration(registration);
         console.log("[PWA] Service Worker registered:", registration);
 
-        // Detect when new service worker is waiting
         registration.onupdatefound = () => {
           const newWorker = registration.installing;
           if (!newWorker) return;
@@ -63,14 +60,12 @@ export function usePWAUpdate(onUpdateAvailable?: () => void) {
           };
         };
 
-        // Check for waiting service worker
         if (registration.waiting) {
           console.log("[PWA] Waiting service worker found");
           setUpdateAvailable(true);
           onUpdateAvailable?.();
         }
 
-        // Check for updates every hour
         const updateCheckInterval = setInterval(
           () => {
             registration.update().catch((err) => {
@@ -94,9 +89,6 @@ export function usePWAUpdate(onUpdateAvailable?: () => void) {
     };
   }, [onUpdateAvailable]);
 
-  /**
-   * Trigger skip waiting & reload
-   */
   const updateApp = async () => {
     if (!updateRegistration?.waiting) {
       console.warn("[PWA] No waiting service worker found");
@@ -106,7 +98,6 @@ export function usePWAUpdate(onUpdateAvailable?: () => void) {
     console.log("[PWA] Triggering SKIP_WAITING...");
     updateRegistration.waiting.postMessage({ type: "SKIP_WAITING" });
 
-    // Listen for controller change
     const handleControllerChange = () => {
       navigator.serviceWorker.removeEventListener(
         "controllerchange",

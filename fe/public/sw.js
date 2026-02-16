@@ -4,7 +4,6 @@ importScripts(
 
 if (!self.workbox) {
   console.error("[SW] Workbox failed to load");
-  self.addEventListener("install", () => self.skipWaiting());
   self.addEventListener("activate", () => self.clients.claim());
   return;
 }
@@ -20,7 +19,6 @@ clientsClaim();
 
 console.log("[SW] Service Worker Starting...");
 
-// HTML → NetworkFirst
 registerRoute(
   ({ request }) => request.mode === "navigate",
   new NetworkFirst({
@@ -34,7 +32,6 @@ registerRoute(
   }),
 );
 
-// API → NetworkFirst + timeout
 registerRoute(
   ({ url }) => url.pathname.startsWith("/api/"),
   new NetworkFirst({
@@ -49,7 +46,6 @@ registerRoute(
   }),
 );
 
-// JS/CSS → StaleWhileRevalidate
 registerRoute(
   ({ request }) =>
     request.destination === "script" || request.destination === "style",
@@ -64,9 +60,9 @@ registerRoute(
   }),
 );
 
-// Images → CacheFirst
 registerRoute(
-  ({ request }) => request.destination === "image",
+  ({ request, url }) =>
+    request.destination === "image" && !url.pathname.startsWith("/favicon"),
   new CacheFirst({
     cacheName: `image-cache-${CACHE_VERSION}`,
     plugins: [
@@ -78,7 +74,6 @@ registerRoute(
   }),
 );
 
-// Fonts → CacheFirst
 registerRoute(
   ({ request }) => request.destination === "font",
   new CacheFirst({
@@ -92,13 +87,11 @@ registerRoute(
   }),
 );
 
-// Install
 self.addEventListener("install", () => {
   console.log("[SW] Installing");
   self.skipWaiting();
 });
 
-// Activate → cleanup old caches
 self.addEventListener("activate", (event) => {
   console.log("[SW] Activating");
 
@@ -123,12 +116,14 @@ self.addEventListener("activate", (event) => {
   );
 });
 
-// Listen for update trigger
 self.addEventListener("message", (event) => {
   if (event.data?.type === "SKIP_WAITING") {
     console.log("[SW] SKIP_WAITING received");
     self.skipWaiting();
   }
 });
+
+workbox.core.skipWaiting();
+workbox.core.clientsClaim();
 
 console.log("[SW] Service Worker Ready");
