@@ -3,8 +3,10 @@ import ProfileKaderSection from "@/components/section/private/kader/profile/prof
 import { SidebarLayout } from "@/core/layouts/sidebar.layout";
 import { useAppSelector } from "@/hooks/dispatch/dispatch";
 import useService from "@/hooks/mutation/prop.service";
+import { useAppNameSpace } from "@/hooks/useAppNameSpace";
 
 const ProfileKaderContainer = () => {
+  const namespace = useAppNameSpace();
   const service = useService();
   const selector = useAppSelector((state) => state.posyandu);
 
@@ -21,6 +23,9 @@ const ProfileKaderContainer = () => {
     <SidebarLayout>
       <main className="w-full min-h-screen overflow-x-hidden">
         <ProfileKaderSection
+          namespace={{
+            alert: namespace.alert,
+          }}
           service={{
             mutation: {
               onLogout: handleLogout,

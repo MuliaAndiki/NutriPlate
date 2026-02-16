@@ -14,7 +14,7 @@ const BabyMerge = () => {
         width="102"
         height="37"
         fill="url(#pattern0_0_1)"
-        fill-opacity="0.5"
+        fillOpacity="0.5"
       />
       <rect width="122" height="109" fill="url(#pattern1_0_1)" />
       <defs>

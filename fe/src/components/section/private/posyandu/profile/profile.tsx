@@ -7,8 +7,12 @@ import Link from "next/link";
 import { Spinner } from "@/components/ui/spinner";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { RoutingProfile } from "@/configs/app.config";
+import { AlertContexType } from "@/types/ui";
 
 interface ProfilePosyanduProps {
+  namespace: {
+    alert: AlertContexType;
+  };
   service: {
     mutation: {
       onLogout: () => void;
@@ -26,6 +30,7 @@ interface ProfilePosyanduProps {
 const ProfilePosyanduSection: React.FC<ProfilePosyanduProps> = ({
   service,
   selector,
+  namespace,
 }) => {
   const resProfile = service.query.userProfileType;
 
@@ -90,7 +95,16 @@ const ProfilePosyanduSection: React.FC<ProfilePosyanduProps> = ({
           className="w-full mt-6 text-background"
           variant="destructive"
           disabled={service.mutation.isPending}
-          onClick={() => service.mutation.onLogout()}
+          onClick={() =>
+            namespace.alert.confirm({
+              title: "Yakin keluar dari akun NutriPlate?",
+              deskripsi: "Anda harus login kembali untuk menggunakan aplikasi",
+              icon: "warning",
+              onConfirm: () => {
+                service.mutation.onLogout();
+              },
+            })
+          }
         >
           {service.mutation.isPending ? <Spinner /> : "Keluar"}
         </Button>

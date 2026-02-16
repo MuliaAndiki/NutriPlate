@@ -161,9 +161,13 @@ export const cacheKey = {
     health: () => ["service:health"],
     statusIot: () => ["service:status:iot"],
   },
-  // not fix
+
   iot: {
     list: () => ["iot:list"],
     device: (token: string) => [`iot:device:${token}`],
+  },
+  session: {
+    active: () => ["session:active"],
+    list: () => ["session:list"],
   },
 };

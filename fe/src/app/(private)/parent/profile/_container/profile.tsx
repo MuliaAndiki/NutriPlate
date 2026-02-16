@@ -3,8 +3,10 @@ import ProfileParentHeroSection from "@/components/section/private/parent/profil
 import { SidebarLayout } from "@/core/layouts/sidebar.layout";
 import { useAppSelector } from "@/hooks/dispatch/dispatch";
 import useService from "@/hooks/mutation/prop.service";
+import { useAppNameSpace } from "@/hooks/useAppNameSpace";
 
 const ProfileParentContainer = () => {
+  const namespace = useAppNameSpace();
   const service = useService();
   const selector = useAppSelector((state) => state.posyandu);
 
@@ -21,6 +23,9 @@ const ProfileParentContainer = () => {
     <SidebarLayout>
       <main className="w-full min-h-screen overflow-x-hidden">
         <ProfileParentHeroSection
+          namespace={{
+            alert: namespace.alert,
+          }}
           service={{
             mutation: {
               onLogout: () => handleLogout(),

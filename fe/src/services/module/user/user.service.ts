@@ -3,7 +3,6 @@ import { FormUpdatePassword, FormUpdateProfile } from "@/types/form/auth.form";
 import AxiosClient from "@/utils/axios.client";
 
 class UserApi {
-  //min intergrate
   public async editProfile(
     payload: FormUpdateProfile,
   ): Promise<TResponse<any>> {

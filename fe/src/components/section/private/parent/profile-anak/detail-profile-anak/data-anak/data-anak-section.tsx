@@ -202,7 +202,7 @@ const DataAnakHeroSection: React.FC<DataAnakHeroSectionProps> = ({
             className="w-full"
             onClick={() => state.setIsEdit(true)}
           >
-            Edit Data
+            Perbarui Data
           </Button>
         </div>
       ) : (

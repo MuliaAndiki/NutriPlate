@@ -15,6 +15,7 @@ import ModelsApi from "./module/models/models.service";
 import KaderRegistrationApi from "./module/kaderRegistration/kaderRegistration.service";
 import ProgramRegistrationApi from "./module/programRegistration/programRegistration.service";
 import ProxyApi from "./module/proxy/proxy.service";
+import SessionApi from "./module/session/session.service";
 
 class Api {
   static Auth = new AuhtApi();
@@ -33,6 +34,7 @@ class Api {
   static KaderRegistration = new KaderRegistrationApi();
   static ProgramRegistration = new ProgramRegistrationApi();
   static Proxy = new ProxyApi();
+  static Session = new SessionApi();
 }
 
 export default Api;
