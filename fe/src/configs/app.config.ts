@@ -158,4 +158,10 @@ export const RoutingProfile: RoutingProfileType[] = [
     icon2: "mingcute:arrow-right-fill",
     href: () => "/about",
   },
+  {
+    title: "Riwayat Login",
+    icon: "fluent:chat-history-24-filled",
+    icon2: "mingcute:arrow-right-fill",
+    href: () => "/history-login",
+  },
 ];

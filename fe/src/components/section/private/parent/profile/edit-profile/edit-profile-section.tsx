@@ -79,7 +79,12 @@ const EditProfileSection: React.FC<EditProfileSectionProps> = ({
               className="object-cover rounded-full aspect-square"
             />
             <div className="absolute right-4 -translate-y-6">
-              <Icon icon="bi:camera-fill" width="26" height="26" />
+              <Icon
+                icon="bi:camera-fill"
+                width="26"
+                height="26"
+                className="text-primary"
+              />
             </div>
           </UploadsTrigger>
         ) : (
@@ -178,7 +183,7 @@ const EditProfileSection: React.FC<EditProfileSectionProps> = ({
           startIcon={<Icon icon="bxs:edit" width="24" height="24" />}
           onClick={() => state.setIsEdit(true)}
         >
-          Edit
+          Perbarui
         </ButtonWrapper>
       )}
     </div>

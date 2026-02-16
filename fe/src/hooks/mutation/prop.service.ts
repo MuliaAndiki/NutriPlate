@@ -14,6 +14,7 @@ import { useProgres } from "./progres/useProgres";
 import { useServices } from "./services/useService";
 import { useTask } from "./task/useTask";
 import { useUsers } from "./users/useUsers";
+import { useSession } from "./session/useSession";
 
 export const useService = () => ({
   auth: useAuth(),
@@ -32,6 +33,7 @@ export const useService = () => ({
   registerKader: useKaderRegistration(),
   iot: useIot(),
   models: useModels(),
+  session: useSession(),
 });
 
 export default useService;

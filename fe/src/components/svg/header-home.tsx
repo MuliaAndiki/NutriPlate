@@ -13,7 +13,7 @@ const HeaderHomeSvg = () => {
       <path
         d="M43.5003 -10.5C-104.5 189 395.5 113.5 201 250.5C117.69 309.182 318 -51.5 442.5 55.5"
         stroke="white"
-        stroke-width="0.5"
+        strokeWidth="0.5"
       />
     </svg>
   );

@@ -3,8 +3,10 @@ import ProfilePosyanduSection from "@/components/section/private/posyandu/profil
 import { SidebarLayout } from "@/core/layouts/sidebar.layout";
 import { useAppSelector } from "@/hooks/dispatch/dispatch";
 import useService from "@/hooks/mutation/prop.service";
+import { useAppNameSpace } from "@/hooks/useAppNameSpace";
 
 const ProfilePosyanduContainer = () => {
+  const namespace = useAppNameSpace();
   const service = useService();
   const selector = useAppSelector((state) => state.posyandu);
   //profile
@@ -21,6 +23,9 @@ const ProfilePosyanduContainer = () => {
     <SidebarLayout>
       <main className="w-full min-h-screen overflow-x-hidden">
         <ProfilePosyanduSection
+          namespace={{
+            alert: namespace.alert,
+          }}
           service={{
             mutation: {
               onLogout: handleLogout,
