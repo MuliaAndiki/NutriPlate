@@ -52,11 +52,7 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
   return (
     <Providers>
       {children}
-
-      {/* PWA Update Prompt */}
       <PWAUpdatePrompt />
-
-      {/* Development Tools */}
       <ReactQueryDevtools initialIsOpen={false} />
       <Toaster position="top-center" toastOptions={{ duration: 900 }} />
     </Providers>

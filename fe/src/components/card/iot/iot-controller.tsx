@@ -94,7 +94,7 @@ const IotControllerCard: React.FC<IotControllerCardProps> = ({
                 disabled={isPending}
                 onClick={() => onHoldWeight()}
               >
-                Gunakan Berat Ini
+                {isPending ? <Spinner /> : "Gunakan Berat Ini"}
               </ButtonWrapper>
             </div>
           </div>
@@ -120,7 +120,7 @@ const IotControllerCard: React.FC<IotControllerCardProps> = ({
                 disabled={isPending}
                 onClick={() => onConfirmWeight()}
               >
-                Scan Makanan
+                {isPending ? <Spinner /> : "Scan Makanan"}
               </ButtonWrapper>
             </div>
           </div>

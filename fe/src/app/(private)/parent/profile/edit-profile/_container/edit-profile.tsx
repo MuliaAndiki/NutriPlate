@@ -1,6 +1,6 @@
 "use client";
 import EditProfileSection from "@/components/section/private/parent/profile/edit-profile/edit-profile-section";
-import { SidebarLayout } from "@/core/layouts/sidebar.layout";
+
 import useService from "@/hooks/mutation/prop.service";
 import { useAppNameSpace } from "@/hooks/useAppNameSpace";
 import { FormUpdateProfile } from "@/types/form/auth.form";
