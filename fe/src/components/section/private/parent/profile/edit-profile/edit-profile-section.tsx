@@ -61,41 +61,6 @@ const EditProfileSection: React.FC<EditProfileSectionProps> = ({
           />
           <h1 className="text-2xl font-extrabold">Edit Profile</h1>
         </div>
-
-        {state.isEdit ? (
-          <div className="w-full flex items-center gap-4">
-            <Button
-              variant={"destructive"}
-              disabled={service.mutation.isPending}
-              className="flex items-center"
-              onClick={() => state.setIsEdit(false)}
-            >
-              <Icon
-                icon="bxs:edit"
-                width="24"
-                height="24"
-                className="text-background"
-              />
-              <h1 className="text-background">Batalkan</h1>
-            </Button>
-            <Button
-              variant={"btn"}
-              className="flex items-center"
-              disabled={service.mutation.isPending}
-              onClick={() => service.mutation.onUpdateProfile()}
-            >
-              <Icon icon="bxs:edit" width="24" height="24" />
-              <h1>{service.mutation.isPending ? <Spinner /> : "Simpan"}</h1>
-            </Button>
-          </div>
-        ) : (
-          <ButtonWrapper
-            startIcon={<Icon icon="bxs:edit" width="24" height="24" />}
-            onClick={() => state.setIsEdit(true)}
-          >
-            Edit
-          </ButtonWrapper>
-        )}
       </div>
       <div className="w-full flex items-center justify-center mt-4">
         {!state.preview ? (
@@ -181,6 +146,41 @@ const EditProfileSection: React.FC<EditProfileSectionProps> = ({
           disabled
         />
       </div>
+      {state.isEdit ? (
+        <div className="w-full grid grid-cols-2 grid-rows-1 gap-2 mt-4">
+          <Button
+            variant={"destructive"}
+            disabled={service.mutation.isPending}
+            className="flex items-center w-full"
+            onClick={() => state.setIsEdit(false)}
+          >
+            <Icon
+              icon="bxs:edit"
+              width="24"
+              height="24"
+              className="text-background"
+            />
+            <h1 className="text-background">Batalkan</h1>
+          </Button>
+          <Button
+            variant={"btn"}
+            className="flex items-center w-full"
+            disabled={service.mutation.isPending}
+            onClick={() => service.mutation.onUpdateProfile()}
+          >
+            <Icon icon="bxs:edit" width="24" height="24" />
+            <h1>{service.mutation.isPending ? <Spinner /> : "Simpan"}</h1>
+          </Button>
+        </div>
+      ) : (
+        <ButtonWrapper
+          className="mt-4 w-full"
+          startIcon={<Icon icon="bxs:edit" width="24" height="24" />}
+          onClick={() => state.setIsEdit(true)}
+        >
+          Edit
+        </ButtonWrapper>
+      )}
     </div>
   );
 };
