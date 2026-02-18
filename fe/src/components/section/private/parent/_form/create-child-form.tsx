@@ -139,7 +139,7 @@ const FormCreateChildSection: React.FC<FormCreateChildProps> = ({
                 >
                   <ImagePlus size={200} />
                   <label className="text-lg font-semibold">
-                    Upload Foto Category
+                    Upload Foto Anak
                   </label>
                 </Button>
               </UploadsTrigger>

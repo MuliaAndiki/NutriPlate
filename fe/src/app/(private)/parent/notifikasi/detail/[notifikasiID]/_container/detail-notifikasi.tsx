@@ -3,28 +3,32 @@ import NotifikasiDetailSection from "@/components/section/private/parent/notifik
 import { SidebarLayout } from "@/core/layouts/sidebar.layout";
 import useService from "@/hooks/mutation/prop.service";
 import { useAppNameSpace } from "@/hooks/useAppNameSpace";
-import { useDebugLog } from "@/utils/useDebug";
+
 import { useParams } from "next/navigation";
 import { useEffect } from "react";
 
 const DetailNotifikasiContainer = () => {
   const namespace = useAppNameSpace();
   const service = useService();
-  const { id } = useParams<{ id: string }>();
-  const notifikasiQuery = service.notafication.query.getNotificationByID(id);
+  const { notifikasiID } = useParams<{ notifikasiID: string }>();
+
+  //notifikasi
+  const notifikasiQuery =
+    service.notafication.query.getNotificationByID(notifikasiID);
   const notifikasiData = notifikasiQuery.data?.data ?? null;
-  const readStatusQuery = service.notafication.query.isNotificationRead(id);
+
+  //read
+  const readStatusQuery =
+    service.notafication.query.isNotificationRead(notifikasiID);
   const isRead = readStatusQuery.data?.data?.isRead ?? false;
+
   const markAsReadMutation = service.notafication.mutation.markAsRead();
 
-  useDebugLog(notifikasiData, [notifikasiQuery], {
-    label: "here",
-  });
   useEffect(() => {
-    if (notifikasiData && !isRead && id) {
-      markAsReadMutation.mutate(id);
+    if (notifikasiData && !isRead && notifikasiID) {
+      return markAsReadMutation.mutate(notifikasiID);
     }
-  }, [notifikasiData, isRead, id, markAsReadMutation]);
+  }, [markAsReadMutation]);
 
   return (
     <SidebarLayout>

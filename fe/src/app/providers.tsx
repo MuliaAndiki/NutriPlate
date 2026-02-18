@@ -18,7 +18,6 @@ import { ReactQueryClientProvider } from "@/pkg/react-query/query-client.pkg";
 import { persistor, store } from "@/stores/store";
 import { composeProviders } from "./composeProvinders";
 import { SocketProvider } from "@/core/providers/socket.provinder";
-import { ClientGate } from "@/core/providers/client-gate";
 
 const Providers = composeProviders([
   ({ children }) => (
@@ -34,8 +33,6 @@ const Providers = composeProviders([
   ThemeProvider,
   AlertProvinder,
   ReactQueryClientProvider,
-  ClientGate,
-
   ({ children }) => (
     <SidebarProvider defaultOpen={false}>{children}</SidebarProvider>
   ),

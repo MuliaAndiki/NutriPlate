@@ -731,10 +731,6 @@ class UserController {
         },
       });
 
-      if (!children.length) {
-        return c.json?.({ status: 404, message: 'children not found' }, 404);
-      }
-
       return c.json?.({ status: 200, message: 'success', data: children }, 200);
     } catch (error) {
       console.error('[getChildren]', error);

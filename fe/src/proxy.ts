@@ -1,10 +1,36 @@
 import { NextRequest, NextResponse } from "next/server";
 
+const MOBILE_UA =
+  /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|mobile/i;
+
+function isMobileRequest(request: NextRequest) {
+  const ua = request.headers.get("user-agent") || "";
+  const chUaMobile = request.headers.get("sec-ch-ua-mobile") || "";
+  return chUaMobile === "?1" || MOBILE_UA.test(ua);
+}
+
 export function proxy(req: NextRequest) {
-  const { pathname } = req.nextUrl;
+  const url = req.nextUrl.clone();
+  const { pathname } = url;
+  const isMobile = isMobileRequest(req);
 
   if (pathname.startsWith("/not-supported")) {
     return NextResponse.next();
+  }
+
+  if (pathname === "/") {
+    url.pathname = isMobile ? "/home" : "/landing";
+    return NextResponse.redirect(url);
+  }
+
+  if (pathname === "/home" && !isMobile) {
+    url.pathname = "/landing";
+    return NextResponse.redirect(url);
+  }
+
+  if (pathname === "/landing" && isMobile) {
+    url.pathname = "/home";
+    return NextResponse.redirect(url);
   }
 
   const privateRoutes = [
@@ -26,8 +52,6 @@ export function proxy(req: NextRequest) {
   if (!isPrivateRoute) {
     return NextResponse.next();
   }
-  const ua = req.headers.get("user-agent") || "";
-  const isMobile = /mobile|android|iphone|ipad/i.test(ua);
 
   if (!isMobile) {
     return NextResponse.redirect(new URL("/not-supported", req.url));
@@ -38,6 +62,8 @@ export function proxy(req: NextRequest) {
 
 export const config = {
   matcher: [
+    "/",
+    "/landing",
     "/parent/:path*",
     "/kader/:path*",
     "/posyandu/:path*",
