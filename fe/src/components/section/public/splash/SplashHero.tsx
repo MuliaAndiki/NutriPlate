@@ -83,11 +83,11 @@ const SplashHeroSection: React.FC<SplashProps> = ({
             </div>
             <ButtonWrapper
               variant="splash"
+              onClick={() => setStep("sp2")}
+              className="font-bold text-xl h-auto w-auto z-1"
               rightIcon={
                 <Icon icon="formkit:arrowright" width="36" height="36" />
               }
-              onClick={() => setStep("sp2")}
-              className="font-bold text-xl h-auto w-auto"
             >
               Mulai Sekarang
             </ButtonWrapper>
