@@ -1,4 +1,4 @@
-import LandingContainer from "./_containers/landing";
+import LandingContainer from "./_containers/lading";
 
 export default function LandingPage() {
   return <LandingContainer />;
