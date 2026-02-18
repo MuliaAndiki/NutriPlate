@@ -357,7 +357,6 @@ class NotificationController {
     }
   }
 
-  // ✅ Mark notification as read per user (separate from global isRead)
   public async markNotificationAsRead(c: AppContext) {
     try {
       const jwtUser = c.user as JwtPayload;
@@ -383,12 +382,14 @@ class NotificationController {
         );
       }
 
-      const notification = await prisma.notifications.findUnique({
+      const updatedNotification = await prisma.notifications.update({
         where: { id: notParams.id },
-        select: { id: true },
+        data: {
+          isRead: true,
+        },
       });
 
-      if (!notification) {
+      if (!updatedNotification) {
         return c.json?.(
           {
             status: 404,
@@ -402,11 +403,7 @@ class NotificationController {
         {
           status: 200,
           message: 'Notification marked as read',
-          data: {
-            notificationId: notParams.id,
-            userId: jwtUser.id,
-            readAt: new Date(),
-          },
+          data: updatedNotification,
         },
         200,
       );
@@ -423,7 +420,6 @@ class NotificationController {
     }
   }
 
-  // ✅ Check if notification is read by current user
   public async isNotificationRead(c: AppContext) {
     try {
       const jwtUser = c.user as JwtPayload;
@@ -449,14 +445,22 @@ class NotificationController {
         );
       }
 
+      const notifikasi = await prisma.notifications.findUnique({
+        where: {
+          id: notParams.id,
+        },
+        select: {
+          isRead: true,
+        },
+      });
+
       return c.json?.(
         {
           status: 200,
           message: 'Successfully get notification read status',
           data: {
-            notificationId: notParams.id,
-            userId: jwtUser.id,
-            isRead: false,
+            notifikasiId: notParams.id,
+            isRead: notifikasi?.isRead ?? false,
           },
         },
         200,

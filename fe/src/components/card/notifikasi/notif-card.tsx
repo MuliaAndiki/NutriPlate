@@ -6,7 +6,6 @@ import Link from "next/link";
 
 interface NotifikasiCardProps {
   res: INotification;
-  // ✅ Per-user read status from Redis
   isRead?: boolean;
 }
 
@@ -38,11 +37,9 @@ const NotifikasiCard: React.FC<NotifikasiCardProps> = ({
             <p className="text-sm text-muted-foreground">{res.message}</p>
             <p className="text-xs text-foreground/80 ">
               {formatDateTime(res.createdAt, { style: "time" })}
-              {/* berapa jam yg lalu */}
             </p>
           </div>
         </div>
-        {/* ✅ Show unread indicator based on per-user tracking */}
         {!isRead ? <div className="w-3 h-3 bg-primary rounded-full" /> : null}
       </div>
     </Link>

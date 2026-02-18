@@ -4,16 +4,6 @@ const nextConfig: NextConfig = {
   compress: true,
   poweredByHeader: false,
   reactStrictMode: true,
-  redirects: async () => {
-    return [
-      {
-        source: "/",
-        destination: process.env.NEXT_PUBLIC_BASEPATH || "/home",
-        permanent: true,
-      },
-    ];
-  },
-
   async rewrites() {
     return [
       {

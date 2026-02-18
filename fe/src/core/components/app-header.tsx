@@ -13,7 +13,6 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import { navigationMenuConfig } from "@/configs/app.config";
-import useService from "@/hooks/mutation/prop.service";
 import { cn } from "@/lib/classname";
 
 // import UserDropdown from './user.dropdown';
@@ -23,12 +22,6 @@ import ThemeToggle from "./theme-toggle";
 
 export default function AppHeader() {
   const [isScrolled, setIsScrolled] = useState(false);
-  const service = useService();
-  const logout = service.auth.mutation.logout();
-
-  const handleLogout = () => {
-    return logout.mutate({});
-  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -70,14 +63,6 @@ export default function AppHeader() {
               ))}
             </NavigationMenuList>
           </NavigationMenu>
-          {/* Klo Lengket DIsini */}
-          <Button
-            onClick={() => {
-              handleLogout();
-            }}
-          >
-            reset
-          </Button>
         </div>
 
         <div className="flex items-center gap-4">
