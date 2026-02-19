@@ -23,9 +23,12 @@ const steps = [
 
 const StartSection = () => {
   return (
-    <section className="w-full bg-background py-16">
+    <section className="w-full bg-background py-16 ">
       <div className="mx-auto w-full max-w-6xl px-6">
-        <div className="flex flex-col items-center gap-4 text-center" data-aos="fade-up">
+        <div
+          className="flex flex-col items-center gap-4 text-center"
+          data-aos="fade-up"
+        >
           <h2 className="text-3xl font-bold text-foreground">
             Mulai Menggunakan NutriPlate
           </h2>

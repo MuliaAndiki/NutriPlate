@@ -29,7 +29,7 @@ const CtaSection = () => {
                 trigger={
                   <button
                     type="button"
-                    className="rounded-md bg-white px-5 py-2.5 text-sm font-semibold text-primary shadow-sm transition hover:bg-white/90"
+                    className="rounded-md bg-background w-full lg:w-auto  px-5 py-2.5 text-sm font-semibold text-primary shadow-sm transition hover:bg-white/90"
                   >
                     Download Aplikasi
                   </button>

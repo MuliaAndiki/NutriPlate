@@ -728,10 +728,23 @@ class UserController {
             },
           },
           programProgress: true,
+          measurements: {
+            orderBy: { createdAt: 'desc' },
+            take: 1,
+            select: {
+              nutritionStatus: true,
+            },
+          },
         },
       });
 
-      return c.json?.({ status: 200, message: 'success', data: children }, 200);
+      const formattedChildren = children.map((child) => ({
+        ...child,
+        measurement: child.measurements[0] ?? null,
+        measurements: undefined,
+      }));
+
+      return c.json?.({ status: 200, message: 'success', data: formattedChildren }, 200);
     } catch (error) {
       console.error('[getChildren]', error);
       return c.json?.(

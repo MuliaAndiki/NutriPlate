@@ -25,7 +25,7 @@ const HeroSection = () => {
             gizi harian, pertumbuhan fisik, serta kondisi kesehatan balita
             secara terintegrasi, mudah dipahami, dan berbasis data yang akurat.
           </p>
-          <div className="flex items-start flex-col space-y-3">
+          <div className="flex  items-start flex-col space-y-3 w-full lg:w-auto">
             <PWAInstallDialog
               trigger={
                 <ButtonWrapper className="w-full ">
@@ -33,7 +33,7 @@ const HeroSection = () => {
                 </ButtonWrapper>
               }
             />
-            <div className="w-full flex flex-wrap items-center gap-4">
+            <div className="w-full flex flex-wrap items-center gap-4 justify-center">
               <PlayStore />
               <AppStore />
             </div>

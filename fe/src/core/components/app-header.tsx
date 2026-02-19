@@ -4,8 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Icon } from "@iconify/react";
-
-import { Button } from "@/components/ui/button";
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -15,8 +13,7 @@ import {
 } from "@/components/ui/navigation-menu";
 import { navigationMenuConfig } from "@/configs/app.config";
 import { cn } from "@/lib/classname";
-import LanguageDropdown from "./language.dropdown";
-import ThemeToggle from "./theme-toggle";
+import { PWAInstallDialog } from "@/components/pwa/PWAInstallDialog";
 import { ButtonWrapper } from "@/components/wrapper/ButtonWrapper";
 
 export default function AppHeader() {
@@ -67,7 +64,13 @@ export default function AppHeader() {
         </NavigationMenu>
 
         <div className="hidden md:flex items-center gap-4">
-          <ButtonWrapper className="w-full">Download Applikasi</ButtonWrapper>
+          <PWAInstallDialog
+            trigger={
+              <ButtonWrapper variant={"pwa"} className="w-full">
+                Download Applikasi
+              </ButtonWrapper>
+            }
+          />
         </div>
 
         <button

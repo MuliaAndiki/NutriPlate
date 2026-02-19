@@ -41,7 +41,7 @@ const AboutSection = () => {
     },
   ];
   return (
-    <section className="w-full min-h-screen flex flex-col items-center justify-center space-y-4 relative px-6 py-16 md:px-10 md:py-20 lg:p-20 ">
+    <section className="w-full min-h-screen flex flex-col items-center justify-center space-y-4 relative px-6 py-16 md:px-10 md:py-20 lg:p-20 overflow-x-hidden ">
       <div className="absolute bg-primary/70 w-50 h-50 rounded-full z-1 blur-2xl right-0 bottom-50 translate-x-40 lg:translate-0" />
       <div
         className="w-full flex flex-col items-center justify-center  space-y-4"
