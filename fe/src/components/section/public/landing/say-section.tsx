@@ -76,15 +76,16 @@ const SaySection = () => {
                 type="button"
                 variant="outline"
                 size="icon"
-                className="h-10 w-10 rounded-full border-border bg-background text-primary hover:bg-primary/10"
+                className="h-10 w-10 rounded-full border-border bg-background text-primary hover:bg-primary/90 hover:text-background"
                 onClick={() => api?.scrollPrev()}
               >
                 <Icon icon="mdi:chevron-left" className="h-5 w-5" />
               </Button>
               <Button
                 type="button"
+                variant={"outline"}
                 size="icon"
-                className="h-10 w-10 rounded-full bg-primary text-primary-foreground hover:bg-primary/90"
+                className="h-10 w-10 rounded-full bg-background text-primary hover:bg-primary/90 hover:text-background"
                 onClick={() => api?.scrollNext()}
               >
                 <Icon icon="mdi:chevron-right" className="h-5 w-5" />

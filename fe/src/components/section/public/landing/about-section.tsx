@@ -41,8 +41,8 @@ const AboutSection = () => {
     },
   ];
   return (
-    <section className="w-full min-h-screen flex flex-col items-center justify-center space-y-4 relative px-6 py-16 md:px-10 md:py-20 lg:p-20">
-      <div className="absolute bg-primary/70 w-50 h-50 rounded-full z-1 blur-2xl right-0 bottom-50" />
+    <section className="w-full min-h-screen flex flex-col items-center justify-center space-y-4 relative px-6 py-16 md:px-10 md:py-20 lg:p-20 ">
+      <div className="absolute bg-primary/70 w-50 h-50 rounded-full z-1 blur-2xl right-0 bottom-50 translate-x-40 lg:translate-0" />
       <div
         className="w-full flex flex-col items-center justify-center  space-y-4"
         data-aos="fade-up"
@@ -88,9 +88,11 @@ const AboutSection = () => {
           className="relative flex items-center justify-center"
           data-aos="zoom-in"
         >
-          <PhoneMockup2 />
-          <div className="absolute w-80 h-80 top-25 left-0 -translate-x-8 rounded-full border-8 border-primary/70 animate-heartbeat z-[-1]" />
-          <div className="absolute w-100 h-100 top-15 left-0 -translate-x-18 rounded-full border-3 border-primary/50 animate-heartbeat-slow z-[-1]" />
+          <div className="w-full  translate-x-12  lg:translate-0">
+            <PhoneMockup2 />
+          </div>
+          <div className="absolute w-80 h-80 top-25 lg:left-0 sm:-translate-x-4 lg:-translate-x-8 rounded-full border-8 border-primary/70 animate-heartbeat  z-[-1]" />
+          <div className="absolute w-100 h-100 top-15 lg:left-0 sm:translate-x-10 lg:-translate-x-18 rounded-full border-3 border-primary/50 animate-heartbeat-slow z-[-1]" />
         </div>
 
         <div className="flex flex-col gap-8 items-center lg:items-start">
