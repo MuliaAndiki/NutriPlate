@@ -20,7 +20,7 @@ const HeroSection = () => {
           <h1 className="text-3xl md:text-4xl lg:text-6xl font-bold">
             Pantau Gizi & Tumbuh Kembang Anak dengan NutriPlate
           </h1>
-          <p className="text-base md:text-lg lg:text-xl font-light text-foreground/60">
+          <p className="text-base md:text-lg lg:text-xl font-light text-foreground/60 text-justify lg:text-wrap">
             Aplikasi resmi bagi orang tua dan posyandu untuk memantau asupan
             gizi harian, pertumbuhan fisik, serta kondisi kesehatan balita
             secara terintegrasi, mudah dipahami, dan berbasis data yang akurat.
@@ -28,7 +28,7 @@ const HeroSection = () => {
           <div className="flex items-start flex-col space-y-3">
             <PWAInstallDialog
               trigger={
-                <ButtonWrapper className="w-full sm:w-auto">
+                <ButtonWrapper className="w-full ">
                   Download Aplikasi
                 </ButtonWrapper>
               }

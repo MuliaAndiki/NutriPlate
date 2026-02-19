@@ -34,6 +34,10 @@ interface AppConfig {
       url: string;
       icon: string;
     };
+    github: {
+      url: string;
+      icon: string;
+    };
   };
 }
 
@@ -68,6 +72,10 @@ export const appConfig: AppConfig = {
     tiktok: {
       url: "https://tiktok.com/app",
       icon: "hugeicons:tiktok",
+    },
+    github: {
+      icon: "mdi:github",
+      url: "https://github.com/MuliaAndiki/NutriPlate.git",
     },
   },
 };
