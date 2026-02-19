@@ -97,10 +97,11 @@ export const navigationMenuConfig: NavigationMenuConfig = {
       href: "/",
       description: "Home",
     },
+
     {
-      title: "Login",
-      href: "/login",
-      description: "login",
+      title: "About",
+      href: "/abouting",
+      description: "abouting",
     },
   ],
 };

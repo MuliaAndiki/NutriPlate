@@ -57,8 +57,8 @@ const SaySection = () => {
   );
 
   return (
-    <section className="w-full bg-secondary/60 py-16 md:py-20">
-      <div className="mx-auto w-full max-w-6xl px-6">
+    <section className="w-full bg-secondary/60 py-16 md:py-20 overflow-x-hidden ">
+      <div className="mx-auto w-full max-w-6xl px-6 ">
         <div className="grid items-center gap-10 lg:grid-cols-[1fr_1.4fr]">
           <div className="flex flex-col gap-4" data-aos="fade-right">
             <div className="space-y-3">
@@ -96,7 +96,7 @@ const SaySection = () => {
           <Carousel
             setApi={setApi}
             opts={{ align: "start", loop: true }}
-            className="w-full"
+            className="w-full max-w-sm lg:max-w-full "
             data-aos="fade-left"
           >
             <CarouselContent className="-ml-4">

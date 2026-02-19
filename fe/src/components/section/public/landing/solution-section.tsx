@@ -1,25 +1,25 @@
 import Image from "next/image";
 const SolutionSection = () => {
-      const SolutionContent = [
-        {
-          image: "/images/family.png",
-          title: "Pemantauan Pertumbuhan Balita",
-          decs: "Lacak berat, tinggi, dan indikator penting lainnya secara berkala dengan grafik yang mudah dipahami.",
-          subtitle: "Pencatatan Asupan Gizi Harian",
-          subdesc:
-            "Catat menu makan harian untuk mengetahui kebutuhan gizi anak dan memastikan pola makan lebih seimbang.",
-        },
-        {
-          image: "/images/family2.png",
-          title: "Program Gizi & Intervensi Posyandu",
-          decs: "Rencana intervensi gizi dibuat lebih terarah dan terpantau bersama kader serta tenaga kesehatan.",
-          subtitle: "Notifikasi & Pengingat Kesehatan",
-          subdesc:
-            "Pengingat otomatis untuk jadwal posyandu, imunisasi, dan evaluasi pertumbuhan anak.",
-        },
-      ];
+  const SolutionContent = [
+    {
+      image: "/images/family.png",
+      title: "Pemantauan Pertumbuhan Balita",
+      decs: "Lacak berat, tinggi, dan indikator penting lainnya secara berkala dengan grafik yang mudah dipahami.",
+      subtitle: "Pencatatan Asupan Gizi Harian",
+      subdesc:
+        "Catat menu makan harian untuk mengetahui kebutuhan gizi anak dan memastikan pola makan lebih seimbang.",
+    },
+    {
+      image: "/images/family2.png",
+      title: "Program Gizi & Intervensi Posyandu",
+      decs: "Rencana intervensi gizi dibuat lebih terarah dan terpantau bersama kader serta tenaga kesehatan.",
+      subtitle: "Notifikasi & Pengingat Kesehatan",
+      subdesc:
+        "Pengingat otomatis untuk jadwal posyandu, imunisasi, dan evaluasi pertumbuhan anak.",
+    },
+  ];
   return (
-    <section className="w-full min-h-screen flex items-center flex-col justify-center relative px-6 py-16 md:px-10 md:py-20 lg:p-20">
+    <section className="w-full min-h-screen flex items-center flex-col justify-center relative px-6 py-16 md:px-10 md:py-20 lg:p-20 overflow-x-hidden">
       <div className="absolute w-80 h-80 rounded-full bg-primary blur-3xl left-0 top-0 -translate-x-60" />
       <div className="absolute w-80 h-80 rounded-full bg-primary blur-3xl right-0 bottom-0 translate-x-60" />
       <div className="w-full flex justify-center max-w-4xl" data-aos="fade-up">

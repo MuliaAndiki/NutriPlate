@@ -1,7 +1,6 @@
 import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
-
 import { cn } from "@/lib/classname";
 
 const buttonVariants = cva(
@@ -35,6 +34,7 @@ const buttonVariants = cva(
         notLinter: "bg-primary rounded-full text-background border",
         splash: "bg-background p-8  rounded-full text-primary",
         info: "bg-info rounded-lg text-bold text-background",
+        pwa: "bg-transparent border border-primary text-lg text-primary",
       },
 
       size: {
