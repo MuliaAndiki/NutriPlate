@@ -73,7 +73,7 @@ class IotService {
     });
 
     console.log(
-      `✅ Command ${payload.command} executed on ${payload.token} with status ${payload.status}`,
+      ` Command ${payload.command} executed on ${payload.token} with status ${payload.status}`,
     );
 
     return {
@@ -258,6 +258,23 @@ class IotService {
 
     return {
       success: true,
+    };
+  }
+  public async AllDevice() {
+    const device = await prisma.iotDevice.findMany({
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+    if (!device) {
+      return {
+        success: false,
+        error: 'Device not found',
+      };
+    }
+    return {
+      success: true,
+      data: device,
     };
   }
 }
