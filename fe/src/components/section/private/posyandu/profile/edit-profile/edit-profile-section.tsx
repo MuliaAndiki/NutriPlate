@@ -61,35 +61,6 @@ const EditProfilePosyanduSection: React.FC<EditProfilePosyanduSectionProps> = ({
           />
           <h1 className="text-2xl font-extrabold">Edit Profile Posyandu</h1>
         </div>
-
-        {state.isEdit ? (
-          <div className="w-full flex items-center gap-4">
-            <Button
-              variant={"destructive"}
-              className="flex items-center"
-              onClick={() => state.setIsEdit(false)}
-            >
-              <Icon icon="bxs:edit" width="24" height="24" />
-              <h1>Batalkan</h1>
-            </Button>
-            <Button
-              variant={"btn"}
-              className="flex items-center"
-              onClick={() => service.mutation.editPosyandu()}
-              disabled={service.mutation.isPending}
-            >
-              <Icon icon="bxs:edit" width="24" height="24" />
-              <h1>Simpan</h1>
-            </Button>
-          </div>
-        ) : (
-          <ButtonWrapper
-            startIcon={<Icon icon="bxs:edit" width="24" height="24" />}
-            onClick={() => state.setIsEdit(true)}
-          >
-            Edit
-          </ButtonWrapper>
-        )}
       </div>
 
       <div className="w-full flex items-center justify-center mt-2">
@@ -103,13 +74,22 @@ const EditProfilePosyanduSection: React.FC<EditProfilePosyanduSectionProps> = ({
           >
             <Image
               alt="profile"
-              src={service.query.posyandu.avaUrl ?? "/avatars/1.png"}
+              src={
+                service.query.posyandu.avaUrl
+                  ? service.query.posyandu.avaUrl
+                  : "/avatars/1.png"
+              }
               width={150}
               height={150}
               className="object-cover rounded-full aspect-square"
             />
             <div className="absolute right-4 -translate-y-6">
-              <Icon icon="bi:camera-fill" width="26" height="26" />
+              <Icon
+                icon="bi:camera-fill"
+                width="26"
+                height="26"
+                className="text-primary"
+              />
             </div>
           </UploadsTrigger>
         ) : (
@@ -128,7 +108,12 @@ const EditProfilePosyanduSection: React.FC<EditProfilePosyanduSectionProps> = ({
                 className="object-cover rounded-full aspect-square"
               />
               <div className="absolute right-4 -translate-y-6">
-                <Icon icon="bi:camera-fill" width="26" height="26" />
+                <Icon
+                  icon="bi:camera-fill"
+                  width="26"
+                  height="26"
+                  className="text-primary"
+                />
               </div>
             </UploadsTrigger>
             <div className="w-full flex justify-center items-center mt-1">
@@ -183,6 +168,51 @@ const EditProfilePosyanduSection: React.FC<EditProfilePosyanduSectionProps> = ({
       </div>
 
       <div className="w-full space-y-2">
+        <label htmlFor="" className="text-lg font-bold">
+          Desa
+        </label>
+        <Input
+          placeholder="Masukkan Desa"
+          value={state.formUpdatePosyandu.village}
+          disabled={!state.isEdit}
+          onChange={(e) =>
+            state.setFormUpdatePosyandu((prev) =>
+              prev ? { ...prev, village: e.target.value } : prev,
+            )
+          }
+        />
+      </div>
+
+      <div className="w-full grid grid-cols-2 grid-rows-1 gap-2">
+        <div className="w-full">
+          <label className="text-lg font-bold">Kecamatan</label>
+          <Input
+            value={state.formUpdatePosyandu.subDistrict}
+            disabled={!state.isEdit}
+            placeholder="Masukkan Kecamatan"
+            onChange={(e) =>
+              state.setFormUpdatePosyandu((prev) =>
+                prev ? { ...prev, subDistrict: e.target.value } : prev,
+              )
+            }
+          />
+        </div>
+        <div className="w-full">
+          <label className="text-lg font-bold">Kabupaten</label>
+          <Input
+            value={state.formUpdatePosyandu.district}
+            disabled={!state.isEdit}
+            placeholder="Masukkan Kabupaten"
+            onChange={(e) =>
+              state.setFormUpdatePosyandu((prev) =>
+                prev ? { ...prev, district: e.target.value } : prev,
+              )
+            }
+          />
+        </div>
+      </div>
+
+      <div className="w-full space-y-2">
         <label className="text-lg font-bold">Jadwal (Hari ke-)</label>
         <Input
           type="number"
@@ -201,6 +231,45 @@ const EditProfilePosyanduSection: React.FC<EditProfilePosyanduSectionProps> = ({
           }
         />
       </div>
+
+      {state.isEdit ? (
+        <div className="w-full flex items-center gap-4">
+          <div className="w-full">
+            <Button
+              variant={"destructive"}
+              className="flex items-center w-full"
+              onClick={() => state.setIsEdit(false)}
+            >
+              <Icon
+                icon="bxs:edit"
+                width="24"
+                height="24"
+                className="text-background"
+              />
+              <h1 className="text-background">Batalkan</h1>
+            </Button>
+          </div>
+          <div className="w-full">
+            <Button
+              variant={"btn"}
+              className="flex items-center w-full"
+              onClick={() => service.mutation.editPosyandu()}
+              disabled={service.mutation.isPending}
+            >
+              <Icon icon="bxs:edit" width="24" height="24" />
+              <h1>Simpan</h1>
+            </Button>
+          </div>
+        </div>
+      ) : (
+        <ButtonWrapper
+          startIcon={<Icon icon="bxs:edit" width="24" height="24" />}
+          onClick={() => state.setIsEdit(true)}
+          className="w-full"
+        >
+          Edit
+        </ButtonWrapper>
+      )}
     </section>
   );
 };

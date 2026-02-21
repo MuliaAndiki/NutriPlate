@@ -9,6 +9,7 @@ import { useAvatarReducer } from "@/hooks/useAvatarReducer";
 import { fileToBase64 } from "@/utils/base64";
 import { parsePayload } from "@/utils/parse.format";
 import { useEffect, useState } from "react";
+import { useDebugLog } from "@/utils/useDebug";
 
 const EditProfilePosyanduContainer = () => {
   // initial
@@ -32,9 +33,7 @@ const EditProfilePosyanduContainer = () => {
   );
 
   //handler
-  const handleChangeAvatar = async (
-    e: React.ChangeEvent<HTMLInputElement>,
-  ) => {
+  const handleChangeAvatar = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       const base64 = await fileToBase64(file);
@@ -107,6 +106,9 @@ const EditProfilePosyanduContainer = () => {
         avaUrl: posyanduByIDData.avaUrl ?? "",
         email: posyanduByIDData.email ?? "",
         phone: posyanduByIDData.phone ?? "",
+        subDistrict: posyanduByIDData.subDistrict ?? "",
+        village: posyanduByIDData.village ?? "",
+        district: posyanduByIDData.district ?? "",
       };
     });
   }, [posyanduByIDData?.id]);
