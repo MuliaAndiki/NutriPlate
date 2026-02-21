@@ -313,6 +313,50 @@ class IotController {
       );
     }
   }
+  public async allDevice(c: AppContext) {
+    try {
+      const jwtUser = c.user as JwtPayload;
+
+      if (!jwtUser) {
+        return c.json?.(
+          {
+            status: 401,
+            message: 'Unauthorized',
+          },
+          401,
+        );
+      }
+
+      const AllDevice = await iotService.AllDevice();
+
+      if (!AllDevice.success) {
+        return c.json?.(
+          {
+            status: 404,
+            message: AllDevice.error,
+          },
+          404,
+        );
+      }
+
+      return c.json?.(
+        {
+          status: 200,
+          message: 'ok',
+          data: AllDevice,
+        },
+        200,
+      );
+    } catch (error) {
+      return c.json?.(
+        {
+          status: 500,
+          message: 'server internal error',
+        },
+        500,
+      );
+    }
+  }
 }
 
 export default new IotController();

@@ -1,6 +1,6 @@
 import { AppContext } from '@/contex/appContex';
 import IotController from '@/controllers/IotController';
-import { verifyToken } from '@/middlewares/auth';
+import { requireRole, verifyToken } from '@/middlewares/auth';
 import Elysia from 'elysia';
 
 class IotRoutes {
@@ -17,11 +17,9 @@ class IotRoutes {
     this.routes();
   }
   private routes() {
-    // Public endpoints (device)
     this.iotRoutes.post('/status', (c: AppContext) => IotController.receiveStatus(c));
     this.iotRoutes.post('/command-executed', (c: AppContext) => IotController.commandExecuted(c));
 
-    // Protected endpoints (dashboard)
     this.iotRoutes.post('/command/send', (c: AppContext) => IotController.sendCommand(c), {
       beforeHandle: [verifyToken().beforeHandle],
     });
@@ -42,6 +40,9 @@ class IotRoutes {
     });
     this.iotRoutes.delete('/device/:token', (c: AppContext) => IotController.deleteDevice(c), {
       beforeHandle: [verifyToken().beforeHandle],
+    });
+    this.iotRoutes.get('/device/all', (c: AppContext) => IotController.allDevice(c), {
+      beforeHandle: [verifyToken().beforeHandle, requireRole(['POSYANDU', 'ADMIN']).beforeHandle],
     });
   }
 }
