@@ -9,7 +9,6 @@ import { useAvatarReducer } from "@/hooks/useAvatarReducer";
 import { fileToBase64 } from "@/utils/base64";
 import { parsePayload } from "@/utils/parse.format";
 import { useEffect, useState } from "react";
-import { useDebugLog } from "@/utils/useDebug";
 
 const EditProfilePosyanduContainer = () => {
   // initial

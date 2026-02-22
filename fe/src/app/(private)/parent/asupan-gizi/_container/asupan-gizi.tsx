@@ -211,7 +211,7 @@ const AsupanGiziContainer = () => {
           setIsScaling(false);
           setTimeout(() => {
             iotStatusQuery.refetch();
-          }, 800);
+          }, 1000);
         },
         onError: () => {
           iotStatusQuery.refetch();
