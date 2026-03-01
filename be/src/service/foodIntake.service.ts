@@ -99,13 +99,8 @@ class FoodIntakeService {
       });
 
       if (!response.data?.success || !response.data?.detections) {
-        const detail =
-          response.data?.detail ||
-          response.data?.message ||
-          'Invalid ML response';
-        throw new Error(
-          typeof detail === 'string' ? detail : JSON.stringify(detail),
-        );
+        const detail = response.data?.detail || response.data?.message || 'Invalid ML response';
+        throw new Error(typeof detail === 'string' ? detail : JSON.stringify(detail));
       }
 
       const result = {
@@ -129,8 +124,7 @@ class FoodIntakeService {
         throw error;
       }
 
-      const message =
-        err instanceof Error ? err.message : String(err);
+      const message = err instanceof Error ? err.message : String(err);
       throw new Error(`Inference failed: ${message}`);
     }
   }
@@ -188,11 +182,11 @@ class FoodIntakeService {
           proteinGram: Number(foodClass.proteinGram ?? 0),
           fatGram: Number(foodClass.fatGram ?? 0),
           carbGram: Number(foodClass.carbGram ?? 0),
-          fiberGram: 0,
-          calciumMg: 0,
-          ironMg: 0,
-          vitaminA: 0,
-          vitaminC: 0,
+          fiberGram: Number(foodClass.fiberGram ?? 0),
+          calciumMg: Number(foodClass.calciumMg ?? 0),
+          ironMg: Number(foodClass.ironMg ?? 0),
+          vitaminA: Number(foodClass.vitaminA ?? 0),
+          vitaminC: Number(foodClass.vitaminC ?? 0),
         }
       : {
           energyKcal: 0,
@@ -348,6 +342,22 @@ class FoodIntakeService {
           nutrientPer100g.fiberGram > 0
             ? Number((weightFactor * nutrientPer100g.fiberGram).toFixed(2))
             : 0;
+        const calciumMg =
+          nutrientPer100g.calciumMg > 0
+            ? Number((weightFactor * nutrientPer100g.calciumMg).toFixed(2))
+            : 0;
+        const ironMg =
+          nutrientPer100g.ironMg > 0
+            ? Number((weightFactor * nutrientPer100g.ironMg).toFixed(2))
+            : 0;
+        const vitaminA =
+          nutrientPer100g.vitaminA > 0
+            ? Number((weightFactor * nutrientPer100g.vitaminA).toFixed(2))
+            : 0;
+        const vitaminC =
+          nutrientPer100g.vitaminC > 0
+            ? Number((weightFactor * nutrientPer100g.vitaminC).toFixed(2))
+            : 0;
 
         processedItems.push({
           id: uuidv4(),
@@ -360,10 +370,10 @@ class FoodIntakeService {
           fatGram,
           carbGram,
           fiberGram,
-          calciumMg: 0,
-          ironMg: 0,
-          vitaminA: 0,
-          vitaminC: 0,
+          calciumMg,
+          ironMg,
+          vitaminA,
+          vitaminC,
           bboxData: detection.bboxData,
           metadata: {
             boundingBox: detection.bounding_box,

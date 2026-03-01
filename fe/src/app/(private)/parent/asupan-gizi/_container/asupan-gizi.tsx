@@ -2,7 +2,7 @@
 import AsupanGiziHeroSection from "@/components/section/private/parent/asupan-gizi/asupan-gizi-section";
 import { SidebarLayout } from "@/core/layouts/sidebar.layout";
 import useService from "@/hooks/mutation/prop.service";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useAppNameSpace } from "@/hooks/useAppNameSpace";
 import { useAppSelector } from "@/hooks/dispatch/dispatch";
 
@@ -11,8 +11,8 @@ const AsupanGiziContainer = () => {
   const service = useService();
   const selector = useAppSelector((state) => state.posyandu);
   // food history
-  const footHistoryQuery = service.foodIntake.query.getHistoryFoodIntake();
-  const footHistoryData = footHistoryQuery.data?.data ?? [];
+  const foodHistoryQuery = service.foodIntake.query.getHistoryFoodIntake();
+  const foodHistoryData = foodHistoryQuery.data?.data ?? [];
   //state
   const [showFlowPopUp, setShowFlowPopUp] = useState(false);
   const [isScaling, setIsScaling] = useState<boolean>(false);
@@ -24,8 +24,9 @@ const AsupanGiziContainer = () => {
   // iot devices
   const iotDevicesQuery = service.iot.query.getDevices();
   const iotDevicesData = iotDevicesQuery.data?.data ?? [];
-  const onlineDevices = iotDevicesData.filter(
-    (item) => item.status === "online",
+  const onlineDevices = useMemo(
+    () => iotDevicesData.filter((item) => item.status === "online"),
+    [iotDevicesData],
   );
 
   const activeDeviceToken =
@@ -249,9 +250,9 @@ const AsupanGiziContainer = () => {
         <AsupanGiziHeroSection
           service={{
             query: {
-              historyFood: footHistoryData ?? [],
+              historyFood: foodHistoryData ?? [],
               isLoading:
-                footHistoryQuery.isLoading ||
+                foodHistoryQuery.isLoading ||
                 iotDevicesQuery.isLoading ||
                 iotStatusQuery.isLoading ||
                 childQuery.isLoading,

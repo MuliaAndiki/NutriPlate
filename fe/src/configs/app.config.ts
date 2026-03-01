@@ -42,15 +42,25 @@ interface AppConfig {
 }
 
 export const appConfig: AppConfig = {
-  name: "App",
-  description: "App",
+  name: "NutriPlate",
+  description:
+    "Platform pemantauan gizi dan tumbuh kembang balita berbasis AI dan IoT",
   logo: "/images/logo.svg",
   metadata: {
-    title: "App",
-    description: "App",
-    keywords: ["App"],
-    author: "App",
-    image: "App",
+    title: "NutriPlate — Pemantauan Gizi & Tumbuh Kembang Anak",
+    description:
+      "Pantau asupan gizi harian, lacak pertumbuhan anak dengan standar WHO, dan gunakan perangkat IoT untuk pengukuran presisi dalam satu aplikasi terpadu.",
+    keywords: [
+      "NutriPlate",
+      "pemantauan gizi",
+      "tumbuh kembang anak",
+      "stunting",
+      "posyandu",
+      "IoT",
+      "nutrisi",
+    ],
+    author: "NutriPlate",
+    image: "/images/logo.svg",
   },
   social_media: {
     twitter: {
@@ -100,8 +110,18 @@ export const navigationMenuConfig: NavigationMenuConfig = {
 
     {
       title: "About",
-      href: "/abouting",
-      description: "abouting",
+      href: "/about",
+      description: "Tentang NutriPlate",
+    },
+    {
+      title: "Kebijakan Privasi",
+      href: "/policy",
+      description: "Kebijakan privasi pengguna",
+    },
+    {
+      title: "Ketentuan Layanan",
+      href: "/terms",
+      description: "Syarat dan ketentuan penggunaan",
     },
   ],
 };
@@ -160,6 +180,12 @@ export const RoutingProfile: RoutingProfileType[] = [
     icon: "ic:outline-policy",
     icon2: "mingcute:arrow-right-fill",
     href: () => "/policy",
+  },
+  {
+    title: "Ketentuan Layanan",
+    icon: "mdi:file-document-outline",
+    icon2: "mingcute:arrow-right-fill",
+    href: () => "/terms",
   },
   {
     title: "Tentang Aplikasi",

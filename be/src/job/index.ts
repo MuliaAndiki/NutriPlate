@@ -38,31 +38,24 @@ export const otpCleanupCron = new Elysia().use(
       const now = new Date();
 
       try {
-        const result = await prisma.user.deleteMany({
+        // Only clear OTP fields for unverified users with expired OTPs
+        // Do NOT delete user records to prevent data loss
+        const result = await prisma.user.updateMany({
           where: {
             isVerify: false,
-            OR: [
-              {
-                expOtp: {
-                  lt: now,
-                },
-              },
-              {
-                AND: [
-                  { expOtp: null },
-                  {
-                    createdAt: {
-                      lt: new Date(now.getTime() - 60 * 60 * 1000),
-                    },
-                  },
-                ],
-              },
-            ],
+            expOtp: {
+              lt: now,
+            },
+            otp: { not: null },
+          },
+          data: {
+            otp: null,
+            expOtp: null,
           },
         });
 
         if (result.count > 0) {
-          console.log(` ${result.count} unverified user(s) deleted`);
+          console.log(` ${result.count} expired OTP(s) cleared`);
         }
       } catch (error) {
         console.error(' OTP cleanup cron error:', error);
