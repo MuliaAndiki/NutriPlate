@@ -12,6 +12,7 @@ import {
   Wifi,
   ArrowLeft,
 } from "lucide-react";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
 const featureList = [
   {
@@ -102,10 +103,16 @@ const techStack = [
   },
 ];
 
-export default function AboutSoftwareSection() {
+interface AboutSoftwareSectionProps {
+  namespace: {
+    router: AppRouterInstance;
+  };
+}
+const AboutSoftwareSection: React.FC<AboutSoftwareSectionProps> = ({
+  namespace,
+}) => {
   return (
     <section className="w-full min-h-screen">
-      {/* Hero */}
       <div className="relative overflow-hidden bg-[linear-gradient(135deg,var(--primary)_0%,#6366f1_100%)] text-primary-foreground">
         <div className="absolute -top-40 -right-40 h-[500px] w-[500px] rounded-full bg-white/10 blur-3xl" />
         <div className="absolute -bottom-32 -left-32 h-[400px] w-[400px] rounded-full bg-white/5 blur-3xl" />
@@ -125,8 +132,14 @@ export default function AboutSoftwareSection() {
         </div>
       </div>
 
-      {/* Mission & Vision */}
       <div className="mx-auto max-w-6xl px-6 py-16 md:py-20">
+        <div className="w-full my-2 gap-2 flex items-center">
+          <ArrowLeft
+            onClick={() => namespace.router.back()}
+            className="cursor-pointer h-5 w-5"
+          />
+          <h1 className="text-lg font-semibold">Kembali</h1>
+        </div>
         <div className="grid gap-8 md:grid-cols-2">
           <div className="rounded-2xl border border-border bg-card p-8 shadow-enhanced">
             <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
@@ -157,7 +170,6 @@ export default function AboutSoftwareSection() {
         </div>
       </div>
 
-      {/* What the Platform Does */}
       <div className="bg-secondary/30">
         <div className="mx-auto max-w-6xl px-6 py-16 md:py-20">
           <div className="text-center">
@@ -190,7 +202,6 @@ export default function AboutSoftwareSection() {
         </div>
       </div>
 
-      {/* Who It Helps */}
       <div className="mx-auto max-w-6xl px-6 py-16 md:py-20">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-foreground md:text-3xl">
@@ -223,7 +234,6 @@ export default function AboutSoftwareSection() {
         </div>
       </div>
 
-      {/* Technology */}
       <div className="bg-secondary/30">
         <div className="mx-auto max-w-6xl px-6 py-16 md:py-20">
           <div className="text-center">
@@ -256,7 +266,6 @@ export default function AboutSoftwareSection() {
         </div>
       </div>
 
-      {/* Commitment */}
       <div className="mx-auto max-w-4xl px-6 py-16 md:py-20 text-center">
         <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-chart-3/10 text-chart-3">
           <Heart className="h-8 w-8" />
@@ -277,16 +286,9 @@ export default function AboutSoftwareSection() {
           perangkat IoT, dan menyempurnakan pengalaman pengguna berdasarkan
           masukan dari lapangan.
         </p>
-        <div className="mt-8">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-enhanced hover-lift transition-all"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Kembali ke Beranda
-          </Link>
-        </div>
       </div>
     </section>
   );
-}
+};
+
+export default AboutSoftwareSection;

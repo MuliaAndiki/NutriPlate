@@ -213,16 +213,9 @@ const TermsSection: React.FC<PolicySectionProps> = ({ namespace }) => {
         <div className="mt-16 flex flex-wrap items-center justify-center gap-4">
           <Link
             href="/policy"
-            className="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-6 py-3 text-sm font-semibold text-foreground shadow-sm hover-lift transition-all"
+            className="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-6 py-3 text-sm font-semibold text-foreground shadow-sm hover-lift transition-all w-full justify-center"
           >
             Kebijakan Privasi
-          </Link>
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-enhanced hover-lift transition-all"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Kembali ke Beranda
           </Link>
         </div>
       </div>
