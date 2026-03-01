@@ -55,10 +55,6 @@ const ProfilePosyanduSection: React.FC<ProfilePosyanduProps> = ({
         <h1 className="text-2xl font-bold">
           {service.query.userProfileType.fullName}
         </h1>
-        <h1 className="font-light">
-          {service.query.userProfileType.email ??
-            service.query.userProfileType.phone}
-        </h1>
       </div>
       <div className="w-full flex flex-col flex-1 justify-between mt-6">
         <div className="w-full flex flex-col space-y-3">

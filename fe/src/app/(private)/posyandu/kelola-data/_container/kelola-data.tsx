@@ -41,13 +41,8 @@ const KelolaDataContainer = () => {
 
   //handler
   const handleDeleteKader = () => {
-    if (!registerKaderID) return;
-
-    deleteKaderMutation.mutate(registerKaderID, {
-      onSuccess: () => {
-        //
-      },
-    });
+    if (!registerKaderID) return null;
+    deleteKaderMutation.mutate(registerKaderID);
   };
 
   return (

@@ -103,6 +103,23 @@ const techStack = [
   },
 ];
 
+const headerContent = [
+  {
+    title: "Misi Kami",
+    icon: <Target className="h-6 w-6" />,
+    desc: "Menyediakan alat digital yang akurat, mudah digunakan, dan dapat diakses oleh seluruh lapisan masyarakat untuk memantau asupan gizi dan pertumbuhan anak sejak dini. Kami berkomitmen membantu menurunkan angka stunting melalui deteksi dini, edukasi gizi, dan kolaborasi antara orang tua dengan tenaga kesehatan di posyandu.",
+    shadow: "bg-primary",
+    text: "text-primary",
+  },
+  {
+    title: "Visi Kami",
+    icon: <Eye className="h-6 w-6" />,
+    desc: "Menjadi platform pemantauan gizi anak terdepan di Indonesia yang memanfaatkan kecerdasan buatan dan Internet of Things (IoT) untuk menciptakan generasi yang sehat, tumbuh optimal, dan bebas dari malnutrisi. Kami membayangkan ekosistem kesehatan anak yang terkoneksi, transparan, dan berbasis data.",
+    shadow: "bg-info",
+    text: "text-info",
+  },
+];
+
 interface AboutSoftwareSectionProps {
   namespace: {
     router: AppRouterInstance;
@@ -141,32 +158,23 @@ const AboutSoftwareSection: React.FC<AboutSoftwareSectionProps> = ({
           <h1 className="text-lg font-semibold">Kembali</h1>
         </div>
         <div className="grid gap-8 md:grid-cols-2">
-          <div className="rounded-2xl border border-border bg-card p-8 shadow-enhanced">
-            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
-              <Target className="h-6 w-6" />
-            </div>
-            <h2 className="text-xl font-bold text-foreground">Misi Kami</h2>
-            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-              Menyediakan alat digital yang akurat, mudah digunakan, dan dapat
-              diakses oleh seluruh lapisan masyarakat untuk memantau asupan gizi
-              dan pertumbuhan anak sejak dini. Kami berkomitmen membantu
-              menurunkan angka stunting melalui deteksi dini, edukasi gizi, dan
-              kolaborasi antara orang tua dengan tenaga kesehatan di posyandu.
-            </p>
-          </div>
-          <div className="rounded-2xl border border-border bg-card p-8 shadow-enhanced">
-            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-chart-2/10 text-chart-2">
-              <Eye className="h-6 w-6" />
-            </div>
-            <h2 className="text-xl font-bold text-foreground">Visi Kami</h2>
-            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-              Menjadi platform pemantauan gizi anak terdepan di Indonesia yang
-              memanfaatkan kecerdasan buatan dan Internet of Things (IoT) untuk
-              menciptakan generasi yang sehat, tumbuh optimal, dan bebas dari
-              malnutrisi. Kami membayangkan ekosistem kesehatan anak yang
-              terkoneksi, transparan, dan berbasis data.
-            </p>
-          </div>
+          {headerContent.map((items) => (
+            <>
+              <div className="rounded-2xl border border-border bg-card p-8 shadow-enhanced">
+                <div
+                  className={`mb-4 flex h-12 w-12 items-center justify-center rounded-xl ${items.shadow}/10  ${items.text}`}
+                >
+                  {items.icon}
+                </div>
+                <h2 className="text-xl font-bold text-foreground">
+                  {items.title}
+                </h2>
+                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                  {items.desc}
+                </p>
+              </div>
+            </>
+          ))}
         </div>
       </div>
 
