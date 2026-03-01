@@ -6,6 +6,7 @@ import bcrypt from 'bcryptjs';
 import { PickChilID } from '@/types/child.types';
 import { generateOtp } from '@/utils/generate-otp';
 import { sendOTPEmail } from '@/utils/mailer';
+import { sanitizeUser } from '@/utils/sanitize';
 
 class UserController {
   public async getProfile(c: AppContext) {
@@ -111,7 +112,7 @@ class UserController {
       }
 
       const isUpdateEmail = typeof user.email === 'string' && user.email.length > 0;
-      const isUpdatePhone = typeof user.email === 'string' && user.email.length > 0;
+      const isUpdatePhone = typeof user.phone === 'string' && user.phone.length > 0;
       let documentUrl: { avaUrl: string } = { avaUrl: '' };
       if (c.files?.avaUrl?.[0]) {
         const file = c.files.avaUrl[0];
@@ -166,9 +167,9 @@ class UserController {
       return c.json?.(
         {
           status: 201,
-          message: 'succes update profile',
+          message: 'successfully updated profile',
           data: {
-            updateUser,
+            updateUser: sanitizeUser(updateUser),
             isUpdateEmail,
           },
         },
@@ -216,8 +217,7 @@ class UserController {
       return c.json?.(
         {
           status: 200,
-          message: 'successfully delete acound',
-          data: auth,
+          message: 'successfully deleted account',
         },
         200,
       );
@@ -236,7 +236,7 @@ class UserController {
   public async updatePassword(c: AppContext) {
     try {
       const jwtUser = c.user as JwtPayload;
-      const usr = c.body as PickUpdatePassword;
+      const usr = c.body as PickUpdatePassword & { oldPassword?: string };
 
       if (!jwtUser) {
         return c.json?.(
@@ -247,19 +247,56 @@ class UserController {
           401,
         );
       }
-      if (!usr) {
+      if (!usr || !usr.password) {
         return c.json?.(
           {
             status: 400,
-            message: 'body is required',
+            message: 'new password is required',
           },
           400,
         );
       }
 
+      const currentUser = await prisma.user.findUnique({
+        where: { id: jwtUser.id },
+        select: { password: true },
+      });
+
+      if (!currentUser) {
+        return c.json?.(
+          {
+            status: 404,
+            message: 'user not found',
+          },
+          404,
+        );
+      }
+
+      if (currentUser.password) {
+        if (!usr.oldPassword) {
+          return c.json?.(
+            {
+              status: 400,
+              message: 'old password is required',
+            },
+            400,
+          );
+        }
+        const isOldPasswordValid = await bcrypt.compare(usr.oldPassword, currentUser.password);
+        if (!isOldPasswordValid) {
+          return c.json?.(
+            {
+              status: 400,
+              message: 'old password is incorrect',
+            },
+            400,
+          );
+        }
+      }
+
       const hashPassword = await bcrypt.hash(usr.password, 10);
 
-      const user = await prisma.user.update({
+      await prisma.user.update({
         where: {
           id: jwtUser.id,
         },
@@ -268,20 +305,10 @@ class UserController {
         },
       });
 
-      if (!user) {
-        return c.json?.(
-          {
-            status: 400,
-            message: 'server internal error',
-          },
-          400,
-        );
-      }
       return c.json?.(
         {
           status: 200,
-          message: 'successfully update password',
-          data: user,
+          message: 'successfully updated password',
         },
         200,
       );
@@ -404,7 +431,14 @@ class UserController {
         where: {
           id: parentID.id,
         },
-        include: {
+        select: {
+          id: true,
+          fullName: true,
+          email: true,
+          phone: true,
+          role: true,
+          avaUrl: true,
+          createdAt: true,
           children: {
             include: {
               measurements: {
@@ -419,10 +453,10 @@ class UserController {
       if (!parent) {
         return c.json?.(
           {
-            status: 400,
-            message: 'server internal error ',
+            status: 404,
+            message: 'parent not found',
           },
-          400,
+          404,
         );
       }
 
@@ -473,15 +507,26 @@ class UserController {
         where: {
           id: userID.id,
         },
+        select: {
+          id: true,
+          email: true,
+          phone: true,
+          fullName: true,
+          role: true,
+          avaUrl: true,
+          isVerify: true,
+          createdAt: true,
+          updatedAt: true,
+        },
       });
 
       if (!auth) {
         return c.json?.(
           {
-            status: 400,
-            message: 'server internal error',
+            status: 404,
+            message: 'user not found',
           },
-          400,
+          404,
         );
       }
       return c.json?.(
@@ -570,15 +615,24 @@ class UserController {
         where: {
           role: 'KADER',
         },
+        select: {
+          id: true,
+          email: true,
+          phone: true,
+          fullName: true,
+          role: true,
+          avaUrl: true,
+          createdAt: true,
+        },
       });
 
       if (!user) {
         return c.json?.(
           {
-            status: 400,
-            message: 'server internal error',
+            status: 404,
+            message: 'kader not found',
           },
-          400,
+          404,
         );
       }
       return c.json?.(
@@ -628,15 +682,26 @@ class UserController {
         where: {
           id: userID.id,
         },
+        select: {
+          id: true,
+          email: true,
+          phone: true,
+          fullName: true,
+          role: true,
+          avaUrl: true,
+          isVerify: true,
+          createdAt: true,
+          updatedAt: true,
+        },
       });
 
       if (!kader) {
         return c.json?.(
           {
-            status: 400,
-            message: 'server internal error',
+            status: 404,
+            message: 'kader not found',
           },
-          400,
+          404,
         );
       }
       return c.json?.(

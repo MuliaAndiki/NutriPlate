@@ -17,6 +17,7 @@ import { sendOTPEmail } from '@/utils/mailer';
 import { OAuth2Client } from 'google-auth-library';
 import { env } from '@/config/env.config';
 import axios from 'axios';
+import { sanitizeUser } from '@/utils/sanitize';
 
 const googleClient = new OAuth2Client(env.GOOGLE_CLIENT_ID);
 
@@ -33,7 +34,7 @@ class AuthController {
         return c.json?.(
           {
             status: 400,
-            message: 'email of phone is required',
+            message: 'email or phone is required',
           },
           400,
         );
@@ -71,8 +72,8 @@ class AuthController {
         return c.json?.(
           {
             status: 201,
-            message: 'successfully registed use email',
-            data: newUsers,
+            message: 'successfully registered using email',
+            data: sanitizeUser(newUsers),
           },
           201,
         );
@@ -90,8 +91,8 @@ class AuthController {
         return c.json?.(
           {
             status: 201,
-            message: 'successfully registed use phone',
-            data: newUsers,
+            message: 'successfully registered using phone',
+            data: sanitizeUser(newUsers),
           },
           201,
         );
@@ -108,7 +109,7 @@ class AuthController {
       return c.json?.(
         {
           status: 500,
-          message: 'Server Interval Error',
+          message: 'Server Internal Error',
           error: error instanceof Error ? error.message : error,
         },
         500,
@@ -135,7 +136,7 @@ class AuthController {
         return c.json?.(
           {
             status: 400,
-            message: 'email of phone is required',
+            message: 'email or phone is required',
           },
           400,
         );
@@ -151,23 +152,17 @@ class AuthController {
         return c.json?.(
           {
             status: 400,
-            message: 'email & phone not registed',
+            message: 'email or phone not registered',
           },
           400,
         );
       }
 
-      await prisma.userSession.deleteMany({
-        where: {
-          userId: selectLogin.id,
-        },
-      });
-
       if (!selectLogin.isVerify) {
         return c.json?.(
           {
             status: 400,
-            message: 'account not verify',
+            message: 'account not verified',
           },
           400,
         );
@@ -183,6 +178,12 @@ class AuthController {
           400,
         );
       }
+
+      await prisma.userSession.deleteMany({
+        where: {
+          userId: selectLogin.id,
+        },
+      });
 
       const ipAddress =
         c.headers['x-forwarded-for']?.split(',')[0] ||
@@ -217,7 +218,7 @@ class AuthController {
       return c.json?.(
         {
           status: 200,
-          data: { ...selectLogin, token },
+          data: { ...sanitizeUser(selectLogin), token },
           message: 'Login successfully',
         },
         200,
@@ -351,7 +352,7 @@ class AuthController {
         return c.json?.(
           {
             status: 200,
-            data: newForgot,
+            data: sanitizeUser(newForgot),
             message: 'successfully found email',
           },
           200,
@@ -367,7 +368,7 @@ class AuthController {
           {
             status: 200,
             message: 'successfully found phone',
-            data: newForgot,
+            data: newForgot ? sanitizeUser(newForgot) : null,
           },
           200,
         );
@@ -413,16 +414,26 @@ class AuthController {
         );
       }
 
+      if (user.expOtp && new Date() > new Date(user.expOtp)) {
+        return c.json?.(
+          {
+            status: 400,
+            message: 'OTP has expired. Please request a new one.',
+          },
+          400,
+        );
+      }
+
       const updateUser = await prisma.user.update({
         where: { id: user!.id },
-        data: { isVerify: true, otp: null },
+        data: { isVerify: true, otp: null, expOtp: null },
       });
 
       return c.json?.(
         {
           status: 200,
-          message: 'Otp isVerify',
-          data: updateUser,
+          message: 'OTP verified successfully',
+          data: sanitizeUser(updateUser),
         },
         200,
       );
@@ -451,7 +462,7 @@ class AuthController {
           400,
         );
       }
-      const user = await prisma.user.findFirstOrThrow({
+      const user = await prisma.user.findFirst({
         where: {
           email: auth.email,
         },
@@ -480,8 +491,8 @@ class AuthController {
       return c.json?.(
         {
           status: 200,
-          message: 'Succes Update Otp',
-          data: newOtp,
+          message: 'OTP resent successfully',
+          data: sanitizeUser(newOtp),
         },
         200,
       );
@@ -504,10 +515,10 @@ class AuthController {
       if (!auth.password) {
         return c.json?.(
           {
-            status: 404,
-            message: 'NewPassword required ',
+            status: 400,
+            message: 'New password is required',
           },
-          404,
+          400,
         );
       }
       if (!auth.email && !auth.phone) {
@@ -529,7 +540,7 @@ class AuthController {
         return c.json?.(
           {
             status: 404,
-            message: 'accound Not Found',
+            message: 'Account not found',
           },
           404,
         );
@@ -538,7 +549,7 @@ class AuthController {
         return c.json?.(
           {
             status: 400,
-            message: 'accound not verify',
+            message: 'Account not verified',
           },
           400,
         );
@@ -554,8 +565,8 @@ class AuthController {
       return c.json?.(
         {
           status: 200,
-          message: 'Succes Reset Password',
-          data: newPassword,
+          message: 'Password reset successfully',
+          data: sanitizeUser(newPassword),
         },
         200,
       );
@@ -691,7 +702,7 @@ class AuthController {
           status: 200,
           message: 'Login with Google successfully',
           data: {
-            ...user,
+            ...sanitizeUser(user),
             token,
           },
         },

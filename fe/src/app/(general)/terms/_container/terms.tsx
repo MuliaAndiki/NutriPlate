@@ -1,12 +1,12 @@
 "use client";
-import PolicySection from "@/components/section/general/policy/policy-section";
+import TermsSection from "@/components/section/general/terms/terms-section";
 import { useAppNameSpace } from "@/hooks/useAppNameSpace";
 
-const PolicyContainer = () => {
+const TermsContainer = () => {
   const namespace = useAppNameSpace();
   return (
     <main className="w-full min-h-screen">
-      <PolicySection
+      <TermsSection
         namespace={{
           router: namespace.router,
         }}
@@ -15,4 +15,4 @@ const PolicyContainer = () => {
   );
 };
 
-export default PolicyContainer;
+export default TermsContainer;

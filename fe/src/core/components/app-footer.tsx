@@ -39,27 +39,51 @@ export default function AppFooter() {
             </div>
           </div>
 
-          <div className="flex w-full flex-col items-start gap-3 md:items-end md:text-right">
-            <div className="flex items-center gap-4">
-              <div>
-                <p className="text-sm font-semibold text-foreground">
-                  Download the App
-                </p>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  Scan QR Code untuk menginstall aplikasi melalui Play Store /
-                  App Store
-                </p>
+          <div className="flex w-full flex-col items-start gap-6 md:flex-row md:items-start md:justify-end md:gap-12">
+            <div className="flex flex-col gap-2">
+              <p className="text-sm font-semibold text-foreground">Navigasi</p>
+              <Link
+                href="/about"
+                className="text-sm text-muted-foreground transition hover:text-primary"
+              >
+                Tentang
+              </Link>
+              <Link
+                href="/policy"
+                className="text-sm text-muted-foreground transition hover:text-primary"
+              >
+                Kebijakan Privasi
+              </Link>
+              <Link
+                href="/terms"
+                className="text-sm text-muted-foreground transition hover:text-primary"
+              >
+                Ketentuan Layanan
+              </Link>
+            </div>
+
+            <div className="flex flex-col items-start gap-3 md:items-end md:text-right">
+              <div className="flex items-center gap-4">
+                <div>
+                  <p className="text-sm font-semibold text-foreground">
+                    Download the App
+                  </p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Scan QR Code untuk menginstall aplikasi melalui Play Store /
+                    App Store
+                  </p>
+                </div>
+                <PWAInstallDialog
+                  trigger={
+                    <button
+                      type="button"
+                      className="flex h-16 w-16 items-center justify-center rounded-md border border-border bg-card text-[10px] font-semibold text-muted-foreground"
+                    >
+                      QR
+                    </button>
+                  }
+                />
               </div>
-              <PWAInstallDialog
-                trigger={
-                  <button
-                    type="button"
-                    className="flex h-16 w-16 items-center justify-center rounded-md border border-border bg-card text-[10px] font-semibold text-muted-foreground"
-                  >
-                    QR
-                  </button>
-                }
-              />
             </div>
           </div>
         </div>

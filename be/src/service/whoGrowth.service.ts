@@ -16,15 +16,14 @@ class WhoGrowthCalculationService {
     let closestSD: string;
 
     if (value >= median) {
-      const sdPlus1Range = (reference.sdPlus1 - median) / 1;
       if (value >= reference.sdPlus2) {
-        zScore = ((value - median) / (reference.sdPlus1 - median)) * 1 + (value >= median ? 0 : 0);
+        zScore = 2 + (value - reference.sdPlus2) / (reference.sdPlus3 - reference.sdPlus2);
         closestSD = value >= reference.sdPlus3 ? '+3 SD' : '+2 SD';
       } else if (value >= reference.sdPlus1) {
-        zScore = ((value - median) / (reference.sdPlus1 - median)) * 1;
+        zScore = 1 + (value - reference.sdPlus1) / (reference.sdPlus2 - reference.sdPlus1);
         closestSD = '+1 SD';
       } else {
-        zScore = ((value - median) / (reference.sdPlus1 - median)) * 1;
+        zScore = (value - median) / (reference.sdPlus1 - median);
         closestSD = '0 SD';
       }
     } else {

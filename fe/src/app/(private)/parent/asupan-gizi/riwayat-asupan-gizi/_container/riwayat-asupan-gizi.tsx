@@ -6,8 +6,8 @@ import useService from "@/hooks/mutation/prop.service";
 const RiwayatAsupanGiziContainer = () => {
   const nameSpace = useAppNameSpace();
   const service = useService();
-  const footHistoryQuery = service.foodIntake.query.getHistoryFoodIntake();
-  const footHistoryData = footHistoryQuery.data?.data ?? [];
+  const foodHistoryQuery = service.foodIntake.query.getHistoryFoodIntake();
+  const foodHistoryData = foodHistoryQuery.data?.data ?? [];
 
   return (
     <SidebarLayout>
@@ -15,8 +15,8 @@ const RiwayatAsupanGiziContainer = () => {
         <RiwayatAsupanGiziHeroSection
           service={{
             query: {
-              history: footHistoryData ?? [],
-              isLoading: footHistoryQuery.isLoading,
+              history: foodHistoryData ?? [],
+              isLoading: foodHistoryQuery.isLoading,
             },
           }}
           namespace={{

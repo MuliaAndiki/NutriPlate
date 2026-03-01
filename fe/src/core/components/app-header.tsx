@@ -48,20 +48,6 @@ export default function AppHeader() {
             <h1 className="text-lg font-bold">NutriPlate</h1>
           </Link>
         </div>
-        <NavigationMenu className="hidden md:flex">
-          <NavigationMenuList>
-            {navigationMenuConfig?.items?.map((item) => (
-              <NavigationMenuItem key={item.title}>
-                <NavigationMenuLink
-                  href={item.href}
-                  className={navigationMenuTriggerStyle()}
-                >
-                  {item.title}
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-            ))}
-          </NavigationMenuList>
-        </NavigationMenu>
 
         <div className="hidden md:flex items-center gap-4">
           <PWAInstallDialog

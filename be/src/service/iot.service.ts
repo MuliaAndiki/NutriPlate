@@ -114,15 +114,20 @@ class IotService {
 
   public async getDevices() {
     const now = Date.now();
-    const devices = await prisma.iotDevice.findMany({
+    const offlineThresholdMs = 60_000;
+
+    // First update offline devices
+    const allDevices = await prisma.iotDevice.findMany({
       orderBy: { updatedAt: 'desc' },
     });
 
-    const offlineThresholdMs = 60_000;
-    const updates = devices
+    const updates = allDevices
       .filter((device) => {
         if (!device.lastOnline) return false;
-        return now - new Date(device.lastOnline).getTime() > offlineThresholdMs;
+        return (
+          now - new Date(device.lastOnline).getTime() > offlineThresholdMs &&
+          device.status !== IotStatus.offline
+        );
       })
       .map((device) =>
         prisma.iotDevice.update({
@@ -135,9 +140,12 @@ class IotService {
       await prisma.$transaction(updates);
     }
 
-    return devices.filter((device) => {
-      if (!device.lastOnline) return false;
-      return now - new Date(device.lastOnline).getTime() <= offlineThresholdMs;
+    // Re-fetch to return fresh data after updates
+    return prisma.iotDevice.findMany({
+      where: {
+        lastOnline: { not: null },
+      },
+      orderBy: { updatedAt: 'desc' },
     });
   }
 
@@ -261,20 +269,20 @@ class IotService {
     };
   }
   public async AllDevice() {
-    const device = await prisma.iotDevice.findMany({
+    const devices = await prisma.iotDevice.findMany({
       orderBy: {
         createdAt: 'desc',
       },
     });
-    if (!device) {
+    if (devices.length === 0) {
       return {
         success: false,
-        error: 'Device not found',
+        error: 'No devices found',
       };
     }
     return {
       success: true,
-      data: device,
+      data: devices,
     };
   }
 }
