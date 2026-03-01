@@ -3,12 +3,28 @@ import DaftarKaderPosyanduSection from "@/components/section/private/posyandu/da
 import { SidebarLayout } from "@/core/layouts/sidebar.layout";
 import useService from "@/hooks/mutation/prop.service";
 import { useAppNameSpace } from "@/hooks/useAppNameSpace";
+import { useState } from "react";
 
 const DaftarKaderPosyanduContainer = () => {
   const namespace = useAppNameSpace();
-  const servce = useService();
-  const kaderQuery = servce.posyandu.query.getKaderList();
+  const service = useService();
+
+  //mutation
+  const deleteKaderMutation = service.registerKader.mutation.deleteKader();
+
+  //kader
+  const kaderQuery = service.posyandu.query.getKaderList();
   const kaderData = kaderQuery.data?.data ?? [];
+
+  //state
+  const [registerKaderID, setRegisterKaderID] = useState<string>("");
+
+  //handler
+  const handleDeleteKader = () => {
+    if (!registerKaderID) return null;
+
+    deleteKaderMutation.mutate(registerKaderID);
+  };
 
   return (
     <SidebarLayout>
@@ -16,12 +32,19 @@ const DaftarKaderPosyanduContainer = () => {
         <DaftarKaderPosyanduSection
           namespace={{
             router: namespace.router,
+            alert: namespace.alert,
           }}
           service={{
             query: {
               isLoading: kaderQuery.isLoading,
               kader: kaderData ?? [],
             },
+            mutation: {
+              onDelete: handleDeleteKader,
+            },
+          }}
+          state={{
+            setRegisterdKaderId: setRegisterKaderID,
           }}
         />
       </main>

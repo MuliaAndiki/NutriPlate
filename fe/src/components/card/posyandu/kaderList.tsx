@@ -13,9 +13,9 @@ const KaderList: React.FC<ListKaderProps> = ({ length }) => {
     >
       <Image
         alt="baby"
-        src={"/images/error.png"}
-        width={100}
-        height={100}
+        src={"/images/stethoscope.png"}
+        width={230}
+        height={230}
         className="object-cover"
       />
       <div className="w-full flex items-start flex-col">

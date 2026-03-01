@@ -11,7 +11,7 @@ const ChildrenList: React.FC<ChildrenListProps> = ({ lengthChild }) => {
         src={"/images/baby4.png"}
         width={130}
         height={130}
-        className=""
+        className="object-cover"
       />
       <div className="w-full flex items-start flex-col">
         <h1 className="text-sm font-bold">Total Balita</h1>

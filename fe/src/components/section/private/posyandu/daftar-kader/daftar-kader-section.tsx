@@ -9,22 +9,31 @@ import KaderCard from "@/components/card/kader/kader-list";
 import DaftarKaderSectionSkeleton from "@/components/skeleton/private/posyandu/daftar-kader/daftar-kader-section-skeleton";
 import DataNotFound from "@/components/empty/data-not-found";
 import EmptyCard from "@/components/fallback/empty-card";
+import { AlertContexType } from "@/types/ui";
 
 interface DaftarKaderPosyanduSectionProps {
   namespace: {
     router: AppRouterInstance;
+    alert: AlertContexType;
   };
   service: {
     query: {
       kader: GetListKader[];
       isLoading: boolean;
     };
+    mutation: {
+      onDelete: () => void;
+    };
+  };
+  state: {
+    setRegisterdKaderId: React.Dispatch<React.SetStateAction<string>>;
   };
 }
 
 const DaftarKaderPosyanduSection: React.FC<DaftarKaderPosyanduSectionProps> = ({
   namespace,
   service,
+  state,
 }) => {
   const resKader = service.query.kader;
   if (service.query.isLoading) {
@@ -64,6 +73,9 @@ const DaftarKaderPosyanduSection: React.FC<DaftarKaderPosyanduSectionProps> = ({
               key={item.kader.id}
               index={index}
               data={item}
+              setRegisterKaderId={state.setRegisterdKaderId}
+              alert={namespace.alert}
+              onDeleteKader={service.mutation.onDelete}
               onDetail={() =>
                 namespace.router.push(
                   `/posyandu/kelola-data/detail-kader/${item.kader.id}`,
