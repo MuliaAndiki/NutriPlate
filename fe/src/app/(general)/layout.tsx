@@ -1,9 +1,13 @@
-import NavLayout from "@/core/layouts/nav.layout";
+import BlankLayout from "@/core/layouts/blank.layout";
 
-export default function GeneralLayout({
+export default function AuthLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return <NavLayout>{children}</NavLayout>;
+  return (
+    <main className="w-full">
+      <BlankLayout>{children}</BlankLayout>
+    </main>
+  );
 }
