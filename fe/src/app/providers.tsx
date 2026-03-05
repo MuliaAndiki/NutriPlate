@@ -7,7 +7,6 @@ import { useEffect } from "react";
 import { Toaster } from "react-hot-toast";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
-
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { PWAUpdatePrompt } from "@/components/pwa/PWAUpdatePrompt";
 import { env } from "@/configs/env.config";

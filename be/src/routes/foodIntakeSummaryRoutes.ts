@@ -3,16 +3,6 @@ import { verifyToken, requireRole } from '@/middlewares/auth';
 import foodIntakeSummaryController from '@/controllers/FoodIntakeSummaryController';
 import { AppContext } from '@/contex/appContex';
 
-/**
- * Food Intake Summary Routes
- *
- * GET /api/food/intake/daily/:childId
- * GET /api/food/intake/range/:childId
- *
- * Both are READ-ONLY endpoints
- * No modifications to POST /intake logic
- */
-
 class FoodIntakeSummaryRoutes {
   public foodIntakeSummaryRoutes;
 
@@ -56,6 +46,13 @@ class FoodIntakeSummaryRoutes {
           verifyToken().beforeHandle,
           requireRole(['PARENT', 'KADER', 'POSYANDU']).beforeHandle,
         ],
+      },
+    );
+    this.foodIntakeSummaryRoutes.get(
+      '/clases',
+      (c: AppContext) => foodIntakeSummaryController.getAllFoodClasses(c),
+      {
+        beforeHandle: [verifyToken().beforeHandle],
       },
     );
   }

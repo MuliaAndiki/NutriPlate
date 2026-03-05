@@ -113,10 +113,10 @@ const LoginHeroSection: React.FC<LoginSectionProps> = ({ service, state }) => {
             </p>
 
             <div className="w-full flex justify-center items-center flex-col space-y-3">
-              <h1 className="text-lg font-bold">Atau Masuk Dengan</h1>
               <button type="button" onClick={() => googleLogin()}>
                 <GoogleSvg />
               </button>
+              <h1 className="text-lg font-bold">Atau Masuk Dengan</h1>
             </div>
           </form>
         </div>

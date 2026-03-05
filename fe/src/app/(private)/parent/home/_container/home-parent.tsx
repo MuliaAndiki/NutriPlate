@@ -13,7 +13,7 @@ const HomeParentContainer = () => {
 
   //state
   const [selectedDeviceToken, setSelectedDeviceToken] = useState<string>("");
-  const [isScaling, setIsScaling] = useState<boolean>(false);
+  const [isScaling] = useState<boolean>(false);
 
   //profile
   const profileQuery = service.user.query.profile();
@@ -47,19 +47,6 @@ const HomeParentContainer = () => {
     staleTime: 0,
   });
   const iotStatusData = iotStatusQuery.data?.data ?? null;
-
-  //error handling
-  const ensureIotReady = () => {
-    if (!iotStatusData?.id) {
-      namespace.alert.toast({
-        title: "Timbangan belum terhubung",
-        message: "Silakan hubungkan timbangan terlebih dahulu",
-        icon: "error",
-      });
-      return false;
-    }
-    return true;
-  };
 
   return (
     <SidebarLayout>
