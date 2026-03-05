@@ -4,14 +4,6 @@ import foodIntakeSummaryService from '@/service/foodIntakeSummary.service';
 import prisma from 'prisma/client';
 
 class FoodIntakeSummaryController {
-  /**
-   * GET /api/food/intake/daily/:childId
-   *
-   * Get daily food intake summary for a child
-   * Query params: date (optional, defaults to today)
-   *
-   * Response: FoodIntakeDailySummary
-   */
   public async getDailySummary(c: AppContext) {
     try {
       const jwtUser = c.user as JwtPayload;
@@ -83,14 +75,6 @@ class FoodIntakeSummaryController {
     }
   }
 
-  /**
-   * GET /api/food/intake/range/:childId
-   *
-   * Get food intake summary for a date range
-   * Query params: startDate, endDate (required)
-   *
-   * Response: Array<FoodIntakeDailySummary>
-   */
   public async getDateRangeSummary(c: AppContext) {
     try {
       const jwtUser = c.user as JwtPayload;
@@ -186,14 +170,6 @@ class FoodIntakeSummaryController {
     }
   }
 
-  /**
-   * GET /api/food/intake/daily/:childId/with-tasks
-   *
-   * Get daily food intake summary combined with daily meal tasks
-   * Query params: date (optional, defaults to today)
-   *
-   * Response: Daily summary with meal tasks breakdown
-   */
   public async getDailySummaryWithTasks(c: AppContext) {
     try {
       const jwtUser = c.user as JwtPayload;
@@ -241,7 +217,6 @@ class FoodIntakeSummaryController {
       const dayEnd = new Date(dateStr);
       dayEnd.setHours(23, 59, 59, 999);
 
-      // Get meal tasks with target nutrition
       const mealTasks = await prisma.taskProgram.findMany({
         where: {
           progres: { child: { id: params.childId } },
@@ -317,9 +292,6 @@ class FoodIntakeSummaryController {
     }
   }
 
-  /**
-   * Helper: Get nutrition breakdown by meal type
-   */
   private async getMealNutritionBreakdown(
     childId: string,
     dayStart: Date,
@@ -362,9 +334,45 @@ class FoodIntakeSummaryController {
     return mealNutrition;
   }
 
-  /**
-   * Helper: Determine meal type from time of day
-   */
+  public async getAllFoodClasses(c: AppContext) {
+    try {
+      const jwtUser = c.user as JwtPayload;
+      if (!jwtUser) {
+        return c.json?.({ status: 401, message: 'Unauthorized' }, 401);
+      }
+
+      const Allclases = await foodIntakeSummaryService.getAllFoodClases();
+
+      if (!Allclases) {
+        return c.json?.(
+          {
+            status: 400,
+            message: 'server internal error ',
+          },
+          400,
+        );
+      }
+
+      return c.json?.(
+        {
+          status: 200,
+          message: 'successfully get allclass food detecsion',
+          data: Allclases,
+        },
+        200,
+      );
+    } catch (error) {
+      return c.json?.(
+        {
+          status: 500,
+          message: 'Failed to get all food classes',
+          error: error instanceof Error ? error.message : 'Unknown error',
+        },
+        500,
+      );
+    }
+  }
+
   private determineMealTypeFromTime(time: Date): string {
     const hour = time.getHours();
     if (hour >= 5 && hour < 10) return 'BREAKFAST';

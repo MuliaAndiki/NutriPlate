@@ -88,11 +88,11 @@ const HomeParentHeroSection: React.FC<HomeParentSectionProps> = ({
       href: "/parent/asupan-gizi",
     },
     {
-      title: "Asupan Makanan",
+      title: "Deteksi Makanan",
       image: AsupanSvg(),
       border: "border border-primary",
       background: "bg-primary/20",
-      href: "/parent/asupan-gizi",
+      href: "/detection-food",
     },
     {
       title: "Grafik Pertumbuhan",

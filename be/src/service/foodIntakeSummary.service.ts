@@ -117,17 +117,11 @@ class FoodIntakeSummaryService {
     );
 
     const baseEnergyKcal = getBaseEnergyKcal(ageMonths);
-
     const macroTarget = getMacroTargets(ageMonths);
-
     const correctionFactor = getEnergyCorrectionFactor(nutritionStatus);
-
     const targetEnergyKcal = Math.round(baseEnergyKcal * correctionFactor);
-
     const energyPercent = Math.min(Math.round((totals.energyKcal / targetEnergyKcal) * 100), 100);
-
     const status = energyPercent >= 90 ? 'GOOD' : energyPercent >= 70 ? 'ENOUGH' : 'LOW';
-
     const result = {
       childId,
       date: dateStr,
@@ -217,6 +211,26 @@ class FoodIntakeSummaryService {
       throw new Error(
         `Failed to get date range summary: ${error instanceof Error ? error.message : 'Unknown error'}`,
       );
+    }
+  }
+  public async getAllFoodClases() {
+    try {
+      const Allclases = await prisma.foodClasses.findMany({
+        orderBy: {
+          createdAt: 'asc',
+        },
+      });
+
+      if (!Allclases) {
+        return {
+          success: false,
+          error: 'server internal error',
+        };
+      }
+
+      return Allclases;
+    } catch (error) {
+      console.error(error);
     }
   }
 }

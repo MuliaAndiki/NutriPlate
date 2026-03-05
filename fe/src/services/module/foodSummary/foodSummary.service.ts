@@ -7,6 +7,11 @@ class FoodSummaryApi {
     return res.data;
   }
 
+  public async getClaseseFood(): Promise<TResponse<any>> {
+    const res = await AxiosClient.get("/api/food/intake/clases");
+    return res.data;
+  }
+
   public async getFoodSummaryRange(
     childId: string,
     params?: { startDate?: string; endDate?: string },

@@ -57,3 +57,33 @@ export interface GetFoodSummaryRangeResponse {
   message: string;
   data: DailySummaryResponse[];
 }
+
+export interface FoodMetadata {
+  note: string | null;
+  label: string;
+  source: string;
+}
+
+export interface FoodClassRespone {
+  id: string;
+  name: string;
+  category: string;
+
+  energyKcal: number;
+  proteinGram: number;
+  fatGram: number;
+  carbGram: number;
+  fiberGram: number | null;
+
+  calciumMg: number;
+  ironMg: number;
+
+  vitaminA: number | null;
+  vitaminC: number | null;
+
+  edibleRatio: number;
+
+  createdAt: string;
+
+  metadata: FoodMetadata;
+}

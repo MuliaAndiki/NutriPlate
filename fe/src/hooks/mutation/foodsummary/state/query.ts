@@ -22,3 +22,11 @@ export function useGetFoodSummaryByRange(
     enabled: !!id && !!params.startDate && !!params.endDate,
   });
 }
+
+export function useGetClasesfood() {
+  return useQuery({
+    queryKey: cacheKey.foodIntake.clases(),
+    queryFn: () => Api.FoodSummary.getClaseseFood(),
+    staleTime: 1000 * 60 * 5,
+  });
+}

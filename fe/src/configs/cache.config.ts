@@ -94,6 +94,7 @@ export const cacheKey = {
   foodIntake: {
     list: () => [`food:list`],
     byId: (id: string) => [`food:byid:${id}`],
+    clases: () => [`food:clases`],
   },
   posyandu: {
     list: () => [`posyandu:list`],

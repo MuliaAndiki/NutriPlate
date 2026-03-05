@@ -1,4 +1,5 @@
 import {
+  useGetClasesfood,
   useGetFoodSummaryByRange,
   useGetFoodSummaryDaily,
 } from "./state/query";
@@ -11,6 +12,7 @@ export function useFoodSummary() {
     query: {
       foodSummaryDaily: useGetFoodSummaryDaily,
       foodSummaryRange: useGetFoodSummaryByRange,
+      foofClases: useGetClasesfood,
     },
   };
 }
