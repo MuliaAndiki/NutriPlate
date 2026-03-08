@@ -9,6 +9,7 @@ async function seedFoodClasses() {
   for (const item of foodClasses) {
     await prisma.foodClasses.upsert({
       where: { name: item.name },
+
       update: {
         category: item.category ?? null,
         energyKcal: item.energyKcal ?? null,
@@ -20,10 +21,24 @@ async function seedFoodClasses() {
         ironMg: item.ironMg ?? null,
         vitaminA: item.vitaminA ?? null,
         vitaminC: item.vitaminC ?? null,
+        fiberGram: item.fiberGram ?? null,
         metadata: item.metadata ?? undefined,
       },
+
       create: {
-        ...item,
+        name: item.name,
+        category: item.category ?? null,
+        energyKcal: item.energyKcal ?? null,
+        proteinGram: item.proteinGram ?? null,
+        fatGram: item.fatGram ?? null,
+        carbGram: item.carbGram ?? null,
+        edibleRatio: item.edibleRatio ?? null,
+        calciumMg: item.calciumMg ?? null,
+        ironMg: item.ironMg ?? null,
+        vitaminA: item.vitaminA ?? null,
+        vitaminC: item.vitaminC ?? null,
+        fiberGram: item.fiberGram ?? null,
+        metadata: item.metadata ?? undefined,
       },
     });
 
