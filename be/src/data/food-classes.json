@@ -17,35 +17,55 @@
       "note": "nasi matang"
     }
   },
+
   {
-    "name": "nasi_goreng",
-    "category": "serealia",
-    "energyKcal": 168,
-    "proteinGram": 3.5,
-    "fatGram": 4.5,
-    "carbGram": 28.0,
+    "name": "keumamah",
+    "category": "animalia",
+    "energyKcal": 110,
+    "proteinGram": 23.87,
+    "fatGram": 0.92,
+    "carbGram": 0,
     "edibleRatio": 1.0,
-    "calciumMg": 15,
-    "ironMg": 1.2,
-    "vitaminA": 45,
+    "calciumMg": 0,
+    "ironMg": 0,
+    "vitaminA": 0,
     "vitaminC": 0,
     "metadata": {
-      "label": "Nasi Goreng",
-      "source": "TKPI estimasi",
-      "note": "nasi + minyak + telur sedikit"
+      "label": "Keumamah (Ikan Kayu Aceh)",
+      "source": "FatSecret",
+      "note": "Berbahan dasar ikan tongkol yang direbus, dikeringkan, dan diasap. Data gizi per 100g. Kolesterol: 42mg, Sodium: 106mg, Kalium: 396mg."
     }
   },
   {
-    "name": "mie",
-    "category": "serealia",
-    "energyKcal": 138,
-    "proteinGram": 4.5,
-    "fatGram": 2.1,
-    "carbGram": 25.0,
+    "name": "apel",
+    "category": "plantae",
+    "energyKcal": 72,
+    "proteinGram": 0.36,
+    "fatGram": 0.23,
+    "carbGram": 19.06,
     "edibleRatio": 1.0,
-    "calciumMg": 12,
+    "calciumMg": 9,
     "ironMg": 1.3,
     "vitaminA": 0,
+    "vitaminC": 5,
+    "metadata": {
+      "label": "Apel Segar",
+      "source": "TKPI",
+      "note": "Apel Segar"
+    }
+  },
+
+  {
+    "name": "mie_goreng",
+    "category": "serealia",
+    "energyKcal": 350,
+    "proteinGram": 8.0,
+    "fatGram": 12,
+    "carbGram": 52.0,
+    "edibleRatio": 1.0,
+    "calciumMg": 0,
+    "ironMg": 1.3,
+    "vitaminA": 441,
     "vitaminC": 0,
     "metadata": {
       "label": "Mie Basah",
@@ -54,25 +74,61 @@
     }
   },
   {
-    "name": "bihun",
-    "category": "serealia",
-    "energyKcal": 109,
-    "proteinGram": 1.8,
-    "fatGram": 0.2,
-    "carbGram": 25.6,
+    "name": "kuah_pliek_u",
+    "category": "vegetables",
+    "energyKcal": 135,
+    "proteinGram": 3.8,
+    "fatGram": 10.2,
+    "carbGram": 9.4,
     "edibleRatio": 1.0,
-    "calciumMg": 3,
-    "ironMg": 0.5,
-    "vitaminA": 0,
-    "vitaminC": 0,
+    "calciumMg": 65,
+    "ironMg": 1.8,
+    "vitaminA": 215,
+    "vitaminC": 12,
     "metadata": {
-      "label": "Bihun",
-      "source": "TKPI",
-      "note": "bihun rebus"
+      "label": "Kuah Pliek U",
+      "source": "TKPI / Riset Gizi Lokal",
+      "note": "Sayuran santan dengan ampas kelapa fermentasi khas Aceh"
     }
   },
   {
-    "name": "roti",
+    "name": "sie_reuboh",
+    "category": "protein_hewani",
+    "energyKcal": 312,
+    "proteinGram": 19.4,
+    "fatGram": 24.8,
+    "carbGram": 2.1,
+    "edibleRatio": 1.0,
+    "calciumMg": 14,
+    "ironMg": 2.8,
+    "vitaminA": 18,
+    "vitaminC": 0,
+    "metadata": {
+      "label": "Sie Reuboh",
+      "source": "TKPI / Riset Gizi Lokal",
+      "note": "Daging sapi rebus lemak dengan cuka enau khas Aceh"
+    }
+  },
+  {
+    "name": "asam_keueng",
+    "category": "protein_hewani",
+    "energyKcal": 82,
+    "proteinGram": 13.5,
+    "fatGram": 2.1,
+    "carbGram": 2.2,
+    "edibleRatio": 0.8,
+    "calciumMg": 38,
+    "ironMg": 1.1,
+    "vitaminA": 25,
+    "vitaminC": 14.2,
+    "metadata": {
+      "label": "Asam Keueng",
+      "source": "TKPI / Riset Gizi Lokal",
+      "note": "Ikan kuah asam pedas khas Aceh tanpa santan"
+    }
+  },
+  {
+    "name": "roti_tawar",
     "category": "serealia",
     "energyKcal": 248,
     "proteinGram": 8.0,
@@ -161,6 +217,7 @@
       "note": "tanpa lontong"
     }
   },
+
   {
     "name": "ikan_goreng",
     "category": "protein_hewani",
@@ -179,76 +236,329 @@
       "note": "ikan laut"
     }
   },
+
   {
-    "name": "udang",
+    "name": "ikan_bakar",
     "category": "protein_hewani",
-    "energyKcal": 99,
-    "proteinGram": 24.0,
-    "fatGram": 0.3,
-    "carbGram": 0.2,
-    "edibleRatio": 0.6,
-    "calciumMg": 70,
-    "ironMg": 2.6,
-    "vitaminA": 54,
+    "energyKcal": 126,
+    "proteinGram": 21.94,
+    "fatGram": 3.44,
+    "carbGram": 0.33,
+    "edibleRatio": 0.7,
+    "calciumMg": 341,
+    "ironMg": 1.1,
+    "vitaminA": 30,
     "vitaminC": 0,
     "metadata": {
-      "label": "Udang",
-      "source": "USDA",
-      "note": "tanpa kulit"
+      "label": "Ikan Bakar",
+      "source": "TKPI",
+      "note": "ikan laut"
     }
   },
   {
-    "name": "telur",
+    "name": "kentang_rebus",
+    "category": "plantae",
+    "energyKcal": 87,
+    "proteinGram": 1.87,
+    "fatGram": 0.1,
+    "carbGram": 20.13,
+    "edibleRatio": 1.0,
+    "calciumMg": 86,
+    "ironMg": 0.31,
+    "vitaminA": 787,
+    "vitaminC": 7.4,
+    "metadata": {
+      "label": "Kentang Rebus",
+      "source": "TKPI",
+      "note": "Kentang Rebus"
+    }
+  },
+  {
+    "name": "kentang_goreng",
+    "category": "plantae",
+    "energyKcal": 274,
+    "proteinGram": 3.48,
+    "fatGram": 14.06,
+    "carbGram": 35.66,
+    "edibleRatio": 1.0,
+    "calciumMg": 60,
+    "ironMg": 0.31,
+    "vitaminA": 787,
+    "vitaminC": 9.7,
+    "metadata": {
+      "label": "Kentang Rebus",
+      "source": "TKPI",
+      "note": "Kentang Rebus"
+    }
+  },
+  {
+    "name": "pisang",
+    "category": "fruits",
+    "energyKcal": 89,
+    "proteinGram": 1.09,
+    "fatGram": 0.33,
+    "carbGram": 22.84,
+    "edibleRatio": 1.0,
+    "calciumMg": 8.7,
+    "ironMg": 0.6,
+    "vitaminA": 0.01,
+    "vitaminC": 12,
+    "metadata": {
+      "label": "Pisang",
+      "source": "TKPI",
+      "note": "Pisang"
+    }
+  },
+  {
+    "name": "stroberi",
+    "category": "fruits",
+    "energyKcal": 32,
+    "proteinGram": 0.7,
+    "fatGram": 0.3,
+    "carbGram": 7.7,
+    "edibleRatio": 0.9,
+    "calciumMg": 16,
+    "ironMg": 0.4,
+    "vitaminA": 12,
+    "vitaminC": 58.8,
+    "metadata": {
+      "label": "Stroberi",
+      "source": "TKPI",
+      "note": "Kondisi segar"
+    }
+  },
+  {
+    "name": "kiwi",
+    "category": "fruits",
+    "energyKcal": 61,
+    "proteinGram": 1.1,
+    "fatGram": 0.5,
+    "carbGram": 14.7,
+    "edibleRatio": 0.87,
+    "calciumMg": 34,
+    "ironMg": 0.3,
+    "vitaminA": 4,
+    "vitaminC": 92.7,
+    "metadata": {
+      "label": "Kiwi",
+      "source": "USDA / TKPI",
+      "note": "Kiwi hijau segar, dikupas"
+    }
+  },
+  {
+    "name": "telur_ceplok",
+    "category": "protein_hewani",
+    "energyKcal": 196,
+    "proteinGram": 13.6,
+    "fatGram": 14.8,
+    "carbGram": 0.8,
+    "edibleRatio": 1.0,
+    "calciumMg": 56,
+    "ironMg": 1.7,
+    "vitaminA": 180,
+    "vitaminC": 0,
+    "metadata": {
+      "label": "Telur Ceplok",
+      "source": "USDA / TKPI",
+      "note": "Digoreng dengan sedikit minyak"
+    }
+  },
+  {
+    "name": "telur_dadar",
+    "category": "protein_hewani",
+    "energyKcal": 154,
+    "proteinGram": 10.6,
+    "fatGram": 11.7,
+    "carbGram": 0.6,
+    "edibleRatio": 1.0,
+    "calciumMg": 48,
+    "ironMg": 1.5,
+    "vitaminA": 172,
+    "vitaminC": 0,
+    "metadata": {
+      "label": "Telur Dadar",
+      "source": "USDA",
+      "note": "Digoreng dengan sedikit minyak"
+    }
+  },
+  {
+    "name": "telur_rebus",
     "category": "protein_hewani",
     "energyKcal": 155,
-    "proteinGram": 13.0,
-    "fatGram": 11.0,
-    "carbGram": 1.1,
-    "edibleRatio": 0.9,
+    "proteinGram": 12.6,
+    "fatGram": 10.6,
+    "carbGram": 1.12,
+    "edibleRatio": 1.0,
     "calciumMg": 50,
-    "ironMg": 1.2,
-    "vitaminA": 160,
+    "ironMg": 1.19,
+    "vitaminA": 149,
     "vitaminC": 0,
     "metadata": {
-      "label": "Telur Ayam",
+      "label": "Telur Rebus",
       "source": "USDA",
-      "note": "tanpa cangkang"
+      "note": "Hard boiled egg"
     }
   },
   {
-    "name": "tahu",
-    "category": "protein_nabati",
-    "energyKcal": 76,
-    "proteinGram": 8.0,
-    "fatGram": 4.8,
-    "carbGram": 1.9,
+    "name": "terong_balado",
+    "category": "vegetables",
+    "energyKcal": 124,
+    "proteinGram": 1.5,
+    "fatGram": 9.2,
+    "carbGram": 10.8,
     "edibleRatio": 1.0,
-    "calciumMg": 350,
-    "ironMg": 5.4,
-    "vitaminA": 0,
-    "vitaminC": 0,
+    "calciumMg": 32,
+    "ironMg": 0.6,
+    "vitaminA": 45,
+    "vitaminC": 7.0,
     "metadata": {
-      "label": "Tahu",
+      "label": "Terong Balado",
       "source": "TKPI",
-      "note": "tahu putih"
+      "note": "Terong tumis dengan bumbu cabai"
     }
   },
   {
-    "name": "tempe",
-    "category": "protein_nabati",
-    "energyKcal": 193,
-    "proteinGram": 20.3,
-    "fatGram": 10.8,
-    "carbGram": 7.6,
+    "name": "rendang_sapi",
+    "category": "protein_hewani",
+    "energyKcal": 468,
+    "proteinGram": 22.6,
+    "fatGram": 35.9,
+    "carbGram": 11.0,
     "edibleRatio": 1.0,
-    "calciumMg": 155,
-    "ironMg": 4.0,
+    "calciumMg": 474,
+    "ironMg": 14.9,
     "vitaminA": 0,
     "vitaminC": 0,
     "metadata": {
-      "label": "Tempe",
+      "label": "Rendang Sapi",
       "source": "TKPI",
-      "note": "tempe kedelai"
+      "note": "Daging sapi olahan santan"
+    }
+  },
+  {
+    "name": "donat",
+    "category": "snack",
+    "energyKcal": 357,
+    "proteinGram": 9.4,
+    "fatGram": 12.0,
+    "carbGram": 52.8,
+    "edibleRatio": 1.0,
+    "calciumMg": 58,
+    "ironMg": 1.5,
+    "vitaminA": 0,
+    "vitaminC": 0,
+    "metadata": {
+      "label": "Donat",
+      "source": "TKPI",
+      "note": "Donat dari tepung terigu"
+    }
+  },
+  {
+    "name": "burger",
+    "category": "fast_food",
+    "energyKcal": 257,
+    "proteinGram": 12.0,
+    "fatGram": 12.4,
+    "carbGram": 24.1,
+    "edibleRatio": 1.0,
+    "calciumMg": 100,
+    "ironMg": 2.5,
+    "vitaminA": 12,
+    "vitaminC": 0,
+    "metadata": {
+      "label": "Burger",
+      "source": "TKPI",
+      "note": "Hamburker standar"
+    }
+  },
+  {
+    "name": "puding",
+    "category": "snack",
+    "energyKcal": 136,
+    "proteinGram": 3.2,
+    "fatGram": 2.5,
+    "carbGram": 25.1,
+    "edibleRatio": 1.0,
+    "calciumMg": 98,
+    "ironMg": 0.5,
+    "vitaminA": 18,
+    "vitaminC": 0,
+    "metadata": {
+      "label": "Puding",
+      "source": "TKPI",
+      "note": "Puding Coklat"
+    }
+  },
+  {
+    "name": "sayur_sop",
+    "category": "vegetables",
+    "energyKcal": 27,
+    "proteinGram": 0.8,
+    "fatGram": 1.1,
+    "carbGram": 4.0,
+    "edibleRatio": 1.0,
+    "calciumMg": 35,
+    "ironMg": 0.5,
+    "vitaminA": 148,
+    "vitaminC": 3.5,
+    "metadata": {
+      "label": "Sayur Sop",
+      "source": "TKPI",
+      "note": "Sayur sop tanpa daging/ayam"
+    }
+  },
+  {
+    "name": "biskuit_choco_chips",
+    "category": "snack",
+    "energyKcal": 492,
+    "proteinGram": 4.2,
+    "fatGram": 25.1,
+    "carbGram": 62.4,
+    "edibleRatio": 1.0,
+    "calciumMg": 33,
+    "ironMg": 3.1,
+    "vitaminA": 11,
+    "vitaminC": 0,
+    "metadata": {
+      "label": "Biskuit Choco Chips",
+      "source": "USDA",
+      "note": "Biskuit komersial dengan butiran cokelat"
+    }
+  },
+  {
+    "name": "tahu_goreng",
+    "category": "protein_nabati",
+    "energyKcal": 115,
+    "proteinGram": 9.7,
+    "fatGram": 8.5,
+    "carbGram": 2.5,
+    "edibleRatio": 1.0,
+    "calciumMg": 124,
+    "ironMg": 0.8,
+    "vitaminA": 0,
+    "vitaminC": 0,
+    "metadata": {
+      "label": "Tahu Goreng",
+      "source": "TKPI",
+      "note": "Tahu digoreng matang"
+    }
+  },
+  {
+    "name": "tempe_goreng",
+    "category": "protein_nabati",
+    "energyKcal": 225,
+    "proteinGram": 18.3,
+    "fatGram": 14.8,
+    "carbGram": 9.1,
+    "edibleRatio": 1.0,
+    "calciumMg": 129,
+    "ironMg": 2.5,
+    "vitaminA": 0,
+    "vitaminC": 0,
+    "metadata": {
+      "label": "Tempe Goreng",
+      "source": "TKPI",
+      "note": "Tempe kedelai digoreng matang"
     }
   },
   {
@@ -287,24 +597,7 @@
       "note": "digoreng"
     }
   },
-  {
-    "name": "sosis",
-    "category": "olahan_daging",
-    "energyKcal": 301,
-    "proteinGram": 12.0,
-    "fatGram": 27.0,
-    "carbGram": 2.0,
-    "edibleRatio": 1.0,
-    "calciumMg": 11,
-    "ironMg": 1.1,
-    "vitaminA": 0,
-    "vitaminC": 0,
-    "metadata": {
-      "label": "Sosis",
-      "source": "USDA",
-      "note": "sosis daging"
-    }
-  },
+
   {
     "name": "capcay",
     "category": "sayuran",
@@ -324,24 +617,6 @@
     }
   },
   {
-    "name": "gado_gado",
-    "category": "sayuran",
-    "energyKcal": 137,
-    "proteinGram": 6.1,
-    "fatGram": 7.6,
-    "carbGram": 12.0,
-    "edibleRatio": 1.0,
-    "calciumMg": 95,
-    "ironMg": 2.5,
-    "vitaminA": 350,
-    "vitaminC": 12,
-    "metadata": {
-      "label": "Gado-gado",
-      "source": "TKPI",
-      "note": "dengan saus kacang"
-    }
-  },
-  {
     "name": "tumis_kangkung",
     "category": "sayuran",
     "energyKcal": 45,
@@ -357,42 +632,6 @@
       "label": "Tumis Kangkung",
       "source": "TKPI",
       "note": "tumis ringan"
-    }
-  },
-  {
-    "name": "bakwan",
-    "category": "gorengan",
-    "energyKcal": 240,
-    "proteinGram": 4.0,
-    "fatGram": 15.0,
-    "carbGram": 22.0,
-    "edibleRatio": 1.0,
-    "calciumMg": 35,
-    "ironMg": 1.8,
-    "vitaminA": 40,
-    "vitaminC": 0,
-    "metadata": {
-      "label": "Bakwan",
-      "source": "TKPI estimasi",
-      "note": "gorengan sayur"
-    }
-  },
-  {
-    "name": "kerupuk",
-    "category": "snack",
-    "energyKcal": 500,
-    "proteinGram": 6.0,
-    "fatGram": 25.0,
-    "carbGram": 65.0,
-    "edibleRatio": 1.0,
-    "calciumMg": 40,
-    "ironMg": 1.5,
-    "vitaminA": 0,
-    "vitaminC": 0,
-    "metadata": {
-      "label": "Kerupuk",
-      "source": "TKPI",
-      "note": "kerupuk goreng"
     }
   }
 ]
