@@ -6,11 +6,14 @@ COPY package.json ./
 COPY prisma ./prisma/
 
 RUN bun install
-RUN bun prisma generate
+RUN bunx prisma generate
 
 COPY . .
 
-EXPOSE 3001
+RUN bunx prisma migrate deploy
 
+RUN bun run seed || true
+
+EXPOSE 3001
 
 CMD ["bun", "run", "start"]

@@ -1,5 +1,7 @@
-import prisma from 'prisma/client';
-import foodClasses from '@/data/food-classes.json';
+import foodClasses from '../data/food-classes.json';
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
 
 type FoodClassInput = {
   name: string;
@@ -17,46 +19,47 @@ type FoodClassInput = {
 };
 
 async function seedFoodClasses() {
-  console.log('🌱 Seeding FoodClasses...');
+  console.log('🌱 Sync FoodClasses...');
 
-  for (const item of foodClasses as FoodClassInput[]) {
-    await prisma.foodClasses.upsert({
-      where: {
-        name: item.name,
-      },
-      update: {
-        category: item.category ?? null,
-        energyKcal: item.energyKcal ?? null,
-        proteinGram: item.proteinGram ?? null,
-        fatGram: item.fatGram ?? null,
-        carbGram: item.carbGram ?? null,
-        edibleRatio: item.edibleRatio ?? null,
-        calciumMg: item.calciumMg ?? null,
-        ironMg: item.ironMg ?? null,
-        vitaminA: item.vitaminA ?? null,
-        vitaminC: item.vitaminC ?? null,
-        metadata: item.metadata ?? undefined,
-      },
-      create: {
-        name: item.name,
-        category: item.category ?? null,
-        energyKcal: item.energyKcal ?? null,
-        proteinGram: item.proteinGram ?? null,
-        fatGram: item.fatGram ?? null,
-        carbGram: item.carbGram ?? null,
-        edibleRatio: item.edibleRatio ?? null,
-        calciumMg: item.calciumMg ?? null,
-        ironMg: item.ironMg ?? null,
-        vitaminA: item.vitaminA ?? null,
-        vitaminC: item.vitaminC ?? null,
-        metadata: item.metadata ?? undefined,
-      },
+  const existing = await prisma.foodClasses.findMany({
+    select: { name: true },
+  });
+
+  const existingMap = new Set(existing.map((e) => e.name));
+
+  const operations = (foodClasses as FoodClassInput[]).map((item) => {
+    const data = {
+      name: item.name,
+      category: item.category ?? null,
+      energyKcal: item.energyKcal ?? null,
+      proteinGram: item.proteinGram ?? null,
+      fatGram: item.fatGram ?? null,
+      carbGram: item.carbGram ?? null,
+      edibleRatio: item.edibleRatio ?? null,
+      calciumMg: item.calciumMg ?? null,
+      ironMg: item.ironMg ?? null,
+      vitaminA: item.vitaminA ?? null,
+      vitaminC: item.vitaminC ?? null,
+      metadata: item.metadata ?? undefined,
+    };
+
+    if (existingMap.has(item.name)) {
+      console.log(`🔄 update: ${item.name}`);
+      return prisma.foodClasses.update({
+        where: { name: item.name },
+        data,
+      });
+    }
+
+    console.log(`➕ create: ${item.name}`);
+    return prisma.foodClasses.create({
+      data,
     });
+  });
 
-    console.log(`✅ upsert: ${item.name}`);
-  }
+  await prisma.$transaction(operations);
 
-  console.log('🎉 FoodClasses seed completed');
+  console.log('🎉 FoodClasses sync completed');
 }
 
 seedFoodClasses()
