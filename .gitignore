@@ -15,3 +15,4 @@ node_modules/
 /fe/192.168.100.52.pem
 /fe/server.ts
 /preprocessing/newModels
+.vscode

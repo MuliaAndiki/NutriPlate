@@ -43,6 +43,10 @@ const HomePosyanduContainer = () => {
   );
   const notifikasiData = notifikasiQuery.data?.data ?? [];
 
+  //food Detection
+  const foodClasesQuery = service.foodSummary.query.foofClases();
+  const foodClasesData = foodClasesQuery.data?.data ?? [];
+
   return (
     <SidebarLayout>
       <main className="w-full min-h-screen overflow-x-hidden">
@@ -54,12 +58,14 @@ const HomePosyanduContainer = () => {
                 childInPosyanduQuery.isLoading ||
                 kaderQuery.isLoading ||
                 MeasurementAllQuery.isLoading ||
-                notifikasiQuery.isLoading,
+                notifikasiQuery.isLoading ||
+                foodClasesQuery.isLoading,
               profile: profileData ?? null,
               measurement: MeasurementAllData ?? [],
               childInPosyandu: childInPosyanduData ?? [],
               kader: KaderData ?? [],
               notifikasi: notifikasiData,
+              foodDetection: foodClasesData ?? [],
             },
           }}
         />

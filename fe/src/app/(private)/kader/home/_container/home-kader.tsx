@@ -54,6 +54,9 @@ const HomeKaderContainer = () => {
   const [posyanduSelectId, setPosyanduSelectId] = useState<string>("");
   const registerKaderMutation = service.registerKader.mutation.registerKader();
 
+  const foodClasesQuery = service.foodSummary.query.foofClases();
+  const foodClasesData = foodClasesQuery.data?.data ?? [];
+
   const handleRegisterKader = () => {
     if (!kaderId || !posyanduSelectId) return;
 
@@ -87,13 +90,15 @@ const HomeKaderContainer = () => {
                 posyanduQuery.isLoading ||
                 MeasurementAllQuery.isLoading ||
                 posyanduByIdQuery.isLoading ||
-                notifikasiQuery.isLoading,
+                notifikasiQuery.isLoading ||
+                foodClasesQuery.isLoading,
               profile: profileData ?? null,
               measurement: MeasurementAllData ?? [],
               childInPosyandu: childInPosyanduData ?? [],
               posyandu: posyanduData ?? [],
               posyanduById: posyanduByIdData ?? null,
               notikasi: notifikasiData,
+              foodDetection: foodClasesData ?? [],
             },
             mutation: {
               onRegisterKader: handleRegisterKader,

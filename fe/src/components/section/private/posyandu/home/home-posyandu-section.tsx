@@ -1,11 +1,12 @@
 import ChildrenList from "@/components/card/child/children-list";
 import HeaderHomeCard from "@/components/card/general/header/home";
 import BalitaRiskList from "@/components/card/kader/balita-risk";
-import BalitaWarningList from "@/components/card/kader/balita-warning";
+
 import KaderList from "@/components/card/posyandu/kaderList";
 import { ButtonWrapper } from "@/components/wrapper/ButtonWrapper";
 import {
   ChildListByPosyanduData,
+  FoodClassRespone,
   KaderDetailResponse,
   MeasurementRespone,
   UserResponse,
@@ -16,6 +17,7 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import Image from "next/image";
 import Link from "next/link";
 import { INotification } from "@/types/schema";
+import FoodDetection from "@/components/card/kader/food-detectsion";
 
 interface HomePosyanduHeroSectionProps {
   service: {
@@ -26,6 +28,7 @@ interface HomePosyanduHeroSectionProps {
       kader: KaderDetailResponse[];
       measurement: MeasurementRespone[];
       notifikasi: INotification;
+      foodDetection: FoodClassRespone[];
     };
   };
 }
@@ -37,6 +40,7 @@ const HomePosyanduHeroSection: React.FC<HomePosyanduHeroSectionProps> = ({
   const resChild = service.query.childInPosyandu;
   const resProfile = service.query.profile;
   const resNotifikasi = service.query.notifikasi;
+  const resFoodDetection = service.query.foodDetection;
 
   if (service.query.isLoading) {
     return <HomePosyanduSectionSkeleton />;
@@ -46,17 +50,18 @@ const HomePosyanduHeroSection: React.FC<HomePosyanduHeroSectionProps> = ({
     !resKader ||
     !resChild ||
     !resProfile ||
-    !resNotifikasi
+    !resNotifikasi ||
+    !resFoodDetection
   ) {
     return <DataNotFound />;
   }
   const lengthChild = resChild.length;
+
+  const foodDetectionLeght = resFoodDetection.length;
   const nutritionStatusLenghtWarning = resMeasuremnt.filter(
     (item) => item.nutritionStatus === "severely_underweight",
   ).length;
-  const nutritionStatusLenghtError = resMeasuremnt.filter(
-    (item) => item.nutritionStatus === "underweight",
-  ).length;
+
   const KaderLenght = resKader.length;
   const lengthNotifikasi = resNotifikasi.isRead === false;
 
@@ -105,7 +110,7 @@ const HomePosyanduHeroSection: React.FC<HomePosyanduHeroSectionProps> = ({
         <div className="w-full p-2 grid grid-cols-2 grid-rows-2 gap-2">
           <ChildrenList lengthChild={lengthChild} />
           <BalitaRiskList lengthChild={nutritionStatusLenghtWarning} />
-          <BalitaWarningList lengthChild={nutritionStatusLenghtError} />
+          <FoodDetection length={foodDetectionLeght} />
           <KaderList length={KaderLenght} />
         </div>
         <div className="w-full flex items-center space-x-1">
