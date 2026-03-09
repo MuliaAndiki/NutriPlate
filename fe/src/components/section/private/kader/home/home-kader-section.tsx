@@ -3,6 +3,7 @@ import HeaderHomeCard from "@/components/card/general/header/home";
 import { ButtonWrapper } from "@/components/wrapper/ButtonWrapper";
 import {
   ChildListByPosyanduData,
+  FoodClassRespone,
   MeasurementRespone,
   PosyanduRespone,
   UserResponse,
@@ -15,11 +16,12 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import RegisterKaderForm from "./_registerKader/registerKader";
 import Link from "next/link";
 import BalitaRiskList from "@/components/card/kader/balita-risk";
-import BalitaWarningList from "@/components/card/kader/balita-warning";
+import BalitaWarningList from "@/components/card/kader/food-detectsion";
 import PosyanduList from "@/components/card/kader/list-posyandu";
 import PosyanduHomeCard from "@/components/card/posyandu/posyandu-home-card";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { INotification } from "@/types/schema";
+import FoodDetection from "@/components/card/kader/food-detectsion";
 
 interface HomeKaderHeroSectionProps {
   namespace: {
@@ -34,6 +36,7 @@ interface HomeKaderHeroSectionProps {
       measurement: MeasurementRespone[];
       posyanduById: PosyanduRespone;
       notikasi: INotification;
+      foodDetection: FoodClassRespone[];
     };
     mutation: {
       onRegisterKader: () => void;
@@ -73,14 +76,13 @@ const HomeKaderHeroSection: React.FC<HomeKaderHeroSectionProps> = ({
 
   const resNotifikasi = service.query.notikasi;
   const lengthChild = service.query.childInPosyandu.length;
+  const resDetection = service.query.foodDetection;
   const nutritionStatusLenghtWarning = service.query.measurement.filter(
     (item) => item.nutritionStatus === "severely_underweight",
   ).length;
-  const nutritionStatusLenghtError = service.query.measurement.filter(
-    (item) => item.nutritionStatus === "underweight",
-  ).length;
   const posyanduLenght = service.query.posyandu.length;
   const lengthNotifikasi = resNotifikasi.isRead === false;
+  const lengthDetection = resDetection.length;
   return (
     <div className="w-full overflow-hidden">
       <HeaderHomeCard
@@ -92,7 +94,7 @@ const HomeKaderHeroSection: React.FC<HomeKaderHeroSectionProps> = ({
         <div className="w-full p-2 grid grid-cols-2 grid-rows-2 gap-2">
           <ChildrenList lengthChild={lengthChild} />
           <BalitaRiskList lengthChild={nutritionStatusLenghtWarning} />
-          <BalitaWarningList lengthChild={nutritionStatusLenghtError} />
+          <FoodDetection length={lengthDetection} />
           <PosyanduList length={posyanduLenght} />
         </div>
         <div className="w-full flex items-center  space-x-1">
