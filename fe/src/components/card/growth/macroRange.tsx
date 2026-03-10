@@ -77,7 +77,9 @@ const MacroRangeRadial: React.FC<MacroRangeRadialProps> = ({ summaries }) => {
   return (
     <Card>
       <CardHeader className="flex-row items-center w-full ">
-        <CardTitle className="text-sm">Total {option.label} (Range)</CardTitle>
+        <CardTitle className="text-sm">
+          Total {option.label} (Range) - 20 Hari
+        </CardTitle>
         <div className="w-full ">
           <Select
             value={selected}
