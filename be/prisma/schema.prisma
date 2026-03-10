@@ -138,7 +138,7 @@ model Food {
   title           String
   totals          Json?
   items           FoodIntakeItem[]
-  child           Child            @relation(fields: [childId], references: [id])
+  child           Child            @relation(fields: [childId], references: [id],onDelete: Cascade)
   food            FoodRawImage[]
 
   iotDevice       IotDevice?       @relation(fields: [iotId], references: [id])

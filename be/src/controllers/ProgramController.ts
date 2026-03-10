@@ -214,7 +214,14 @@ class ProgramController {
         });
 
         if (!child?.posyanduId) {
-          return c.json?.({ status: 404, message: 'child or posyandu not found' }, 404);
+          return c.json?.(
+            {
+              status: 200,
+              message: 'successfully get programs',
+              data: [],
+            },
+            200,
+          );
         }
 
         posyanduId = child.posyanduId;

@@ -22,7 +22,6 @@ export function useGetChild({
 
     return false;
   })();
-  console.log({ role, posyanduId, canFetch });
   return useQuery({
     queryKey: cacheKey.child.byAll(role, posyanduId),
     queryFn: () => Api.User.getChild(posyanduId),

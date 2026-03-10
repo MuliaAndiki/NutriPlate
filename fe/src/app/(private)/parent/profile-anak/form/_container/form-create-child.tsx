@@ -8,11 +8,16 @@ import { useAppNameSpace } from "@/hooks/useAppNameSpace";
 import { useAvatarReducer } from "@/hooks/useAvatarReducer";
 import { FormCreateChild } from "@/types/form/child.form";
 import { fileToBase64 } from "@/utils/base64";
+import { useAppSelector } from "@/hooks/dispatch/dispatch";
 
 const FormCreateChildContainer = () => {
   const nameSpace = useAppNameSpace();
   const service = useService();
-  const createChildMutation = service.child.mutation.create();
+  const selector = useAppSelector((state) => state.posyandu);
+
+  const createChildMutation = service.child.mutation.create({
+    role: selector.role!,
+  });
   const { avatar, removePreview, selectAvatar } = useAvatarReducer();
   const [formCreateChiild, setFormCreateChild] = useState<FormCreateChild>({
     dateOfBirth: "",

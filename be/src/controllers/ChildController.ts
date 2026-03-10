@@ -65,6 +65,9 @@ class ChildController {
           avaChild: documentUrl.avaChild ?? null,
           profileChild: childBody.profileChild as Prisma.JsonObject,
         },
+        include: {
+          parent: true,
+        },
       });
       if (!child) {
         return c.json?.(
