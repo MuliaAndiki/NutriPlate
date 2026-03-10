@@ -67,6 +67,26 @@ const DetailPengukuranSection: React.FC<DetailPengukuranSectionProps> = ({
       <div className="w-full">
         <ChildParent res={resChildren} key={resChildren.id} />
       </div>
+      <div className="w-full flex justify-end">
+        <ButtonWrapper
+          variant={"outline"}
+          size="sm"
+          onClick={() =>
+            namespace.router.push(
+              `/posyandu/pengukuran/detail-anak/${resChildren.id}`,
+            )
+          }
+          rightIcon={
+            <Icon
+              icon="material-symbols:arrow-forward-rounded"
+              width="18"
+              height="18"
+            />
+          }
+        >
+          Detail Anak
+        </ButtonWrapper>
+      </div>
       <div className="w-full flex flex-col justify-start space-y-2 ">
         <div className="w-full">
           <h1 className="text-lg font-bold">Berat Badan (kg)</h1>
