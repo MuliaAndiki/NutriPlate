@@ -271,7 +271,7 @@ model FoodRawImage {
   createdAt      DateTime         @default(now())
   labeled_at     DateTime?
   labels         FoodAnnotation[]
-  food           Food             @relation(fields: [source_food_id], references: [id])
+  food           Food             @relation(fields: [source_food_id], references: [id],onDelete: Cascade)
   uploader       User             @relation(fields: [uploader_id], references: [id])
 
   @@map("food_raw_image")
