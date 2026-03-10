@@ -25,7 +25,7 @@ const DailySummaryPosyanduContainer = () => {
   const endDate = today.toISOString().split("T")[0];
 
   const startDate = new Date(today);
-  startDate.setDate(startDate.getDate() - 6);
+  startDate.setDate(startDate.getDate() - 20);
   const startDateStr = startDate.toISOString().split("T")[0];
 
   const foodSummaryRangeQuery = service.foodSummary.query.foodSummaryRange(
