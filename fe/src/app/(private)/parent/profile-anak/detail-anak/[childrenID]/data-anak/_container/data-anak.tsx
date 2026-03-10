@@ -9,19 +9,20 @@ import { useAvatarReducer } from "@/hooks/useAvatarReducer";
 import { FormUpdateChild } from "@/types/form/child.form";
 import { fileToBase64 } from "@/utils/base64";
 import { parsePayload } from "@/utils/parse.format";
+import { useAppSelector } from "@/hooks/dispatch/dispatch";
 
 const DataAnakContainer = () => {
   const nameSpace = useAppNameSpace();
   const { childrenID } = useParams<{ childrenID: string }>();
   const service = useService();
-
+  const selector = useAppSelector((state) => state.posyandu);
   //children
   const childQueryByID = service.user.query.childById(childrenID);
   const chilDataByID = childQueryByID.data?.data ?? null;
 
   //mutation
   const updateChild = service.child.mutation.update();
-  const deleteChild = service.child.mutation.delete();
+  const deleteChild = service.child.mutation.delete({ role: selector.role! });
 
   //state
   const [formUpdateChild, setFormUpdateChild] =

@@ -3,7 +3,6 @@ export const cacheKey = {
     byToken: (token: string) => [`child:token:${token}`],
     byID: (id: string) => [`child:${id}`],
     byAll: (role: any, posyanduId: any) => ["child", role, posyanduId],
-    list: () => ["child:list"],
     byParent: (id: string) => [`child:parent:${id}`],
     byPosyandu: (id: string) => [`child:posyandu:${id}`],
   },
