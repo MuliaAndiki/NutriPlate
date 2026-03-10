@@ -119,7 +119,7 @@ model Measurement {
   nutritionStatus     NutritionStatus
   note                String?
   createdAt           DateTime        @default(now())
-  child               Child           @relation(fields: [childId], references: [id])
+  child               Child           @relation(fields: [childId], references: [id],onDelete: Cascade)
   whoEvaluation       WhoEvaluation?
 
   @@index([childId])
@@ -354,8 +354,8 @@ model WhoEvaluation {
   recommendation Json
   createdAt      DateTime    @default(now())
   classification Json
-  child          Child       @relation(fields: [childId], references: [id])
-  measurement    Measurement @relation(fields: [measurementId], references: [id])
+  child          Child       @relation(fields: [childId], references: [id], onDelete: Cascade)
+  measurement    Measurement @relation(fields: [measurementId], references: [id] )
 
   @@index([childId])
   @@map("who_evaluations")
