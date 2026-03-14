@@ -3,8 +3,10 @@ from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from config.config import config 
 
-MODEL_PATH = "models/1.1.pt"
-RESULT_PATH = "models/results.csv"
+MODEL_PATH = "models/1.0/1.0.pt"
+RESULT_PATH = "models/1.0/results.csv"
+
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
