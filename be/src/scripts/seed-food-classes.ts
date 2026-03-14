@@ -4,7 +4,7 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function seedFoodClasses() {
-  console.log('🌱 Sync FoodClasses...');
+  console.log('🌱 Sync FoodClasses');
 
   for (const item of foodClasses) {
     await prisma.foodClasses.upsert({
