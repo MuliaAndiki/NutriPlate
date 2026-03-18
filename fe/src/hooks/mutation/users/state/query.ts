@@ -3,7 +3,7 @@ import { cacheKey } from "@/configs/cache.config";
 import Api from "@/services/props.module";
 import { Role } from "@/types/partial";
 
-// bug here
+
 export function useGetChild({
   role,
   posyanduId,

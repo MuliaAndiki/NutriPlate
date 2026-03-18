@@ -20,11 +20,16 @@ interface DailySummaryKaderSectionProps {
       foodSummaryRange: any;
     };
   };
+  state: {
+    setSelectDay: React.Dispatch<React.SetStateAction<number>>;
+    selectDay: number;
+  };
 }
 
 const DailySummaryKaderSection: React.FC<DailySummaryKaderSectionProps> = ({
   namespace,
   service,
+  state,
 }) => {
   if (service.query.isLoading) return <DailySummarySectionSkeleton />;
 
@@ -50,7 +55,11 @@ const DailySummaryKaderSection: React.FC<DailySummaryKaderSectionProps> = ({
         key={service.query.foodSummaryDaily.childId}
       />
 
-      <MacroRangeChart summaries={service.query.foodSummaryRange.summaries} />
+      <MacroRangeChart
+        summaries={service.query.foodSummaryRange.summaries}
+        setSelectDay={state.setSelectDay}
+        selectDay={state.selectDay}
+      />
     </section>
   );
 };

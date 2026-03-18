@@ -5,11 +5,14 @@ import { SidebarLayout } from "@/core/layouts/sidebar.layout";
 import useService from "@/hooks/mutation/prop.service";
 import { useAppNameSpace } from "@/hooks/useAppNameSpace";
 import { useParams } from "next/navigation";
+import { useState } from "react";
 
 const DailySummaryKaderContainer = () => {
   const namespace = useAppNameSpace();
   const { childrenID } = useParams<{ childrenID: string }>();
   const service = useService();
+
+  const [selectDay, setSelectDay] = useState<number>(0);
 
   // child
   const childQueryByID = service.user.query.childById(childrenID);
@@ -51,6 +54,10 @@ const DailySummaryKaderContainer = () => {
                 foodSummaryRangeQuery.isLoading,
               foodSummaryRange: foodSummaryRangeData ?? null,
             },
+          }}
+          state={{
+            selectDay: selectDay,
+            setSelectDay: setSelectDay,
           }}
         />
       </main>

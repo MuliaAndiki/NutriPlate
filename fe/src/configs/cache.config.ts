@@ -62,8 +62,11 @@ export const cacheKey = {
   },
   foodSummaryDaily: {
     byChild: (child: string) => [`food:summary:child:${child}`],
-    byRange: (child: string, params: any) => [
-      `food:summary:child:range:${child}/${params}`,
+    byRange: (
+      child: string,
+      params: { startDate?: string; endDate?: string },
+    ) => [
+      `food:summary:child:range:${child}:${params.startDate ?? ""}:${params.endDate ?? ""}`,
     ],
   },
   food: {

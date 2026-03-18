@@ -5,7 +5,6 @@ import { DailySummaryResponse } from "@/types/res/foodSummary.respone";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { ChevronLeft } from "lucide-react";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
-import { aggregateRangeSummary } from "@/utils/summary";
 import MacroRangeChart from "@/components/card/growth/macroRange";
 import DailySummarySectionSkeleton from "@/components/skeleton/private/parent/profile-anak/detail-profile-anak/daily-summary/daily-summary-section-skeleton";
 
@@ -21,11 +20,16 @@ interface DailySummarySectionProps {
       foodSummaryRange: any;
     };
   };
+  state: {
+    setSelectDay: React.Dispatch<React.SetStateAction<number>>;
+    selectDay: number;
+  };
 }
 
 const DailySummarySection: React.FC<DailySummarySectionProps> = ({
   namespace,
   service,
+  state,
 }) => {
   if (service.query.isLoading) return <DailySummarySectionSkeleton />;
 
@@ -51,7 +55,11 @@ const DailySummarySection: React.FC<DailySummarySectionProps> = ({
         key={service.query.foodSummaryDaily.childId}
       />
 
-      <MacroRangeChart summaries={service.query.foodSummaryRange.summaries} />
+      <MacroRangeChart
+        summaries={service.query.foodSummaryRange.summaries}
+        setSelectDay={state.setSelectDay}
+        selectDay={state.selectDay}
+      />
     </section>
   );
 };
