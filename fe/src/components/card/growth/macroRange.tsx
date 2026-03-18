@@ -41,9 +41,15 @@ const TOTAL_OPTIONS: {
 
 interface MacroRangeRadialProps {
   summaries: any[];
+  setSelectDay: React.Dispatch<React.SetStateAction<number>>;
+  selectDay: number;
 }
 
-const MacroRangeRadial: React.FC<MacroRangeRadialProps> = ({ summaries }) => {
+const MacroRangeRadial: React.FC<MacroRangeRadialProps> = ({
+  summaries,
+  setSelectDay,
+  selectDay,
+}) => {
   const [selected, setSelected] = useState<TotalKey>("energyKcal");
 
   const option = TOTAL_OPTIONS.find((o) => o.key === selected)!;
@@ -77,9 +83,31 @@ const MacroRangeRadial: React.FC<MacroRangeRadialProps> = ({ summaries }) => {
   return (
     <Card>
       <CardHeader className="flex-row items-center w-full ">
-        <CardTitle className="text-sm">
-          Total {option.label} (Range) - 20 Hari
-        </CardTitle>
+        <div className="w-full flex justify-between items-center">
+          <CardTitle className="text-sm">Total {option.label}</CardTitle>
+          <Select
+            value={selectDay.toString()}
+            onValueChange={(e) => setSelectDay(Number(e))}
+          >
+            <SelectTrigger className="">
+              <SelectValue placeholder="Pilih Tanggal" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectLabel>Tanggal</SelectLabel>
+                {Array.from({ length: 30 }, (_, i) => {
+                  const tanggal = (i + 1).toString();
+                  return (
+                    <SelectItem key={tanggal} value={tanggal}>
+                      {tanggal}
+                    </SelectItem>
+                  );
+                })}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
+
         <div className="w-full ">
           <Select
             value={selected}

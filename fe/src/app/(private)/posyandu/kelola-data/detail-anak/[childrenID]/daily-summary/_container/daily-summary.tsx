@@ -6,11 +6,13 @@ import { SidebarLayout } from "@/core/layouts/sidebar.layout";
 import useService from "@/hooks/mutation/prop.service";
 import { useAppNameSpace } from "@/hooks/useAppNameSpace";
 import { useParams } from "next/navigation";
+import { useState } from "react";
 
 const DailySummaryPosyanduContainer = () => {
   const namespace = useAppNameSpace();
   const { childrenID } = useParams<{ childrenID: string }>();
   const service = useService();
+  const [selectDay, setSelectDay] = useState<number>(0);
 
   // child
   const childQueryByID = service.user.query.childById(childrenID);
@@ -25,7 +27,7 @@ const DailySummaryPosyanduContainer = () => {
   const endDate = today.toISOString().split("T")[0];
 
   const startDate = new Date(today);
-  startDate.setDate(startDate.getDate() - 20);
+  startDate.setDate(startDate.getDate() - selectDay);
   const startDateStr = startDate.toISOString().split("T")[0];
 
   const foodSummaryRangeQuery = service.foodSummary.query.foodSummaryRange(
@@ -52,6 +54,10 @@ const DailySummaryPosyanduContainer = () => {
                 foodSummaryRangeQuery.isLoading,
               foodSummaryRange: foodSummaryRangeData ?? null,
             },
+          }}
+          state={{
+            setSelectDay: setSelectDay,
+            selectDay: selectDay,
           }}
         />
       </main>

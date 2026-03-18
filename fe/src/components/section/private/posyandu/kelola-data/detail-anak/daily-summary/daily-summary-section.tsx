@@ -20,11 +20,15 @@ interface DailySummaryPosyanduSectionProps {
       foodSummaryRange: any;
     };
   };
+  state: {
+    setSelectDay: React.Dispatch<React.SetStateAction<number>>;
+    selectDay: number;
+  };
 }
 
 const DailySummaryPosyanduSection: React.FC<
   DailySummaryPosyanduSectionProps
-> = ({ namespace, service }) => {
+> = ({ namespace, service, state }) => {
   if (service.query.isLoading) return <DailySummarySectionSkeleton />;
 
   return (
@@ -49,7 +53,11 @@ const DailySummaryPosyanduSection: React.FC<
         key={service.query.foodSummaryDaily.childId}
       />
 
-      <MacroRangeChart summaries={service.query.foodSummaryRange.summaries} />
+      <MacroRangeChart
+        summaries={service.query.foodSummaryRange.summaries}
+        selectDay={state.selectDay}
+        setSelectDay={state.setSelectDay}
+      />
     </section>
   );
 };
