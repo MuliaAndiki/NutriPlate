@@ -18,10 +18,10 @@ class ProgramRouter {
   }
   private routes() {
     this.programRoutes.post('/:id', (c: AppContext) => ProgramController.createProgram(c), {
-      beforeHandle: [verifyToken().beforeHandle, requireRole(['POSYANDU']).beforeHandle],
+      beforeHandle: [verifyToken().beforeHandle, requireRole(['POSYANDU', 'ADMIN']).beforeHandle],
     });
     this.programRoutes.put(`/:id`, (c: AppContext) => ProgramController.updateProgram(c), {
-      beforeHandle: [verifyToken().beforeHandle, requireRole(['POSYANDU']).beforeHandle],
+      beforeHandle: [verifyToken().beforeHandle, requireRole(['POSYANDU', 'ADMIN']).beforeHandle],
     });
     this.programRoutes.get('/', (c: AppContext) => ProgramController.getPrograms(c), {
       beforeHandle: [verifyToken().beforeHandle],
@@ -29,11 +29,11 @@ class ProgramRouter {
     this.programRoutes.get('/:id', (c: AppContext) => ProgramController.getProgrambyID(c), {
       beforeHandle: [
         verifyToken().beforeHandle,
-        requireRole(['PARENT', 'KADER', 'POSYANDU']).beforeHandle,
+        requireRole(['PARENT', 'KADER', 'POSYANDU', 'ADMIN']).beforeHandle,
       ],
     });
     this.programRoutes.delete('/:id', (c: AppContext) => ProgramController.deleteProgram(c), {
-      beforeHandle: [verifyToken().beforeHandle, requireRole(['POSYANDU']).beforeHandle],
+      beforeHandle: [verifyToken().beforeHandle, requireRole(['POSYANDU', 'ADMIN']).beforeHandle],
     });
   }
 }

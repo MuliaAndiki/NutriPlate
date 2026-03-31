@@ -87,5 +87,24 @@ export const NavigationPosyandu: NagivationType[] = [
 ];
 
 export const NavigationAdmin: NagivationType[] = [
-  //
+  {
+    name: "Beranda",
+    icon: <Icon icon="fa7-solid:house" />,
+    href: `${routing.admin}/home`,
+  },
+  {
+    name: "IoT",
+    icon: <Icon icon="fluent:iot-16-regular" />,
+    href: `${routing.admin}/iot`,
+  },
+  {
+    name: "Notifikasi",
+    icon: <Icon icon="mdi:bell-outline" />,
+    href: `${routing.admin}/notifikasi`,
+  },
+  {
+    name: "Akun",
+    icon: <Icon icon="mdi:user" />,
+    href: `${routing.admin}/profile`,
+  },
 ];

@@ -43,7 +43,7 @@ class NotificationRouter {
       `/:id`,
       (c: AppContext) => NotificationController.updateNotification(c),
       {
-        beforeHandle: [verifyToken().beforeHandle, requireRole(['POSYANDU']).beforeHandle],
+        beforeHandle: [verifyToken().beforeHandle, requireRole(['POSYANDU', 'ADMIN']).beforeHandle],
       },
     );
     this.notificationRoutes.delete(

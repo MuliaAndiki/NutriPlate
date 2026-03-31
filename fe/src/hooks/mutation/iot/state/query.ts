@@ -11,6 +11,15 @@ export function useGetIotDevices() {
   });
 }
 
+export function useGetAllIotDevices() {
+  return useQuery({
+    queryKey: cacheKey.iot.all(),
+    queryFn: () => Api.Iot.getAllDevices(),
+    staleTime: 1000 * 60 * 5,
+    refetchInterval: 1000 * 60,
+  });
+}
+
 export function useGetIotDeviceDetail(
   token: string,
   options?: Partial<

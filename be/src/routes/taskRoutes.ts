@@ -18,25 +18,37 @@ class TaskRoutes {
   }
   private routes() {
     this.taskRoutes.get('/notBroadcast', (c: AppContext) => TaskController.getTaskNotBroadCast(c), {
-      beforeHandle: [verifyToken().beforeHandle, requireRole(['POSYANDU', 'KADER']).beforeHandle],
+      beforeHandle: [
+        verifyToken().beforeHandle,
+        requireRole(['POSYANDU', 'KADER', 'ADMIN']).beforeHandle,
+      ],
     });
     this.taskRoutes.post('/task/:id', (c: AppContext) => TaskController.doneTask(c), {
-      beforeHandle: [verifyToken().beforeHandle, requireRole(['PARENT']).beforeHandle],
+      beforeHandle: [verifyToken().beforeHandle, requireRole(['PARENT', 'ADMIN']).beforeHandle],
     });
     this.taskRoutes.post('/:id', (c: AppContext) => TaskController.createTask(c), {
-      beforeHandle: [verifyToken().beforeHandle, requireRole(['POSYANDU', 'KADER']).beforeHandle],
+      beforeHandle: [
+        verifyToken().beforeHandle,
+        requireRole(['POSYANDU', 'KADER', 'ADMIN']).beforeHandle,
+      ],
     });
     this.taskRoutes.get('/:progressId', (c: AppContext) => TaskController.getTaskForChild(c), {
       beforeHandle: [verifyToken().beforeHandle],
     });
     this.taskRoutes.put('/:id', (c: AppContext) => TaskController.updateTask(c), {
-      beforeHandle: [verifyToken().beforeHandle, requireRole(['POSYANDU', 'KADER']).beforeHandle],
+      beforeHandle: [
+        verifyToken().beforeHandle,
+        requireRole(['POSYANDU', 'KADER', 'ADMIN']).beforeHandle,
+      ],
     });
     this.taskRoutes.delete('/:id', (c: AppContext) => TaskController.deleteTask(c), {
-      beforeHandle: [verifyToken().beforeHandle, requireRole(['POSYANDU', 'KADER']).beforeHandle],
+      beforeHandle: [
+        verifyToken().beforeHandle,
+        requireRole(['POSYANDU', 'KADER', 'ADMIN']).beforeHandle,
+      ],
     });
     this.taskRoutes.patch('/broadcast', (c: AppContext) => TaskController.broadcastTasks(c), {
-      beforeHandle: [verifyToken().beforeHandle, requireRole(['POSYANDU']).beforeHandle],
+      beforeHandle: [verifyToken().beforeHandle, requireRole(['POSYANDU', 'ADMIN']).beforeHandle],
     });
   }
 }
