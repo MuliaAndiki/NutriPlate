@@ -23,7 +23,7 @@ class MeasurementRoutes {
       '/:id',
       (c: AppContext) => MeasurementController.createMeasurement(c),
       {
-        beforeHandle: [verifyToken().beforeHandle, requireRole(['POSYANDU']).beforeHandle],
+        beforeHandle: [verifyToken().beforeHandle, requireRole(['POSYANDU', 'ADMIN']).beforeHandle],
       },
     );
 

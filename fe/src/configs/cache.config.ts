@@ -167,6 +167,7 @@ export const cacheKey = {
 
   iot: {
     list: () => ["iot:list"],
+    all: () => ["iot:all"],
     device: (token: string) => [`iot:device:${token}`],
   },
   session: {

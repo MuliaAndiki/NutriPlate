@@ -2,7 +2,9 @@ export interface IIotDevice {
   id: string;
   parentId?: string;
   posyanduId?: string;
-  deviceToken: string;
+  token?: string;
+  command?: string;
+  name: string;
   deviceName: string;
   pairingToken?: string;
   lastWeight?: number | null;

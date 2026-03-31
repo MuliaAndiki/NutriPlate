@@ -19,21 +19,21 @@ class ChildRoutes {
 
   private routes() {
     this.childRoutes.post('/', (c: AppContext) => ChildController.createChild(c), {
-      beforeHandle: [verifyToken().beforeHandle, requireRole(['PARENT']).beforeHandle],
+      beforeHandle: [verifyToken().beforeHandle, requireRole(['PARENT', 'ADMIN']).beforeHandle],
     });
 
     this.childRoutes.patch('/cancel/:id', (c: AppContext) => ChildController.cancelRegister(c), {
-      beforeHandle: [verifyToken().beforeHandle, requireRole(['PARENT']).beforeHandle],
+      beforeHandle: [verifyToken().beforeHandle, requireRole(['PARENT', 'ADMIN']).beforeHandle],
     });
 
     this.childRoutes.put('/:id', (c: AppContext) => ChildController.updateChild(c), {
-      beforeHandle: [verifyToken().beforeHandle, requireRole(['PARENT']).beforeHandle],
+      beforeHandle: [verifyToken().beforeHandle, requireRole(['PARENT', 'ADMIN']).beforeHandle],
     });
     this.childRoutes.delete('/:id', (c: AppContext) => ChildController.deleteChild(c), {
-      beforeHandle: [verifyToken().beforeHandle, requireRole(['PARENT']).beforeHandle],
+      beforeHandle: [verifyToken().beforeHandle, requireRole(['PARENT', 'ADMIN']).beforeHandle],
     });
     this.childRoutes.patch('/:id', (c: AppContext) => ChildController.registerChild(c), {
-      beforeHandle: [verifyToken().beforeHandle, requireRole(['PARENT']).beforeHandle],
+      beforeHandle: [verifyToken().beforeHandle, requireRole(['PARENT', 'ADMIN']).beforeHandle],
     });
   }
 }

@@ -23,7 +23,7 @@ class ProgresRoutes {
       {
         beforeHandle: [
           verifyToken().beforeHandle,
-          requireRole(['POSYANDU', 'PARENT', 'KADER']).beforeHandle,
+          requireRole(['POSYANDU', 'PARENT', 'KADER', 'ADMIN']).beforeHandle,
         ],
       },
     );
@@ -33,7 +33,7 @@ class ProgresRoutes {
       {
         beforeHandle: [
           verifyToken().beforeHandle,
-          requireRole(['PARENT', 'POSYANDU']).beforeHandle,
+          requireRole(['PARENT', 'POSYANDU', 'ADMIN']).beforeHandle,
         ],
       },
     );
@@ -48,14 +48,14 @@ class ProgresRoutes {
       '/registrations/:id/accept',
       (c: AppContext) => ProgresController.acceptProgramRegistration(c),
       {
-        beforeHandle: [verifyToken().beforeHandle, requireRole(['POSYANDU']).beforeHandle],
+        beforeHandle: [verifyToken().beforeHandle, requireRole(['POSYANDU', 'ADMIN']).beforeHandle],
       },
     );
     this.progresRoutes.put(
       '/registrations/:id/reject',
       (c: AppContext) => ProgresController.rejectProgramRegistration(c),
       {
-        beforeHandle: [verifyToken().beforeHandle, requireRole(['POSYANDU']).beforeHandle],
+        beforeHandle: [verifyToken().beforeHandle, requireRole(['POSYANDU', 'ADMIN']).beforeHandle],
       },
     );
 
@@ -67,7 +67,10 @@ class ProgresRoutes {
       },
     );
     this.progresRoutes.patch('/:id', (c: AppContext) => ProgresController.cancelChildProgram(c), {
-      beforeHandle: [verifyToken().beforeHandle, requireRole(['POSYANDU', 'PARENT']).beforeHandle],
+      beforeHandle: [
+        verifyToken().beforeHandle,
+        requireRole(['POSYANDU', 'PARENT', 'ADMIN']).beforeHandle,
+      ],
     });
     // not fix
     this.progresRoutes.get(

@@ -24,7 +24,7 @@ class FoodIntakeSummaryRoutes {
       {
         beforeHandle: [
           verifyToken().beforeHandle,
-          requireRole(['PARENT', 'KADER', 'POSYANDU']).beforeHandle,
+          requireRole(['PARENT', 'KADER', 'POSYANDU', 'ADMIN']).beforeHandle,
         ],
       },
     );
@@ -34,7 +34,7 @@ class FoodIntakeSummaryRoutes {
       {
         beforeHandle: [
           verifyToken().beforeHandle,
-          requireRole(['PARENT', 'KADER', 'POSYANDU']).beforeHandle,
+          requireRole(['PARENT', 'KADER', 'POSYANDU', 'ADMIN']).beforeHandle,
         ],
       },
     );
@@ -44,7 +44,7 @@ class FoodIntakeSummaryRoutes {
       {
         beforeHandle: [
           verifyToken().beforeHandle,
-          requireRole(['PARENT', 'KADER', 'POSYANDU']).beforeHandle,
+          requireRole(['PARENT', 'KADER', 'POSYANDU', 'ADMIN']).beforeHandle,
         ],
       },
     );
