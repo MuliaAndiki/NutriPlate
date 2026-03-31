@@ -16,3 +16,4 @@ node_modules/
 /fe/server.ts
 /preprocessing/newModels
 .vscode
+.github
