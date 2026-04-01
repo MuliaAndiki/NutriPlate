@@ -111,48 +111,57 @@ const DetectionMakananSection: React.FC<DetectionMakananSectionProps> = ({
                 </tr>
               </thead>
               <tbody>
-                {food.map((item) => (
-                  <tr
-                    key={item.id}
-                    className="border-t odd:bg-background even:bg-muted/30"
-                  >
-                    <td className="px-3 py-2">
-                      <p className="font-medium">
-                        {item.metadata?.label ?? item.name}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {item.name}
-                      </p>
-                    </td>
-                    <td className="px-3 py-2 capitalize">{item.category}</td>
-                    <td className="px-3 py-2 text-right">
-                      {formatValue(item.energyKcal, "kkal")}
-                    </td>
-                    <td className="px-3 py-2 text-right">
-                      {formatValue(item.proteinGram, "g")}
-                    </td>
-                    <td className="px-3 py-2 text-right">
-                      {formatValue(item.fatGram, "g")}
-                    </td>
-                    <td className="px-3 py-2 text-right">
-                      {formatValue(item.carbGram, "g")}
-                    </td>
-                    <td className="px-3 py-2 text-right">
-                      {formatValue(item.calciumMg, "mg")}
-                    </td>
-                    <td className="px-3 py-2 text-right">
-                      {formatValue(item.ironMg, "mg")}
-                    </td>
-                    <td className="px-3 py-2">
-                      <p>{item.metadata?.source ?? "-"}</p>
-                      {item.metadata?.note && (
-                        <p className="text-xs text-muted-foreground truncate max-w-[220px]">
-                          {item.metadata.note}
+                {food
+                  .slice()
+                  .sort((a, b) => {
+                    const nameA = (
+                      a.metadata.label ?? a.name
+                    ).toLocaleLowerCase();
+                    const nameB = (b.metadata?.label ?? b.name).toLowerCase();
+                    return nameA.localeCompare(nameB);
+                  })
+                  .map((item) => (
+                    <tr
+                      key={item.id}
+                      className="border-t odd:bg-background even:bg-muted/30"
+                    >
+                      <td className="px-3 py-2">
+                        <p className="font-medium">
+                          {item.metadata?.label ?? item.name}
                         </p>
-                      )}
-                    </td>
-                  </tr>
-                ))}
+                        <p className="text-xs text-muted-foreground">
+                          {item.name}
+                        </p>
+                      </td>
+                      <td className="px-3 py-2 capitalize">{item.category}</td>
+                      <td className="px-3 py-2 text-right">
+                        {formatValue(item.energyKcal, "kkal")}
+                      </td>
+                      <td className="px-3 py-2 text-right">
+                        {formatValue(item.proteinGram, "g")}
+                      </td>
+                      <td className="px-3 py-2 text-right">
+                        {formatValue(item.fatGram, "g")}
+                      </td>
+                      <td className="px-3 py-2 text-right">
+                        {formatValue(item.carbGram, "g")}
+                      </td>
+                      <td className="px-3 py-2 text-right">
+                        {formatValue(item.calciumMg, "mg")}
+                      </td>
+                      <td className="px-3 py-2 text-right">
+                        {formatValue(item.ironMg, "mg")}
+                      </td>
+                      <td className="px-3 py-2">
+                        <p>{item.metadata?.source ?? "-"}</p>
+                        {item.metadata?.note && (
+                          <p className="text-xs text-muted-foreground truncate max-w-[220px]">
+                            {item.metadata.note}
+                          </p>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
               </tbody>
             </table>
           </div>
